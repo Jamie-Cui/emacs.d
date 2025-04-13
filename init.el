@@ -46,6 +46,12 @@
 ;; disable certain things
 (menu-bar-mode 0)
 (tool-bar-mode 0)
+(global-display-line-numbers-mode 1)
+(setq display-line-numbers-type 'relative)
+(setq ring-bell-function 'ignore)
+
+;; HACK for mac only
+(setq mac-command-modifier 'meta)
 
 ;; -----------------------------------------------------------
 ;; (my) emacs core thirdparty configurations
@@ -58,7 +64,6 @@
                          ("org"   . "http://orgmode.org/elpa/")
                          ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
-
 
 ;; make sure package-refresh-contents will only run once
 (when (not package-archive-contents)
@@ -89,6 +94,103 @@
 (unless (package-installed-p 'projectile)
   (package-install 'projectile))
 
+(unless (package-installed-p 'consult)
+  (package-install 'consult))
+
+(unless (package-installed-p 'helpful)
+  (package-install 'helpful))
+
+(unless (package-installed-p 'vterm)
+  (package-install 'vterm))
+
+(unless (package-installed-p 'magit)
+  (package-install 'magit))
+
+(unless (package-installed-p 'eglot)
+  (package-install 'eglot))
+
+(unless (package-installed-p 'orderless)
+  (package-install 'orderless))
+
+(unless (package-installed-p 'corfu)
+  (package-install 'corfu))
+
+(unless (package-installed-p 'hl-todo)
+  (package-install 'hl-todo))
+
+(use-package hl-todo
+  :config
+  (global-hl-todo-mode 1)
+  (setq hl-todo-highlight-punctuation ":"
+        hl-todo-keyword-faces
+        '(;; For reminders to change or add something at a later date.
+          ("TODO" warning bold)
+          ;; For code (or code paths) that are broken, unimplemented, or slow,
+          ;; and may become bigger problems later.
+          ("FIXME" error bold)
+          ;; For code that needs to be revisited later, either to upstream it,
+          ;; improve it, or address non-critical issues.
+          ("REVIEW" font-lock-keyword-face bold)
+          ;; For code smells where questionable practices are used
+          ;; intentionally, and/or is likely to break in a future update.
+          ("HACK" font-lock-constant-face bold)
+          ;; For sections of code that just gotta go, and will be gone soon.
+          ;; Specifically, this means the code is deprecated, not necessarily
+          ;; the feature it enables.
+          ("DEPRECATED" font-lock-doc-face bold)
+          ;; Extra keywords commonly found in the wild, whose meaning may vary
+          ;; from project to project.
+          ("NOTE" success bold)
+          ("BUG" error bold)
+          ("XXX" font-lock-constant-face bold))))
+
+(use-package corfu
+  :ensure t
+  :init
+  (global-corfu-mode)
+  )
+
+(use-package emacs
+  :custom
+  (tab-always-indent 'complete)
+
+  ;; Emacs 30 and newer: Disable Ispell completion function.
+  ;; Try `cape-dict' as an alternative.
+  (text-mode-ispell-word-completion nil)
+
+  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+  ;; commands are hidden, since they are not used via M-x. This setting is
+  ;; useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p))
+
+(use-package orderless
+  :ensure t
+  :init
+  (setq completion-styles '(orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles . (partial-completion))))))    
+
+(use-package eglot)
+
+(use-package magit)
+
+;; projectile
+(use-package vterm
+  :ensure t
+  :config
+  (setq vterm-mode-hook (lambda() (display-line-numbers-mode -1)))
+  )
+
+;; projectile
+(use-package projectile
+  :ensure t
+  :config
+  (setq projectile-enable-caching t)
+  )
+
+;; helpful
+(use-package helpful)
+
 ;; keycast
 (use-package keycast
   :config
@@ -106,8 +208,14 @@
   (vertico-mode)
   )
 
+;; consult
+(use-package consult)
+
 ;; evil
-(use-package undo-tree)
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode 1)
+  )
 (use-package undo-fu)
 
 (use-package evil
@@ -117,13 +225,23 @@
   (setq evil-overriding-maps nil)
   (setq evil-want-keybinding nil)
   :config
+  (defalias #'forward-evil-word #'forward-evil-symbol)
+  ;; make evil-search-word look for symbol rather than word boundaries
+  (setq-default evil-symbol-word-search t)
+
   (evil-mode 1)
 
-  ;; Leader
+  ;; Leader key in evil mode
   (evil-set-leader 'normal (kbd "SPC"))
   (evil-set-leader 'visual (kbd "SPC"))
   (evil-set-leader 'motion (kbd "SPC"))
   (evil-set-leader 'insert (kbd "M-SPC"))
+
+  ;; make sure the follwing key bindings always work
+  (evil-define-key nil 'global (kbd "M-f")     #'consult-line)
+  (evil-define-key nil 'global (kbd "M-s")     #'save-buffer)
+  (evil-define-key nil 'global (kbd "C-u")     #'evil-scroll-up)
+  (evil-define-key nil 'global (kbd "C-d")     #'evil-scroll-down)
 
   ;; window-related key bindings
   (evil-define-key nil 'global
@@ -137,17 +255,42 @@
     (kbd "<leader>wv")     #'evil-window-vsplit
     )
 
-  ;; buffer-related key bindings
+  ;; buffeer-related key bindings
   (evil-define-key nil 'global
-    (kbd "<leader>bb")     #'vertico-
-    (kbd "<leader>bj")     #'evil-window-down
-    (kbd "<leader>wk")     #'evil-window-up
-    (kbd "<leader>wl")     #'evil-window-right
-    (kbd "<leader>ww")     #'other-window
-    (kbd "<leader>wd")     #'evil-window-delete
-    (kbd "<leader>ws")     #'evil-window-split
-    (kbd "<leader>wv")     #'evil-window-vsplit
+    (kbd "<leader>bb")     #'consult-buffer
+    (kbd "<leader>bd")     #'kill-current-buffer
     )
+
+  ;; open-related key bindings
+  (evil-define-key nil 'global
+    (kbd "<leader>ot")     #'vterm-other-window
+    (kbd "<leader>od")     #'dired-jump
+    (kbd "<leader>og")     #'magit-status
+    )
+
+  ;; prject-related key bindings
+  (evil-define-key nil 'global
+    (kbd "<leader>pp")     #'projectile-switch-project
+    (kbd "<leader>pc")     #'projectile-compile-project
+    (kbd "<leader>pt")     #'projectile-test-project
+    (kbd "<leader>pr")     #'projectile-run-project
+    (kbd "<leader>pd")     #'projectile-kill-buffers
+    (kbd "<leader>pi")     #'projectile-invalidate-cache
+    (kbd "<leader>SPC")    #'projectile-find-file
+    )
+
+  ;; help functions
+  (evil-define-key nil 'global
+    (kbd "<leader>hf")     #'helpful-callable
+    (kbd "<leader>hk")     #'helpful-key
+    (kbd "<leader>hv")     #'helpful-variable
+    (kbd "<leader>hm")     #'describe-mode
+    )
+
+  ;; quit emacs
+  (evil-define-key nil 'global
+    (kbd "<leader>qq")     #'save-buffers-kill-terminal
+    (kbd "<leader>qr")     #'restart-emacs)
   )
 
 ;;; evil-collection
