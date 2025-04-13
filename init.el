@@ -43,15 +43,44 @@
 ;; Emacs native configurations
 ;; -----------------------------------------------------------
 
+;; load theme
+(load-theme 'tsdh-dark t)
+
+;; maximize on startup
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; set default font
+(set-frame-font "0xProto Nerd Font Mono 16" nil t)
+
 ;; disable certain things
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 (global-display-line-numbers-mode 1)
+
 (setq display-line-numbers-type 'relative)
 (setq ring-bell-function 'ignore)
 
+;; use spaces instead of tabs
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq indent-line-function 'insert-tab)
+(setq tab-always-indent t) ; hitting TAB always just indents the current line.
+
 ;; HACK for mac only
 (setq mac-command-modifier 'meta)
+
+;; after all emacs built-in pacakges are loaded
+(use-package emacs
+  :custom
+  ;; Emacs 30 and newer: Disable Ispell completion function.
+  ;; Try `cape-dict' as an alternative.
+  (text-mode-ispell-word-completion nil)
+
+  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+  ;; commands are hidden, since they are not used via M-x. This setting is
+  ;; useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  )
 
 ;; -----------------------------------------------------------
 ;; (my) emacs core thirdparty configurations
@@ -69,54 +98,43 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-;;modeline上显示我的所有的按键和执行的命令
-(unless (package-installed-p 'keycast)
-  (package-install 'keycast))
+(defun +ensure-packages-installed (packages-alist)
+  "Make sure the given package is installed."
+  (dolist (p packages-alist)
+    (unless (package-installed-p p)
+      (package-install p)))
+  )
 
-(unless (package-installed-p 'evil-collection)
-  (package-install 'evil-collection))
-
-(unless (package-installed-p 'undo-tree)
-  (package-install 'undo-tree))
-
-(unless (package-installed-p 'undo-fu)
-  (package-install 'undo-fu))
-
-(unless (package-installed-p 'which-key)
-  (package-install 'which-key))
-
-(unless (package-installed-p 'evil)
-  (package-install 'evil))
-
-(unless (package-installed-p 'vertico)
-  (package-install 'vertico))
-
-(unless (package-installed-p 'projectile)
-  (package-install 'projectile))
-
-(unless (package-installed-p 'consult)
-  (package-install 'consult))
-
-(unless (package-installed-p 'helpful)
-  (package-install 'helpful))
-
-(unless (package-installed-p 'vterm)
-  (package-install 'vterm))
-
-(unless (package-installed-p 'magit)
-  (package-install 'magit))
-
-(unless (package-installed-p 'eglot)
-  (package-install 'eglot))
-
-(unless (package-installed-p 'orderless)
-  (package-install 'orderless))
-
-(unless (package-installed-p 'corfu)
-  (package-install 'corfu))
-
-(unless (package-installed-p 'hl-todo)
-  (package-install 'hl-todo))
+(+ensure-packages-installed
+ '(
+   ;; evil-related
+   evil
+   evil-collection
+   undo-tree
+   undo-fu
+   ;; show key helps
+   which-key
+   consult
+   ;; show helps of fun, key, mode
+   helpful
+   ;; search engine
+   vertico
+   orderless ; make sure
+   ;; project engine
+   projectile
+   ;; complete engine
+   corfu
+   ;; better terminal emulater
+   vterm
+   ;; the killer app: git ui
+   magit
+   ;; lsp
+   eglot
+   ;; highlight todo keywords
+   hl-todo
+   ;; search tool based on ripgrep
+   rg
+   ))
 
 (use-package hl-todo
   :config
@@ -147,21 +165,12 @@
 (use-package corfu
   :ensure t
   :init
+  :config
   (global-corfu-mode)
+  ;; Enable auto completion and configure quitting
+  (setq corfu-auto t
+        corfu-quit-no-match 'separator) ;; or t
   )
-
-(use-package emacs
-  :custom
-  (tab-always-indent 'complete)
-
-  ;; Emacs 30 and newer: Disable Ispell completion function.
-  ;; Try `cape-dict' as an alternative.
-  (text-mode-ispell-word-completion nil)
-
-  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
-  ;; commands are hidden, since they are not used via M-x. This setting is
-  ;; useful beyond Corfu.
-  (read-extended-command-predicate #'command-completion-default-include-p))
 
 (use-package orderless
   :ensure t
@@ -172,7 +181,12 @@
 
 (use-package eglot)
 
-(use-package magit)
+(use-package magit
+  :after evil
+  :config
+  ;; disable SPACE key binding
+  (evil-define-key nil 'global (kbd "M-f")     #'consult-line)
+  )
 
 ;; projectile
 (use-package vterm
@@ -190,11 +204,6 @@
 
 ;; helpful
 (use-package helpful)
-
-;; keycast
-(use-package keycast
-  :config
-  (keycast-mode-line-mode 1))
 
 ;; which-key
 (use-package which-key
@@ -215,6 +224,8 @@
 (use-package undo-tree
   :config
   (global-undo-tree-mode 1)
+  ;; do not save history by default
+  (setq undo-tree-auto-save-history nil)
   )
 (use-package undo-fu)
 
@@ -240,6 +251,7 @@
   ;; make sure the follwing key bindings always work
   (evil-define-key nil 'global (kbd "M-f")     #'consult-line)
   (evil-define-key nil 'global (kbd "M-s")     #'save-buffer)
+  (evil-define-key nil 'global (kbd "M-/")     #'comment-line)
   (evil-define-key nil 'global (kbd "C-u")     #'evil-scroll-up)
   (evil-define-key nil 'global (kbd "C-d")     #'evil-scroll-down)
 
@@ -258,6 +270,7 @@
   ;; buffeer-related key bindings
   (evil-define-key nil 'global
     (kbd "<leader>bb")     #'consult-buffer
+    (kbd "<leader>bn")     #'evil-buffer-new
     (kbd "<leader>bd")     #'kill-current-buffer
     )
 
@@ -270,12 +283,15 @@
 
   ;; prject-related key bindings
   (evil-define-key nil 'global
+    (kbd "<leader>pa")     #'projectile-add-known-project
+    (kbd "<leader>px")     #'projectile-remove-known-project
     (kbd "<leader>pp")     #'projectile-switch-project
     (kbd "<leader>pc")     #'projectile-compile-project
     (kbd "<leader>pt")     #'projectile-test-project
     (kbd "<leader>pr")     #'projectile-run-project
     (kbd "<leader>pd")     #'projectile-kill-buffers
     (kbd "<leader>pi")     #'projectile-invalidate-cache
+    (kbd "<leader>pf")     #'consult-ripgrep
     (kbd "<leader>SPC")    #'projectile-find-file
     )
 
