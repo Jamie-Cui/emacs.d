@@ -60,7 +60,7 @@
 (package-initialize)
 
 
-;;防止反复调用 package-refresh-contents 会影响加载速度
+;; make sure package-refresh-contents will only run once
 (when (not package-archive-contents)
   (package-refresh-contents))
 
@@ -152,6 +152,8 @@
 
 ;;; evil-collection
 (use-package evil-collection
+  :init
+  (setq evil-want-keybinding nil)
   :after evil
   :config
   (evil-collection-init))
