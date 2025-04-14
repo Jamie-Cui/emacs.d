@@ -44,17 +44,20 @@
 ;; -----------------------------------------------------------
 
 ;; load theme
-(load-theme 'tsdh-dark t)
+;; (load-theme 'tsdh-dark t)
+(load-theme 'modus-vivendi t)
 
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; set default font
-(set-frame-font "0xProto Nerd Font Mono 16" nil t)
+(set-frame-font "0xProto Nerd Font Mono" nil t)
 
 ;; disable certain things
 (menu-bar-mode 0)
 (tool-bar-mode 0)
+(customize-set-variable 'scroll-bar-mode nil)
+(customize-set-variable 'horizontal-scroll-bar-mode nil)
 (global-display-line-numbers-mode 1)
 
 (setq display-line-numbers-type 'relative)
@@ -68,6 +71,20 @@
 
 ;; HACK for mac only
 (setq mac-command-modifier 'meta)
+
+;; HACK add homebrew to emacs's exec-path
+(add-to-list 'exec-path "/opt/homebrew/bin") 
+
+;; HACK native-comp failes on mac m1
+;; see: https://github.com/d12frosted/homebrew-emacs-plus/issues/554#issuecomment-1601274371
+(setenv "LIBRARY_PATH"
+        (mapconcat 'identity
+                   '(
+                     "/opt/homebrew/opt/gcc/lib/gcc/14"
+                     "/opt/homebrew/opt/libgccjit/lib/gcc/14"
+                     "/opt/homebrew/opt/gcc/lib/gcc/14/gcc/aarch64-apple-darwin24/14")
+                   ":"))
+
 
 ;; after all emacs built-in pacakges are loaded
 (use-package emacs
@@ -112,6 +129,9 @@
    evil-collection
    undo-tree
    undo-fu
+   evil-multiedit
+   evil-mc
+   evil-goggles
    ;; show key helps
    which-key
    consult
@@ -134,7 +154,103 @@
    hl-todo
    ;; search tool based on ripgrep
    rg
+   ;; roam
+   org-roam
+   ;; citar
+   citar
+   ;; better error checking
+   flycheck
+   ;; better dired
+   dirvish
+   ;; better place to write diaries
+   org-journal
+   ;; tiling windown manager
+   ;; edwina
+   ;; dashboard at startup
+   dashboard
    ))
+
+;; TODO
+
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
+  ;; Set the title
+  (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+  ;; Set the banner
+  ;; (setq dashboard-startup-banner [VALUE])
+  ;; Value can be:
+  ;;  - 'official which displays the official emacs logo.
+  ;;  - 'logo which displays an alternative emacs logo.
+  ;;  - an integer which displays one of the text banners
+  ;;    (see dashboard-banners-directory files).
+  ;;  - a string that specifies a path for a custom banner
+  ;;    currently supported types are gif/image/text/xbm.
+  ;;  - a cons of 2 strings which specifies the path of an image to use
+  ;;    and other path of a text file to use if image isn't supported.
+  ;;    (cons "path/to/image/file/image.png" "path/to/text/file/text.txt").
+  ;;  - a list that can display an random banner,
+  ;;    supported values are: string (filepath), 'official, 'logo and integers.
+
+  ;; Content is not centered by default. To center, set
+  (setq dashboard-center-content t)
+  ;; vertically center content
+  (setq dashboard-vertically-center-content t)
+
+  ;; To disable shortcut "jump" indicators for each section, set
+  (setq dashboard-show-shortcuts nil)
+  )
+
+(use-package evil-goggles
+  :ensure t
+  :after evil
+  :config
+  (evil-goggles-mode)
+
+  ;; optionally use diff-mode's faces; as a result, deleted text
+  ;; will be highlighed with `diff-removed` face which is typically
+  ;; some red color (as defined by the color theme)
+  ;; other faces such as `diff-added` will be used for other actions
+  (evil-goggles-use-diff-faces))
+
+(use-package evil-mc
+  :ensure t
+  :after evil
+  :config
+  (global-evil-mc-mode  1) ;; enable
+  )
+
+(use-package evil-multiedit
+  :ensure t
+  :after evil
+  :config
+  (evil-multiedit-default-keybinds)
+  )
+
+(use-package org-journal)
+
+(use-package dirvish
+  :config
+  (setq dirvish-side-mode-hook (lambda() (display-line-numbers-mode -1)))
+  )
+
+(use-package flycheck)
+
+(use-package citar)
+
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/Library/Mobile Documents/com~apple~CloudDocs/org-remote/roam"))
+  :config
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
+
+;; NOTE
 
 (use-package hl-todo
   :config
@@ -159,8 +275,9 @@
           ;; Extra keywords commonly found in the wild, whose meaning may vary
           ;; from project to project.
           ("NOTE" success bold)
+          ("DONE" success bold)
           ("BUG" error bold)
-          ("XXX" font-lock-constant-face bold))))
+          )))
 
 (use-package corfu
   :ensure t
@@ -181,12 +298,7 @@
 
 (use-package eglot)
 
-(use-package magit
-  :after evil
-  :config
-  ;; disable SPACE key binding
-  (evil-define-key nil 'global (kbd "M-f")     #'consult-line)
-  )
+(use-package magit)
 
 ;; projectile
 (use-package vterm
@@ -215,6 +327,8 @@
 (use-package vertico
   :init
   (vertico-mode)
+  :custom
+  (vertico-cycle t)
   )
 
 ;; consult
@@ -232,7 +346,7 @@
 (use-package evil
   :ensure t
   :after (:and undo-tree undo-fu)
-  :init
+  :preface
   (setq evil-overriding-maps nil)
   (setq evil-want-keybinding nil)
   :config
@@ -251,6 +365,8 @@
   ;; make sure the follwing key bindings always work
   (evil-define-key nil 'global (kbd "M-f")     #'consult-line)
   (evil-define-key nil 'global (kbd "M-s")     #'save-buffer)
+  (evil-define-key nil 'global (kbd "M-c")     #'evil-yank)
+  (evil-define-key nil 'global (kbd "M-v")     #'evil-paste-before)
   (evil-define-key nil 'global (kbd "M-/")     #'comment-line)
   (evil-define-key nil 'global (kbd "C-u")     #'evil-scroll-up)
   (evil-define-key nil 'global (kbd "C-d")     #'evil-scroll-down)
@@ -269,16 +385,18 @@
 
   ;; buffeer-related key bindings
   (evil-define-key nil 'global
-    (kbd "<leader>bb")     #'consult-buffer
+    (kbd "<leader><")      #'consult-buffer
     (kbd "<leader>bn")     #'evil-buffer-new
     (kbd "<leader>bd")     #'kill-current-buffer
+    (kbd "<leader>br")     #'revert-buffer
     )
 
   ;; open-related key bindings
   (evil-define-key nil 'global
-    (kbd "<leader>ot")     #'vterm-other-window
+    (kbd "<leader>ot")     #'projectile-run-vterm-other-window
     (kbd "<leader>od")     #'dired-jump
     (kbd "<leader>og")     #'magit-status
+    (kbd "<leader>op")     #'dirvish-side
     )
 
   ;; prject-related key bindings
@@ -295,6 +413,13 @@
     (kbd "<leader>SPC")    #'projectile-find-file
     )
 
+  ;; note functions
+  (evil-define-key nil 'global
+    (kbd "<leader>nrf")     #'org-roam-node-find
+    (kbd "<leader>nri")     #'org-roam-node-insert
+    ;; (kbd "<leader>njj")     #'org-roam-node-insert
+    )
+
   ;; help functions
   (evil-define-key nil 'global
     (kbd "<leader>hf")     #'helpful-callable
@@ -306,8 +431,10 @@
   ;; quit emacs
   (evil-define-key nil 'global
     (kbd "<leader>qq")     #'save-buffers-kill-terminal
-    (kbd "<leader>qr")     #'restart-emacs)
+    (kbd "<leader>qr")     #'restart-emacs
   )
+)
+
 
 ;;; evil-collection
 (use-package evil-collection
