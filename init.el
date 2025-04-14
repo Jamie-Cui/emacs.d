@@ -44,7 +44,6 @@
 ;; -----------------------------------------------------------
 
 ;; load theme
-;; (load-theme 'tsdh-dark t)
 (load-theme 'modus-vivendi t)
 
 ;; maximize on startup
@@ -84,15 +83,6 @@
                      "/opt/homebrew/opt/libgccjit/lib/gcc/14"
                      "/opt/homebrew/opt/gcc/lib/gcc/14/gcc/aarch64-apple-darwin24/14")
                    ":"))
-
-;; (use-package dired
-;;   :after evil
-;;   :config
-;;   ;; HACK dired mode, remove SPC keybinding
-;;   (keymap-unset dired-mode-map "SPC")
-;;   (evil-define-key 'normal 'dired-mode-map (kbd "SPC") #'nil)
-;;   (evil-set-initial-state 'dired-mode 'normal)
-;;   )
 
 ;; after all emacs built-in pacakges are loaded
 (use-package emacs
@@ -146,6 +136,13 @@
    evil-multiedit
    evil-mc
    evil-goggles
+   general ; more convenient way of defining keys
+   ;; org-related pacakages
+   evil-org
+   org-download
+   org-superstar
+   org-fancy-priorities
+   org-roam
    ;; show key helps
    which-key
    consult
@@ -153,7 +150,7 @@
    helpful
    ;; search engine
    vertico
-   orderless ; make sure
+   orderless
    ;; project engine
    projectile
    ;; complete engine
@@ -168,8 +165,6 @@
    hl-todo
    ;; search tool based on ripgrep
    rg
-   ;; roam
-   org-roam
    ;; citar
    citar
    ;; better error checking
@@ -179,14 +174,74 @@
    ;; better place to write diaries
    org-journal
    ;; tiling windown manager
-   ;; edwina
+   edwina
    ;; dashboard at startup
    dashboard
    ;; icons
    nerd-icons
+   ;; modeline
+   doom-modeline
+   ;; cpplint
+   flycheck-google-cpplint
+   ;; bazel-mode
+   bazel
+   ;; protobuf-mdoe
+   protobuf-mode
+   ;; meson-mode
+   meson-mode
+   ;; allow drawing
+   plantuml-mode
+   ;; preview org math
+   xenops
+   ;; show key frenquency
+   keyfreq
+   ;; llm client
+   gptel
+   ;; export org code in colors
+   engrave-faces
+   ;; adds marginalia to the minibuffer completions
+   marginalia
    ))
 
+;; ---------------------------------------------------------------------------
 ;; TODO
+
+(use-package org-journal)
+
+(use-package flycheck)
+
+(use-package citar)
+
+;; ---------------------------------------------------------------------------
+
+(use-package marginalia
+  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
+  ;; available in the *Completions* buffer, add it to the
+  ;; `completion-list-mode-map'.
+  :bind (:map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+
+  ;; The :init section is always executed.
+  :init
+
+  ;; Marginalia must be activated in the :init section of use-package such that
+  ;; the mode gets enabled right away. Note that this forces loading the
+  ;; package.
+  (marginalia-mode))
+
+(use-package edwina
+  :ensure t
+  :config
+  ;; (setq display-buffer-base-action '(display-buffer-below-selected))
+  (edwina-setup-dwm-keys)
+  (edwina-mode 1)
+  )
+
+(use-package doom-modeline
+  :ensure t
+  :config
+  (doom-modeline-mode 1)
+  )
 
 (use-package nerd-icons)
 
@@ -225,6 +280,12 @@
   :after evil
   :config
   (evil-goggles-mode)
+  (setq evil-goggles-duration 0.1
+        evil-goggles-pulse nil ; too slow
+        ;; evil-goggles provides a good indicator of what has been affected.
+        ;; delete/change is obvious, so I'd rather disable it for these.
+        evil-goggles-enable-delete nil
+        evil-goggles-enable-change nil)
   )
 
 (use-package evil-mc
@@ -241,7 +302,6 @@
   (evil-multiedit-default-keybinds)
   )
 
-(use-package org-journal)
 
 (use-package dirvish
   :ensure t
@@ -254,31 +314,7 @@
         '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size)
         dirvish-side-attributes
         '(vc-state nerd-icons collapse file-size))
-  :bind 
-  (:map dirvish-mode-map               ; Dirvish inherits `dired-mode-map'
-   (";"   . dired-up-directory)        ; So you can adjust `dired' bindings here
-   ("?"   . dirvish-dispatch)          ; [?] a helpful cheatsheet
-   ("a"   . dirvish-setup-menu)        ; [a]ttributes settings:`t' toggles mtime, `f' toggles fullframe, etc.
-   ("f"   . dirvish-file-info-menu)    ; [f]ile info
-   ("o"   . dirvish-quick-access)      ; [o]pen `dirvish-quick-access-entries'
-   ("s"   . dirvish-quicksort)         ; [s]ort flie list
-   ("r"   . dirvish-history-jump)      ; [r]ecent visited
-   ("l"   . dirvish-ls-switches-menu)  ; [l]s command flags
-   ("v"   . dirvish-vc-menu)           ; [v]ersion control commands
-   ("*"   . dirvish-mark-menu)
-   ("y"   . dirvish-yank-menu)
-   ("N"   . dirvish-narrow)
-   ("^"   . dirvish-history-last)
-   ("TAB" . dirvish-subtree-toggle)
-   ("M-f" . dirvish-history-go-forward)
-   ("M-b" . dirvish-history-go-backward)
-   ("M-e" . dirvish-emerge-menu)
-   ("SPC" . nil)
-   ))
-
-(use-package flycheck)
-
-(use-package citar)
+  )
 
 (use-package org-roam
   :ensure t
@@ -290,8 +326,6 @@
   (org-roam-db-autosync-mode)
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
-
-;; NOTE
 
 (use-package hl-todo
   :config
@@ -327,6 +361,9 @@
   (global-corfu-mode)
   ;; Enable auto completion and configure quitting
   (setq corfu-auto t
+        corfu-cycle t
+        corfu-preview-current 'nil ; do not insert unless i select it
+        corfu-preselect 'nil ; do not preselect anything
         corfu-quit-no-match 'separator) ;; or t
   )
 
@@ -370,10 +407,15 @@
   (vertico-mode)
   :custom
   (vertico-cycle t)
+  (vertico-preselect 'no-prompt) ; do not do any preselect
+  (vertico-count 17)
   )
 
 ;; consult
-(use-package consult)
+(use-package consult
+  :custom
+  (consult-preview-max-count 17)
+  )
 
 ;; evil
 (use-package undo-tree
@@ -395,87 +437,92 @@
   ;; make evil-search-word look for symbol rather than word boundaries
   (setq-default evil-symbol-word-search t)
 
-  (evil-mode 1)
+  (evil-mode 1))
 
-  ;; Leader key in evil mode
-  (evil-set-leader 'normal (kbd "SPC"))
-  (evil-set-leader 'visual (kbd "SPC"))
-  (evil-set-leader 'motion (kbd "SPC"))
-  (evil-set-leader 'insert (kbd "M-SPC"))
 
-  ;; make sure the follwing key bindings always work
-  (evil-define-key nil 'global (kbd "M-f")     #'consult-line)
-  (evil-define-key nil 'global (kbd "M-s")     #'save-buffer)
-  (evil-define-key nil 'global (kbd "M-c")     #'evil-yank)
-  (evil-define-key nil 'global (kbd "M-v")     #'evil-paste-before)
-  (evil-define-key nil 'global (kbd "M-/")     #'comment-line)
-  (evil-define-key nil 'global (kbd "C-u")     #'evil-scroll-up)
-  (evil-define-key nil 'global (kbd "C-d")     #'evil-scroll-down)
-  (evil-define-key nil 'global (kbd "C-=")     #'text-scale-increase)
-  (evil-define-key nil 'global (kbd "C--")     #'text-scale-decrease)
+(use-package general
+  :after (:and evil evil-mc)
+  :config
+  ;; * Prefix Keybindings
+  ;; :prefix can be used to prevent redundant specification of prefix keys
+  ;; again, variables are not necessary and likely not useful if you are only
+  ;; using a definer created with `general-create-definer' for the prefixes
 
-  ;; window-related key bindings
-  (evil-define-key nil 'global
-    (kbd "<leader>wh")     #'evil-window-left
-    (kbd "<leader>wj")     #'evil-window-down
-    (kbd "<leader>wk")     #'evil-window-up
-    (kbd "<leader>wl")     #'evil-window-right
-    (kbd "<leader>ww")     #'other-window
-    (kbd "<leader>wd")     #'evil-window-delete
-    (kbd "<leader>ws")     #'evil-window-split
-    (kbd "<leader>wv")     #'evil-window-vsplit
-    )
+  (defconst my-leader "SPC")
+  (defconst my-local-leader "SPC m")
 
-  ;; buffeer-related key bindings
-  (evil-define-key nil 'global
-    (kbd "<leader><")      #'consult-buffer
-    (kbd "<leader>bn")     #'evil-buffer-new
-    (kbd "<leader>bd")     #'kill-current-buffer
-    (kbd "<leader>br")     #'revert-buffer
-    )
+  (general-create-definer +my-leader-def
+    :prefix my-leader)
 
-  ;; open-related key bindings
-  (evil-define-key nil 'global
-    (kbd "<leader>ot")     #'projectile-run-vterm-other-window
-    (kbd "<leader>od")     #'dired-jump
-    (kbd "<leader>og")     #'magit-status
-    (kbd "<leader>op")     #'dirvish-side
-    )
+  ;; ** keybindings that should not be overriden
+  (general-define-key
+   :keymaps 'override
+   "M-f"     #'consult-line
+   "M-s"     #'save-buffer
+   "M-c"     #'evil-yank
+   "M-v"     #'evil-paste-before
+   "M-/"     #'comment-line
+   "C-u"     #'evil-scroll-up
+   "C-d"     #'evil-scroll-down
+   "C-="     #'text-scale-increase
+   "C--"     #'text-scale-decrease
+   )
 
-  ;; prject-related key bindings
-  (evil-define-key nil 'global
-    (kbd "<leader>pa")     #'projectile-add-known-project
-    (kbd "<leader>px")     #'projectile-remove-known-project
-    (kbd "<leader>pp")     #'projectile-switch-project
-    (kbd "<leader>pc")     #'projectile-compile-project
-    (kbd "<leader>pt")     #'projectile-test-project
-    (kbd "<leader>pr")     #'projectile-run-project
-    (kbd "<leader>pd")     #'projectile-kill-buffers
-    (kbd "<leader>pi")     #'projectile-invalidate-cache
-    (kbd "<leader>pf")     #'consult-ripgrep
-    (kbd "<leader>SPC")    #'projectile-find-file
-    )
+  (general-define-key
+   :states 'visual
+   :keymaps 'normal
+   "gzA"     #'evil-mc-make-cursor-in-visual-selection-end
+   "gzI"     #'evil-mc-make-cursor-in-visual-selection-beg
+   "gzq"     #'evil-mc-undo-all-cursors
+   )
 
-  ;; note functions
-  (evil-define-key nil 'global
-    (kbd "<leader>nrf")     #'org-roam-node-find
-    (kbd "<leader>nri")     #'org-roam-node-insert
-    ;; (kbd "<leader>njj")     #'org-roam-node-insert
-    )
-
-  ;; help functions
-  (evil-define-key nil 'global
-    (kbd "<leader>hf")     #'helpful-callable
-    (kbd "<leader>hk")     #'helpful-key
-    (kbd "<leader>hv")     #'helpful-variable
-    (kbd "<leader>hm")     #'describe-mode
-    )
-
-  ;; quit emacs
-  (evil-define-key nil 'global
-    (kbd "<leader>qq")     #'save-buffers-kill-terminal
-    (kbd "<leader>qr")     #'restart-emacs
-    )
+  ;; ** Global Keybindings
+  (+my-leader-def
+   :states 'normal
+   :keymaps 'override ; prevent from being override
+   ;; window-related key bindings
+   "wh"     #'evil-window-left
+   "wj"     #'evil-window-down
+   "wk"     #'evil-window-up
+   "wl"     #'evil-window-right
+   "ww"     #'other-window
+   "wd"     #'evil-window-delete
+   "ws"     #'evil-window-split
+   "wv"     #'evil-window-vsplit
+   "wm"     #'maximize-window
+   ;; buffeer-related key bindings
+   "<"      #'consult-buffer
+   "bn"     #'evil-buffer-new
+   "bd"     #'kill-current-buffer
+   "br"     #'revert-buffer
+   ;; open-related key bindings
+   "ot"     #'projectile-run-vterm-other-window
+   "od"     #'dired-jump
+   "og"     #'magit-status
+   "op"     #'dirvish-side
+   ;; prject-related key bindings
+   "pa"     #'projectile-add-known-project
+   "px"     #'projectile-remove-known-project
+   "pp"     #'projectile-switch-project
+   "pc"     #'projectile-compile-project
+   "pt"     #'projectile-test-project
+   "pr"     #'projectile-run-project
+   "pd"     #'projectile-kill-buffers
+   "pi"     #'projectile-invalidate-cache
+   "pf"     #'consult-ripgrep
+   "SPC"   #'projectile-find-file
+   ;; note functions
+   "nrf"     #'org-roam-node-find
+   "nri"     #'org-roam-node-insert
+   ;; help functions
+   "hf"     #'helpful-callable
+   "hk"     #'helpful-key
+   "hv"     #'helpful-variable
+   "hm"     #'describe-mode
+   ;; quit emacs
+   "qq"     #'save-buffers-kill-terminal
+   "qr"     #'restart-emacs
+   )
   )
 
 
@@ -485,5 +532,7 @@
   (setq evil-want-keybinding nil)
   :after evil
   :config
+  ;; make sure the follwing key bindings always work
+
   (evil-collection-init)
   )
