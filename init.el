@@ -161,6 +161,7 @@
    magit
    ;; lsp
    eglot
+   flycheck-eglot
    ;; highlight todo keywords
    hl-todo
    ;; search tool based on ripgrep
@@ -214,12 +215,48 @@
 
 ;; ---------------------------------------------------------------------------
 
+(use-package flycheck-google-cpplint
+  :ensure t
+  :custom
+  (flycheck-c/c++-googlelint-executable "cpplint")
+  (flycheck-googlelint-verbose "0")
+  (flycheck-cppcheck-standards "c++17")
+  (flycheck-googlelint-linelength "80")
+  (flycheck-googlelint-filter
+   (concat
+    "-whitespace,"
+    "-whitespace/braces,"
+    "-whitespace/indent,"
+    "-build/include_order,"
+    "-build/header_guard,"
+    "-runtime/reference,"
+    )))
+
+(use-package flycheck-eglot
+  :ensure t
+  :config
+  ;; see: https://github.com/kkholst/.doom.d/blob/main/config.org
+  ;; We need to tweak a little bit to make cpplint and eglot to work together.
+  ;; see: https://melpa.org/#/flycheck-eglot
+  ;;
+  ;; see: https://github.com/flycheck/flycheck-eglot
+  ;; By default, the Flycheck-Eglot considers the Eglot to be the only
+  ;; provider of syntax checks. Other Flycheck checkers are ignored.
+  ;; There is a variable `flycheck-eglot-exclusive' that controls this.
+  ;; You can override it system wide or for some major modes.
+  ;;
+  (setq flycheck-eglot-exclusive nil)
+  (flycheck-add-next-checker 'eglot-check
+                             '(warning . c/c++-googlelint))
+  )
+
+
 (use-package marginalia
   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.
   :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
+              ("M-A" . marginalia-cycle))
 
   ;; The :init section is always executed.
   :init
@@ -374,7 +411,12 @@
         completion-category-defaults nil
         completion-category-overrides '((file (styles . (partial-completion))))))    
 
-(use-package eglot)
+(use-package eglot
+  :ensure t
+  :config
+  (add-hook 'cc-mode 'eglot-ensure)
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  )
 
 (use-package magit)
 
@@ -439,6 +481,9 @@
 
   (evil-mode 1))
 
+(defun revert-buffer-no-confirm ()
+  "Revert buffer without confirmation."
+  (interactive) (revert-buffer t t))
 
 (use-package general
   :after (:and evil evil-mc)
@@ -476,6 +521,7 @@
    "gzq"     #'evil-mc-undo-all-cursors
    )
 
+
   ;; ** Global Keybindings
   (+my-leader-def
    :states 'normal
@@ -494,7 +540,7 @@
    "<"      #'consult-buffer
    "bn"     #'evil-buffer-new
    "bd"     #'kill-current-buffer
-   "br"     #'revert-buffer
+   "br"     #'revert-buffer-no-confirm
    ;; open-related key bindings
    "ot"     #'projectile-run-vterm-other-window
    "od"     #'dired-jump
@@ -522,6 +568,10 @@
    ;; quit emacs
    "qq"     #'save-buffers-kill-terminal
    "qr"     #'restart-emacs
+   ;; toggles
+   "th"     #'hs-hide-level
+   ;; other 
+   "."      #'find-file
    )
   )
 
