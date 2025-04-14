@@ -85,6 +85,14 @@
                      "/opt/homebrew/opt/gcc/lib/gcc/14/gcc/aarch64-apple-darwin24/14")
                    ":"))
 
+;; (use-package dired
+;;   :after evil
+;;   :config
+;;   ;; HACK dired mode, remove SPC keybinding
+;;   (keymap-unset dired-mode-map "SPC")
+;;   (evil-define-key 'normal 'dired-mode-map (kbd "SPC") #'nil)
+;;   (evil-set-initial-state 'dired-mode 'normal)
+;;   )
 
 ;; after all emacs built-in pacakges are loaded
 (use-package emacs
@@ -98,6 +106,12 @@
   ;; useful beyond Corfu.
   (read-extended-command-predicate #'command-completion-default-include-p)
   )
+
+;; HACK for vertico
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package savehist
+  :init
+  (savehist-mode))
 
 ;; -----------------------------------------------------------
 ;; (my) emacs core thirdparty configurations
@@ -168,9 +182,13 @@
    ;; edwina
    ;; dashboard at startup
    dashboard
+   ;; icons
+   nerd-icons
    ))
 
 ;; TODO
+
+(use-package nerd-icons)
 
 (use-package dashboard
   :ensure t
@@ -207,12 +225,7 @@
   :after evil
   :config
   (evil-goggles-mode)
-
-  ;; optionally use diff-mode's faces; as a result, deleted text
-  ;; will be highlighed with `diff-removed` face which is typically
-  ;; some red color (as defined by the color theme)
-  ;; other faces such as `diff-added` will be used for other actions
-  (evil-goggles-use-diff-faces))
+  )
 
 (use-package evil-mc
   :ensure t
@@ -231,9 +244,37 @@
 (use-package org-journal)
 
 (use-package dirvish
+  :ensure t
+  :init
+  (dirvish-override-dired-mode)
   :config
-  (setq dirvish-side-mode-hook (lambda() (display-line-numbers-mode -1)))
-  )
+  (setq dirvish-mode-line-format
+        '(:left (sort symlink) :right (omit yank index)))
+  (setq dirvish-attributes           ; The order *MATTERS* for some attributes
+        '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size)
+        dirvish-side-attributes
+        '(vc-state nerd-icons collapse file-size))
+  :bind 
+  (:map dirvish-mode-map               ; Dirvish inherits `dired-mode-map'
+   (";"   . dired-up-directory)        ; So you can adjust `dired' bindings here
+   ("?"   . dirvish-dispatch)          ; [?] a helpful cheatsheet
+   ("a"   . dirvish-setup-menu)        ; [a]ttributes settings:`t' toggles mtime, `f' toggles fullframe, etc.
+   ("f"   . dirvish-file-info-menu)    ; [f]ile info
+   ("o"   . dirvish-quick-access)      ; [o]pen `dirvish-quick-access-entries'
+   ("s"   . dirvish-quicksort)         ; [s]ort flie list
+   ("r"   . dirvish-history-jump)      ; [r]ecent visited
+   ("l"   . dirvish-ls-switches-menu)  ; [l]s command flags
+   ("v"   . dirvish-vc-menu)           ; [v]ersion control commands
+   ("*"   . dirvish-mark-menu)
+   ("y"   . dirvish-yank-menu)
+   ("N"   . dirvish-narrow)
+   ("^"   . dirvish-history-last)
+   ("TAB" . dirvish-subtree-toggle)
+   ("M-f" . dirvish-history-go-forward)
+   ("M-b" . dirvish-history-go-backward)
+   ("M-e" . dirvish-emerge-menu)
+   ("SPC" . nil)
+   ))
 
 (use-package flycheck)
 
@@ -370,6 +411,8 @@
   (evil-define-key nil 'global (kbd "M-/")     #'comment-line)
   (evil-define-key nil 'global (kbd "C-u")     #'evil-scroll-up)
   (evil-define-key nil 'global (kbd "C-d")     #'evil-scroll-down)
+  (evil-define-key nil 'global (kbd "C-=")     #'text-scale-increase)
+  (evil-define-key nil 'global (kbd "C--")     #'text-scale-decrease)
 
   ;; window-related key bindings
   (evil-define-key nil 'global
@@ -432,8 +475,8 @@
   (evil-define-key nil 'global
     (kbd "<leader>qq")     #'save-buffers-kill-terminal
     (kbd "<leader>qr")     #'restart-emacs
+    )
   )
-)
 
 
 ;;; evil-collection
@@ -442,4 +485,5 @@
   (setq evil-want-keybinding nil)
   :after evil
   :config
-  (evil-collection-init))
+  (evil-collection-init)
+  )
