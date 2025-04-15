@@ -206,10 +206,17 @@
    engrave-faces
    ;; adds marginalia to the minibuffer completions
    marginalia
+   ;; make line-break look nicer
+   page-break-lines
    ))
 
 ;; ---------------------------------------------------------------------------
 ;; TODO
+
+(use-package page-break-lines
+  :config
+  (global-page-break-lines-mode 1)
+  )
 
 (use-package org-journal)
 
@@ -291,7 +298,7 @@
   :config
   (dashboard-setup-startup-hook)
   ;; Set the title
-  (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+  (setq dashboard-banner-logo-title "Emacs")
   ;; Set the banner
   ;; (setq dashboard-startup-banner [VALUE])
   ;; Value can be:
@@ -314,6 +321,11 @@
 
   ;; To disable shortcut "jump" indicators for each section, set
   (setq dashboard-show-shortcuts nil)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-items '((recents   . 5)
+                          (projects  . 5)
+                          (agenda    . 5)))
   )
 
 (use-package evil-goggles
@@ -574,6 +586,8 @@
    "qr"     #'restart-emacs
    ;; toggles
    "th"     #'hs-hide-level
+   "tf"     #'toggle-frame-fullscreen
+   "tt"     #'toggle-truncate-lines
    ;; other 
    "."      #'find-file
    )
