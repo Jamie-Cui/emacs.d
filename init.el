@@ -2,8 +2,13 @@
 ;; Emacs native configurations
 ;; -----------------------------------------------------------
 
+(setq custom-file
+      (concat (file-name-directory user-init-file) "custom.el"))
+(load custom-file custom-file)
+
 ;; load theme
-(load-theme 'modus-vivendi t)
+;; (load-theme 'modus-vivendi t)
+(load-theme 'tsdh-dark t)
 
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -33,9 +38,12 @@
 ;; column
 (setq fill-column 80)
 
-;; HACK setup environment
-(add-to-list 'exec-path "/opt/homebrew/bin")
+;; add auto-mdoe list
+(add-to-list 'auto-mode-alist
+             '("\\(\\.ii\\|\\.\\(CC?\\|HH?\\)\\|\\.[ch]\\(pp\\|xx\\|\\+\\+\\)\\|\\.\\(cc\\|hh\\)\\)\\'"
+               . c++-ts-mode))
 
+;; HACK setup environment
 ;; see: https://www.emacswiki.org/emacs/ExecPath
 (defun set-exec-path-from-shell-PATH ()
   "Set up Emacs' `exec-path' and PATH environment variable to match
@@ -49,8 +57,12 @@ apps are not started from a shell."
           "[ \t\n]*$" "" (shell-command-to-string
                           "$SHELL --login -c 'echo $PATH'"
                           ))))
+    ;; (message path-from-shell)
     (setenv "PATH" path-from-shell)
     (setq exec-path (split-string path-from-shell path-separator))))
+
+;; run this setup function
+(set-exec-path-from-shell-PATH)
 
 ;; HACK for mac only
 (setq mac-command-modifier 'meta)
@@ -115,7 +127,7 @@ apps are not started from a shell."
   (dolist (p packages-alist)
     (unless (package-installed-p p)
       (package-install p)))
-  )
+
 
 (+ensure-packages-installed
  '(
@@ -195,15 +207,13 @@ apps are not started from a shell."
    marginalia
    ;; make line-break look nicer
    page-break-lines
+   ;; markdown mode
+   markdown-mode
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
-
-(use-package page-break-lines
-  :config
-  (global-page-break-lines-mode 1)
-  )
+;; ------------------------------------------------------------------
 
 (use-package org-journal)
 
@@ -211,7 +221,16 @@ apps are not started from a shell."
 
 (use-package citar)
 
-;; ------------------------------------------------------------------
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "multimarkdown")
+  :bind (:map markdown-mode-map
+         ("C-c C-e" . markdown-do)))
+
+(use-package page-break-lines
+  :config
+  (global-page-break-lines-mode 1))
 
 (use-package flycheck-google-cpplint
   :ensure t
@@ -265,12 +284,12 @@ apps are not started from a shell."
   ;; forces loading the package.
   (marginalia-mode))
 
-(use-package edwina
-  :ensure t
-  :config
-  (edwina-setup-dwm-keys)
-  (edwina-mode 1)
-  )
+;; (use-package edwina
+  ;; :ensure t
+  ;; :config
+  ;; (edwina-setup-dwm-keys)
+  ;; (edwina-mode 1)
+  ;; )
 
 (use-package doom-modeline
   :ensure t
@@ -285,7 +304,8 @@ apps are not started from a shell."
   :config
   (dashboard-setup-startup-hook)
   ;; Set the title
-  (setq dashboard-banner-logo-title "Emacs")
+  ;; (setq dashboard-banner-logo-title "Emacs")
+  (setq dashboard-page-separator "\n\f\n")
 
   ;; Content is not centered by default. To center, set
   (setq dashboard-center-content t)
@@ -294,11 +314,13 @@ apps are not started from a shell."
 
   ;; To disable shortcut "jump" indicators for each section, set
   (setq dashboard-show-shortcuts nil)
+  (setq dashboard-startup-banner 'official)
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-items '((recents   . 5)
                           (projects  . 5)
                           (agenda    . 5)))
+  (setq dashboard-projects-backend 'projectile)
   )
 
 (use-package evil-goggles
@@ -345,6 +367,13 @@ apps are not started from a shell."
           file-size)
         dirvish-side-attributes
         '(vc-state nerd-icons collapse file-size))
+
+  (general-define-key
+   :state 'normal
+   :keymaps 'dirvish-mode-map
+   "TAB"     #'dirvish-subtree-toggle
+   "?"       #'dirvish-dispatch
+   )
   )
 
 (use-package org-roam
@@ -432,6 +461,7 @@ apps are not started from a shell."
 (use-package projectile
   :ensure t
   :config
+  (projectile-mode +1)
   (setq projectile-enable-caching t)
   )
 
@@ -499,6 +529,16 @@ apps are not started from a shell."
   (general-create-definer +my-leader-def
     :prefix my-leader)
 
+  (defun evil-keyboard-quit ()
+    "Keyboard quit and force normal state."
+    (interactive)
+    (and evil-mode (evil-force-normal-state))
+    (keyboard-quit))
+
+  (general-define-key
+   :states '(normal insert visual)
+   "C-g" #'evil-keyboard-quit) 
+
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
@@ -545,7 +585,6 @@ apps are not started from a shell."
    "ot"     #'projectile-run-vterm-other-window
    "od"     #'dired-jump
    "og"     #'magit-status
-   "op"     #'dirvish-side
    ;; prject-related key bindings
    "pa"     #'projectile-add-known-project
    "px"     #'projectile-remove-known-project
@@ -556,7 +595,8 @@ apps are not started from a shell."
    "pd"     #'projectile-kill-buffers
    "pi"     #'projectile-invalidate-cache
    "pf"     #'consult-ripgrep
-   "SPC"   #'projectile-find-file
+   "po"     #'find-sibling-file
+   "SPC"    #'projectile-find-file
    ;; note functions
    "nrf"     #'org-roam-node-find
    "nri"     #'org-roam-node-insert
@@ -575,6 +615,7 @@ apps are not started from a shell."
    "tc"     #'display-fill-column-indicator-mode
    ;; other 
    "."      #'find-file
+   "`"      #'evil-switch-to-windows-last-buffer
    )
   )
 
@@ -586,19 +627,12 @@ apps are not started from a shell."
   :after evil
   :config
   ;; make sure the follwing key bindings always work
-
   (evil-collection-init)
   )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
+;;;
+(use-package cc-mode
+  :config
+  (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
+  (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
+  )
