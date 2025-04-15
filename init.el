@@ -312,6 +312,7 @@ apps are not started from a shell."
         evil-goggles-enable-change nil)
   )
 
+
 (use-package evil-mc
   :ensure t
   :after evil
@@ -465,6 +466,7 @@ apps are not started from a shell."
   (global-undo-tree-mode 1)
   ;; do not save history by default
   (setq undo-tree-auto-save-history nil)
+
   )
 (use-package undo-fu)
 
@@ -478,6 +480,9 @@ apps are not started from a shell."
   (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
   (setq-default evil-symbol-word-search t)
+
+  ;; use undo-tree
+  (evil-set-undo-system 'undo-tree)
 
   (evil-mode 1))
 
