@@ -126,8 +126,7 @@ apps are not started from a shell."
   "Make sure the given package is installed."
   (dolist (p packages-alist)
     (unless (package-installed-p p)
-      (package-install p)))
-
+      (package-install p))))
 
 (+ensure-packages-installed
  '(
@@ -537,7 +536,7 @@ apps are not started from a shell."
 
   (general-define-key
    :states '(normal insert visual)
-   "C-g" #'evil-keyboard-quit) 
+   "C-g" #'evil-keyboard-quit)
 
   ;; ** keybindings that should not be overriden
   (general-define-key
