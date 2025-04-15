@@ -1,44 +1,3 @@
-;;     Copyright (C) 2025 Jamie Cui
-
-;;     This program is free software: you can redistribute it and/or modify
-;;     it under the terms of the GNU General Public License as published by
-;;     the Free Software Foundation, either version 3 of the License, or
-;;     (at your option) any later version.
-
-;;     This program is distributed in the hope that it will be useful,
-;;     but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;     GNU General Public License for more details.
-
-;;     You should have received a copy of the GNU General Public License
-;;     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-;; Also add information on how to contact you by electronic and paper mail.
-
-;;   If the program does terminal interaction, make it output a short
-;; notice like this when it starts in an interactive mode:
-
-;;     <program>  Copyright (C) <year>  <name of author>
-;;     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
-;;     This is free software, and you are welcome to redistribute it
-;;     under certain conditions; type `show c' for details.
-
-;; The hypothetical commands `show w' and `show c' should show the appropriate
-;; parts of the General Public License.  Of course, your program's commands
-;; might be different; for a GUI interface, you would use an "about box".
-
-;;   You should also get your employer (if you work as a programmer) or school,
-;; if any, to sign a "copyright disclaimer" for the program, if necessary.
-;; For more information on this, and how to apply and follow the GNU GPL, see
-;; <http://www.gnu.org/licenses/>.
-
-;;   The GNU General Public License does not permit incorporating your program
-;; into proprietary programs.  If your program is a subroutine library, you
-;; may consider it more useful to permit linking proprietary applications with
-;; the library.  If this is what you want to do, use the GNU Lesser General
-;; Public License instead of this License.  But first, please read
-;; <http://www.gnu.org/philosophy/why-not-lgpl.html>.
-
 ;; -----------------------------------------------------------
 ;; Emacs native configurations
 ;; -----------------------------------------------------------
@@ -50,7 +9,7 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; set default font
-(set-frame-font "0xProto Nerd Font Mono 16" nil t)
+(set-frame-font "0xProto Nerd Font Mono 14" nil t)
 
 ;; disable certain things
 (menu-bar-mode 0)
@@ -66,11 +25,32 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq indent-line-function 'insert-tab)
-(setq tab-always-indent t) ; hitting TAB always just indents the current line.
+(setq tab-always-indent t) ;  TAB just indents the current line
+
+;; do not move to new line when comment ends
+;; (setq comment-line-break-function 'nil)
+
+;; column
+(setq fill-column 80)
 
 ;; HACK setup environment
 (add-to-list 'exec-path "/opt/homebrew/bin")
-(setenv "PATH" "/Users/jamie/miniconda3/bin:/Users/jamie/miniconda3/condabin:/Users/jamie/.config/doom/bin:/Users/jamie/.config/emacs/bin:/Users/jamie/.emacs.d/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/jamie/.orbstack/bin:/Users/jamie/Desktop/emacs/nextstep/Emacs.app/Contents/MacOS")
+
+;; see: https://www.emacswiki.org/emacs/ExecPath
+(defun set-exec-path-from-shell-PATH ()
+  "Set up Emacs' `exec-path' and PATH environment variable to match
+that used by the user's shell.
+
+This is particularly useful under Mac OS X and macOS, where GUI
+apps are not started from a shell."
+  (interactive)
+  (let ((path-from-shell
+         (replace-regexp-in-string
+          "[ \t\n]*$" "" (shell-command-to-string
+                          "$SHELL --login -c 'echo $PATH'"
+                          ))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
 
 ;; HACK for mac only
 (setq mac-command-modifier 'meta)
@@ -79,14 +59,17 @@
 (add-to-list 'exec-path "/opt/homebrew/bin") 
 
 ;; HACK native-comp failes on mac m1
-;; see: https://github.com/d12frosted/homebrew-emacs-plus/issues/554#issuecomment-1601274371
-(setenv "LIBRARY_PATH"
-        (mapconcat 'identity
-                   '(
-                     "/opt/homebrew/opt/gcc/lib/gcc/14"
-                     "/opt/homebrew/opt/libgccjit/lib/gcc/14"
-                     "/opt/homebrew/opt/gcc/lib/gcc/14/gcc/aarch64-apple-darwin24/14")
-                   ":"))
+;; see: https://github.com/d12frosted/homebrew-emacs-plus/issues/554\
+;; #issuecomment-1601274371
+(setenv
+ "LIBRARY_PATH"
+ (mapconcat
+  'identity
+  '(
+    "/opt/homebrew/opt/gcc/lib/gcc/14"
+    "/opt/homebrew/opt/libgccjit/lib/gcc/14"
+    "/opt/homebrew/opt/gcc/lib/gcc/14/gcc/aarch64-apple-darwin24/14")
+  ":"))
 
 ;; after all emacs built-in pacakges are loaded
 (use-package emacs
@@ -95,14 +78,16 @@
   ;; Try `cape-dict' as an alternative.
   (text-mode-ispell-word-completion nil)
 
-  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
-  ;; commands are hidden, since they are not used via M-x. This setting is
-  ;; useful beyond Corfu.
-  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu ;; commands are hidden, since they are not used via M-x.
+  ;; This setting is ;; useful beyond Corfu.
+  (read-extended-command-predicate
+   #'command-completion-default-include-p)
   )
 
 ;; HACK for vertico
-;; Persist history over Emacs restarts. Vertico sorts by history position.
+;; Persist history over Emacs restarts.
+;; Vertico sorts by history position.
 (use-package savehist
   :init
   (savehist-mode))
@@ -113,10 +98,12 @@
 
 ;; Enable package
 (require 'package)
-(setq package-archives '(("gnu"   . "http://elpa.gnu.org/packages/")
-                         ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-                         ("org"   . "http://orgmode.org/elpa/")
-                         ("melpa" . "http://melpa.org/packages/")))
+(setq package-archives
+      '(("gnu"   . "http://elpa.gnu.org/packages/")
+        ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
+        ("org"   . "http://orgmode.org/elpa/")
+        ("melpa" . "http://melpa.org/packages/")))
+
 (package-initialize)
 
 ;; make sure package-refresh-contents will only run once
@@ -210,7 +197,7 @@
    page-break-lines
    ))
 
-;; ---------------------------------------------------------------------------
+;; ------------------------------------------------------------------
 ;; TODO
 
 (use-package page-break-lines
@@ -224,7 +211,7 @@
 
 (use-package citar)
 
-;; ---------------------------------------------------------------------------
+;; ------------------------------------------------------------------
 
 (use-package flycheck-google-cpplint
   :ensure t
@@ -247,13 +234,14 @@
   :ensure t
   :config
   ;; see: https://github.com/kkholst/.doom.d/blob/main/config.org
-  ;; We need to tweak a little bit to make cpplint and eglot to work together.
+  ;; We need to tweak a little bit to make cpplint and eglot to work
+  ;; together.
   ;; see: https://melpa.org/#/flycheck-eglot
   ;;
   ;; see: https://github.com/flycheck/flycheck-eglot
   ;; By default, the Flycheck-Eglot considers the Eglot to be the only
   ;; provider of syntax checks. Other Flycheck checkers are ignored.
-  ;; There is a variable `flycheck-eglot-exclusive' that controls this.
+  ;; There is a variable `flycheck-eglot-exclusive' that controls this
   ;; You can override it system wide or for some major modes.
   ;;
   (setq flycheck-eglot-exclusive nil)
@@ -263,24 +251,23 @@
 
 
 (use-package marginalia
-  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
-  ;; available in the *Completions* buffer, add it to the
-  ;; `completion-list-mode-map'.
+  ;; Bind `marginalia-cycle' locally in the minibuffer.
+  ;; To make the binding ;; available in the *Completions* buffer,
+  ;; add it to the `completion-list-mode-map'.
   :bind (:map minibuffer-local-map
               ("M-A" . marginalia-cycle))
 
   ;; The :init section is always executed.
   :init
 
-  ;; Marginalia must be activated in the :init section of use-package such that
-  ;; the mode gets enabled right away. Note that this forces loading the
-  ;; package.
+  ;; Marginalia must be activated in the :init section of use-package
+  ;; such that ;; the mode gets enabled right away. Note that this
+  ;; forces loading the package.
   (marginalia-mode))
 
 (use-package edwina
   :ensure t
   :config
-  ;; (setq display-buffer-base-action '(display-buffer-below-selected))
   (edwina-setup-dwm-keys)
   (edwina-mode 1)
   )
@@ -299,20 +286,6 @@
   (dashboard-setup-startup-hook)
   ;; Set the title
   (setq dashboard-banner-logo-title "Emacs")
-  ;; Set the banner
-  ;; (setq dashboard-startup-banner [VALUE])
-  ;; Value can be:
-  ;;  - 'official which displays the official emacs logo.
-  ;;  - 'logo which displays an alternative emacs logo.
-  ;;  - an integer which displays one of the text banners
-  ;;    (see dashboard-banners-directory files).
-  ;;  - a string that specifies a path for a custom banner
-  ;;    currently supported types are gif/image/text/xbm.
-  ;;  - a cons of 2 strings which specifies the path of an image to use
-  ;;    and other path of a text file to use if image isn't supported.
-  ;;    (cons "path/to/image/file/image.png" "path/to/text/file/text.txt").
-  ;;  - a list that can display an random banner,
-  ;;    supported values are: string (filepath), 'official, 'logo and integers.
 
   ;; Content is not centered by default. To center, set
   (setq dashboard-center-content t)
@@ -335,8 +308,6 @@
   (evil-goggles-mode)
   (setq evil-goggles-duration 0.1
         evil-goggles-pulse nil ; too slow
-        ;; evil-goggles provides a good indicator of what has been affected.
-        ;; delete/change is obvious, so I'd rather disable it for these.
         evil-goggles-enable-delete nil
         evil-goggles-enable-change nil)
   )
@@ -363,8 +334,14 @@
   :config
   (setq dirvish-mode-line-format
         '(:left (sort symlink) :right (omit yank index)))
-  (setq dirvish-attributes           ; The order *MATTERS* for some attributes
-        '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size)
+  (setq dirvish-attributes
+        '(vc-state
+          subtree-state
+          nerd-icons
+          collapse
+          git-msg
+          file-time
+          file-size)
         dirvish-side-attributes
         '(vc-state nerd-icons collapse file-size))
   )
@@ -372,10 +349,15 @@
 (use-package org-roam
   :ensure t
   :custom
-  (org-roam-directory (file-truename "~/Library/Mobile Documents/com~apple~CloudDocs/org-remote/roam"))
+  (org-roam-directory
+   (file-truename
+    "~/Library/Mobile Documents/com~apple~CloudDocs/org-remote/roam"))
   :config
-  ;; If you're using a vertical completion framework, you might want a more informative completion interface
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  ;; If you're using a vertical completion framework, you might want
+  ;; a more informative completion interface
+  (setq org-roam-node-display-template
+        (concat "${title:*} "
+                (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-mode)
   ;; If using org-roam-protocol
   (require 'org-roam-protocol))
@@ -387,21 +369,22 @@
         hl-todo-keyword-faces
         '(;; For reminders to change or add something at a later date.
           ("TODO" warning bold)
-          ;; For code (or code paths) that are broken, unimplemented, or slow,
-          ;; and may become bigger problems later.
+          ;; For code (or code paths) that are broken, unimplemented,
+          ;; or slow, and may become bigger problems later.
           ("FIXME" error bold)
-          ;; For code that needs to be revisited later, either to upstream it,
-          ;; improve it, or address non-critical issues.
+          ;; For code that needs to be revisited later, either to
+          ;; upstream it, improve it, or address non-critical issues.
           ("REVIEW" font-lock-keyword-face bold)
           ;; For code smells where questionable practices are used
-          ;; intentionally, and/or is likely to break in a future update.
+          ;; intentionally, and/or is likely to break in a future
+          ;; update.
           ("HACK" font-lock-constant-face bold)
-          ;; For sections of code that just gotta go, and will be gone soon.
-          ;; Specifically, this means the code is deprecated, not necessarily
-          ;; the feature it enables.
+          ;; For sections of code that just gotta go, and will be gone
+          ;; soon. Specifically, this means the code is deprecated,
+          ;; not necessarily ;; the feature it enables.
           ("DEPRECATED" font-lock-doc-face bold)
-          ;; Extra keywords commonly found in the wild, whose meaning may vary
-          ;; from project to project.
+          ;; Extra keywords commonly found in the wild, whose meaning
+          ;; may vary from project to project.
           ("NOTE" success bold)
           ("DONE" success bold)
           ("BUG" error bold)
@@ -425,7 +408,8 @@
   :init
   (setq completion-styles '(orderless)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles . (partial-completion))))))    
+        completion-category-overrides
+        '((file (styles . (partial-completion))))))    
 
 (use-package eglot
   :ensure t
@@ -504,11 +488,6 @@
 (use-package general
   :after (:and evil evil-mc)
   :config
-  ;; * Prefix Keybindings
-  ;; :prefix can be used to prevent redundant specification of prefix keys
-  ;; again, variables are not necessary and likely not useful if you are only
-  ;; using a definer created with `general-create-definer' for the prefixes
-
   (defconst my-leader "SPC")
   (defconst my-local-leader "SPC m")
 
@@ -588,6 +567,7 @@
    "th"     #'hs-hide-level
    "tf"     #'toggle-frame-fullscreen
    "tt"     #'toggle-truncate-lines
+   "tc"     #'display-fill-column-indicator-mode
    ;; other 
    "."      #'find-file
    )
@@ -616,3 +596,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
