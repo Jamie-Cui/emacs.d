@@ -2,6 +2,16 @@
 .projectile-cache.eld
 .DS_Store
 
+*.el
+*.eld
+recentf
+!init.el
+elpa
+eln-cache
+auto-save-list
+org-roam.db
+history
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
