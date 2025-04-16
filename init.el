@@ -593,15 +593,6 @@ apps are not started from a shell."
    "C--"     #'text-scale-decrease
    )
 
-  (general-define-key
-   :states 'visual
-   :keymaps 'normal
-   "gzA"     #'evil-mc-make-cursor-in-visual-selection-end
-   "gzI"     #'evil-mc-make-cursor-in-visual-selection-beg
-   "gzq"     #'evil-mc-undo-all-cursors
-   )
-
-
   ;; ** Global Keybindings
   (+my-leader-def
     :states 'normal
