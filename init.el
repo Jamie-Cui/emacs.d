@@ -65,8 +65,8 @@ apps are not started from a shell."
 (set-exec-path-from-shell-PATH)
 
 (when (eq system-type 'darwin)
-  ; do this
-  ; and this ...
+                                        ; do this
+                                        ; and this ...
   ;; HACK for mac only
   (setq mac-command-modifier 'meta)
   )
@@ -224,11 +224,14 @@ apps are not started from a shell."
 
 (use-package org-journal)
 
-(use-package flycheck)
-
 (use-package citar)
 
 ;; ------------------------------------
+
+(use-package flycheck
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+  )
 
 (use-package evil-nerd-commenter
   :after evil)
@@ -241,7 +244,7 @@ apps are not started from a shell."
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown")
   :bind (:map markdown-mode-map
-         ("C-c C-e" . markdown-do)))
+              ("C-c C-e" . markdown-do)))
 
 (use-package page-break-lines
   :config
@@ -300,11 +303,11 @@ apps are not started from a shell."
   (marginalia-mode))
 
 ;; (use-package edwina
-  ;; :ensure t
-  ;; :config
-  ;; (edwina-setup-dwm-keys)
-  ;; (edwina-mode 1)
-  ;; )
+;; :ensure t
+;; :config
+;; (edwina-setup-dwm-keys)
+;; (edwina-mode 1)
+;; )
 
 (use-package doom-modeline
   :ensure t
@@ -460,6 +463,8 @@ apps are not started from a shell."
   :ensure t
   :config
   (add-hook 'cc-mode 'eglot-ensure)
+  (add-hook 'c++-ts-mode 'eglot-ensure)
+  (add-hook 'c-ts-mode 'eglot-ensure)
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
   )
 
@@ -579,59 +584,63 @@ apps are not started from a shell."
 
   ;; ** Global Keybindings
   (+my-leader-def
-   :states 'normal
-   :keymaps 'override ; prevent from being override
-   ;; window-related key bindings
-   "wh"     #'evil-window-left
-   "wj"     #'evil-window-down
-   "wk"     #'evil-window-up
-   "wl"     #'evil-window-right
-   "ww"     #'other-window
-   "wd"     #'evil-window-delete
-   "ws"     #'evil-window-split
-   "wv"     #'evil-window-vsplit
-   "wm"     #'maximize-window
-   ;; buffeer-related key bindings
-   "<"      #'consult-buffer
-   "bn"     #'evil-buffer-new
-   "bd"     #'kill-current-buffer
-   "br"     #'revert-buffer-no-confirm
-   ;; open-related key bindings
-   "ot"     #'projectile-run-vterm-other-window
-   "od"     #'dired-jump
-   "og"     #'magit-status
-   ;; prject-related key bindings
-   "pa"     #'projectile-add-known-project
-   "px"     #'projectile-remove-known-project
-   "pp"     #'projectile-switch-project
-   "pc"     #'projectile-compile-project
-   "pt"     #'projectile-test-project
-   "pr"     #'projectile-run-project
-   "pd"     #'projectile-kill-buffers
-   "pi"     #'projectile-invalidate-cache
-   "pf"     #'consult-ripgrep
-   "po"     #'find-sibling-file
-   "SPC"    #'projectile-find-file
-   ;; note functions
-   "nrf"     #'org-roam-node-find
-   "nri"     #'org-roam-node-insert
-   ;; help functions
-   "hf"     #'helpful-callable
-   "hk"     #'helpful-key
-   "hv"     #'helpful-variable
-   "hm"     #'describe-mode
-   ;; quit emacs
-   "qq"     #'save-buffers-kill-terminal
-   "qr"     #'restart-emacs
-   ;; toggles
-   "th"     #'hs-hide-level
-   "tf"     #'toggle-frame-fullscreen
-   "tt"     #'toggle-truncate-lines
-   "tc"     #'display-fill-column-indicator-mode
-   ;; other 
-   "."      #'find-file
-   "`"      #'evil-switch-to-windows-last-buffer
-   )
+    :states 'normal
+    :keymaps 'override ; prevent from being override
+    ;; window-related key bindings
+    "wh"     #'evil-window-left
+    "wj"     #'evil-window-down
+    "wk"     #'evil-window-up
+    "wl"     #'evil-window-right
+    "ww"     #'other-window
+    "wd"     #'evil-window-delete
+    "ws"     #'evil-window-split
+    "wv"     #'evil-window-vsplit
+    "wm"     #'maximize-window
+    ;; buffeer-related key bindings
+    "<"      #'consult-buffer
+    "bn"     #'evil-buffer-new
+    "bd"     #'kill-current-buffer
+    "br"     #'revert-buffer-no-confirm
+    ;; open-related key bindings
+    "ot"     #'projectile-run-vterm-other-window
+    "od"     #'dired-jump
+    "og"     #'magit-status
+    ;; prject-related key bindings
+    "pa"     #'projectile-add-known-project
+    "px"     #'projectile-remove-known-project
+    "pp"     #'projectile-switch-project
+    "pc"     #'projectile-compile-project
+    "pt"     #'projectile-test-project
+    "pr"     #'projectile-run-project
+    "pd"     #'projectile-kill-buffers
+    "pi"     #'projectile-invalidate-cache
+    "pf"     #'consult-ripgrep
+    "po"     #'find-sibling-file
+    "SPC"    #'projectile-find-file
+    ;; note functions
+    "nrf"     #'org-roam-node-find
+    "nri"     #'org-roam-node-insert
+    ;; help functions
+    "hf"     #'helpful-callable
+    "hk"     #'helpful-key
+    "hv"     #'helpful-variable
+    "hm"     #'describe-mode
+    ;; quit emacs
+    "qq"     #'save-buffers-kill-terminal
+    "qr"     #'restart-emacs
+    ;; toggles
+    "th"     #'hs-hide-level
+    "tf"     #'toggle-frame-fullscreen
+    "tt"     #'toggle-truncate-lines
+    "tc"     #'display-fill-column-indicator-mode
+    ;; code
+    "cx"     #'list-flycheck-errors
+    "ca"     #'eglot-code-actions
+    "cf"     #'eglot-format-buffer
+    ;; other 
+    "."      #'find-file
+    "TAB"      #'evil-switch-to-windows-last-buffer
+    )
   )
 
 
