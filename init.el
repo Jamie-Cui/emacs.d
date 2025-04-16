@@ -1,14 +1,20 @@
+;;; -*- lexical-binding: t; -*-
+
 ;; -----------------------------------------------------------
 ;; Emacs native configurations
 ;; -----------------------------------------------------------
 
-;; (setq custom-file
-;;       (concat (file-name-directory user-init-file) "custom.el"))
-;; (load custom-file custom-file)
-
 ;; load theme
-;; (load-theme 'modus-vivendi t)
 (load-theme 'tsdh-dark t)
+
+;; defining your own
+;; macos: ~/Library/Mobile Documents/com~apple~CloudDocs/org-root
+;; linux: ~/org-root
+;; it's recommended to symlink your remote file here
+;; ln -s ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/org-root .
+(defvar +my-org-root-dir "~/org-root")
+(make-directory (concat +my-org-root-dir "/roam") t)
+(make-directory (concat +my-org-root-dir "/journal") t)
 
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -23,7 +29,6 @@
 (customize-set-variable 'horizontal-scroll-bar-mode nil)
 (global-display-line-numbers-mode 1)
 
-(setq display-line-numbers-type 'relative)
 (setq ring-bell-function 'ignore)
 
 ;; use spaces instead of tabs
@@ -32,6 +37,9 @@
 (setq indent-line-function 'insert-tab)
 (setq tab-always-indent t) ;  TAB just indents the current line
 
+;; allow use minibuffer inside minibuffer
+(setq enable-recursive-minibuffers t)
+
 ;; use short answers
 (setq use-short-answers t)
 
@@ -39,18 +47,19 @@
 (setq fill-column 80)
 
 ;; add auto-mdoe list
-(add-to-list 'auto-mode-alist
-             '("\\(\\.ii\\|\\.\\(CC?\\|HH?\\)\\|\\.[ch]\\(pp\\|xx\\|\\+\\+\\)\\|\\.\\(cc\\|hh\\)\\)\\'"
-               . c++-ts-mode))
+(add-to-list
+ 'auto-mode-alist
+ '("\\(\\.ii\\|\\.\\(CC?\\|HH?\\)\\|\\.[ch]\\(pp\\|xx\\|\\+\\+\\)\\|\\.\\(cc\\|hh\\)\\)\\'"
+   . c++-ts-mode))
 
 ;; HACK setup environment
 ;; see: https://www.emacswiki.org/emacs/ExecPath
 (defun set-exec-path-from-shell-PATH ()
   "Set up Emacs' `exec-path' and PATH environment variable to match
-that used by the user's shell.
+  that used by the user's shell.
 
-This is particularly useful under Mac OS X and macOS, where GUI
-apps are not started from a shell."
+  This is particularly useful under Mac OS X and macOS, where GUI
+  apps are not started from a shell."
   (interactive)
   (let ((path-from-shell
          (replace-regexp-in-string
@@ -98,6 +107,21 @@ apps are not started from a shell."
   (setq dired-listing-switches "-alh")
   )
 
+(use-package display-line-numbers
+  :config
+  (setq display-line-numbers-type 'relative))
+
+(use-package org
+  :config
+  (add-to-list 'org-latex-packages-alist
+               '("lambda, advantage, operators, sets, adversary, landau,\
+ probability, notions, logic, ff, mm, primitives, events, complexity, oracles,\
+ asymptotics, keys" "cryptocode" t))
+  (add-to-list 'org-latex-packages-alist
+               '("" "booktabs" t))
+  (setq org-log-done t)
+  )
+
 ;; -----------------------------------------------------------
 ;; (my) emacs core thirdparty configurations
 ;; -----------------------------------------------------------
@@ -138,7 +162,6 @@ apps are not started from a shell."
    evil-org
    org-download
    org-superstar
-   org-fancy-priorities
    org-roam
    ;; show key helps
    which-key
@@ -158,6 +181,7 @@ apps are not started from a shell."
    magit
    ;; lsp
    eglot
+   consult-eglot
    flycheck-eglot
    ;; highlight todo keywords
    hl-todo
@@ -210,11 +234,143 @@ apps are not started from a shell."
    cmake-mode
    ;; code auto formating
    apheleia
+   ;; Emacs Mini-Buffer Actions Rooted in Keymaps
+   embark
+   embark-consult
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
+
+(use-package dirvish
+  :init
+  (dirvish-override-dired-mode)
+  :after general
+  :config
+  ;; (dirvish-peek-mode)             ; Preview files in minibuffer
+  ;; (dirvish-side-follow-mode)      ; similar to `treemacs-follow-mode'
+  (setq dirvish-mode-line-format
+        '(:left (sort symlink) :right (omit yank index)))
+  (setq dirvish-attributes           ; The order *MATTERS* for some attributes
+        '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size)
+        dirvish-side-attributes
+        '(vc-state nerd-icons collapse file-size))
+  (general-define-key
+   :states 'normal
+   :keymaps 'dirvish-mode-map
+   "TAB" #'dirvish-subtree-toggle
+   )
+  )
+
+(use-package cmake-mode)
+
+;; ------------------------------------
+
+(use-package iedit
+  :init
+  ;; Fix conflict with embark.
+  (setq iedit-toggle-key-default nil))
+
+(use-package embark
+  :ensure t
+  :bind
+  (;;("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-act)        ;; good alternative: M-.
+   ;;("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
+   )
+
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Show the Embark target at point via Eldoc. You may adjust the
+  ;; Eldoc strategy, if you want to see the documentation from
+  ;; multiple providers. Beware that using this can be a little
+  ;; jarring since the message shown in the minibuffer can be more
+  ;; than one line, causing the modeline to move up and down:
+
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+(use-package embark-consult
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package plantuml-mode
+  :after org
+  :config
+  (setq plantuml-default-exec-mode 'executable)
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   ;; this line activates plantuml
+   '((plantuml . t))))
+
+(use-package xenops
+  :config
+  (add-hook 'org-mode-hook #'xenops-mode)
+  (setq xenops-math-image-current-scale-factor 1.2)
+  (setq xenops-math-image-margin 0)
+  ;; HACK error from xenops with org>9.7
+  ;; https://github.com/syl20bnr/spacemacs/issues/16577
+  ;; https://github.com/dandavison/xenops/pull/74/files
+  ;; https://github.com/dandavison/xenops/issues/73
+  (defun fn/xenops-src-parse-at-point ()
+    (-if-let* ((element (xenops-parse-element-at-point 'src))
+               (org-babel-info
+                (xenops-src-do-in-org-mode
+                 (org-babel-get-src-block-info 'light (org-element-context)))))
+        (xenops-util-plist-update
+         element
+         :type 'src
+         :language (nth 0 org-babel-info)
+         :org-babel-info org-babel-info)))
+
+  (advice-add 'xenops-src-parse-at-point
+              :override 'fn/xenops-src-parse-at-point)
+  )
+
+(use-package org-journal
+  :config
+  (setq org-journal-dir (concat +my-org-root-dir "/journal"))
+  )
+
+(use-package org-superstar
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+  )
+
+(use-package org-download
+  :config
+  ;; see: https://www.emacswiki.org/emacs/BufferLocalVariable
+  (setq-default org-download-image-dir "img")
+  (setq-default org-download-heading-lvl nil) ; no headings
+  (setq org-download-method 'directory)
+  (setq org-download-image-org-width 500)
+  (setq org-download-link-format "[[file:%s]]\n"
+        org-download-abbreviate-filename-function #'file-relative-name)
+  (setq org-download-link-format-function
+        #'org-download-link-format-function-default))
+
+(use-package citar
+  :config
+  (add-to-list 'citar-bibliography (concat +my-org-root-dir "/zotero_all.bib"))
+  (add-to-list 'citar-notes-paths (concat +my-org-root-dir "/roam"))
+  :hook
+  (LaTeX-mode . citar-capf-setup)
+  (org-mode . citar-capf-setup))
+
 
 (use-package flycheck-popup-tip
   :config
@@ -226,17 +382,11 @@ apps are not started from a shell."
   (apheleia-global-mode +1)
   )
 
-(use-package cmake-mode)
-
-(use-package org-journal)
-
-(use-package citar)
-
-;; ------------------------------------
-
 (use-package flycheck
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode)
+  :custom
+  (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   )
 
 (use-package evil-nerd-commenter
@@ -379,40 +529,11 @@ apps are not started from a shell."
   (evil-multiedit-default-keybinds)
   )
 
-
-;; (use-package dirvish
-;;   :ensure t
-;;   :init
-;;   (dirvish-override-dired-mode)
-;;   :config
-;;   (setq dirvish-mode-line-format
-;;         '(:left (sort symlink) :right (omit yank index)))
-;;   (setq dirvish-attributes
-;;         '(vc-state
-;;           subtree-state
-;;           nerd-icons
-;;           collapse
-;;           git-msg
-;;           file-time
-;;           file-size)
-;;         dirvish-side-attributes
-;;         '(vc-state nerd-icons collapse file-size))
-
-;;   (general-define-key
-;;    :state 'normal
-;;    :keymaps 'dirvish-mode-map
-;;    "TAB"     #'dirvish-subtree-toggle
-;;    "?"       #'dirvish-dispatch
-;;    )
-;;   )
-
 (use-package org-roam
   :ensure t
-  :custom
-  (org-roam-directory
-   (file-truename
-    "~/Library/Mobile Documents/com~apple~CloudDocs/org-remote/roam"))
   :config
+  (setq org-roam-directory (concat +my-org-root-dir "/roam"))
+
   ;; If you're using a vertical completion framework, you might want
   ;; a more informative completion interface
   (setq org-roam-node-display-template
@@ -469,7 +590,9 @@ apps are not started from a shell."
   (setq completion-styles '(orderless)
         completion-category-defaults nil
         completion-category-overrides
-        '((file (styles . (partial-completion))))))    
+        '((file (styles . (partial-completion))))))
+
+(use-package consult-eglot)
 
 (use-package eglot
   :ensure t
@@ -640,6 +763,12 @@ apps are not started from a shell."
     ;; note functions
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
+    "njj"     #'org-journal-new-entry
+    "nb"      #'citar-open
+    "n@"      #'citar-insert-citation
+    "ny"      #'org-store-link
+    "np"      #'org-insert-link
+    "ne"      #'org-export-dispatch
     ;; help functions
     "hf"     #'helpful-callable
     "hk"     #'helpful-key
@@ -657,9 +786,11 @@ apps are not started from a shell."
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
     "cf"     #'eglot-format-buffer
-    ;; other 
+    "cj"     #'consult-eglot-symbols
+    ;; other
     "."      #'find-file
-    "TAB"      #'evil-switch-to-windows-last-buffer
+    "TAB"    #'evil-switch-to-windows-last-buffer
+    "si"     #'consult-imenu
     )
   )
 
