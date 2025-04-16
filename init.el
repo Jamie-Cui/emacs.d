@@ -2,9 +2,9 @@
 ;; Emacs native configurations
 ;; -----------------------------------------------------------
 
-(setq custom-file
-      (concat (file-name-directory user-init-file) "custom.el"))
-(load custom-file custom-file)
+;; (setq custom-file
+;;       (concat (file-name-directory user-init-file) "custom.el"))
+;; (load custom-file custom-file)
 
 ;; load theme
 ;; (load-theme 'modus-vivendi t)
@@ -32,8 +32,8 @@
 (setq indent-line-function 'insert-tab)
 (setq tab-always-indent t) ;  TAB just indents the current line
 
-;; do not move to new line when comment ends
-;; (setq comment-line-break-function 'nil)
+;; use short answers
+(setq use-short-answers t)
 
 ;; column
 (setq fill-column 80)
@@ -64,24 +64,12 @@ apps are not started from a shell."
 ;; run this setup function
 (set-exec-path-from-shell-PATH)
 
-;; HACK for mac only
-(setq mac-command-modifier 'meta)
-
-;; HACK add homebrew to emacs's exec-path
-(add-to-list 'exec-path "/opt/homebrew/bin") 
-
-;; HACK native-comp failes on mac m1
-;; see: https://github.com/d12frosted/homebrew-emacs-plus/issues/554\
-;; #issuecomment-1601274371
-(setenv
- "LIBRARY_PATH"
- (mapconcat
-  'identity
-  '(
-    "/opt/homebrew/opt/gcc/lib/gcc/14"
-    "/opt/homebrew/opt/libgccjit/lib/gcc/14"
-    "/opt/homebrew/opt/gcc/lib/gcc/14/gcc/aarch64-apple-darwin24/14")
-  ":"))
+(when (eq system-type 'darwin)
+  ; do this
+  ; and this ...
+  ;; HACK for mac only
+  (setq mac-command-modifier 'meta)
+  )
 
 ;; after all emacs built-in pacakges are loaded
 (use-package emacs
@@ -138,6 +126,7 @@ apps are not started from a shell."
    evil-multiedit
    evil-mc
    evil-goggles
+   evil-nerd-commenter
    general ; more convenient way of defining keys
    ;; org-related pacakages
    evil-org
@@ -213,6 +202,10 @@ apps are not started from a shell."
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
+
+(use-package evil-nerd-commenter
+  :after evil
+  )
 
 (use-package org-journal)
 
@@ -349,31 +342,31 @@ apps are not started from a shell."
   )
 
 
-(use-package dirvish
-  :ensure t
-  :init
-  (dirvish-override-dired-mode)
-  :config
-  (setq dirvish-mode-line-format
-        '(:left (sort symlink) :right (omit yank index)))
-  (setq dirvish-attributes
-        '(vc-state
-          subtree-state
-          nerd-icons
-          collapse
-          git-msg
-          file-time
-          file-size)
-        dirvish-side-attributes
-        '(vc-state nerd-icons collapse file-size))
+;; (use-package dirvish
+;;   :ensure t
+;;   :init
+;;   (dirvish-override-dired-mode)
+;;   :config
+;;   (setq dirvish-mode-line-format
+;;         '(:left (sort symlink) :right (omit yank index)))
+;;   (setq dirvish-attributes
+;;         '(vc-state
+;;           subtree-state
+;;           nerd-icons
+;;           collapse
+;;           git-msg
+;;           file-time
+;;           file-size)
+;;         dirvish-side-attributes
+;;         '(vc-state nerd-icons collapse file-size))
 
-  (general-define-key
-   :state 'normal
-   :keymaps 'dirvish-mode-map
-   "TAB"     #'dirvish-subtree-toggle
-   "?"       #'dirvish-dispatch
-   )
-  )
+;;   (general-define-key
+;;    :state 'normal
+;;    :keymaps 'dirvish-mode-map
+;;    "TAB"     #'dirvish-subtree-toggle
+;;    "?"       #'dirvish-dispatch
+;;    )
+;;   )
 
 (use-package org-roam
   :ensure t
@@ -545,7 +538,7 @@ apps are not started from a shell."
    "M-s"     #'save-buffer
    "M-c"     #'evil-yank
    "M-v"     #'evil-paste-before
-   "M-/"     #'comment-line
+   "M-/"     #'evilnc-comment-or-uncomment-lines
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
    "C-="     #'text-scale-increase
