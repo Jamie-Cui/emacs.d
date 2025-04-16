@@ -92,6 +92,12 @@ apps are not started from a shell."
   :init
   (savehist-mode))
 
+(use-package dired-x
+  :config
+  (setq-default dired-dwim-target t)
+  (setq dired-listing-switches "-alh")
+  )
+
 ;; -----------------------------------------------------------
 ;; (my) emacs core thirdparty configurations
 ;; -----------------------------------------------------------
@@ -197,21 +203,38 @@ apps are not started from a shell."
    page-break-lines
    ;; markdown mode
    markdown-mode
+   ;; Colorize color names in buffers
+   rainbow-mode
+   ;; cmake
+   cmake-mode
+   ;; code auto formating
+   apheleia
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
 
-(use-package evil-nerd-commenter
-  :after evil
+(use-package apheleia
+  :config
+  (apheleia-global-mode +1)
   )
+
+(use-package cmake-mode)
 
 (use-package org-journal)
 
 (use-package flycheck)
 
 (use-package citar)
+
+;; ------------------------------------
+
+(use-package evil-nerd-commenter
+  :after evil)
+
+(use-package rainbow-mode
+  :hook (emacs-lisp-mode text-mode lisp-mode cc-mode cmake-mode))
 
 (use-package markdown-mode
   :ensure t
@@ -628,3 +651,15 @@ apps are not started from a shell."
   (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
   (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
   )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
