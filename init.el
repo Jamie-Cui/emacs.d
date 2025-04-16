@@ -528,6 +528,15 @@ apps are not started from a shell."
 (use-package consult
   :custom
   (consult-preview-max-count 17)
+  (consult-customize
+   consult-ripgrep consult-git-grep consult-grep consult-man
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   ;; my/command-wrapping-consult    ;; disable auto previews inside my command
+   :preview-key '(:debounce 1 any) ;; Option 1: Delay preview
+   ;; :preview-key "M-.")            ;; Option 2: Manual preview
+   )
   )
 
 ;; evil
