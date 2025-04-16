@@ -480,7 +480,15 @@ apps are not started from a shell."
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
   )
 
-(use-package magit)
+(use-package magit
+  :ensure t
+  :after evil-collection
+  :config
+  (general-define-key
+   :keymaps 'smerge-mode-map
+   "C-c C-c"     #'smerge-keep-current
+   )
+  )
 
 ;; projectile
 (use-package vterm
