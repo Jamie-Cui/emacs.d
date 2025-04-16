@@ -167,6 +167,7 @@ apps are not started from a shell."
    citar
    ;; better error checking
    flycheck
+   flycheck-popup-tip
    ;; better dired
    dirvish
    ;; better place to write diaries
@@ -214,6 +215,11 @@ apps are not started from a shell."
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
+
+(use-package flycheck-popup-tip
+  :config
+  (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode)
+  )
 
 (use-package apheleia
   :config
@@ -311,7 +317,13 @@ apps are not started from a shell."
 
 (use-package doom-modeline
   :ensure t
+  :after nerd-icons
   :config
+  (setq doom-modeline-height 1) ; optional
+  (if (facep 'mode-line-active)
+      (set-face-attribute 'mode-line-active nil :family "0xProto Nerd Font Mono 14") ; For 29+
+    (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
+  (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
   (doom-modeline-mode 1)
   )
 
