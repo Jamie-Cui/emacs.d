@@ -809,6 +809,7 @@
 
   (use-package org-download
     :ensure t
+    :config
     (setq org-download-screenshot-method
           "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\"")
     )
