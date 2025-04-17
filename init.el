@@ -364,6 +364,26 @@
 (use-package apheleia
   :config
   (apheleia-global-mode +1)
+  ;; HACK use elgot-format when possible
+  ;; https://github.com/radian-software/apheleia/issues/153#issuecomment-1446651497
+  (cl-defun apheleia-indent-eglot-managed-buffer
+      (&key buffer scratch callback &allow-other-keys)
+    "Copy BUFFER to SCRATCH, then format scratch, then call CALLBACK."
+    (with-current-buffer scratch
+      (setq-local eglot--cached-server
+                  (with-current-buffer buffer
+                    (eglot-current-server)))
+      (let ((buffer-file-name (buffer-local-value 'buffer-file-name buffer)))
+        (eglot-format-buffer))
+      (funcall callback)))
+  (add-to-list 'apheleia-formatters
+               '(eglot-managed . apheleia-indent-eglot-managed-buffer))
+  ;; HACK add all eglot-ensured modes 
+  (add-to-list 'apheleia-mode-alist '(cc-mode-hook . eglot-managed))
+  (add-to-list 'apheleia-mode-alist '(c++-mode-hook . eglot-managed))
+  (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
+  (add-to-list 'apheleia-mode-alist '(c-mode-hook . eglot-managed))
+  (add-to-list 'apheleia-mode-alist '(c-ts-mode-hook . eglot-managed))
   )
 
 (use-package flycheck
