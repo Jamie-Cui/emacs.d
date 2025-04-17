@@ -407,7 +407,11 @@
 
 (use-package flycheck-eglot
   :ensure t
+  :after (flycheck eglot)
+  :custom
+  (flycheck-eglot-exclusive nil)
   :config
+  (global-flycheck-eglot-mode 1)
   ;; see: https://github.com/kkholst/.doom.d/blob/main/config.org
   ;; We need to tweak a little bit to make cpplint and eglot to work
   ;; together.
@@ -419,11 +423,9 @@
   ;; There is a variable `flycheck-eglot-exclusive' that controls this
   ;; You can override it system wide or for some major modes.
   ;;
-  (setq flycheck-eglot-exclusive nil)
   (flycheck-add-next-checker 'eglot-check
                              '(warning . c/c++-googlelint))
   )
-
 
 (use-package marginalia
   ;; Bind `marginalia-cycle' locally in the minibuffer.
@@ -566,9 +568,11 @@
 (use-package eglot
   :ensure t
   :config
-  (add-hook 'cc-mode 'eglot-ensure)
-  (add-hook 'c++-ts-mode 'eglot-ensure)
-  (add-hook 'c-ts-mode 'eglot-ensure)
+  (add-hook 'cc-mode-hook 'eglot-ensure)
+  (add-hook 'c++-mode-hook 'eglot-ensure)
+  (add-hook 'c++-ts-mode-hook 'eglot-ensure)
+  (add-hook 'c-mode-hook 'eglot-ensure)
+  (add-hook 'c-ts-mode-hook 'eglot-ensure)
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
   )
 
