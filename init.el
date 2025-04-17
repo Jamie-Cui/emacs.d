@@ -232,11 +232,16 @@
    embark-consult
    ;; Chinese input
    rime
+   ;; colorful compilation output
+   ansi-color
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
+
+(use-package ansi-color
+  :hook (compilation-filter . ansi-color-compilation-filter))
 
 (use-package dirvish
   :init
