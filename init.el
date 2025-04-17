@@ -260,6 +260,8 @@
    :states 'normal
    :keymaps 'dirvish-mode-map
    "TAB" #'dirvish-subtree-toggle
+   "h"   #'dired-up-directory
+   "l"   #'dired-find-file
    )
   )
 
