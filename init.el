@@ -243,11 +243,17 @@
    rime
    ;; colorful compilation output
    ansi-color
+   ;; make eldoc looks nicer
+   eldoc-box
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
+
+(use-package eldoc-box
+  :config
+  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-at-point-mode t))
 
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
