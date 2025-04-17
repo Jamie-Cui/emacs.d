@@ -15,9 +15,19 @@
 (defvar +my-org-root-dir "~/org-root")
 (make-directory (concat +my-org-root-dir "/roam") t)
 (make-directory (concat +my-org-root-dir "/journal") t)
+(make-directory (concat +my-org-root-dir "/deft") t)
+(make-directory (concat (file-name-directory user-init-file) "/bin") t)
+
+;; stop makding ~ files!
+(setq make-backup-files nil) 
 
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; do not show me native-comp warning and erros
+(use-package comp-run
+  :config
+  (setq native-comp-async-report-warnings-errors 'silent))
 
 ;; set default font
 (set-frame-font "0xProto Nerd Font Mono 14" nil t)
@@ -245,11 +255,34 @@
    ansi-color
    ;; make eldoc looks nicer
    eldoc-box
+   ;; pdf tools
+   pdf-tools
+   ;; latex support 
+   auctex
+   ;; deft for note taking
+   deft
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
+
+(use-package auctex)
+
+;; ------------------------------------
+
+(use-package pdf-tools
+  :config
+  (pdf-loader-install))
+
+
+(use-package deft
+  :config
+  (setq deft-extensions '("org"))
+  (setq deft-directory (concat +my-org-root-dir "/deft"))
+  )
+
+(use-package cmake-mode)
 
 (use-package eldoc-box
   :config
@@ -280,10 +313,6 @@
    )
   )
 
-(use-package cmake-mode)
-
-;; ------------------------------------
-
 (use-package iedit
   :init
   ;; Fix conflict with embark.
@@ -309,6 +338,9 @@
 (use-package plantuml-mode
   :after org
   :config
+  (setq plantuml-jar-path
+        (concat (file-name-directory user-init-file) "/bin/plantuml.jar"))
+  (setq org-plantuml-jar-path plantuml-jar-path)
   (setq plantuml-default-exec-mode 'executable)
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
   (org-babel-do-load-languages
@@ -692,6 +724,7 @@
   :preface
   (setq evil-overriding-maps nil)
   (setq evil-want-keybinding nil)
+  (setq evil-want-Y-yank-to-eol t) ; this need to be set before evil
   :config
   (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
@@ -700,7 +733,8 @@
   ;; use undo-tree
   (evil-set-undo-system 'undo-tree)
 
-  (evil-mode 1))
+  (evil-mode 1)
+  )
 
 (defun revert-buffer-no-confirm ()
   "Revert buffer without confirmation."
@@ -785,6 +819,7 @@
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "ne"      #'org-export-dispatch
+    "nd"      #'deft
     ;; help functions
     "hf"     #'helpful-callable
     "hk"     #'helpful-key
@@ -865,3 +900,15 @@
     )
   )
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
