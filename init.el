@@ -43,8 +43,8 @@
 ;; use short answers
 (setq use-short-answers t)
 
-;; enable hide-show in all programming modes
-(use-package hide-show
+;; enable hideshow in all programming modes
+(use-package hideshow
   :config
   (add-hook 'prog-mode-hook #'hs-minor-mode))
 
