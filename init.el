@@ -489,8 +489,8 @@
   :ensure t
   :config
   (dashboard-setup-startup-hook)
-  ;; Set the title
-  ;; (setq dashboard-banner-logo-title "Emacs")
+  ;; Set the title  
+  (setq dashboard-banner-logo-title "It's possible to build a cabin with no foundations, but not a lasting building.")
   (setq dashboard-page-separator "\n\f\n")
 
   ;; Content is not centered by default. To center, set
