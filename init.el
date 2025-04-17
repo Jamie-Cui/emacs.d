@@ -43,6 +43,11 @@
 ;; use short answers
 (setq use-short-answers t)
 
+;; enable hide-show in all programming modes
+(use-package hide-show
+  :config
+  (add-hook 'prog-mode-hook #'hs-minor-mode))
+
 ;; column
 (setq fill-column 80)
 
