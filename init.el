@@ -746,6 +746,7 @@
     "br"     #'revert-buffer-no-confirm
     ;; open-related key bindings
     "ot"     #'projectile-run-vterm-other-window
+    "oT"     #'vterm
     "od"     #'dired-jump
     "og"     #'magit-status
     ;; prject-related key bindings
