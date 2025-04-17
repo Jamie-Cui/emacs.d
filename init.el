@@ -115,6 +115,10 @@
   (setq org-log-done t)
   )
 
+(use-package compile
+  :config
+  (setq compilation-scroll-output t))
+
 ;; -----------------------------------------------------------
 ;; (my) emacs core thirdparty configurations
 ;; -----------------------------------------------------------
