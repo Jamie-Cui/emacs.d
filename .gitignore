@@ -12,6 +12,8 @@ auto-save-list
 org-roam.db
 history
 tree-sitter
+rime
+.cache
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
