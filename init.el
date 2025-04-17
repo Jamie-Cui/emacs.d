@@ -5,7 +5,7 @@
 ;; -----------------------------------------------------------
 
 ;; load theme
-(load-theme 'tsdh-dark t)
+(load-theme 'modus-vivendi t)
 
 ;; defining your own
 ;; macos: ~/Library/Mobile Documents/com~apple~CloudDocs/org-root
