@@ -379,11 +379,15 @@
   (add-to-list 'apheleia-formatters
                '(eglot-managed . apheleia-indent-eglot-managed-buffer))
   ;; HACK add all eglot-ensured modes 
+  ;; This determines what formatter to use in buffers without a
+  ;; setting for apheleia-formatter. The keys are major mode
   (add-to-list 'apheleia-mode-alist '(cc-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(c++-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(c-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(c-ts-mode-hook . eglot-managed))
+  (add-to-list 'apheleia-mode-alist '(cmake-mode . cmake-format))
+
   )
 
 (use-package flycheck
