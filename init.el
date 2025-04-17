@@ -73,13 +73,6 @@
 ;; run this setup function
 (set-exec-path-from-shell-PATH)
 
-(when (eq system-type 'darwin)
-                                        ; do this
-                                        ; and this ...
-  ;; HACK for mac only
-  (setq mac-command-modifier 'meta)
-  )
-
 ;; after all emacs built-in pacakges are loaded
 (use-package emacs
   :custom
@@ -237,6 +230,8 @@
    ;; Emacs Mini-Buffer Actions Rooted in Keymaps
    embark
    embark-consult
+   ;; Chinese input
+   rime
    ))
 
 ;; ------------------------------------------------------------------
@@ -275,28 +270,10 @@
 (use-package embark
   :ensure t
   :bind
-  (;;("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-act)        ;; good alternative: M-.
-   ;;("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
-   )
-
+  (("C-;" . embark-act))
   :init
-
-  ;; Optionally replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
-
-  ;; Show the Embark target at point via Eldoc. You may adjust the
-  ;; Eldoc strategy, if you want to see the documentation from
-  ;; multiple providers. Beware that using this can be a little
-  ;; jarring since the message shown in the minibuffer can be more
-  ;; than one line, causing the modeline to move up and down:
-
-  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
-
   :config
-
-  ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
@@ -548,24 +525,11 @@
   (global-hl-todo-mode 1)
   (setq hl-todo-highlight-punctuation ":"
         hl-todo-keyword-faces
-        '(;; For reminders to change or add something at a later date.
-          ("TODO" warning bold)
-          ;; For code (or code paths) that are broken, unimplemented,
-          ;; or slow, and may become bigger problems later.
+        '(("TODO" warning bold)
           ("FIXME" error bold)
-          ;; For code that needs to be revisited later, either to
-          ;; upstream it, improve it, or address non-critical issues.
           ("REVIEW" font-lock-keyword-face bold)
-          ;; For code smells where questionable practices are used
-          ;; intentionally, and/or is likely to break in a future
-          ;; update.
           ("HACK" font-lock-constant-face bold)
-          ;; For sections of code that just gotta go, and will be gone
-          ;; soon. Specifically, this means the code is deprecated,
-          ;; not necessarily ;; the feature it enables.
           ("DEPRECATED" font-lock-doc-face bold)
-          ;; Extra keywords commonly found in the wild, whose meaning
-          ;; may vary from project to project.
           ("NOTE" success bold)
           ("DONE" success bold)
           ("BUG" error bold)
@@ -723,6 +687,7 @@
    "C-d"     #'evil-scroll-down
    "C-="     #'text-scale-increase
    "C--"     #'text-scale-decrease
+   "C-SPC"   #'toggle-input-method
    )
 
   ;; ** Global Keybindings
@@ -812,15 +777,40 @@
   (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
   (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
   )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+;; -----------------------------------------------------------
+;; System-specific configurations
+;; -----------------------------------------------------------
+
+;; HACK for mac only
+(when (eq system-type 'darwin)
+  (setq mac-command-modifier 'meta)
+  )
+
+;; HACK for windows wsl2 only
+(when (eq system-type 'linux)
+  ;; Hack from: https://gist.github.com/minorugh/1770a6aa93df5fe55f70b4d72091ff76
+  ;; Emacs on WSL open links in Windows web browser
+  ;; https://adam.kruszewski.name/2017/09/emacs-in-wsl-and-opening-links/
+  (when (getenv "WSLENV")
+    (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
+          (cmd-args '("/c" "start")))
+      (when (file-exists-p cmd-exe)
+        (setq browse-url-generic-program  cmd-exe
+              browse-url-generic-args     cmd-args
+              browse-url-browser-function 'browse-url-generic
+              search-web-default-browser 'browse-url-generic))))
+
+  (use-package rime
+    :ensure t
+    :config
+    (setq default-input-method "rime"
+          rime-show-candidate 'popup))
+
+  (use-package org-download
+    :ensure t
+    (setq org-download-screenshot-method
+          "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\"")
+    )
+  )
+
