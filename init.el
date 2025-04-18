@@ -136,6 +136,8 @@
                '("" "booktabs" t))
   (setq org-log-done t)
   (setq org-confirm-babel-evaluate nil) ; don't ask, just do it
+  (setq org-startup-with-inline-images t)
+  (add-to-list 'org-export-backends 'beamer)
   )
 
 (use-package compile
