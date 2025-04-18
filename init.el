@@ -69,6 +69,9 @@
 ;; column
 (setq fill-column 80)
 
+;; dired hide .. and .
+(add-hook 'dired-mode-hook 'dired-omit-mode)
+
 ;; add auto-mdoe list
 (add-to-list
  'auto-mode-alist
@@ -274,6 +277,14 @@
 
 (use-package auctex)
 
+(use-package cmake-mode
+  :config
+  (defun +my-modify-cmake-mode-syntax-table ()
+    (interactive)
+    (modify-syntax-entry ?/ "-" cmake-mode-syntax-table))
+  (add-hook 'cmake-mode-hook #'+my-modify-cmake-mode-syntax-table)
+  )
+
 ;; ------------------------------------
 
 (use-package engrave-faces)
@@ -292,13 +303,6 @@
   :config
   (setq deft-extensions '("org"))
   (setq deft-directory (concat +my-org-root-dir "/deft"))
-  )
-
-(use-package cmake-mode
-  :config
-  (defun +my-modify-cmake-mode-syntax-table ()
-    (modify-syntax-entry "/" "w" cmake-mode-syntax-table))
-  (add-hook 'cmake-mode-hook #'+my-modify-cmake-mode-syntax-table)
   )
 
 (use-package eldoc-box
