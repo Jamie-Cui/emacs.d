@@ -799,7 +799,7 @@
     "wd"     #'evil-window-delete
     "ws"     #'evil-window-split
     "wv"     #'evil-window-vsplit
-    "wm"     #'maximize-window
+    "wm"     #'delete-other-windows
     ;; buffeer-related key bindings
     "<"      #'consult-buffer
     "bn"     #'evil-buffer-new
