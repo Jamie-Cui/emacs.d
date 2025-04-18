@@ -25,9 +25,7 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; do not show me native-comp warning and erros
-(use-package comp-run
-  :config
-  (setq native-comp-async-report-warnings-errors 'silent))
+(setq native-comp-async-report-warnings-errors 'silent)
 
 ;; set default font
 (set-frame-font "0xProto Nerd Font Mono 14" nil t)
@@ -37,9 +35,19 @@
 (tool-bar-mode 0)
 (customize-set-variable 'scroll-bar-mode nil)
 (customize-set-variable 'horizontal-scroll-bar-mode nil)
-(global-display-line-numbers-mode 1)
-
 (setq ring-bell-function 'ignore)
+
+;; line numbers
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'org-mode-hook 'display-line-numbers-mode)
+(dolist (mode '(pdf-view-mode-hook
+                term-mode-hook
+                eshell-mode-hook
+                vterm-mode-hook
+                imenu-list-minor-mode-hook
+                imenu-list-major-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode -1))))
+(setq-default display-line-numbers-type 'relative)
 
 ;; use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
@@ -115,10 +123,6 @@
   (setq dired-listing-switches "-alh")
   )
 
-(use-package display-line-numbers
-  :config
-  (setq display-line-numbers-type 'relative))
-
 (use-package org
   :config
   (add-to-list 'org-latex-packages-alist
@@ -128,6 +132,7 @@
   (add-to-list 'org-latex-packages-alist
                '("" "booktabs" t))
   (setq org-log-done t)
+  (setq org-confirm-babel-evaluate nil) ; don't ask, just do it
   )
 
 (use-package compile
@@ -271,10 +276,17 @@
 
 ;; ------------------------------------
 
+(use-package engrave-faces)
+
+(use-package ox-latex
+  :after engrave-faces
+  :config
+  (setq org-latex-src-block-backend 'engraved)
+  (setq org-latex-engraved-theme 't))
+
 (use-package pdf-tools
   :config
   (pdf-loader-install))
-
 
 (use-package deft
   :config
@@ -339,7 +351,7 @@
   :after org
   :config
   (setq plantuml-jar-path
-        (concat (file-name-directory user-init-file) "/bin/plantuml.jar"))
+        (concat (file-name-directory user-init-file) "bin/plantuml.jar"))
   (setq org-plantuml-jar-path plantuml-jar-path)
   (setq plantuml-default-exec-mode 'executable)
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
