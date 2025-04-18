@@ -798,6 +798,7 @@
   (+my-leader-def
     :states 'normal
     :keymaps 'override ; prevent from being override
+    "a RET"  #'embark-dwim
     ;; window-related key bindings
     "wh"     #'evil-window-left
     "wj"     #'evil-window-down
