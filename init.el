@@ -462,6 +462,8 @@
   (add-hook 'after-init-hook #'global-flycheck-mode)
   :custom
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+  ;; flycheck has performace issues, make it less automate
+  (flycheck-check-syntax-automatically '(save mode-enable))
   )
 
 (use-package evil-nerd-commenter
