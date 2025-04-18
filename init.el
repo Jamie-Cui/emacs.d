@@ -706,7 +706,7 @@
   (vertico-mode)
   :custom
   (vertico-cycle t)
-  (vertico-preselect 'no-prompt) ; do not do any preselect
+  (vertico-preselect 'first) 
   (vertico-count 17)
   )
 
