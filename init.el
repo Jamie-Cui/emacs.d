@@ -294,7 +294,12 @@
   (setq deft-directory (concat +my-org-root-dir "/deft"))
   )
 
-(use-package cmake-mode)
+(use-package cmake-mode
+  :config
+  (defun +my-modify-cmake-mode-syntax-table ()
+    (modify-syntax-entry "/" "w" cmake-mode-syntax-table))
+  (add-hook 'cmake-mode-hook #'+my-modify-cmake-mode-syntax-table)
+  )
 
 (use-package eldoc-box
   :config
