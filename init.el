@@ -280,7 +280,6 @@
 (use-package cmake-mode
   :config
   (defun +my-modify-cmake-mode-syntax-table ()
-    (interactive)
     (modify-syntax-entry ?/ "-" cmake-mode-syntax-table))
   (add-hook 'cmake-mode-hook #'+my-modify-cmake-mode-syntax-table)
   )
