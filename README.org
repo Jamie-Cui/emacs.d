@@ -16,3 +16,16 @@ My personal emacs config
 #+begin_src bash
 git clone https://github.com/Jamie-Cui/emacs.d.git ~/.emacs.d
 #+end_src
+
+
+* MacOs hide docs
+
+see: https://apple.stackexchange.com/a/82084
+
+#+begin_src bash
+defaults write com.apple.dock autohide-delay -float 1000; killall Dock
+#+end_src
+
+#+begin_src bash
+defaults delete com.apple.dock autohide-delay; killall Dock
+#+end_src
