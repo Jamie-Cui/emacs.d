@@ -18,7 +18,7 @@ git clone https://github.com/Jamie-Cui/emacs.d.git ~/.emacs.d
 #+end_src
 
 
-* MacOs hide docs
+* MacOs hide dock
 
 see: https://apple.stackexchange.com/a/82084
 
