@@ -138,11 +138,21 @@
   (setq org-confirm-babel-evaluate nil) ; don't ask, just do it
   (setq org-startup-with-inline-images t)
   (add-to-list 'org-export-backends 'beamer)
-  )
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   ;; this line activates plantuml
+   '((C . t) ; c, c++, and D
+     (shell . t)
+     (latex . t)
+     )))
+
 
 (use-package compile
-  :config
-  (setq compilation-scroll-output t))
+  :custom
+  (compilation-auto-jump-to-first-error 'if-location-known)
+  (compilation-scroll-output t))
+
 
 ;; -----------------------------------------------------------
 ;; (my) emacs core thirdparty configurations
@@ -185,7 +195,7 @@
    org-download
    org-superstar
    org-roam
-   ;; show key helps
+   ;; show key helps (it's builtin with emacs > 30)
    which-key
    consult
    ;; show helps of fun, key, mode
@@ -271,6 +281,8 @@
    auctex
    ;; deft for note taking
    deft
+   ;; better snippet
+   yasnippet
    ))
 
 ;; ------------------------------------------------------------------
@@ -279,14 +291,27 @@
 
 (use-package auctex)
 
+(use-package yasnippet
+  :config
+  (yas-global-mode 1)
+  ;; TODO
+  ;; (setq yas-snippet-dirs
+  ;;       '("~/.emacs.d/snippets"                 ;; personal snippets
+  ;;         "/path/to/some/collection/"           ;; foo-mode and bar-mode snippet collection
+  ;;         "/path/to/yasnippet/yasmate/snippets" ;; the yasmate collection
+  ;;         ))
+  )
+
+;; ------------------------------------------------------------------
+;; DONE
+;; ------------------------------------------------------------------
+
 (use-package cmake-mode
   :config
   (defun +my-modify-cmake-mode-syntax-table ()
     (modify-syntax-entry ?/ "-" cmake-mode-syntax-table))
   (add-hook 'cmake-mode-hook #'+my-modify-cmake-mode-syntax-table)
   )
-
-;; ------------------------------------
 
 (use-package engrave-faces)
 
@@ -359,10 +384,11 @@
 
 (use-package plantuml-mode
   :after org
+  :custom 
+  (org-plantuml-jar-path plantuml-jar-path)
   :config
   (setq plantuml-jar-path
         (concat (file-name-directory user-init-file) "bin/plantuml.jar"))
-  (setq org-plantuml-jar-path plantuml-jar-path)
   (setq plantuml-default-exec-mode 'executable)
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
   (org-babel-do-load-languages
@@ -565,9 +591,18 @@
   :ensure t
   :config
   (dashboard-setup-startup-hook)
+
+  ;; HACK from https://github.com/emacs-dashboard/emacs-dashboard/issues/153#issuecomment-714406661
+  (defvar my-banners-dir (concat user-emacs-directory (convert-standard-filename "data/")))
+  (defun install-banners ()
+    "Copy all files under under banners directory to dashboard banners directory"
+    (when (boundp 'dashboard-banners-directory)
+      (copy-directory my-banners-dir dashboard-banners-directory nil nil t)))
+  (install-banners)
+
   ;; Set the title  
   (setq dashboard-banner-logo-title "It's possible to build a cabin with no foundations, but not a lasting building.")
-  (setq dashboard-page-separator "\n\f\n")
+  ;; (setq dashboard-page-separator "\n\f\n")
 
   ;; Content is not centered by default. To center, set
   (setq dashboard-center-content t)
@@ -576,13 +611,14 @@
 
   ;; To disable shortcut "jump" indicators for each section, set
   (setq dashboard-show-shortcuts nil)
-  (setq dashboard-startup-banner 'official)
+  (setq dashboard-startup-banner 4) ; 4 means using 4.txt
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-items '((recents   . 5)
-                          (projects  . 5)
-                          (agenda    . 5)))
+                          (projects  . 5)))
   (setq dashboard-projects-backend 'projectile)
+  ;; make dashboard work for emacsclient -c
+  (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name)))
   )
 
 (use-package evil-goggles
@@ -803,8 +839,10 @@
   (+my-leader-def
     :states 'normal
     :keymaps 'override ; prevent from being override
+    "a" '(:ignore t :which-key "actions")
     "a RET"  #'embark-dwim
     ;; window-related key bindings
+    "w" '(:ignore t :which-key "window")
     "wh"     #'evil-window-left
     "wj"     #'evil-window-down
     "wk"     #'evil-window-up
@@ -815,16 +853,18 @@
     "wv"     #'evil-window-vsplit
     "wm"     #'delete-other-windows
     ;; buffeer-related key bindings
-    "<"      #'consult-buffer
+    "b" '(:ignore t :which-key "buffer")
     "bn"     #'evil-buffer-new
     "bd"     #'kill-current-buffer
     "br"     #'revert-buffer-no-confirm
     ;; open-related key bindings
+    "o" '(:ignore t :which-key "open")
     "ot"     #'projectile-run-vterm-other-window
     "oT"     #'vterm
     "od"     #'dired-jump
     "og"     #'magit-status
     ;; prject-related key bindings
+    "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project
     "px"     #'projectile-remove-known-project
     "pp"     #'projectile-switch-project
@@ -835,8 +875,8 @@
     "pi"     #'projectile-invalidate-cache
     "pf"     #'consult-ripgrep
     "po"     #'find-sibling-file
-    "SPC"    #'projectile-find-file
     ;; note functions
+    "n" '(:ignore t :which-key "note")
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
     "njj"     #'org-journal-new-entry
@@ -847,27 +887,36 @@
     "ne"      #'org-export-dispatch
     "nd"      #'deft
     ;; help functions
+    "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
     "hk"     #'helpful-key
     "hv"     #'helpful-variable
     "hm"     #'describe-mode
     ;; quit emacs
+    "q" '(:ignore t :which-key "quit")
     "qq"     #'save-buffers-kill-terminal
     "qr"     #'restart-emacs
     ;; toggles
+    "t" '(:ignore t :which-key "toggle")
     "th"     #'hs-hide-level
     "tf"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
     "tc"     #'display-fill-column-indicator-mode
     ;; code
+    "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
+    "cr"     #'eglot-rename
     "cf"     #'eglot-format-buffer
     "cj"     #'consult-eglot-symbols
+    ;; search
+    "s" '(:ignore t :which-key "search")
+    "si"     #'consult-imenu
     ;; other
     "."      #'find-file
+    "<"      #'consult-buffer
     "TAB"    #'evil-switch-to-windows-last-buffer
-    "si"     #'consult-imenu
+    "SPC"    #'projectile-find-file
     )
   )
 
@@ -926,15 +975,3 @@
     )
   )
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

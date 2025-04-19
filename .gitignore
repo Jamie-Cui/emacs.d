@@ -1,6 +1,8 @@
 ## emacs
 .projectile-cache.eld
 .DS_Store
+.org-id-locations
+bin
 
 *.el
 *.eld
