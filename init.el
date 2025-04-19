@@ -593,7 +593,6 @@
   :ensure t
   :custom
   (dashboard-center-content t)
-  (dashboard-vertically-center-content t)
   :config
   (dashboard-setup-startup-hook)
 
@@ -611,13 +610,14 @@
 
   ;; To disable shortcut "jump" indicators for each section, set
   (setq dashboard-show-shortcuts nil)
-  ;; (setq dashboard-startup-banner 4) ; 4 means using 4.txt
+  (setq dashboard-startup-banner 4) ; 4 means using 4.txt
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-items '((recents   . 5)
                           (projects  . 5)))
   (setq dashboard-projects-backend 'projectile)
   (setq initial-buffer-choice (lambda() (dashboard-open)))
+  (setq dashboard-after-initialize-hook (lambda() (dashboard-open)))
   )
 
 (use-package evil-goggles
