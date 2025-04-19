@@ -284,7 +284,7 @@
    ;; better snippet
    yasnippet
    ;; mu4e evil key bindings
-   evil-mu4e
+   ;; evil-mu4e
    ))
 
 ;; ------------------------------------------------------------------
@@ -292,6 +292,9 @@
 ;; ------------------------------------------------------------------
 
 (use-package auctex)
+
+;;(use-package evil-mu4e
+;;  :after evil)
 
 (use-package yasnippet
   :config
@@ -968,35 +971,51 @@
 (when (eq system-type 'darwin)
   (setq mac-command-modifier 'meta)
   (add-to-list 'default-frame-alist '(undecorated . t)) 
+
+  (use-package vterm
+    :config
+    (setq vterm-shell "/opt/homebrew/bin/fish"))
   )
 
 ;; HACK for windows wsl2 only
 (when (eq system-type 'linux)
-  ;; Hack from: https://gist.github.com/minorugh/1770a6aa93df5fe55f70b4d72091ff76
-  ;; Emacs on WSL open links in Windows web browser
-  ;; https://adam.kruszewski.name/2017/09/emacs-in-wsl-and-opening-links/
-  (when (getenv "WSLENV")
-    (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
-          (cmd-args '("/c" "start")))
-      (when (file-exists-p cmd-exe)
-        (setq browse-url-generic-program  cmd-exe
-              browse-url-generic-args     cmd-args
-              browse-url-browser-function 'browse-url-generic
-              search-web-default-browser 'browse-url-generic))))
-
+  ;; linux use rime
   (use-package rime
     :ensure t
     :config
     (setq default-input-method "rime"
           rime-show-candidate 'popup))
 
+  )
+
+;; HACK for windows wsl2
+(when (getenv "WSLENV")
+  ;; from: https://gist.github.com/minorugh/1770a6aa93df5fe55f70b4d72091ff76
+  ;; Emacs on WSL open links in Windows web browser
+  ;; https://adam.kruszewski.name/2017/09/emacs-in-wsl-and-opening-links/
+  (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
+        (cmd-args '("/c" "start")))
+    (when (file-exists-p cmd-exe)
+      (setq browse-url-generic-program  cmd-exe
+            browse-url-generic-args     cmd-args
+            browse-url-browser-function 'browse-url-generic
+            search-web-default-browser 'browse-url-generic)))
+
+  ;; org-download from windows clipboard
   (use-package org-download
     :ensure t
     :config
     (setq org-download-screenshot-method
-          "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\"")
-    )
+          "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\""))
+
+  ;; wsl use rime
+  (use-package rime
+    :ensure t
+    :config
+    (setq default-input-method "rime"
+          rime-show-candidate 'popup))
   )
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
