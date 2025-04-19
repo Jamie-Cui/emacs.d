@@ -326,9 +326,19 @@
   (pdf-loader-install))
 
 (use-package deft
+  :after general
   :config
   (setq deft-extensions '("org"))
   (setq deft-directory (concat +my-org-root-dir "/deft"))
+  (setq deft-default-extension "org")
+  (+my-local-leader-def
+    :keymaps 'deft-mode-map
+    :states '(normal visual)
+    "A" #'deft-archive-file
+    "n" #'deft-new-file
+    "f" #'deft-filter
+    "d" #'deft-delete-file
+    )
   )
 
 (use-package eldoc-box
@@ -809,6 +819,9 @@
 
   (general-create-definer +my-leader-def
     :prefix my-leader)
+
+  (general-create-definer +my-local-leader-def
+    :prefix my-local-leader)
 
   (defun evil-keyboard-quit ()
     "Keyboard quit and force normal state."
