@@ -283,6 +283,8 @@
    deft
    ;; better snippet
    yasnippet
+   ;; mu4e evil key bindings
+   evil-mu4e
    ))
 
 ;; ------------------------------------------------------------------
@@ -836,6 +838,7 @@
    "M-c"     #'evil-yank
    "M-v"     #'evil-paste-before
    "M-/"     #'evilnc-comment-or-uncomment-lines
+   "M-a"     #'mark-whole-buffer
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
    "C-="     #'text-scale-increase
@@ -994,4 +997,25 @@
           "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\"")
     )
   )
-
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(apheleia bazel citar cmake-mode consult-eglot corfu dashboard deft dirvish
+              doom-modeline edwina eldoc-box embark-consult engrave-faces
+              evil-collection evil-goggles evil-mc evil-mu4e evil-multiedit
+              evil-nerd-commenter evil-org flycheck-eglot
+              flycheck-google-cpplint flycheck-popup-tip general gptel helpful
+              hl-todo keyfreq magit marginalia markdown-mode meson-mode
+              orderless org-download org-fancy-priorities org-journal org-roam
+              org-superstar page-break-lines pdf-tools plantuml-mode projectile
+              protobuf-mode rainbow-mode rg rime treesit-auto undo-fu undo-tree
+              vertico vterm xenops yasnippet)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
