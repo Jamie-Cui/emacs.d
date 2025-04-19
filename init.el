@@ -512,7 +512,6 @@
   (add-to-list 'apheleia-mode-alist '(c-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(c-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(cmake-mode . cmake-format))
-
   )
 
 (use-package flycheck
@@ -870,7 +869,6 @@
   (+my-leader-def
     :states 'normal
     :keymaps 'override ; prevent from being override
-    "RET"    #'gptel
     "a" '(:ignore t :which-key "actions")
     "a RET"  #'embark-dwim
     ;; window-related key bindings
@@ -945,8 +943,11 @@
     "s" '(:ignore t :which-key "search")
     "si"     #'consult-imenu
     ;; other
+    "RET"    #'gptel
+    "x"      #'scratch-buffer
     "."      #'find-file
     "<"      #'consult-buffer
+    "/"      #'consult-ripgrep
     "TAB"    #'evil-switch-to-windows-last-buffer
     "SPC"    #'projectile-find-file
     )
