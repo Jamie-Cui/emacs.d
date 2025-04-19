@@ -328,9 +328,15 @@
 (use-package deft
   :after general
   :config
-  (setq deft-extensions '("org"))
-  (setq deft-directory (concat +my-org-root-dir "/deft"))
   (setq deft-default-extension "org")
+  (setq deft-use-filename-as-title nil)
+  (setq deft-use-filter-string-for-filename nil)
+  (setq deft-auto-save-interval -1.0) ; disable auto-save
+  (setq deft-file-naming-rules
+        '((noslash . "-")
+          (nospace . "-")
+          (case-fn . downcase)))
+  (setq deft-directory (concat +my-org-root-dir "/deft"))
   )
 
 (use-package eldoc-box
@@ -929,6 +935,7 @@
     "n" #'deft-new-file
     "f" #'deft-filter
     "d" #'deft-delete-file
+    "g" #'deft-refresh
     )
   )
 
