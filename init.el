@@ -586,10 +586,10 @@
   :after nerd-icons
   :config
   (setq doom-modeline-height 1) ; optional
-  (if (facep 'mode-line-active)
-      (set-face-attribute 'mode-line-active nil :family "0xProto Nerd Font Mono 14") ; For 29+
-    (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
-  (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
+  ;; (if (facep 'mode-line-active)
+  ;;     (set-face-attribute 'mode-line-active nil :family "0xProto Nerd Font Mono 14") ; For 29+
+  ;;   (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
+  ;; (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
   (doom-modeline-mode 1)
   )
 
