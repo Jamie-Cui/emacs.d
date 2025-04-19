@@ -866,12 +866,12 @@
     ;; prject-related key bindings
     "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project
-    "px"     #'projectile-remove-known-project
+    "pd"     #'projectile-remove-known-project
     "pp"     #'projectile-switch-project
     "pc"     #'projectile-compile-project
     "pt"     #'projectile-test-project
     "pr"     #'projectile-run-project
-    "pd"     #'projectile-kill-buffers
+    "pq"     #'projectile-kill-buffers
     "pi"     #'projectile-invalidate-cache
     "pf"     #'consult-ripgrep
     "po"     #'find-sibling-file
