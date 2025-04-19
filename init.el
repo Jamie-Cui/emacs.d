@@ -964,6 +964,7 @@
 ;; HACK for mac only
 (when (eq system-type 'darwin)
   (setq mac-command-modifier 'meta)
+  (add-to-list 'default-frame-alist '(undecorated . t)) 
   )
 
 ;; HACK for windows wsl2 only
