@@ -291,6 +291,23 @@
 ;; TODO
 ;; ------------------------------------------------------------------
 
+(use-package gptel
+  :config
+  (setq gptel-model   'deepseek-r1
+        gptel-default-mode 'org-mode
+        gptel-org-branching-context 't
+        gptel-log-level 'info
+        gptel-backend
+        (gptel-make-openai "DeepSeek"
+          :host "dashscope.aliyuncs.com/compatible-mode/v1"
+          :endpoint "/chat/completions"
+          :stream t
+          :key "sk-**********************************"
+          :models '(deepseek-r1)))
+
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** @jc\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "** @ai\n"))
+
 (use-package auctex)
 
 ;;(use-package evil-mu4e
@@ -853,6 +870,7 @@
   (+my-leader-def
     :states 'normal
     :keymaps 'override ; prevent from being override
+    "RET"    #'gptel
     "a" '(:ignore t :which-key "actions")
     "a RET"  #'embark-dwim
     ;; window-related key bindings
