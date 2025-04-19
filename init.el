@@ -331,14 +331,6 @@
   (setq deft-extensions '("org"))
   (setq deft-directory (concat +my-org-root-dir "/deft"))
   (setq deft-default-extension "org")
-  (+my-local-leader-def
-    :keymaps 'deft-mode-map
-    :states '(normal visual)
-    "A" #'deft-archive-file
-    "n" #'deft-new-file
-    "f" #'deft-filter
-    "d" #'deft-delete-file
-    )
   )
 
 (use-package eldoc-box
@@ -599,6 +591,9 @@
 
 (use-package dashboard
   :ensure t
+  :custom
+  (dashboard-center-content t)
+  (dashboard-vertically-center-content t)
   :config
   (dashboard-setup-startup-hook)
 
@@ -614,21 +609,15 @@
   (setq dashboard-banner-logo-title "It's possible to build a cabin with no foundations, but not a lasting building.")
   ;; (setq dashboard-page-separator "\n\f\n")
 
-  ;; Content is not centered by default. To center, set
-  (setq dashboard-center-content t)
-  ;; vertically center content
-  (setq dashboard-vertically-center-content t)
-
   ;; To disable shortcut "jump" indicators for each section, set
   (setq dashboard-show-shortcuts nil)
-  (setq dashboard-startup-banner 4) ; 4 means using 4.txt
+  ;; (setq dashboard-startup-banner 4) ; 4 means using 4.txt
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-items '((recents   . 5)
                           (projects  . 5)))
   (setq dashboard-projects-backend 'projectile)
-  ;; make dashboard work for emacsclient -c
-  (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name)))
+  (setq initial-buffer-choice (lambda() (dashboard-open)))
   )
 
 (use-package evil-goggles
@@ -930,6 +919,16 @@
     "<"      #'consult-buffer
     "TAB"    #'evil-switch-to-windows-last-buffer
     "SPC"    #'projectile-find-file
+    )
+
+  ;; deft mode map
+  (+my-local-leader-def
+    :keymaps 'deft-mode-map
+    :states '(normal visual)
+    "A" #'deft-archive-file
+    "n" #'deft-new-file
+    "f" #'deft-filter
+    "d" #'deft-delete-file
     )
   )
 
