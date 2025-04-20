@@ -37,6 +37,9 @@
 (customize-set-variable 'horizontal-scroll-bar-mode nil)
 (setq ring-bell-function 'ignore)
 
+;; word wrap
+(global-visual-line-mode 1)
+
 ;; line numbers
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'org-mode-hook 'display-line-numbers-mode)
@@ -285,11 +288,23 @@
    yasnippet
    ;; mu4e evil key bindings
    ;; evil-mu4e
+   ;; chinese spacing
+   pangu-spacing
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
+
+(use-package pangu-spacing
+  :config
+  (global-pangu-spacing-mode 1)
+  (setq pangu-spacing-real-insert-separtor nil)
+  ;; (add-hook 'org-mode-hook
+  ;;           '(lambda ()
+  ;;              (set (make-local-variable
+  ;;                    'pangu-spacing-real-insert-separtor) t)))
+  )
 
 (use-package gptel
   :config
@@ -338,14 +353,26 @@
 (use-package engrave-faces)
 
 (use-package ox-latex
-  :after engrave-faces
+  :after (:and engrave-faces citar)
+  :custom
+  (org-export-with-toc nil)
   :config
   (setq org-latex-src-block-backend 'engraved)
-  (setq org-latex-engraved-theme 't))
+  (setq org-latex-engraved-theme 't)
+  ;; this var is used by org-export
+  (add-to-list 'org-cite-global-bibliography (concat +my-org-root-dir "/zotero_all.bib"))
+  )
 
 (use-package pdf-tools
+  :mode (("\\.pdf\\'" . pdf-view-mode))
   :config
-  (pdf-loader-install))
+  (pdf-loader-install)
+  (add-hook
+   'org-mode-hook
+   '(lambda ()
+      (delete '("\\.pdf\\'" . default) org-file-apps)
+      (add-to-list 'org-file-apps '("\\.pdf\\'" . org-pdftools-open))))
+  )
 
 (use-package deft
   :after general
@@ -1048,9 +1075,11 @@
               flycheck-google-cpplint flycheck-popup-tip general gptel helpful
               hl-todo keyfreq magit marginalia markdown-mode meson-mode
               orderless org-download org-fancy-priorities org-journal org-roam
-              org-superstar page-break-lines pdf-tools plantuml-mode projectile
-              protobuf-mode rainbow-mode rg rime treesit-auto undo-fu undo-tree
-              vertico vterm xenops yasnippet)))
+              org-superstar page-break-lines pangu-spacing pdf-tools
+              plantuml-mode projectile protobuf-mode rainbow-mode rg rime
+              treesit-auto undo-fu undo-tree vertico vterm xenops yasnippet))
+ '(safe-local-variable-values
+   '((face-remapping-alist (default (:family "Times New Roman" :height 160))))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
