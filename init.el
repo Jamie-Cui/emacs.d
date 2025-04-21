@@ -4,6 +4,10 @@
 ;; Emacs native configurations
 ;; -----------------------------------------------------------
 
+;; setup 
+(when jc-emacs-directory
+  (setq jc-emacs-directory "~/Desktop/emacs.d"))
+
 ;; load theme
 ;; (load-theme 'modus-vivendi t)
 
@@ -651,7 +655,7 @@
   (dashboard-setup-startup-hook)
 
   ;; HACK from https://github.com/emacs-dashboard/emacs-dashboard/issues/153#issuecomment-714406661
-  (defvar my-banners-dir (concat user-emacs-directory (convert-standard-filename "data/")))
+  (defvar my-banners-dir (concat jc-emacs-directory "/data/"))
   (defun install-banners ()
     "Copy all files under under banners directory to dashboard banners directory"
     (when (boundp 'dashboard-banners-directory)
