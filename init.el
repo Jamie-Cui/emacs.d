@@ -1030,7 +1030,7 @@
 
   (use-package vterm
     :config
-    (setq vterm-shell "/opt/homebrew/bin/fish"))
+    (setq vterm-shell 'zsh))
   )
 
 ;; HACK for linux and wsl
