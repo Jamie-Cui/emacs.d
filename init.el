@@ -540,11 +540,12 @@
   ;; HACK add all eglot-ensured modes 
   ;; This determines what formatter to use in buffers without a
   ;; setting for apheleia-formatter. The keys are major mode
-  (add-to-list 'apheleia-mode-alist '(cc-mode-hook . eglot-managed))
-  (add-to-list 'apheleia-mode-alist '(c++-mode-hook . eglot-managed))
+  ;; (add-to-list 'apheleia-mode-alist '(cc-mode-hook . eglot-managed))
+  ;; (add-to-list 'apheleia-mode-alist '(c++-mode-hook . eglot-managed))
+  ;; (add-to-list 'apheleia-mode-alist '(c-mode-hook . eglot-managed))
+  ;; (add-to-list 'apheleia-mode-alist '(c-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
-  (add-to-list 'apheleia-mode-alist '(c-mode-hook . eglot-managed))
-  (add-to-list 'apheleia-mode-alist '(c-ts-mode-hook . eglot-managed))
+  (add-to-list 'apheleia-mode-alist '(rust-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(cmake-mode . cmake-format))
   )
 
@@ -762,11 +763,12 @@
 (use-package eglot
   :ensure t
   :config
-  (add-hook 'cc-mode-hook 'eglot-ensure)
-  (add-hook 'c++-mode-hook 'eglot-ensure)
+  ;; (add-hook 'cc-mode-hook 'eglot-ensure)
+  ;; (add-hook 'c++-mode-hook 'eglot-ensure)
+  ;; (add-hook 'c-mode-hook 'eglot-ensure)
+  ;; (add-hook 'c-ts-mode-hook 'eglot-ensure)
   (add-hook 'c++-ts-mode-hook 'eglot-ensure)
-  (add-hook 'c-mode-hook 'eglot-ensure)
-  (add-hook 'c-ts-mode-hook 'eglot-ensure)
+  (add-hook 'rust-ts-mode-hook 'eglot-ensure)
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
   (setq eglot-confirm-server-initiated-edits nil)
   )
