@@ -761,6 +761,7 @@
   (add-hook 'c-mode-hook 'eglot-ensure)
   (add-hook 'c-ts-mode-hook 'eglot-ensure)
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  (setq eglot-confirm-server-initiated-edits nil)
   )
 
 (use-package magit
@@ -1023,7 +1024,7 @@
     (setq vterm-shell "/opt/homebrew/bin/fish"))
   )
 
-;; HACK for windows wsl2 only
+;; HACK for linux and wsl
 (when (eq system-type 'linux)
   ;; linux use rime
   (use-package rime
@@ -1046,7 +1047,17 @@
             browse-url-generic-args     cmd-args
             browse-url-browser-function 'browse-url-generic
             search-web-default-browser 'browse-url-generic)))
-
+  
+  ;; declare new functions
+  (defun cp-current-file-to-windows()
+    "Copy the current file to windows"
+    (interactive)
+    (let ((dest-path (concat "~/Desktop/tmp/" (format-time-string "%Y-%m-%d") "/")))
+      (when buffer-file-name
+        (make-directory dest-path 'parents)
+        (message (concat "cp -r " buffer-file-name " " dest-path))
+        (shell-command (concat "cp -r " buffer-file-name " " dest-path)))))
+  
   ;; org-download from windows clipboard
   (use-package org-download
     :ensure t
