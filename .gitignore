@@ -3,6 +3,7 @@
 .DS_Store
 .org-id-locations
 bin
+projects
 
 *.el
 *.eld
