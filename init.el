@@ -5,7 +5,7 @@
 ;; -----------------------------------------------------------
 
 ;; setup 
-(when jc-emacs-directory
+(when (not jc-emacs-directory)
   (setq jc-emacs-directory "~/Desktop/emacs.d"))
 
 ;; load theme
