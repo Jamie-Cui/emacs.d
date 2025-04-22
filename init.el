@@ -145,6 +145,7 @@
   (add-to-list 'org-latex-packages-alist
                '("" "booktabs" t))
   (setq org-log-done t)
+  (add-hook 'org-mode-hook 'org-indent-mode)
   (setq org-confirm-babel-evaluate nil) ; don't ask, just do it
   (setq org-startup-with-inline-images t)
   (add-to-list 'org-export-backends 'beamer)
@@ -848,6 +849,7 @@
   :preface
   (setq evil-overriding-maps nil)
   (setq evil-want-keybinding nil)
+  (setq evil-auto-indent nil)
   (setq evil-want-Y-yank-to-eol t) ; this need to be set before evil
   :config
   (defalias #'forward-evil-word #'forward-evil-symbol)
