@@ -935,6 +935,7 @@
     "wk"     #'evil-window-up
     "wl"     #'evil-window-right
     "ww"     #'other-window
+    "wx"     #'evil-window-exchange
     "wd"     #'evil-window-delete
     "ws"     #'evil-window-split
     "wv"     #'evil-window-vsplit
@@ -944,6 +945,7 @@
     "bn"     #'evil-buffer-new
     "bd"     #'kill-current-buffer
     "br"     #'revert-buffer-no-confirm
+    "bc"     #'clean-buffer-list
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ot"     #'projectile-run-vterm-other-window
