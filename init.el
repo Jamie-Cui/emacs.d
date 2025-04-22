@@ -200,6 +200,7 @@
    evil-mc
    evil-goggles
    evil-nerd-commenter
+   evil-args
    general ; more convenient way of defining keys
    ;; org-related pacakages
    evil-org
@@ -300,9 +301,26 @@
    pangu-spacing
    ))
 
+(setq evil-overriding-maps nil)
+(setq evil-want-keybinding nil)
+
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
+
+(use-package evil-args
+  :after evil
+  :config
+  ;; bind evil-args text objects
+  (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
+  (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
+
+  ;; bind evil-forward/backward-args
+  (define-key evil-normal-state-map "L" 'evil-forward-arg)
+  (define-key evil-normal-state-map "H" 'evil-backward-arg)
+
+  ;; bind evil-jump-out-args
+  (define-key evil-normal-state-map "K" 'evil-jump-out-args))
 
 (use-package pangu-spacing
   :config
@@ -932,7 +950,7 @@
     "oT"     #'vterm
     "od"     #'dired-jump
     "og"     #'magit-status
-    ;; prject-related key bindings
+    ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project
     "pd"     #'projectile-remove-known-project
@@ -1006,7 +1024,7 @@
 
 ;;; evil-collection
 (use-package evil-collection
-  :init
+  :preface
   (setq evil-want-keybinding nil)
   :after evil
   :config
