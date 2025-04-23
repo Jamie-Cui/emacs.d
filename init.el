@@ -25,6 +25,10 @@
 ;; stop makding ~ files!
 (setq make-backup-files nil) 
 
+;; disable electric-indent-mode, forever
+(electric-indent-mode -1)
+(add-hook 'after-change-major-mode-hook (lambda() (electric-indent-mode -1)))
+
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
@@ -145,6 +149,7 @@
   (add-to-list 'org-latex-packages-alist
                '("" "booktabs" t))
   (setq org-log-done t)
+  (setq org-src-window-setup 'current-window)
   (add-hook 'org-mode-hook 'org-indent-mode)
   (setq org-confirm-babel-evaluate nil) ; don't ask, just do it
   (setq org-startup-with-inline-images t)
@@ -157,7 +162,6 @@
      (shell . t)
      (latex . t)
      )))
-
 
 (use-package compile
   :custom
@@ -207,6 +211,7 @@
    org-download
    org-superstar
    org-roam
+   org-appear
    ;; show key helps (it's builtin with emacs > 30)
    which-key
    consult
@@ -307,6 +312,10 @@
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
+
+(use-package org-appear
+  :config
+  (add-hook 'org-mode-hook 'org-appear-mode))
 
 (use-package evil-args
   :after evil
