@@ -971,10 +971,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     "bc"     #'clean-buffer-list
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
-    "ot"     #'projectile-run-vterm-other-window
-    "oT"     #'vterm
+    "ot"     #'vterm
+    "oT"     #'projectile-project-root
     "od"     #'dired-jump
-    "og"     #'magit-status
+    "oD"     #'projectile-dired
+    "og"     #'magit-status-quick
+    "oG"     #'magit-project-status
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project
