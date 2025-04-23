@@ -92,6 +92,10 @@
        (rust-regexp (concat (regexp-opt rust-files t) "\\'")))
   (add-to-list 'auto-mode-alist (cons rust-regexp 'rust-ts-mode)))
 
+(let* ((rust-files '("Cargo.lock"))
+       (rust-regexp (concat (regexp-opt rust-files t) "\\'")))
+  (add-to-list 'auto-mode-alist (cons rust-regexp 'conf-toml-mode)))
+
 ;; HACK setup environment
 ;; see: https://www.emacswiki.org/emacs/ExecPath
 (defun set-exec-path-from-shell-PATH ()
