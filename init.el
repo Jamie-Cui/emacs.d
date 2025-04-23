@@ -88,7 +88,7 @@
        (cc-regexp (concat (regexp-opt cc-files t) "\\'")))
   (add-to-list 'auto-mode-alist (cons cc-regexp 'c++-ts-mode)))
 
-(let* ((rust-files '(".rs" ".thor" "Gemfile" "Rakefile" "Crushfile" "Capfile"))
+(let* ((rust-files '(".rs"))
        (rust-regexp (concat (regexp-opt rust-files t) "\\'")))
   (add-to-list 'auto-mode-alist (cons rust-regexp 'rust-ts-mode)))
 
@@ -168,6 +168,16 @@
   (compilation-auto-jump-to-first-error 'if-location-known)
   (compilation-scroll-output t))
 
+;;; esc quits
+(defun minibuffer-keyboard-quit ()
+  "Abort recursive edit.
+In Delete Selection mode, if the mark is active, just deactivate it;
+then it takes a second \\[keyboard-quit] to abort the minibuffer."
+  (interactive)
+  (if (and delete-selection-mode transient-mark-mode mark-active)
+      (setq deactivate-mark  t)
+    (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+    (abort-recursive-edit)))
 
 ;; -----------------------------------------------------------
 ;; (my) emacs core thirdparty configurations
@@ -205,6 +215,7 @@
    evil-goggles
    evil-nerd-commenter
    evil-args
+   evil-escape ; quit everything with C-g!
    general ; more convenient way of defining keys
    ;; org-related pacakages
    evil-org
@@ -306,9 +317,6 @@
    pangu-spacing
    ))
 
-(setq evil-overriding-maps nil)
-(setq evil-want-keybinding nil)
-
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
@@ -316,6 +324,31 @@
 (use-package org-appear
   :config
   (add-hook 'org-mode-hook 'org-appear-mode))
+
+
+;; see: https://github.com/doomemacs/doomemacs/blob/da32e8e6f233a80d54d51964d21c4b46b000323b/modules/editor/evil/config.el#L324C1-L341C42
+(use-package evil-escape
+  :after '(evil general)
+  :init
+  (setq evil-escape-excluded-states '(normal visual multiedit emacs motion)
+        evil-escape-excluded-major-modes '(neotree-mode treemacs-mode vterm-mode)
+        evil-escape-key-sequence nil
+        evil-escape-delay 0.15)
+  :config
+  ;; `evil-escape' in the minibuffer is more disruptive than helpful. That is,
+  ;; unless we have `evil-collection-setup-minibuffer' enabled, in which case we
+  ;; want the same behavior in insert mode as we do in normal buffers.
+  (add-hook 'evil-escape-inhibit-functions
+            (defun +evil-inhibit-escape-in-minibuffer-fn ()
+              (and (minibufferp)
+                   (or (not (bound-and-true-p evil-collection-setup-minibuffer))
+                       (evil-normal-state-p)))))
+
+  (general-define-key
+   :states '(insert replace visual operator)
+   "C-g" #'evil-escape
+   )
+  )
 
 (use-package evil-args
   :after evil
@@ -435,8 +468,6 @@
   (dirvish-override-dired-mode)
   :after general
   :config
-  ;; (dirvish-peek-mode)             ; Preview files in minibuffer
-  ;; (dirvish-side-follow-mode)      ; similar to `treemacs-follow-mode'
   (setq dirvish-mode-line-format
         '(:left (sort symlink) :right (omit yank index)))
   (setq dirvish-attributes           ; The order *MATTERS* for some attributes
@@ -658,13 +689,6 @@
   ;; forces loading the package.
   (marginalia-mode))
 
-;; (use-package edwina
-;; :ensure t
-;; :config
-;; (edwina-setup-dwm-keys)
-;; (edwina-mode 1)
-;; )
-
 (use-package doom-modeline
   :ensure t
   :after nerd-icons
@@ -727,14 +751,13 @@
   :after evil
   :config
   (global-evil-mc-mode  1) ;; enable
-  )
+  (setq evil-mc-undo-cursors-on-keyboard-quit t))
 
 (use-package evil-multiedit
   :ensure t
   :after evil
   :config
-  (evil-multiedit-default-keybinds)
-  )
+  (evil-multiedit-default-keybinds))
 
 (use-package org-roam
   :ensure t
@@ -791,10 +814,7 @@
 (use-package eglot
   :ensure t
   :config
-  ;; (add-hook 'cc-mode-hook 'eglot-ensure)
-  ;; (add-hook 'c++-mode-hook 'eglot-ensure)
-  ;; (add-hook 'c-mode-hook 'eglot-ensure)
-  ;; (add-hook 'c-ts-mode-hook 'eglot-ensure)
+  (add-hook 'c-ts-mode-hook 'eglot-ensure)
   (add-hook 'c++-ts-mode-hook 'eglot-ensure)
   (add-hook 'rust-ts-mode-hook 'eglot-ensure)
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
@@ -805,11 +825,10 @@
   :ensure t
   :after evil-collection
   :config
+  (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   (general-define-key
    :keymaps 'smerge-mode-map
-   "C-c C-c"     #'smerge-keep-current
-   )
-  )
+   "C-c C-c"     #'smerge-keep-current))
 
 ;; projectile
 (use-package vterm
@@ -878,6 +897,7 @@
   (setq evil-want-keybinding nil)
   (setq evil-auto-indent nil)
   (setq evil-want-Y-yank-to-eol t) ; this need to be set before evil
+  (setq evil-want-C-g-bindings t) ; this need to be set before evil
   :config
   (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
@@ -905,16 +925,10 @@
   (general-create-definer +my-local-leader-def
     :prefix my-local-leader)
 
-  (defun evil-keyboard-quit ()
-    "Keyboard quit and force normal state."
-    (interactive)
-    (and evil-mode (evil-force-normal-state))
-    (keyboard-quit))
-
   (general-define-key
-   :states '(normal insert visual)
-   "C-g" #'evil-keyboard-quit)
-
+   :states '(insert replace normal visual operator)
+   "C-g" #'evil-escape
+   )
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
@@ -966,6 +980,7 @@
     "pa"     #'projectile-add-known-project
     "pd"     #'projectile-remove-known-project
     "pp"     #'projectile-switch-project
+    "pC"     #'projectile-configure-project
     "pc"     #'projectile-compile-project
     "pt"     #'projectile-test-project
     "pr"     #'projectile-run-project
@@ -1061,8 +1076,7 @@
 
   (use-package vterm
     :config
-    (setq vterm-shell 'zsh))
-  )
+    (setq vterm-shell 'zsh)))
 
 ;; HACK for linux and wsl
 (when (eq system-type 'linux)
@@ -1109,3 +1123,5 @@
     :config
     (setq default-input-method "rime")
     (setq rime-show-candidate 'popup)))
+
+(evil-escape-mode)
