@@ -332,7 +332,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;; see: https://github.com/doomemacs/doomemacs/blob/da32e8e6f233a80d54d51964d21c4b46b000323b/modules/editor/evil/config.el#L324C1-L341C42
 (use-package evil-escape
-  :after '(evil general)
+  :after (:and evil general)
   :init
   (setq evil-escape-excluded-states '(normal visual multiedit emacs motion)
         evil-escape-excluded-major-modes '(neotree-mode treemacs-mode vterm-mode)
@@ -658,7 +658,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 (use-package flycheck-eglot
   :ensure t
-  :after (flycheck eglot)
+  :after (:and flycheck eglot)
   :custom
   (flycheck-eglot-exclusive nil)
   :config
