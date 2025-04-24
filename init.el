@@ -941,6 +941,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    "M-c"     #'evil-yank
    "M-v"     #'evil-paste-before
    "M-/"     #'evilnc-comment-or-uncomment-lines
+   "M-z"     #'evil-undo
+   "M-Z"     #'evil-redo
    "M-a"     #'mark-whole-buffer
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
