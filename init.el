@@ -976,7 +976,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ot"     #'vterm
-    "oT"     #'projectile-project-root
+    "oT"     #'projectile-run-vterm
     "od"     #'dired-jump
     "oD"     #'projectile-dired
     "og"     #'magit-status-quick
