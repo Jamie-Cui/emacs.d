@@ -998,15 +998,16 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     "po"     #'find-sibling-file
     ;; note functions
     "n" '(:ignore t :which-key "note")
-    "nrf"     #'org-roam-node-find
-    "nri"     #'org-roam-node-insert
-    "njj"     #'org-journal-new-entry
-    "nb"      #'citar-open
     "n@"      #'citar-insert-citation
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "ne"      #'org-export-dispatch
     "nd"      #'deft
+    "nj"      #'org-journal-new-entry
+    "nrf"     #'org-roam-node-find
+    "nri"     #'org-roam-node-insert
+    "nrs"     #'org-roam-db-sync
+    "nb"     #'citar-open
     ;; help functions
     "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
