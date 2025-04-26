@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: plantuml 
+# key: pla
+# --
+
+#+begin_src plantuml :file img/$0.png
+#+end_src

@@ -47,6 +47,7 @@
 
 ;; word wrap
 (global-visual-line-mode 1)
+(setq word-wrap-by-category t)
 
 ;; line numbers
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -319,12 +320,21 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    ;; evil-mu4e
    ;; chinese spacing
    pangu-spacing
+   ;; workspace
+   perspective
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
 
+
+(use-package perspective
+  :custom 
+  (persp-suppress-no-prefix-key-warning t)
+  :init
+  (persp-mode)
+  )
 (use-package org-appear
   :config
   (add-hook 'org-mode-hook 'org-appear-mode))
@@ -372,10 +382,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :config
   (global-pangu-spacing-mode 1)
   (setq pangu-spacing-real-insert-separtor nil)
-  ;; (add-hook 'org-mode-hook
-  ;;           '(lambda ()
-  ;;              (set (make-local-variable
-  ;;                    'pangu-spacing-real-insert-separtor) t)))
+  (add-hook 'org-mode-hook
+            '(lambda ()
+               (set (make-local-variable
+                     'pangu-spacing-real-insert-separtor) t)))
   )
 
 (use-package gptel
@@ -404,11 +414,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :config
   (yas-global-mode 1)
   ;; TODO
-  ;; (setq yas-snippet-dirs
-  ;;       '("~/.emacs.d/snippets"                 ;; personal snippets
-  ;;         "/path/to/some/collection/"           ;; foo-mode and bar-mode snippet collection
-  ;;         "/path/to/yasnippet/yasmate/snippets" ;; the yasmate collection
-  ;;         ))
+  (let ((my-yas-dir (concat jc-emacs-directory "/snippets/")))
+    (add-to-list 'yas-snippet-dirs my-yas-dir))
+  (define-key yas-minor-mode-map [(tab)] nil)
+  (define-key yas-minor-mode-map (kbd "TAB") nil)
   )
 
 ;; ------------------------------------------------------------------
@@ -528,6 +537,18 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (add-hook 'org-mode-hook #'xenops-mode)
   (setq xenops-math-image-current-scale-factor 1.2)
   (setq xenops-math-image-margin 0)
+  ;; (setq xelatex-dvisvgm-preview '(xelatex-dvisvgm :programs ("xelatex" "dvisvgm")
+  ;;                                                 :description "dvi > svg"
+  ;;                                                 :message "you need to install lualatex and dvisvgm."
+  ;;                                                 :image-input-type "dvi"
+  ;;                                                 :image-output-type "svg"
+  ;;                                                 :image-size-adjust (2.0 . 2.0)
+  ;;                                                 :latex-compiler
+  ;;                                                 ("xelatex --interaction=nonstopmode --shell-escape --output-format=dvi --output-directory=%o %f")
+  ;;                                                 :image-converter
+  ;;                                                 ("dvisvgm %f -n -b min -c %S -o %O")))
+  ;; (add-to-list 'xenops-math-latex-process-alist xelatex-dvisvgm-preview)
+  ;; (setq xenops-math-latex-process 'xelatex-dvisvgm)
   ;; HACK error from xenops with org>9.7
   ;; https://github.com/syl20bnr/spacemacs/issues/16577
   ;; https://github.com/dandavison/xenops/pull/74/files
@@ -937,6 +958,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (general-define-key
    :keymaps 'override
    "M-f"     #'consult-line
+   "M-y"     #'yas-expand
    "M-s"     #'save-buffer
    "M-c"     #'evil-yank
    "M-v"     #'evil-paste-before
@@ -949,6 +971,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    "C-="     #'text-scale-increase
    "C--"     #'text-scale-decrease
    "C-SPC"   #'toggle-input-method
+   "C-h"     #'persp-prev
+   "C-l"     #'persp-next
    )
 
   ;; ** Global Keybindings
@@ -969,6 +993,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     "ws"     #'evil-window-split
     "wv"     #'evil-window-vsplit
     "wm"     #'delete-other-windows
+    ;; workspace
+    "[["     #'persp-switch
+    "[r"     #'persp-rename
+    "[d"     #'persp-kill
     ;; buffeer-related key bindings
     "b" '(:ignore t :which-key "buffer")
     "bn"     #'evil-buffer-new
