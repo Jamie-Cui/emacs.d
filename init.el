@@ -395,11 +395,11 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
         gptel-org-branching-context 't
         gptel-log-level 'info
         gptel-backend
-        (gptel-make-openai "DeepSeek"
+        (gptel-make-deepseek "DeepSeek"
           :host "dashscope.aliyuncs.com/compatible-mode/v1"
           :endpoint "/chat/completions"
           :stream t
-          :key "sk-**********************************"
+          :key "**************************"
           :models '(deepseek-r1)))
 
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** @jc\n")
