@@ -9,7 +9,7 @@
   (setq jc-emacs-directory "~/Desktop/emacs.d"))
 
 ;; load theme
-;; (load-theme 'modus-vivendi t)
+(load-theme 'wombat t)
 
 ;; defining your own
 ;; macos: ~/Library/Mobile Documents/com~apple~CloudDocs/org-root
@@ -971,6 +971,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    "C-="     #'text-scale-increase
    "C--"     #'text-scale-decrease
    "C-SPC"   #'toggle-input-method
+   "C-/"     #'persp-switch
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
    )
