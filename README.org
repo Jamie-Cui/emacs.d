@@ -13,18 +13,22 @@
 
 My personal emacs config
 
-#+begin_src bash
-git clone https://github.com/Jamie-Cui/emacs.d.git ~/.emacs.d
-#+end_src
+* What this config does?
+
+1. Use melpa only.
 
 * Getting started
+
+** $HOME/.emacs.d/init.el
 
 #+begin_src elisp
 (defvar jc-emacs-directory "~/Desktop/emacs.d")
 (load (concat jc-emacs-directory "/init.el"))
 #+end_src
 
-* MacOs hide dock
+* Q & A 
+
+** How to let MacOs hide dock?
 
 see: https://apple.stackexchange.com/a/82084
 

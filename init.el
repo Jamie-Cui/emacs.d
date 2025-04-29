@@ -4,6 +4,12 @@
 ;; Emacs native configurations
 ;; -----------------------------------------------------------
 
+(let ((minver "29.1"))
+  (when (version< emacs-version minver)
+    (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
+(when (version< emacs-version "28.1")
+  (message "Your Emacs is old, and some functionality in this config will be disabled. Please upgrade if possible."))
+
 ;; setup 
 (when (not jc-emacs-directory)
   (setq jc-emacs-directory "~/Desktop/emacs.d"))
@@ -569,8 +575,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package org-journal
-  :config
-  (setq org-journal-dir (concat +my-org-root-dir "/journal"))
+  :custom
+  (org-journal-dir (concat +my-org-root-dir "/journal"))
+  (org-journal-find-file-fn 'find-file)
   )
 
 (use-package org-superstar
@@ -994,16 +1001,13 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     "ws"     #'evil-window-split
     "wv"     #'evil-window-vsplit
     "wm"     #'delete-other-windows
-    ;; workspace
-    "[["     #'persp-switch
-    "[r"     #'persp-rename
-    "[d"     #'persp-kill
     ;; buffeer-related key bindings
     "b" '(:ignore t :which-key "buffer")
     "bn"     #'evil-buffer-new
     "bd"     #'kill-current-buffer
     "br"     #'revert-buffer-no-confirm
     "bc"     #'clean-buffer-list
+    "bo"     #'persp-kill-other-buffers
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ot"     #'vterm
