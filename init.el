@@ -486,6 +486,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :init
   (dirvish-override-dired-mode)
   :after general
+  :custom
+  (dired-listing-switches (purecopy "-alh --group-directories-first"))
   :config
   (setq dirvish-mode-line-format
         '(:left (sort symlink) :right (omit yank index)))
