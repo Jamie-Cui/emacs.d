@@ -339,7 +339,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;; ------------------------------------------------------------------
 
 (use-package cnfonts
-  :ensure cnfonts
+  :ensure t
   :custom
   (cnfonts-personal-fontnames '(
                                 ("0xProto Nerd Font Mono") ;; English
@@ -357,13 +357,14 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package smartparens
-  :ensure smartparens  ;; install the package
+  :ensure t  ;; install the package
   :hook (prog-mode text-mode markdown-mode org-mode) ;; add `smartparens-mode` to these hooks
   :config
   ;; load default config
   (require 'smartparens-config))
 
 (use-package perspective
+  :ensure t
   :custom 
   (persp-suppress-no-prefix-key-warning t)
   :init
@@ -376,7 +377,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;; see: https://github.com/doomemacs/doomemacs/blob/da32e8e6f233a80d54d51964d21c4b46b000323b/modules/editor/evil/config.el#L324C1-L341C42
 (use-package evil-escape
-  :after (:and evil general)
+  :ensure t
+  :after (evil general)
   :init
   (setq evil-escape-excluded-states '(normal visual multiedit emacs motion)
         evil-escape-excluded-major-modes '(neotree-mode treemacs-mode vterm-mode)
@@ -399,6 +401,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package evil-args
+  :ensure t
   :after evil
   :config
   ;; bind evil-args text objects
@@ -413,6 +416,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (define-key evil-normal-state-map "K" 'evil-jump-out-args))
 
 (use-package pangu-spacing
+  :ensure t
   :config
   (global-pangu-spacing-mode 1)
   (setq pangu-spacing-real-insert-separtor nil)
@@ -423,6 +427,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package gptel
+  :ensure t
   :config
   (setq gptel-model   'deepseek-r1
         gptel-default-mode 'org-mode
@@ -439,12 +444,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** @jc\n")
   (setf (alist-get 'org-mode gptel-response-prefix-alist) "** @ai\n"))
 
-(use-package auctex)
-
-;;(use-package evil-mu4e
-;;  :after evil)
+(use-package auctex
+  :ensure t
+  )
 
 (use-package yasnippet
+  :ensure t
   :config
   (yas-global-mode 1)
   ;; TODO
@@ -459,16 +464,19 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;; ------------------------------------------------------------------
 
 (use-package cmake-mode
+  :ensure t
   :config
   (defun +my-modify-cmake-mode-syntax-table ()
     (modify-syntax-entry ?/ "-" cmake-mode-syntax-table))
   (add-hook 'cmake-mode-hook #'+my-modify-cmake-mode-syntax-table)
   )
 
-(use-package engrave-faces)
+(use-package engrave-faces
+  :ensure t
+  )
 
 (use-package ox-latex
-  :after (:and engrave-faces citar)
+  :after (engrave-faces citar)
   :custom
   (org-export-with-toc nil)
   :config
@@ -479,6 +487,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package pdf-tools
+  :ensure t
   :mode (("\\.pdf\\'" . pdf-view-mode))
   :config
   (pdf-loader-install)
@@ -490,6 +499,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package deft
+  :ensure t
   :after general
   :config
   (setq deft-default-extension "org")
@@ -504,19 +514,25 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package eldoc-box
+  :ensure t
   :config
   (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
 
 (use-package ansi-color
+  :ensure t
   :hook (compilation-filter . ansi-color-compilation-filter))
 
 (use-package dirvish
+  :ensure t
   :init
   (dirvish-override-dired-mode)
   :after general
   :custom
   (dired-listing-switches (purecopy "-alh --group-directories-first"))
   :config
+  ;; HACK for macos, see: https://github.com/d12frosted/homebrew-emacs-plus/issues/383#issuecomment-899157143
+  (when (eq system-type 'darwin)
+    (setq insert-directory-program "gls" dired-use-ls-dired t))
   (setq dirvish-mode-line-format
         '(:left (sort symlink) :right (omit yank index)))
   (setq dirvish-attributes           ; The order *MATTERS* for some attributes
@@ -533,6 +549,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package iedit
+  :ensure t
   :init
   ;; Fix conflict with embark.
   (setq iedit-toggle-key-default nil))
@@ -555,6 +572,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package plantuml-mode
+  :ensure t
   :after org
   :custom 
   (org-plantuml-jar-path plantuml-jar-path)
@@ -569,6 +587,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    '((plantuml . t))))
 
 (use-package xenops
+  :ensure t
+  :if window-system ;; do not load xenops on termial emacs
   :config
   (add-hook 'org-mode-hook #'xenops-mode)
   (setq xenops-math-image-current-scale-factor 1.2)
@@ -605,17 +625,20 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package org-journal
+  :ensure t
   :custom
   (org-journal-dir (concat +my-org-root-dir "/journal"))
   (org-journal-find-file-fn 'find-file)
   )
 
 (use-package org-superstar
+  :ensure t
   :config
   (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
   )
 
 (use-package org-download
+  :ensure t
   :config
   ;; see: https://www.emacswiki.org/emacs/BufferLocalVariable
   (setq-default org-download-image-dir "img")
@@ -628,6 +651,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
         #'org-download-link-format-function-default))
 
 (use-package citar
+  :ensure t
   :config
   (add-to-list 'citar-bibliography (concat +my-org-root-dir "/zotero_all.bib"))
   (add-to-list 'citar-notes-paths (concat +my-org-root-dir "/roam"))
@@ -637,11 +661,13 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 
 (use-package flycheck-popup-tip
+  :ensure t
   :config
   (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode)
   )
 
 (use-package apheleia
+  :ensure t
   :config
   (apheleia-global-mode +1)
   ;; HACK use elgot-format when possible
@@ -671,6 +697,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package flycheck
+  :ensure t
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode)
   :custom
@@ -681,9 +708,11 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package evil-nerd-commenter
+  :ensure t
   :after evil)
 
 (use-package rainbow-mode
+  :ensure t
   :hook (emacs-lisp-mode text-mode lisp-mode cc-mode cmake-mode))
 
 (use-package markdown-mode
@@ -694,6 +723,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
               ("C-c C-e" . markdown-do)))
 
 (use-package page-break-lines
+  :ensure t
   :config
   (global-page-break-lines-mode 1))
 
@@ -716,7 +746,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 (use-package flycheck-eglot
   :ensure t
-  :after (:and flycheck eglot)
+  :after (flycheck eglot)
   :custom
   (flycheck-eglot-exclusive nil)
   :config
@@ -737,6 +767,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 (use-package marginalia
+  :ensure t
   ;; Bind `marginalia-cycle' locally in the minibuffer.
   ;; To make the binding ;; available in the *Completions* buffer,
   ;; add it to the `completion-list-mode-map'.
@@ -763,7 +794,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (doom-modeline-mode 1)
   )
 
-(use-package nerd-icons)
+(use-package nerd-icons
+  :ensure t
+  )
 
 (use-package dashboard
   :ensure t
@@ -836,6 +869,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (require 'org-roam-protocol))
 
 (use-package hl-todo
+  :ensure t
   :config
   (global-hl-todo-mode 1)
   (setq hl-todo-highlight-punctuation ":"
@@ -871,7 +905,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
         completion-category-overrides
         '((file (styles . (partial-completion))))))
 
-(use-package consult-eglot)
+(use-package consult-eglot
+  :ensure t)
 
 (use-package eglot
   :ensure t
@@ -908,16 +943,19 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 ;; helpful
-(use-package helpful)
+(use-package helpful
+  :ensure t)
 
 ;; which-key
 (use-package which-key
+  :ensure t
   :config
   (which-key-setup-minibuffer)
   (which-key-mode 1))
 
 ;; vertico
 (use-package vertico
+  :ensure t
   :init
   (vertico-mode)
   :custom
@@ -928,6 +966,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;; consult
 (use-package consult
+  :ensure t
   :custom
   (consult-preview-max-count 17)
   (consult-customize
@@ -943,6 +982,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;; evil
 (use-package undo-tree
+  :ensure t
   :config
   (global-undo-tree-mode 1)
   ;; do not save history by default
@@ -953,7 +993,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 (use-package evil
   :ensure t
-  :after (:and undo-tree undo-fu)
+  :after (undo-tree undo-fu)
   :preface
   (setq evil-overriding-maps nil)
   (setq evil-want-keybinding nil)
@@ -976,7 +1016,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive) (revert-buffer t t))
 
 (use-package general
-  :after (:and evil evil-mc)
+  :ensure t
+  :after (evil evil-mc)
   :config
   (defconst my-leader "SPC")
   (defconst my-local-leader "SPC m")
@@ -1122,6 +1163,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; evil-collection
 (use-package evil-collection
+  :ensure t
   :preface
   (setq evil-want-keybinding nil)
   :after evil
@@ -1132,6 +1174,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;;
 (use-package cc-mode
+  :ensure t
   :config
   (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
   (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
