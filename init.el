@@ -331,14 +331,14 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    ;; smart-parens
    smartparens
    ;; chinese s alignment, or valign (maybe?)
-   cns
+   cnfonts
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
 
-(use-package cns
+(use-package cnfonts
   :ensure cnfonts
   :custom
   (cnfonts-personal-fontnames '(
