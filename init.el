@@ -42,7 +42,7 @@
 (setq native-comp-async-report-warnings-errors 'silent)
 
 ;; set default font
-(set-frame-font "0xProto Nerd Font Mono 14" nil t)
+(set-frame-font "0xProto Nerd Font Mono" nil t)
 
 ;; disable certain things
 (menu-bar-mode 0)
@@ -328,12 +328,40 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    pangu-spacing
    ;; workspace
    perspective
+   ;; smart-parens
+   smartparens
+   ;; chinese s alignment, or valign (maybe?)
+   cns
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
 
+(use-package cns
+  :ensure cnfonts
+  :custom
+  (cnfonts-personal-fontnames '(
+                                ("0xProto Nerd Font Mono") ;; English
+                                ("Sarasa Term SC Nerd") ;; Chinese
+                                nil  ;; Ext-B
+                                ("Symbols Nerd Font Mono") ;; Symbol
+                                nil ;; Others
+                                ))
+  :config
+  ;; use this to list all fonts
+  ;; (cl-prettyprint (font-family-list))
+  (define-key cnfonts-mode-map (kbd "C--") #'cnfonts-decrease-fontsize)
+  (define-key cnfonts-mode-map (kbd "C-=") #'cnfonts-increase-fontsize)
+  (cnfonts-mode 1)
+  )
+
+(use-package smartparens
+  :ensure smartparens  ;; install the package
+  :hook (prog-mode text-mode markdown-mode org-mode) ;; add `smartparens-mode` to these hooks
+  :config
+  ;; load default config
+  (require 'smartparens-config))
 
 (use-package perspective
   :custom 
@@ -977,8 +1005,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    "M-a"     #'mark-whole-buffer
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
-   "C-="     #'text-scale-increase
-   "C--"     #'text-scale-decrease
+   ;; "C-="     #'text-scale-increase
+   ;; "C--"     #'text-scale-decrease
    "C-SPC"   #'toggle-input-method
    "C-/"     #'persp-switch
    "C-h"     #'persp-prev
