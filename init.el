@@ -38,6 +38,9 @@
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; scroll should preserve screen position
+(setq scroll-preserve-screen-position t)
+
 ;; do not show me native-comp warning and erros
 (setq native-comp-async-report-warnings-errors 'silent)
 
@@ -157,7 +160,7 @@
   (add-to-list 'org-latex-packages-alist
                '("" "booktabs" t))
   (setq org-log-done t)
-  (setq org-src-window-setup 'current-window)
+  (setq org-src-window-setup 'other-window)
   (add-hook 'org-mode-hook 'org-indent-mode)
   (setq org-confirm-babel-evaluate nil) ; don't ask, just do it
   (setq org-startup-with-inline-images t)
@@ -225,7 +228,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    evil-escape ; quit everything with C-g!
    general ; more convenient way of defining keys
    ;; org-related pacakages
-   evil-org
    org-download
    org-superstar
    org-roam
