@@ -41,9 +41,6 @@
 ;; do not show me native-comp warning and erros
 (setq native-comp-async-report-warnings-errors 'silent)
 
-;; set default font
-(set-frame-font "0xProto Nerd Font Mono" nil t)
-
 ;; disable certain things
 (menu-bar-mode 0)
 (tool-bar-mode 0)
@@ -73,8 +70,8 @@
 (setq indent-line-function 'insert-tab)
 (setq tab-always-indent t) ;  TAB just indents the current line
 
-;; allow use minibuffer inside minibuffer
-(setq enable-recursive-minibuffers t)
+;; dont allow use minibuffer inside minibuffer
+(setq enable-recursive-minibuffers nil)
 
 ;; use short answers
 (setq use-short-answers t)
@@ -220,8 +217,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    ;; evil-related
    evil
    evil-collection
-   undo-tree
-   undo-fu
    evil-multiedit
    evil-mc
    evil-goggles
@@ -343,7 +338,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :ensure t
   :custom
   (cnfonts-personal-fontnames '(
-                                ("0xProto Nerd Font Mono") ;; English
+                                ("Sarasa Term SC Nerd" "FiraCode Nerd Font Mono") ;; English
                                 ("Sarasa Term SC Nerd") ;; Chinese
                                 nil  ;; Ext-B
                                 ("Symbols Nerd Font Mono") ;; Symbol
@@ -982,19 +977,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   )
 
 ;; evil
-(use-package undo-tree
-  :ensure t
-  :config
-  (global-undo-tree-mode 1)
-  ;; do not save history by default
-  (setq undo-tree-auto-save-history nil)
-
-  )
-(use-package undo-fu)
 
 (use-package evil
   :ensure t
-  :after (undo-tree undo-fu)
   :preface
   (setq evil-overriding-maps nil)
   (setq evil-want-keybinding nil)
@@ -1005,12 +990,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
   (setq-default evil-symbol-word-search t)
-
-  ;; use undo-tree
-  (evil-set-undo-system 'undo-tree)
-
-  (evil-mode 1)
-  )
+  (evil-set-undo-system 'undo-redo)
+  (evil-mode 1))
 
 (defun revert-buffer-no-confirm ()
   "Revert buffer without confirmation."
@@ -1050,7 +1031,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    ;; "C-="     #'text-scale-increase
    ;; "C--"     #'text-scale-decrease
    "C-SPC"   #'toggle-input-method
-   "C-/"     #'persp-switch
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
    )
@@ -1144,6 +1124,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     "x"      #'scratch-buffer
     "."      #'find-file
     "<"      #'consult-buffer
+    ">"      #'persp-switch
     "/"      #'consult-ripgrep
     "TAB"    #'evil-switch-to-windows-last-buffer
     "SPC"    #'projectile-find-file
@@ -1161,7 +1142,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     )
   )
 
-
 ;;; evil-collection
 (use-package evil-collection
   :ensure t
@@ -1171,6 +1151,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :config
   ;; make sure the follwing key bindings always work
   (evil-collection-init)
+  ;; HACK re-bind keys
+  (evil-collection-define-key '(normal visual) 'evil-mc-key-map (kbd "gz") evil-mc-cursors-map)
   )
 
 ;;;
