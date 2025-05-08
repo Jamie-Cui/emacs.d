@@ -509,6 +509,21 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
           (nospace . "-")
           (case-fn . downcase)))
   (setq deft-directory (concat +my-org-root-dir "/deft"))
+
+  ;; HACK enable auto refresh
+  ;; see: https://github.com/jrblevin/deft/pull/62/files
+  (defvar deft-auto-refresh-descriptor nil)
+  (defun deft-auto-refresh (event)
+    (deft-refresh))
+  (when (fboundp 'file-notify-add-watch)
+    (setq deft-auto-refresh-descriptor
+          (file-notify-add-watch
+           deft-directory
+           '(change attribute-change)
+           'deft-auto-refresh
+           )
+          )
+    )
   )
 
 (use-package eldoc-box
