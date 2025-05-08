@@ -165,6 +165,7 @@
   (setq org-confirm-babel-evaluate nil) ; don't ask, just do it
   (setq org-startup-with-inline-images t)
   (add-to-list 'org-export-backends 'beamer)
+  (setq org-export-dispatch-use-expert-ui 't)
 
   (org-babel-do-load-languages
    'org-babel-load-languages
