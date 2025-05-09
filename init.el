@@ -379,11 +379,14 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 (use-package popwin
   :ensure t
+  :custom 
+  (popwin:popup-window-height 0.3)
   :config
   ;; By default, *Help*, *Completions*, *compilation*, and *Occur* buffers will be shown in a popup window.
   ;; see: popwin:special-display-config
-  (push "*Flycheck errors*" popwin:special-display-config)
-  (push "*DeepSeek*" popwin:special-display-config)
+  (push '("*Flycheck errors*" :stick t) popwin:special-display-config)
+  (push '("*DeepSeek*" :stick t) popwin:special-display-config)
+  (push '(helpful-mode :stick t) popwin:special-display-config)
   (popwin-mode 1)
   )
 
