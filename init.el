@@ -391,8 +391,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :ensure t
   :custom
   (cnfonts-personal-fontnames '(
-                                ("Sarasa Term SC Nerd" "FiraCode Nerd Font Mono" "0xProto Nerd Font Mono") ;; English
-                                ("Sarasa Term SC Nerd") ;; Chinese
+                                ("Sarasa Term SC Nerd" "0xProto Nerd Font Mono") ;; English
+                                ("Sarasa Term SC Nerd" "LXGWWenKaiMono") ;; Chinese
                                 nil  ;; Ext-B
                                 ("Symbols Nerd Font Mono") ;; Symbol
                                 nil ;; Others
