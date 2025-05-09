@@ -369,11 +369,23 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    smartparens
    ;; chinese s alignment, or valign (maybe?)
    cnfonts
+   ;; popup window
+   popwin
    ))
 
 ;; ------------------------------------------------------------------
 ;; TODO
 ;; ------------------------------------------------------------------
+
+(use-package popwin
+  :ensure t
+  :config
+  ;; By default, *Help*, *Completions*, *compilation*, and *Occur* buffers will be shown in a popup window.
+  ;; see: popwin:special-display-config
+  (push "*Flycheck errors*" popwin:special-display-config)
+  (push "*DeepSeek*" popwin:special-display-config)
+  (popwin-mode 1)
+  )
 
 (use-package cnfonts
   :ensure t
