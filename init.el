@@ -380,7 +380,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (use-package popwin
   :ensure t
   :custom 
-  (popwin:popup-window-height 0.3)
+  (popwin:popup-window-height 0.5)
   :config
   ;; By default, *Help*, *Completions*, *compilation*, and *Occur* buffers will be shown in a popup window.
   ;; see: popwin:special-display-config
