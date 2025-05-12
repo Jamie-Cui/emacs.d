@@ -311,7 +311,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    ;; icons
    nerd-icons
    ;; modeline
-   doom-modeline
+   ;; doom-modeline
    ;; cpplint
    flycheck-google-cpplint
    ;; bazel-mode
@@ -381,12 +381,22 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :ensure t
   :custom 
   (popwin:popup-window-height 0.5)
+  ;; HACK redefine special display rule
+  (popwin:special-display-config
+   '(;; Emacs
+     ;; ("*Miniedit Help*" :noselect t)
+     help-mode
+     ;; (completion-list-mode :noselect t)
+     ;; (compilation-mode :noselect t)
+     ;; (grep-mode :noselect t)
+     ;; (occur-mode :noselect t)
+     ;; "*Shell Command Output*"
+     ("*Flycheck errors*" :stick t)
+     ;; ("*DeepSeek*" :stick t)
+     (helpful-mode :stick t)
+     )
+   )
   :config
-  ;; By default, *Help*, *Completions*, *compilation*, and *Occur* buffers will be shown in a popup window.
-  ;; see: popwin:special-display-config
-  (push '("*Flycheck errors*" :stick t) popwin:special-display-config)
-  (push '("*DeepSeek*" :stick t) popwin:special-display-config)
-  (push '(helpful-mode :stick t) popwin:special-display-config)
   (popwin-mode 1)
   )
 
@@ -551,6 +561,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (use-package deft
   :ensure t
   :after general
+  :custom
+  (deft-recursive t)
   :config
   (setq deft-default-extension "org")
   (setq deft-use-filename-as-title nil)
@@ -594,6 +606,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :after general
   :custom
   (dired-listing-switches (purecopy "-alh --group-directories-first"))
+  (dired-kill-when-opening-new-dired-buffer t)
+  (dirvish-quick-access-entries ; It's a custom option, `setq' won't work
+   '(("~" "~/"                          "Home")))
   :config
   ;; HACK for macos, see: https://github.com/d12frosted/homebrew-emacs-plus/issues/383#issuecomment-899157143
   (when (eq system-type 'darwin)
@@ -658,18 +673,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (add-hook 'org-mode-hook #'xenops-mode)
   (setq xenops-math-image-current-scale-factor 1.2)
   (setq xenops-math-image-margin 0)
-  ;; (setq xelatex-dvisvgm-preview '(xelatex-dvisvgm :programs ("xelatex" "dvisvgm")
-  ;;                                                 :description "dvi > svg"
-  ;;                                                 :message "you need to install lualatex and dvisvgm."
-  ;;                                                 :image-input-type "dvi"
-  ;;                                                 :image-output-type "svg"
-  ;;                                                 :image-size-adjust (2.0 . 2.0)
-  ;;                                                 :latex-compiler
-  ;;                                                 ("xelatex --interaction=nonstopmode --shell-escape --output-format=dvi --output-directory=%o %f")
-  ;;                                                 :image-converter
-  ;;                                                 ("dvisvgm %f -n -b min -c %S -o %O")))
-  ;; (add-to-list 'xenops-math-latex-process-alist xelatex-dvisvgm-preview)
-  ;; (setq xenops-math-latex-process 'xelatex-dvisvgm)
   ;; HACK error from xenops with org>9.7
   ;; https://github.com/syl20bnr/spacemacs/issues/16577
   ;; https://github.com/dandavison/xenops/pull/74/files
@@ -751,10 +754,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   ;; HACK add all eglot-ensured modes 
   ;; This determines what formatter to use in buffers without a
   ;; setting for apheleia-formatter. The keys are major mode
-  ;; (add-to-list 'apheleia-mode-alist '(cc-mode-hook . eglot-managed))
-  ;; (add-to-list 'apheleia-mode-alist '(c++-mode-hook . eglot-managed))
-  ;; (add-to-list 'apheleia-mode-alist '(c-mode-hook . eglot-managed))
-  ;; (add-to-list 'apheleia-mode-alist '(c-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(rust-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(cmake-mode . cmake-format))
@@ -846,17 +845,17 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   ;; forces loading the package.
   (marginalia-mode))
 
-(use-package doom-modeline
-  :ensure t
-  :after nerd-icons
-  :config
-  (setq doom-modeline-height 1) ; optional
-  ;; (if (facep 'mode-line-active)
-  ;;     (set-face-attribute 'mode-line-active nil :family "0xProto Nerd Font Mono 14") ; For 29+
-  ;;   (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
-  ;; (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
-  (doom-modeline-mode 1)
-  )
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :after nerd-icons
+;;   :config
+;;   (setq doom-modeline-height 1) ; optional
+;;   ;; (if (facep 'mode-line-active)
+;;   ;;     (set-face-attribute 'mode-line-active nil :family "0xProto Nerd Font Mono 14") ; For 29+
+;;   ;;   (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
+;;   ;; (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
+;;   (doom-modeline-mode 1)
+;;   )
 
 (use-package nerd-icons
   :ensure t
@@ -1128,6 +1127,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     "br"     #'revert-buffer-no-confirm
     "bc"     #'clean-buffer-list
     "bo"     #'persp-kill-other-buffers
+    "B" '(:ignore t :which-key "bookmark")
+    "BB"     #'consult-bookmark
+    "Bn"     #'bookmark-set
+    "Bd"     #'bookmark-delete
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ot"     #'vterm
@@ -1291,3 +1294,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (setq rime-show-candidate 'popup)))
 
 (evil-escape-mode)
+
+
+;;; site pakcages
+
+(use-package org-imgtog
+  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
+  :hook org-mode)
