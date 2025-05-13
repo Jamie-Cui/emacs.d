@@ -130,10 +130,6 @@
 (add-hook 'dired-mode-hook 'dired-omit-mode)
 
 ;; add auto-mdoe list
-(require 'treesit)
-(when (treesit-ready-p 'cpp)
-  (treesit-install-language-grammar 'cpp))
-
 (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
@@ -610,8 +606,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :custom
   (dired-listing-switches (purecopy "-alh --group-directories-first"))
   (dired-kill-when-opening-new-dired-buffer t)
-  (dirvish-quick-access-entries ; It's a custom option, `setq' won't work
-   '(("~" "~/"                          "Home")))
   :config
   ;; HACK for macos, see: https://github.com/d12frosted/homebrew-emacs-plus/issues/383#issuecomment-899157143
   (when (eq system-type 'darwin)
@@ -1299,7 +1293,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 
 ;;; site pakcages
-
 (use-package org-imgtog
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :hook org-mode)
