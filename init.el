@@ -435,8 +435,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :custom 
   (persp-suppress-no-prefix-key-warning t)
   :init
-  (persp-mode)
-  )
+  (persp-mode))
+
 (use-package org-appear
   :config
   (add-hook 'org-mode-hook 'org-appear-mode))
@@ -444,11 +444,11 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (use-package evil-escape
   :ensure t
   :after (evil general)
-  :init
-  (setq evil-escape-excluded-states '(normal visual multiedit emacs motion)
-        evil-escape-excluded-major-modes '(vterm-mode)
-        evil-escape-key-sequence nil
-        evil-escape-delay 0.15)
+  :custom
+  (evil-escape-excluded-states '(normal visual multiedit emacs motion))
+  (evil-escape-excluded-major-modes '(vterm-mode))
+  (evil-escape-key-sequence nil)
+  (evil-escape-delay 0.15)
   :config
   ;; `evil-escape' in the minibuffer is more disruptive than helpful. That is,
   ;; unless we have `evil-collection-setup-minibuffer' enabled, in which case we
@@ -458,11 +458,11 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
               (and (minibufferp)
                    (or (not (bound-and-true-p evil-collection-setup-minibuffer))
                        (evil-normal-state-p)))))
-
   (general-define-key
    :states '(insert replace visual operator)
-   "C-g" #'evil-escape
-   )
+   "C-g" #'evil-escape)
+
+  (evil-escape-mode)
   )
 
 (use-package evil-args
@@ -568,17 +568,15 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :after general
   :custom
   (deft-recursive t)
-  :config
-  (setq deft-default-extension "org")
-  (setq deft-use-filename-as-title nil)
-  (setq deft-use-filter-string-for-filename nil)
-  (setq deft-auto-save-interval -1.0) ; disable auto-save
-  (setq deft-file-naming-rules
-        '((noslash . "-")
-          (nospace . "-")
-          (case-fn . downcase)))
-  (setq deft-directory (concat +my-org-root-dir "/deft"))
+  (deft-file-naming-rules '((noslash . "-")
+                            (nospace . "-")
+                            (case-fn . downcase)))
+  (deft-auto-save-interval -1.0) 
+  (deft-use-filter-string-for-filename nil)
+  (deft-use-filename-as-title nil)
+  (deft-directory (concat +my-org-root-dir "/deft"))
 
+  :config
   ;; HACK enable auto refresh
   ;; see: https://github.com/jrblevin/deft/pull/62/files
   (defvar deft-auto-refresh-descriptor nil)
@@ -1287,9 +1285,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   ;; org-download from windows clipboard
   (use-package org-download
     :ensure t
-    :config
-    (setq org-download-screenshot-method
-          "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\""))
+    :custom
+    (org-download-screenshot-method
+     "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\""))
 
   ;; wsl use rime
   (use-package rime
@@ -1298,7 +1296,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (setq default-input-method "rime")
     (setq rime-show-candidate 'popup)))
 
-(evil-escape-mode)
 
 
 ;;; site pakcages

@@ -8,6 +8,7 @@ projects
 *.el
 *.eld
 !site-lisp/*.el
+!lisp/*.el
 recentf
 !init.el
 elpa
