@@ -11,8 +11,8 @@
   (message "Your Emacs is old, and some functionality in this config will be disabled. Please upgrade if possible."))
 
 ;; setup 
-(when (not jc-emacs-directory)
-  (setq jc-emacs-directory "~/Desktop/emacs.d"))
+(when (not (boundp' jc-emacs-directory))
+  (defconst jc-emacs-directory "~/Desktop/emacs.d"))
 
 ;; load theme
 ;; (load-theme 'wombat t)
@@ -81,7 +81,7 @@
       tooltip-resize-echo-area t)
 
 ;; do not show me native-comp warning and erros
-(setq native-comp-async-report-warnings-errors 'silent)
+(setopt native-comp-async-report-warnings-errors 'silent)
 
 ;; disable certain things
 (menu-bar-mode 0)
@@ -130,9 +130,13 @@
 (add-hook 'dired-mode-hook 'dired-omit-mode)
 
 ;; add auto-mdoe list
-(let* ((cc-files '(".h" ".cc" ".cpp" ".hpp" ".c"))
-       (cc-regexp (concat (regexp-opt cc-files t) "\\'")))
-  (add-to-list 'auto-mode-alist (cons cc-regexp 'c++-ts-mode)))
+(require 'treesit)
+(when (treesit-ready-p 'cpp)
+  (treesit-install-language-grammar 'cpp))
+
+(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+(add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+(add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
 
 (let* ((rust-files '(".rs"))
        (rust-regexp (concat (regexp-opt rust-files t) "\\'")))
@@ -191,6 +195,8 @@
   )
 
 (use-package org
+  :custom
+  (org-export-dispatch-use-expert-ui t)
   :config
   (add-to-list 'org-latex-packages-alist
                '("lambda, advantage, operators, sets, adversary, landau,\
@@ -204,7 +210,6 @@
   (setq org-confirm-babel-evaluate nil) ; don't ask, just do it
   (setq org-startup-with-inline-images t)
   (add-to-list 'org-export-backends 'beamer)
-  (setq org-export-dispatch-use-expert-ui 't)
 
   (org-babel-do-load-languages
    'org-babel-load-languages
