@@ -604,7 +604,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (dirvish-override-dired-mode)
   :after general
   :custom
-  (dired-listing-switches (purecopy "-alh --group-directories-first"))
+  (dired-listing-switches (purecopy "-alh --human-readable --group-directories-first --no-group"))
   (dired-kill-when-opening-new-dired-buffer t)
   :config
   ;; HACK for macos, see: https://github.com/d12frosted/homebrew-emacs-plus/issues/383#issuecomment-899157143
