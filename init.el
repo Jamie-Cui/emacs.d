@@ -158,6 +158,7 @@
                           ))))
     ;; (message path-from-shell)
     (setenv "PATH" path-from-shell)
+    (message path-from-shell)
     (setq exec-path (split-string path-from-shell path-separator))))
 
 ;; run this setup function
@@ -502,12 +503,15 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
           :key (auth-source-pick-first-password :host "api.deepseek.com")
           :models '(deepseek-r1)))
 
+  (general-define-key
+   :keymaps 'gptel-mode-map
+   "C-c C-c" #'gptel-send)
+
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** @jc\n")
   (setf (alist-get 'org-mode gptel-response-prefix-alist) "** @ai\n"))
 
 (use-package auctex
-  :ensure t
-  )
+  :ensure t)
 
 (use-package yasnippet
   :ensure t
@@ -573,6 +577,13 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (deft-directory (concat +my-org-root-dir "/deft"))
 
   :config
+  (setq deft-strip-summary-regexp
+	    (concat "\\("
+		        "[\n\t]" ;; blank
+		        "\\|^#\\+[[:alpha:]_]+:.*$" ;; org-mode metadata
+		        "\\|^:PROPERTIES:\n\\(.+\n\\)+:END:\n"
+		        "\\)"))
+  (setq deft-default-extension "org")
   ;; HACK enable auto refresh
   ;; see: https://github.com/jrblevin/deft/pull/62/files
   (defvar deft-auto-refresh-descriptor nil)
