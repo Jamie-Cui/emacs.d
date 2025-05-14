@@ -28,6 +28,9 @@
 (make-directory (concat +my-org-root-dir "/deft") t)
 (make-directory (concat (file-name-directory user-init-file) "/bin") t)
 
+;; set tramp default encoding shell to zsh
+(setopt tramp-encoding-shell "/bin/zsh")
+
 ;; stop makding ~ files!
 (setq make-backup-files nil) 
 
