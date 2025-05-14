@@ -28,9 +28,6 @@
 (make-directory (concat +my-org-root-dir "/deft") t)
 (make-directory (concat (file-name-directory user-init-file) "/bin") t)
 
-;; set tramp default encoding shell to zsh
-(setopt tramp-encoding-shell "/bin/zsh")
-
 ;; stop makding ~ files!
 (setq make-backup-files nil) 
 
@@ -1006,6 +1003,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   :ensure t
   :config
   (setq vterm-mode-hook (lambda() (display-line-numbers-mode -1)))
+
+  ;; set tramp default encoding shell to zsh
+  (add-to-list 'vterm-tramp-shells '("sshx" login-shell))
   )
 
 ;; projectile
