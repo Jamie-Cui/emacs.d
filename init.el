@@ -379,6 +379,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;; TODO
 ;; ------------------------------------------------------------------
 
+(use-package bazel
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.BUILD\\'" . bazel-mode))
+  (setq bazel-buildifier-before-save 't))
+
 (use-package popwin
   :ensure t
   :custom 
@@ -1191,6 +1197,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     "tf"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
     "tc"     #'display-fill-column-indicator-mode
+    "tg"     #'magit-blame-addition
     ;; code
     "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors
