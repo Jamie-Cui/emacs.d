@@ -313,7 +313,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
    ;; icons
    nerd-icons
    ;; modeline
-   ;; doom-modeline
+   doom-modeline
    ;; cpplint
    flycheck-google-cpplint
    ;; bazel-mode
@@ -859,17 +859,17 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   ;; forces loading the package.
   (marginalia-mode))
 
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :after nerd-icons
-;;   :config
-;;   (setq doom-modeline-height 1) ; optional
-;;   ;; (if (facep 'mode-line-active)
-;;   ;;     (set-face-attribute 'mode-line-active nil :family "0xProto Nerd Font Mono 14") ; For 29+
-;;   ;;   (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
-;;   ;; (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
-;;   (doom-modeline-mode 1)
-;;   )
+(use-package doom-modeline
+  :ensure t
+  :after nerd-icons
+  :config
+  (setq doom-modeline-icon nil) ; optional
+  ;; (if (facep 'mode-line-active)
+  ;;     (set-face-attribute 'mode-line-active nil :family "0xProto Nerd Font Mono 14") ; For 29+
+  ;;   (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
+  ;; (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
+  (doom-modeline-mode 1)
+  )
 
 (use-package nerd-icons
   :ensure t
