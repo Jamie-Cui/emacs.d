@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 ;; -----------------------------------------------------------
-;; Emacs native configurations
+;; DONE Emacs native configurations
 ;; -----------------------------------------------------------
 
 (let ((minver "29.1"))
@@ -24,14 +24,12 @@
 (require 'init-os)
 (require 'init-misc)
 
-
-
 ;; Set up Emacs' `exec-path' and PATH environment variable to match
 ;; that used by the user's shell.
 (+set-emacs-exec-path-from-shell-PATH)
 
 ;; -----------------------------------------------------------
-;; (my) emacs core thirdparty configurations
+;; DONE programming modes
 ;; -----------------------------------------------------------
 
 (+ensure-packages-installed
@@ -48,22 +46,13 @@
    markdown-mode
    ))
 
-;; ------------------------------------------------------------------
-;; Markdown mode
-;; ------------------------------------------------------------------
-
-(use-package markdown-mode
-  :ensure t
-  :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-command "multimarkdown")
-  :bind (:map markdown-mode-map
-              ("C-c C-e" . markdown-do)))
 
 ;; ------------------------------------------------------------------
-;; C/C++, cmake and bazel
+;; DONE C/C++, cmake and bazel
 ;; ------------------------------------------------------------------
 
 ;; add auto-mode list
+;; I prefer to use treesit-mode
 (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
@@ -74,6 +63,7 @@
 
 ;; formatter
 (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
+(add-to-list 'apheleia-mode-alist '(c-ts-mode-hook . eglot-managed))
 (add-to-list 'apheleia-mode-alist '(cmake-mode . cmake-format))
 
 (use-package cmake-mode
@@ -90,7 +80,7 @@
   (setq bazel-buildifier-before-save 't))
 
 ;; ------------------------------------------------------------------
-;; Rust mode
+;; TODO Rust mode
 ;; ------------------------------------------------------------------
 
 (let* ((rust-files '(".rs"))
@@ -102,7 +92,22 @@
   (add-to-list 'auto-mode-alist (cons rust-regexp 'conf-toml-mode)))
 
 ;; ------------------------------------------------------------------
-;; Key Bindings
+;; TODO Zig mode 
+;; ------------------------------------------------------------------
+
+;; ------------------------------------------------------------------
+;; Markdown mode
+;; ------------------------------------------------------------------
+
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "multimarkdown")
+  :bind (:map markdown-mode-map
+              ("C-c C-e" . markdown-do)))
+
+;; ------------------------------------------------------------------
+;; DONE Key Bindings
 ;; ------------------------------------------------------------------
 
 (use-package general
@@ -150,6 +155,7 @@
     "a" '(:ignore t :which-key "actions")
     "a RET"  #'embark-dwim
     ;; window-related key bindings
+
     "w" '(:ignore t :which-key "window")
     "wh"     #'evil-window-left
     "wj"     #'evil-window-down
@@ -257,10 +263,9 @@
 
 
 ;; -----------------------------------------------------------
-;; System-specific configurations
+;; DONE org-imgtog
 ;; -----------------------------------------------------------
 
-;;; site pakcages
 (use-package org-imgtog
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :hook org-mode)
