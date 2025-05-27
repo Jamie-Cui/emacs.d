@@ -14,6 +14,7 @@
    evil-goggles
    evil-nerd-commenter
    evil-args
+   evil-surround
    evil-escape ; quit everything with C-g!
    general ; more convenient way of defining keys
    which-key
@@ -115,5 +116,11 @@
   :after evil
   :config
   (evil-multiedit-default-keybinds))
+
+(use-package evil-surround
+  :ensure t
+  :after evil
+  :config
+  (global-evil-surround-mode 1))
 
 (provide 'init-evil)
