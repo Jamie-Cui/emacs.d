@@ -286,6 +286,8 @@
 (use-package doom-modeline
   :ensure t
   :after nerd-icons
+  :custom
+  (doom-modeline-buffer-file-name-style 'relative-from-project)
   :config
   (setq doom-modeline-icon nil) ; optional
   ;; (if (facep 'mode-line-active)
