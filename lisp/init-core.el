@@ -65,7 +65,7 @@
    ;; better snippet
    yasnippet
    ;; workspace
-   perspective
+   persp-mode
    ;; smart-parens
    smartparens
    ;; popup window
@@ -101,7 +101,7 @@
   ;; load default config
   (require 'smartparens-config))
 
-(use-package perspective
+(use-package persp-mode
   :ensure t
   :custom 
   (persp-suppress-no-prefix-key-warning t)
