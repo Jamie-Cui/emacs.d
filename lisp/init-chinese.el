@@ -46,8 +46,6 @@
   :config
   ;; use this to list all fonts
   ;; (cl-prettyprint (font-family-list))
-  (define-key cnfonts-mode-map (kbd "C--") #'cnfonts-decrease-fontsize)
-  (define-key cnfonts-mode-map (kbd "C-=") #'cnfonts-increase-fontsize)
   (cnfonts-mode 1)
   )
 
