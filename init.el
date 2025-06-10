@@ -34,18 +34,24 @@
 
 (+ensure-packages-installed
  '(
-   ;; bazel mode
+   ;; bazel mode (need config)
    bazel
+   ;; cmake mode (need config)
+   cmake-mode
    ;; protobuf mdoe
    protobuf-mode
    ;; meson mode
    meson-mode
-   ;; cmake mode
-   cmake-mode
    ;; markdown mode
    markdown-mode
+   ;; yaml mode
+   yaml-mode
    ))
 
+(use-package protobuf-mode)
+(use-package meson-mode)
+(use-package markdown-mode)
+(use-package yaml-mode)
 
 ;; ------------------------------------------------------------------
 ;; DONE C/C++, cmake and bazel
@@ -131,6 +137,7 @@
   (general-define-key
    :keymaps 'override
    "M-f"     #'consult-line
+   "M-Y"     #'consult-yasnippet
    "M-y"     #'yas-expand
    "M-s"     #'save-buffer
    "M-c"     #'evil-yank
@@ -141,8 +148,8 @@
    "M-a"     #'mark-whole-buffer
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
-   ;; "C-="     #'text-scale-increase
-   ;; "C--"     #'text-scale-decrease
+   "C-="     #'cnfonts-increase-fontsize
+   "C--"     #'cnfonts-decrease-fontsize
    "C-SPC"   #'toggle-input-method
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
@@ -243,7 +250,8 @@
     "x"      #'scratch-buffer
     "."      #'find-file
     "<"      #'consult-buffer
-    ">"      #'persp-switch
+    ","      #'consult-project-buffer
+    ">"      #'projectile-switch-open-project
     "/"      #'+vertico/project-search
     "TAB"    #'evil-switch-to-windows-last-buffer
     "SPC"    #'projectile-find-file
@@ -260,7 +268,6 @@
     "g" #'deft-refresh
     )
   )
-
 
 ;; -----------------------------------------------------------
 ;; DONE org-imgtog

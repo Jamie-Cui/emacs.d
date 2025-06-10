@@ -95,7 +95,7 @@
 (setq use-short-answers t)
 
 ;; column
-(setq fill-column 80)
+(setopt fill-column 80)
 
 ;; enable hideshow in all programming modes
 (use-package hideshow

@@ -64,8 +64,9 @@
    auctex
    ;; better snippet
    yasnippet
+   consult-yasnippet
    ;; workspace
-   perspective
+   persp-mode
    ;; smart-parens
    smartparens
    ;; popup window
@@ -101,7 +102,7 @@
   ;; load default config
   (require 'smartparens-config))
 
-(use-package perspective
+(use-package persp-mode
   :ensure t
   :custom 
   (persp-suppress-no-prefix-key-warning t)
@@ -137,11 +138,12 @@
 (use-package yasnippet
   :ensure t
   :config
+  (require 'consult-yasnippet)
   (yas-global-mode 1)
   ;; TODO
-  (let ((my-yas-dir (concat jc-emacs-directory "/snippets/")))
+  (let ((my-yas-dir (concat jc-emacs-directory "/snippets")))
     (add-to-list 'yas-snippet-dirs my-yas-dir))
-  (define-key yas-minor-mode-map [(tab)] nil)
+  (define-key yas-minor-mode-map (kbd "<tab>") nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil)
   )
 
@@ -295,6 +297,7 @@
   ;;   (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
   ;; (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
   (doom-modeline-mode 1)
+  (setq doom-modeline-buffer-file-name-style 'relative-from-project)
   )
 
 (use-package nerd-icons
