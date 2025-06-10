@@ -137,6 +137,7 @@
   (general-define-key
    :keymaps 'override
    "M-f"     #'consult-line
+   "M-Y"     #'consult-yasnippet
    "M-y"     #'yas-expand
    "M-s"     #'save-buffer
    "M-c"     #'evil-yank
@@ -147,8 +148,8 @@
    "M-a"     #'mark-whole-buffer
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
-   ;; "C-="     #'text-scale-increase
-   ;; "C--"     #'text-scale-decrease
+   "C-="     #'cnfonts-increase-fontsize
+   "C--"     #'cnfonts-decrease-fontsize
    "C-SPC"   #'toggle-input-method
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
@@ -267,7 +268,6 @@
     "g" #'deft-refresh
     )
   )
-
 
 ;; -----------------------------------------------------------
 ;; DONE org-imgtog
