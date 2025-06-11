@@ -276,3 +276,6 @@
 (use-package org-imgtog
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :hook org-mode)
+
+(+ensure-packages-installed '(persp-projectile))
+(use-package persp-projectile)
