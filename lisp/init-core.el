@@ -140,9 +140,9 @@
   :config
   (require 'consult-yasnippet)
   (yas-global-mode 1)
-  ;; TODO
   (let ((my-yas-dir (concat jc-emacs-directory "/snippets")))
     (add-to-list 'yas-snippet-dirs my-yas-dir))
+  (yas-reload-all)
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil)
   )
