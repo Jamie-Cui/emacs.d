@@ -66,7 +66,7 @@
    yasnippet
    consult-yasnippet
    ;; workspace
-   persp-mode
+   perspective
    ;; smart-parens
    smartparens
    ;; popup window
@@ -102,12 +102,13 @@
   ;; load default config
   (require 'smartparens-config))
 
-(use-package persp-mode
+(use-package perspective
   :ensure t
   :custom 
   (persp-suppress-no-prefix-key-warning t)
   :init
-  (persp-mode))
+  (persp-mode)
+  )
 
 
 (use-package gptel
@@ -140,9 +141,9 @@
   :config
   (require 'consult-yasnippet)
   (yas-global-mode 1)
+  ;; TODO
   (let ((my-yas-dir (concat jc-emacs-directory "/snippets")))
     (add-to-list 'yas-snippet-dirs my-yas-dir))
-  (yas-reload-all)
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil)
   )
