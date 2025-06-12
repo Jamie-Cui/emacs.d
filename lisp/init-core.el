@@ -107,6 +107,7 @@
   :custom 
   (persp-suppress-no-prefix-key-warning t)
   (persp-sort 'created)
+  (persp-modestring-dividers '("[ " " ]" " | "))
   :init
   (persp-mode)
   )
@@ -394,7 +395,7 @@
    :keymaps 'smerge-mode-map
    "C-c C-c"     #'smerge-keep-current))
 
-;; projectile
+;; vterm
 (use-package vterm
   :ensure t
   :config
@@ -407,9 +408,13 @@
 ;; projectile
 (use-package projectile
   :ensure t
+  :custom
+  (projectile-project-name-function '+projectile-project-name--lower-case)
   :config
   (projectile-mode +1)
   (setq projectile-enable-caching t)
+  (defun +projectile-project-name--lower-case (project-root)
+    (downcase (file-name-nondirectory (directory-file-name project-root))))
   )
 
 ;; helpful
@@ -449,5 +454,6 @@
    ;; :preview-key "M-.")            ;; Option 2: Manual preview
    )
   )
+
 
 (provide 'init-core)
