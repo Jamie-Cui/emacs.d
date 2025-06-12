@@ -106,6 +106,7 @@
   :ensure t
   :custom 
   (persp-suppress-no-prefix-key-warning t)
+  (persp-sort 'created)
   :init
   (persp-mode)
   )
@@ -298,7 +299,6 @@
   ;;   (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
   ;; (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
   (doom-modeline-mode 1)
-  (setq doom-modeline-buffer-file-name-style 'relative-from-project)
   )
 
 (use-package nerd-icons
