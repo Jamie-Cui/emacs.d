@@ -66,7 +66,7 @@
    yasnippet
    consult-yasnippet
    ;; workspace
-   persp-mode
+   perspective
    ;; smart-parens
    smartparens
    ;; popup window
@@ -102,12 +102,15 @@
   ;; load default config
   (require 'smartparens-config))
 
-(use-package persp-mode
+(use-package perspective
   :ensure t
   :custom 
   (persp-suppress-no-prefix-key-warning t)
+  (persp-sort 'created)
+  (persp-modestring-dividers '("[ " " ]" " | "))
   :init
-  (persp-mode))
+  (persp-mode)
+  )
 
 
 (use-package gptel
@@ -297,7 +300,6 @@
   ;;   (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
   ;; (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
   (doom-modeline-mode 1)
-  (setq doom-modeline-buffer-file-name-style 'relative-from-project)
   )
 
 (use-package nerd-icons
@@ -393,7 +395,7 @@
    :keymaps 'smerge-mode-map
    "C-c C-c"     #'smerge-keep-current))
 
-;; projectile
+;; vterm
 (use-package vterm
   :ensure t
   :config
@@ -406,9 +408,13 @@
 ;; projectile
 (use-package projectile
   :ensure t
+  :custom
+  (projectile-project-name-function '+projectile-project-name--lower-case)
   :config
   (projectile-mode +1)
   (setq projectile-enable-caching t)
+  (defun +projectile-project-name--lower-case (project-root)
+    (downcase (file-name-nondirectory (directory-file-name project-root))))
   )
 
 ;; helpful
@@ -448,5 +454,6 @@
    ;; :preview-key "M-.")            ;; Option 2: Manual preview
    )
   )
+
 
 (provide 'init-core)

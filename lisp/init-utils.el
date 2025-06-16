@@ -46,7 +46,7 @@
                   (if all-files "-uu ")
                   (unless recursive "--maxdepth 1 ")
                   "--null --line-buffered --color=never --max-columns=1000 "
-                  "--path-separator /   --smart-case --no-heading "
+                  "--smart-case --no-heading "
                   "--with-filename --line-number --search-zip "
                   "--hidden -g !.git -g !.svn -g !.hg "
                   (mapconcat #'identity args " ")))

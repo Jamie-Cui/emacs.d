@@ -153,6 +153,7 @@
    "C-SPC"   #'toggle-input-method
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
+   "C-q"     #'persp-kill
    )
 
   ;; ** Global Keybindings
@@ -251,7 +252,6 @@
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer
-    ">"      #'projectile-switch-open-project
     "/"      #'+vertico/project-search
     "TAB"    #'evil-switch-to-windows-last-buffer
     "SPC"    #'projectile-find-file
@@ -276,3 +276,6 @@
 (use-package org-imgtog
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :hook org-mode)
+
+(+ensure-packages-installed '(persp-projectile))
+(use-package persp-projectile)

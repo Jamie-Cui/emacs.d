@@ -107,4 +107,6 @@
   :init
   (savehist-mode))
 
+(setopt comint-scroll-to-bottom-on-output t)
+
 (provide 'init-misc)
