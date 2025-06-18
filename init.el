@@ -133,6 +133,12 @@
    :states '(insert replace normal visual operator)
    "C-g" #'evil-escape
    )
+
+  ;; HACK kill current persp without asking
+  (defun +persp/kill-current ()
+    (interactive)
+    (persp-kill (persp-current-name)))
+
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
@@ -153,7 +159,7 @@
    "C-SPC"   #'toggle-input-method
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
-   "C-q"     #'persp-kill
+   "C-q"     #'+persp/kill-current
    )
 
   ;; ** Global Keybindings
@@ -188,8 +194,8 @@
     "Bd"     #'bookmark-delete
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
-    "ot"     #'vterm
-    "oT"     #'projectile-run-vterm
+    "ot"     #'eshell
+    "oT"     #'project-eshell
     "od"     #'dired-jump
     "oD"     #'projectile-dired
     "og"     #'magit-status-quick
@@ -203,7 +209,6 @@
     "pc"     #'projectile-compile-project
     "pt"     #'projectile-test-project
     "pr"     #'projectile-run-project
-    "pq"     #'projectile-kill-buffers
     "pi"     #'projectile-invalidate-cache
     "pf"     #'+vertico/project-search
     "po"     #'find-sibling-file
