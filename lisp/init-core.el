@@ -455,5 +455,31 @@
    )
   )
 
+;; eshell
+(use-package eshell
+  :config
+  (add-to-list 'eshell-modules-list 'eshell-tramp)
+  ;; METHOD USER DOMAIN HOST PORT LOCALNAME &optional HOP
+  (defun eshell/remote-cd (&optional directory)
+    (if (file-remote-p default-directory)
+        (with-parsed-tramp-file-name default-directory nil
+          (eshell/cd (tramp-make-tramp-file-name
+                      (tramp-file-name-method v)
+                      (tramp-file-name-user v)
+	                  'nil
+                      (tramp-file-name-host v)
+	                  'nil
+                      (or directory "")
+	                  (tramp-file-name-hop v)
+	                  )))
+      (eshell/cd directory)))
+  (defalias 'eshell/rcd 'eshell/remote-cd)
+  (defalias 'eshell/lcd 'eshell/remote-cd)
+
+  (defun eshell/clear ()
+    "Clear the eshell buffer."
+    (let ((inhibit-read-only t))
+      (erase-buffer)))
+  )
 
 (provide 'init-core)
