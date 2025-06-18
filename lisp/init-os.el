@@ -3,7 +3,6 @@
 ;;; Code:
 
 (require 'init-utils)
-(require 'init-org)
 
 ;;; --------------------------------------
 ;;; WLS2
