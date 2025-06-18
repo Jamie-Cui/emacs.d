@@ -282,5 +282,12 @@
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :hook org-mode)
 
-(+ensure-packages-installed '(persp-projectile))
-(use-package persp-projectile)
+
+(use-package ultra-scroll
+  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
+  :init
+  (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
+        scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+  :config
+  (ultra-scroll-mode 1)
+  )

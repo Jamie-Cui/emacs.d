@@ -17,7 +17,8 @@
    ;; complete engine
    corfu
    ;; better terminal emulater
-   vterm
+   ;; vterm
+   eat
    ;; the killer app: git ui
    magit
    ;; lsp
@@ -67,6 +68,7 @@
    consult-yasnippet
    ;; workspace
    perspective
+   persp-projectile
    ;; smart-parens
    smartparens
    ;; popup window
@@ -396,14 +398,14 @@
    "C-c C-c"     #'smerge-keep-current))
 
 ;; vterm
-(use-package vterm
-  :ensure t
-  :config
-  (setq vterm-mode-hook (lambda() (display-line-numbers-mode -1)))
+;; (use-package vterm
+;;   :ensure t
+;;   :config
+;;   (setq vterm-mode-hook (lambda() (display-line-numbers-mode -1)))
 
-  ;; set tramp default encoding shell to zsh
-  (add-to-list 'vterm-tramp-shells '("sshx" login-shell))
-  )
+;;   ;; set tramp default encoding shell to zsh
+;;   (add-to-list 'vterm-tramp-shells '("sshx" login-shell))
+;;   )
 
 ;; projectile
 (use-package projectile
@@ -482,6 +484,9 @@
       (erase-buffer)))
   )
 
-(setq tramp-allow-unsafe-temporary-files t)
+(use-package eat
+  :ensure t)
+
+(use-package persp-projectile)
 
 (provide 'init-core)

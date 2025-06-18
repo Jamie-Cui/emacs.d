@@ -112,4 +112,6 @@
 
 (setopt comint-scroll-to-bottom-on-output t)
 
+(setq tramp-allow-unsafe-temporary-files t)
+
 (provide 'init-misc)
