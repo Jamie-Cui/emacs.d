@@ -4,6 +4,9 @@
 
 (require 'init-utils)
 
+;; stop the BELL!
+(setq ring-bell-function 'ignore)
+
 ;; stop makding ~ files!
 (setq make-backup-files nil) 
 
