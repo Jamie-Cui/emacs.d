@@ -482,4 +482,6 @@
       (erase-buffer)))
   )
 
+(setq tramp-allow-unsafe-temporary-files t)
+
 (provide 'init-core)
