@@ -4,6 +4,8 @@
 
 ;; Enable package
 (require 'package)
+(require 'perspective)
+
 (setq package-archives
       '(("gnu"   . "http://elpa.gnu.org/packages/")
         ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
@@ -107,5 +109,24 @@ in the search."
       (setq exec-path (split-string path-from-shell path-separator))))
   )
 
+(defun +persp/move-buffer-prev ()
+  "Like persp-prev, but move current."
+  (interactive)
+  (let ((tmp-buffer (current-buffer)))
+    (persp-forget-buffer tmp-buffer)
+    (persp-prev)
+    (persp-set-buffer tmp-buffer)
+    (persp-switch-to-buffer tmp-buffer))
+  )
+
+(defun +persp/move-buffer-next ()
+  "Like persp-next, but move current."
+  (interactive)
+  (let ((tmp-buffer (current-buffer)))
+    (persp-forget-buffer tmp-buffer)
+    (persp-next)
+    (persp-set-buffer tmp-buffer)
+    (persp-switch-to-buffer tmp-buffer))
+  )
 
 (provide 'init-utils)
