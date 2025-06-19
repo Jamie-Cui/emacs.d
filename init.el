@@ -157,6 +157,8 @@
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
    "C-SPC"   #'toggle-input-method
+   "C-S-h"   #'+persp/move-buffer-prev
+   "C-S-l"   #'+persp/move-buffer-next
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
    "C-q"     #'+persp/kill-current
