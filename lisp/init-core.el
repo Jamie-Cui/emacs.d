@@ -18,7 +18,7 @@
    corfu
    ;; better terminal emulater
    ;; vterm
-   eat
+   ;; eat
    ;; the killer app: git ui
    magit
    ;; lsp
@@ -49,7 +49,7 @@
    ;; make line-break look nicer
    page-break-lines
    ;; Colorize color names in buffers
-   rainbow-mode
+   ;;  rainbow-mode
    ;; code auto formating
    apheleia
    ;; Emacs Mini-Buffer Actions Rooted in Keymaps
@@ -62,13 +62,12 @@
    ;; pdf tools
    pdf-tools
    ;; latex support 
-   auctex
+   ;;  auctex
    ;; better snippet
    yasnippet
    consult-yasnippet
    ;; workspace
    perspective
-   persp-projectile
    ;; smart-parens
    smartparens
    ;; popup window
@@ -137,19 +136,21 @@
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** @jc\n")
   (setf (alist-get 'org-mode gptel-response-prefix-alist) "** @ai\n"))
 
-(use-package auctex
-  :ensure t)
+;; (use-package auctex
+;;   :ensure t)
 
 (use-package yasnippet
   :ensure t
   :config
   (require 'consult-yasnippet)
-  (yas-global-mode 1)
-  ;; TODO
   (let ((my-yas-dir (concat jc-emacs-directory "/snippets")))
     (add-to-list 'yas-snippet-dirs my-yas-dir))
-  (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  ;; start mode globally
+  (yas-global-mode 1)
+  ;; reload all snippets
+  (yas-reload-all)
+  ;; (define-key yas-minor-mode-map (kbd "<tab>") nil)
+  ;; (define-key yas-minor-mode-map (kbd "TAB") nil)
   )
 
 (use-package eldoc-box
@@ -226,9 +227,9 @@
   (flycheck-idle-change-delay 4)
   )
 
-(use-package rainbow-mode
-  :ensure t
-  :hook (emacs-lisp-mode text-mode lisp-mode cc-mode cmake-mode))
+;; (use-package rainbow-mode
+;;   :ensure t
+;;   :hook (emacs-lisp-mode text-mode lisp-mode cc-mode cmake-mode))
 
 (use-package page-break-lines
   :ensure t
@@ -332,6 +333,7 @@
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-items '((recents   . 5)
+                          (bookmarks . 5)
                           (projects  . 5)))
   (setq dashboard-projects-backend 'projectile)
   (setq initial-buffer-choice (lambda() (dashboard-open)))
@@ -356,15 +358,14 @@
 
 (use-package corfu
   :ensure t
-  :init
+  :custom
+  (corfu-auto t)
+  (corfu-cycle t)
+  (corfu-preview-current 'nil) ; do not insert unless i select it
+  (corfu-preselect 'nil) ; do not preselect anything
+  (corfu-quit-no-match 'separator) ;; or t
   :config
   (global-corfu-mode)
-  ;; Enable auto completion and configure quitting
-  (setq corfu-auto t
-        corfu-cycle t
-        corfu-preview-current 'nil ; do not insert unless i select it
-        corfu-preselect 'nil ; do not preselect anything
-        corfu-quit-no-match 'separator) ;; or t
   )
 
 (use-package orderless
@@ -430,6 +431,7 @@
   (which-key-setup-minibuffer)
   (which-key-mode 1))
 
+
 ;; vertico
 (use-package vertico
   :ensure t
@@ -457,36 +459,5 @@
    )
   )
 
-;; eshell
-(use-package eshell
-  :config
-  (add-to-list 'eshell-modules-list 'eshell-tramp)
-  ;; METHOD USER DOMAIN HOST PORT LOCALNAME &optional HOP
-  (defun eshell/remote-cd (&optional directory)
-    (if (file-remote-p default-directory)
-        (with-parsed-tramp-file-name default-directory nil
-          (eshell/cd (tramp-make-tramp-file-name
-                      (tramp-file-name-method v)
-                      (tramp-file-name-user v)
-	                  'nil
-                      (tramp-file-name-host v)
-	                  'nil
-                      (or directory "")
-	                  (tramp-file-name-hop v)
-	                  )))
-      (eshell/cd directory)))
-  (defalias 'eshell/rcd 'eshell/remote-cd)
-  (defalias 'eshell/lcd 'eshell/remote-cd)
-
-  (defun eshell/clear ()
-    "Clear the eshell buffer."
-    (let ((inhibit-read-only t))
-      (erase-buffer)))
-  )
-
-(use-package eat
-  :ensure t)
-
-(use-package persp-projectile)
 
 (provide 'init-core)
