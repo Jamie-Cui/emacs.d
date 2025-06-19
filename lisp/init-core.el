@@ -72,7 +72,12 @@
    smartparens
    ;; popup window
    popwin
+   ;; treesit-auto
+   treesit-auto
    ))
+
+(use-package treesit-auto
+  :ensure t)
 
 (use-package popwin
   :ensure t
