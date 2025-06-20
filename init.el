@@ -141,6 +141,11 @@
    :states '(insert replace normal visual operator)
    "C-g" #'evil-escape
    )
+             
+  ;; HACK always get a new eshell
+  (defun +eshell/new ()
+    (interactive)
+    (eshell '(t)))
 
   ;; HACK kill current persp without asking
   (defun +persp/kill-current ()
@@ -204,7 +209,7 @@
     "Bd"     #'bookmark-delete
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
-    "ot"     #'eshell
+    "ot"     #'+eshell/new
     "oT"     #'project-eshell
     "od"     #'dired-jump
     "oD"     #'projectile-dired
