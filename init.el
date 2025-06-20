@@ -10,16 +10,22 @@
 (when (version< emacs-version "28.1")
   (message "Your Emacs is old, and some functionality in this config will be disabled. Please upgrade if possible."))
 
-;; setup 
+;; setup emacs configuration dir
 (when (not (boundp' jc-emacs-directory))
-  (defconst jc-emacs-directory "~/Desktop/emacs.d"))
+  (defconst jc-emacs-directory "~/emacs.d"))
+
+;; setup emacs org dir
+(when (not (boundp' jc-org-root-dir))
+  (defconst jc-org-root-dir "~/org-root"))
 
 (add-to-list 'load-path (expand-file-name "lisp" jc-emacs-directory))
-(require 'init-utils)
+
+(require 'init-funs)
 (require 'init-core)
 (require 'init-evil)
 (require 'init-dired)
 (require 'init-org)
+(require 'init-latex)
 (require 'init-chinese)
 (require 'init-os)
 (require 'init-misc)
@@ -46,6 +52,8 @@
    markdown-mode
    ;; yaml mode
    yaml-mode
+   ;; pdf-tools
+   pdf-tools
    ))
 
 (use-package protobuf-mode)
@@ -292,4 +300,20 @@
         scroll-margin 0)        ; important: scroll-margin>0 not yet supported
   :config
   (ultra-scroll-mode 1)
+  )
+
+;; -----------------------------------------------------------
+;; DONE pdf-tools
+;; -----------------------------------------------------------
+
+(use-package pdf-tools
+  :ensure t
+  :mode (("\\.pdf\\'" . pdf-view-mode))
+  :config
+  (pdf-loader-install)
+  (add-hook
+   'org-mode-hook
+   '(lambda ()
+      (delete '("\\.pdf\\'" . default) org-file-apps)
+      (add-to-list 'org-file-apps '("\\.pdf\\'" . org-pdftools-open))))
   )

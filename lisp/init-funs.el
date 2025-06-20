@@ -4,7 +4,6 @@
 
 ;; Enable package
 (require 'package)
-(require 'perspective)
 
 (setq package-archives
       '(("gnu"   . "http://elpa.gnu.org/packages/")
@@ -129,4 +128,4 @@ in the search."
     (persp-switch-to-buffer tmp-buffer))
   )
 
-(provide 'init-utils)
+(provide 'init-funs)

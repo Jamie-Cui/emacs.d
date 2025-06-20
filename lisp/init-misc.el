@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-utils)
+(require 'init-funs)
 
 ;; stop the BELL!
 (setq ring-bell-function 'ignore)

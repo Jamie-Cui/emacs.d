@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-utils)
+(require 'init-funs)
 
 (+ensure-packages-installed
  '(
