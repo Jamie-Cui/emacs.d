@@ -114,4 +114,6 @@
 
 (setq tramp-allow-unsafe-temporary-files t)
 
+(setopt enable-remote-dir-locals t)
+
 (provide 'init-misc)
