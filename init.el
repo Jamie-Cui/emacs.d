@@ -266,6 +266,7 @@
     ;; search
     "s" '(:ignore t :which-key "search")
     "si"     #'consult-imenu ;; search item
+    "sh"     #'consult-history ;; search history
     ;; other
     "RET"    #'gptel
     "x"      #'scratch-buffer
