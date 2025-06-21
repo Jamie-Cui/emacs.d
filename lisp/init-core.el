@@ -68,6 +68,7 @@
    consult-yasnippet
    ;; workspace
    perspective
+   persp-projectile
    ;; smart-parens
    smartparens
    ;; popup window
@@ -75,6 +76,9 @@
    ;; treesit-auto
    treesit-auto
    ))
+
+(use-package persp-projectile
+  :ensure t)
 
 (use-package treesit-auto
   :ensure t)
@@ -85,17 +89,11 @@
   (popwin:popup-window-height 0.5)
   ;; HACK redefine special display rule
   (popwin:special-display-config
-   '(;; Emacs
-     ;; ("*Miniedit Help*" :noselect t)
-     help-mode
-     ;; (completion-list-mode :noselect t)
-     ;; (compilation-mode :noselect t)
-     ;; (grep-mode :noselect t)
-     ;; (occur-mode :noselect t)
-     ;; "*Shell Command Output*"
-     ("*Flycheck errors*" :stick t)
-     ;; ("*DeepSeek*" :stick t)
+   '(
      (helpful-mode :stick t)
+     ("*Flycheck errors*" :stick t)
+     ("*DeepSeek*" :stick t)
+     ("*scratch*" :stick t)
      )
    )
   :config
@@ -113,7 +111,7 @@
   :custom 
   (persp-suppress-no-prefix-key-warning t)
   (persp-sort 'created)
-  (persp-modestring-dividers '("[ " " ]" " | "))
+  (persp-modestring-dividers '("[" "]" "|"))
   :init
   (persp-mode)
   )

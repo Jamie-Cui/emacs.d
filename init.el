@@ -18,6 +18,10 @@
 (when (not (boundp' jc-org-root-dir))
   (defconst jc-org-root-dir "~/org-root"))
 
+;; compress warning at start-up
+(setopt warning-minimum-level :emergency)
+
+;; add load path
 (add-to-list 'load-path (expand-file-name "lisp" jc-emacs-directory))
 
 (require 'init-funs)
@@ -141,7 +145,7 @@
    :states '(insert replace normal visual operator)
    "C-g" #'evil-escape
    )
-             
+  
   ;; HACK always get a new eshell
   (defun +eshell/new ()
     (interactive)
@@ -238,7 +242,7 @@
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
     "nrs"     #'org-roam-db-sync
-    "nb"     #'citar-open
+    "nb"      #'citar-open
     ;; help functions
     "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
