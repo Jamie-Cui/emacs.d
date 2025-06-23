@@ -45,6 +45,22 @@
   (diredfl-global-mode)
   )
 
+(use-package tramp
+  :config
+  ;; Enable full-featured Dirvish over TRAMP on ssh connections
+  ;; https://www.gnu.org/software/tramp/#Improving-performance-of-asynchronous-remote-processes
+  (connection-local-set-profile-variables
+   'remote-direct-async-process
+   '((tramp-direct-async-process . t)))
+  (connection-local-set-profiles
+   '(:application tramp :protocol "ssh")
+   'remote-direct-async-process)
+  ;; Tips to speed up connections
+  (setq tramp-verbose 0)
+  (setq tramp-chunksize 2000)
+  (setq tramp-ssh-controlmaster-options nil))
+
+(provide 'init-dired)
 
 ;; (use-package dirvish
 ;;   :ensure t
@@ -68,20 +84,3 @@
 ;;    "h"   #'dired-up-directory
 ;;    "l"   #'dired-find-file)
 ;;   )
-
-(use-package tramp
-  :config
-  ;; Enable full-featured Dirvish over TRAMP on ssh connections
-  ;; https://www.gnu.org/software/tramp/#Improving-performance-of-asynchronous-remote-processes
-  (connection-local-set-profile-variables
-   'remote-direct-async-process
-   '((tramp-direct-async-process . t)))
-  (connection-local-set-profiles
-   '(:application tramp :protocol "ssh")
-   'remote-direct-async-process)
-  ;; Tips to speed up connections
-  (setq tramp-verbose 0)
-  (setq tramp-chunksize 2000)
-  (setq tramp-ssh-controlmaster-options nil))
-
-(provide 'init-dired)
