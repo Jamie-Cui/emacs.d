@@ -45,6 +45,7 @@
   (diredfl-global-mode)
   )
 
+
 ;; (use-package dirvish
 ;;   :ensure t
 ;;   :init

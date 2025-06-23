@@ -18,7 +18,7 @@
    corfu
    ;; better terminal emulater
    ;; vterm
-   ;; eat
+   eat
    ;; the killer app: git ui
    magit
    ;; lsp
@@ -410,6 +410,17 @@
 ;;   ;; set tramp default encoding shell to zsh
 ;;   (add-to-list 'vterm-tramp-shells '("sshx" login-shell))
 ;;   )
+
+(use-package eat
+  :ensure t
+  :config
+  ;; For `eat-eshell-visual-command-mode'.
+  (add-hook 'eshell-first-time-mode-hook
+            #'eat-eshell-visual-command-mode)
+
+  ;; For `eat-eshell-mode'.
+  (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode)
+  )
 
 ;; projectile
 (use-package projectile
