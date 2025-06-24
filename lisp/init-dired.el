@@ -62,25 +62,3 @@
 
 (provide 'init-dired)
 
-;; (use-package dirvish
-;;   :ensure t
-;;   :init
-;;   (dirvish-override-dired-mode)
-;;   :after (:and general nerd-icons)
-;;   :custom
-;;   (dired-listing-switches (purecopy "-alh --human-readable --group-directories-first --no-group"))
-;;   (dired-kill-when-opening-new-dired-buffer t)
-;;   (dirvish-subtree-state-style 'plus)
-;;   :config
-;;   ;; HACK for macos, see: https://github.com/d12frosted/homebrew-emacs-plus/issues/383#issuecomment-899157143
-;;   (when (eq system-type 'darwin)
-;;     (setq insert-directory-program "gls" dired-use-ls-dired t))
-;;   (setq dirvish-mode-line-format '(:left (sort symlink) :right (omit yank index)))
-;;   (setq dirvish-attributes '(vc-state subtree-state file-time file-size))
-;;   (general-define-key
-;;    :states 'normal
-;;    :keymaps 'dirvish-mode-map
-;;    "TAB" #'dirvish-subtree-toggle
-;;    "h"   #'dired-up-directory
-;;    "l"   #'dired-find-file)
-;;   )
