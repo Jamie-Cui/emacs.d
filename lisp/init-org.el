@@ -101,7 +101,7 @@
   (deft-use-filter-string-for-filename nil)
   (deft-use-filename-as-title nil)
   (deft-directory (concat jc-org-root-dir "/deft"))
-
+  (deft-ignore-file-regexp "^\\(?:\\.|$\\)")
   :config
   (setq deft-strip-summary-regexp
 	    (concat "\\("
