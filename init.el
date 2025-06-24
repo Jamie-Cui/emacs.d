@@ -22,19 +22,27 @@
 ;; add load path
 (add-to-list 'load-path (expand-file-name "lisp" jc-emacs-directory))
 
-;; add native emacs configurations and utils
-(require 'init-misc)
-(require 'init-utils)
-
+;; HACK setup environment
+;; see: https://www.emacswiki.org/emacs/ExecPath
 ;; Set up Emacs' `exec-path' and PATH environment variable to match
 ;; that used by the user's shell.
-(+set-emacs-exec-path-from-shell-PATH)
+;; 
+;; This is particularly useful under Mac OS X and macOS, where GUI
+;; apps are not started from a shell.
+(when (not (eq system-type 'windows-nt))
+  (let ((path-from-shell
+         (replace-regexp-in-string
+          "[ \t\n]*$" "" (shell-command-to-string
+                          "$SHELL --login -c 'echo $PATH'"
+                          ))))
+    ;; (message path-from-shell)
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
 
-(message "-----------------------------------------")
-(message "                exec-path                ")
-(message "-----------------------------------------")
 (message "%s" exec-path)
-(message "-----------------------------------------")
+
+;; additional emacs-native configurations
+(require 'init-misc)
 
 ;; -----------------------------------------------------------
 ;; DONE Setup packages
@@ -43,13 +51,13 @@
 ;; Enable package
 (require 'package)
 
-;; setup elpa pacakges (if not set)
-(when (not (boundp 'package-archives))
-  (setopt package-archives
-          '(("gnu"   . "http://elpa.gnu.org/packages/")
-            ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-            ("org"   . "http://orgmode.org/elpa/")
-            ("melpa" . "http://melpa.org/packages/"))))
+;; setup elpa pacakges
+(setq package-archives
+      '(
+        ("gnu"   . "http://elpa.gnu.org/packages/")
+        ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
+        ("org"   . "http://orgmode.org/elpa/")
+        ("melpa" . "http://melpa.org/packages/")))
 
 ;; initialize packages
 (package-initialize)
@@ -58,10 +66,17 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+;; HACK see: https://emacs.stackexchange.com/a/53142
+(setq package-check-signature nil)
+(package-install 'gnu-elpa-keyring-update)
+(gnu-elpa-keyring-update)
+(setq package-check-signature 'allow-unsigned)
+
 ;; -----------------------------------------------------------
 ;; DONE Configure Core
 ;; -----------------------------------------------------------
 
+(require 'init-utils)
 (require 'init-core)
 (require 'init-evil)
 (require 'init-dired)
@@ -69,7 +84,6 @@
 (require 'init-latex)
 (require 'init-chinese)
 (require 'init-os)
-
 
 ;; -----------------------------------------------------------
 ;; DONE programming modes

@@ -117,7 +117,7 @@
 (setopt enable-remote-dir-locals t)
 
 ;; compress warning at start-up
-(setopt warning-minimum-level :emergency)
+;; (setopt warning-minimum-level :emergency)
 
 ;; Imporove tramp speed
 ;; see: https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./

@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'cl-macs)
 
 (defun +ensure-packages-installed (packages-alist)
   "Make sure the given package is installed."
@@ -73,25 +74,6 @@ in the search."
   "Revert buffer without confirmation."
   (interactive) (revert-buffer t t))
 
-;; HACK setup environment
-;; see: https://www.emacswiki.org/emacs/ExecPath
-(defun +set-emacs-exec-path-from-shell-PATH ()
-  "Set up Emacs' `exec-path' and PATH environment variable to match
-  that used by the user's shell.
-
-  This is particularly useful under Mac OS X and macOS, where GUI
-  apps are not started from a shell."
-  (interactive)
-  (when (not (eq system-type 'windows-nt))
-    (let ((path-from-shell
-           (replace-regexp-in-string
-            "[ \t\n]*$" "" (shell-command-to-string
-                            "$SHELL --login -c 'echo $PATH'"
-                            ))))
-      ;; (message path-from-shell)
-      (setenv "PATH" path-from-shell)
-      (setq exec-path (split-string path-from-shell path-separator))))
-  )
 
 (defun +persp/move-buffer-prev ()
   "Like persp-prev, but move current."
