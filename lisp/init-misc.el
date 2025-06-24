@@ -148,4 +148,7 @@
 ;; don't automatically refresh the status buffer after running a git command
 (setq magit-refresh-status-buffer nil)
 
+;;; eshell
+(setopt eshell-scroll-show-maximum-output nil)
+
 (provide 'init-misc)
