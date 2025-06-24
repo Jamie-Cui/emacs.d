@@ -5,18 +5,6 @@
 ;; Enable package
 (require 'package)
 
-(setq package-archives
-      '(("gnu"   . "http://elpa.gnu.org/packages/")
-        ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-        ("org"   . "http://orgmode.org/elpa/")
-        ("melpa" . "http://melpa.org/packages/")))
-
-(package-initialize)
-
-;; make sure package-refresh-contents will only run once
-(when (not package-archive-contents)
-  (package-refresh-contents))
-
 (defun +ensure-packages-installed (packages-alist)
   "Make sure the given package is installed."
   (dolist (p packages-alist)
