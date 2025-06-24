@@ -26,6 +26,12 @@
         ("org"   . "http://orgmode.org/elpa/")
         ("melpa" . "http://melpa.org/packages/"))))
 
+(package-initialize)
+
+;; make sure package-refresh-contents will only run once
+(when (not package-archive-contents)
+  (package-refresh-contents))
+
 ;; compress warning at start-up
 (setopt warning-minimum-level :emergency)
 
