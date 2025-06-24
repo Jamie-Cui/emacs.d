@@ -18,6 +18,14 @@
 (when (not (boundp' jc-org-root-dir))
   (defconst jc-org-root-dir "~/org-root"))
 
+;; setup elpa pacakges (if not set)
+(when (not (boundp 'package-archives))
+  (setq package-archives
+      '(("gnu"   . "http://elpa.gnu.org/packages/")
+        ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
+        ("org"   . "http://orgmode.org/elpa/")
+        ("melpa" . "http://melpa.org/packages/"))))
+
 ;; compress warning at start-up
 (setopt warning-minimum-level :emergency)
 
