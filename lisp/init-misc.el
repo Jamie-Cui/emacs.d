@@ -119,6 +119,8 @@
 ;; compress warning at start-up
 (setopt warning-minimum-level :emergency)
 
+
+
 ;; Imporove tramp speed
 ;; see: https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
 (setq tramp-allow-unsafe-temporary-files t ; do not warn me, please
@@ -150,5 +152,34 @@
 
 ;;; eshell
 (setopt eshell-scroll-show-maximum-output nil)
+
+;; fancy eshell 
+;; see: https://lambdaland.org/posts/2024-08-19_fancy_eshell_prompt/
+(setopt eshell-prompt-function '+eshell/fancy-shell)
+(setopt eshell-prompt-regexp "^[^#$\n]* [$#] ")
+(setopt eshell-highlight-prompt nil)
+
+(defun +eshell/fancy-shell ()
+  "A pretty shell with git status"
+  (let* ((cwd (abbreviate-file-name (eshell/pwd)))
+         (ref (magit-get-shortname "HEAD"))
+         (stat (magit-file-status))
+         (x-stat eshell-last-command-status)
+         (git-chunk
+          (if ref
+              (format "%s%s%s "
+                      (propertize (if stat "[" "(") 'font-lock-face (list :foreground (if stat "red" "green")))
+                      (propertize ref 'font-lock-face '(:foreground "yellow"))
+                      (propertize (if stat "]" ")") 'font-lock-face (list :foreground (if stat "red" "green"))))
+            "")))
+    (propertize
+     (format "%s %s %s$ "
+             (if (< 0 x-stat) (format (propertize "!%s" 'font-lock-face '(:foreground "red")) x-stat)
+               (propertize "➤" 'font-lock-face (list :foreground (if (< 0 x-stat) "red" "green"))))
+             (propertize cwd 'font-lock-face '(:foreground "#45babf"))
+             git-chunk)
+     'read-only t
+     'front-sticky   '(font-lock-face read-only)
+     'rear-nonsticky '(font-lock-face read-only))))
 
 (provide 'init-misc)
