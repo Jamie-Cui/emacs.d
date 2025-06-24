@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-funs)
+(require 'init-utils)
 
 ;; stop the BELL!
 (setq ring-bell-function 'ignore)
@@ -115,5 +115,8 @@
 (setq tramp-allow-unsafe-temporary-files t)
 
 (setopt enable-remote-dir-locals t)
+
+;; compress warning at start-up
+(setopt warning-minimum-level :emergency)
 
 (provide 'init-misc)

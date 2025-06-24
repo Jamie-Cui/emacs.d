@@ -1,9 +1,7 @@
-;;; init-core.el --- core functionality support -*- lexical-binding: t -*-
+;;; init-utils.el --- core functionality support -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 
-;; Enable package
-(require 'package)
 
 (defun +ensure-packages-installed (packages-alist)
   "Make sure the given package is installed."
@@ -92,7 +90,6 @@ in the search."
                             ))))
       ;; (message path-from-shell)
       (setenv "PATH" path-from-shell)
-      (message path-from-shell)
       (setq exec-path (split-string path-from-shell path-separator))))
   )
 
@@ -116,4 +113,4 @@ in the search."
     (persp-switch-to-buffer tmp-buffer))
   )
 
-(provide 'init-funs)
+(provide 'init-utils)

@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-funs)
+(require 'init-utils)
 
 ;; defining your own
 ;; macos: ~/Library/Mobile Documents/com~apple~CloudDocs/org-root

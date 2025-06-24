@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-funs)
+(require 'init-utils)
 
 ;;; --------------------------------------
 ;;; WLS2

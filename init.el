@@ -7,6 +7,7 @@
 (let ((minver "29.1"))
   (when (version< emacs-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
+
 (when (version< emacs-version "28.1")
   (message "Your Emacs is old, and some functionality in this config will be disabled. Please upgrade if possible."))
 
@@ -18,27 +19,55 @@
 (when (not (boundp' jc-org-root-dir))
   (defconst jc-org-root-dir "~/org-root"))
 
+;; add load path
+(add-to-list 'load-path (expand-file-name "lisp" jc-emacs-directory))
+
+;; add native emacs configurations and utils
+(require 'init-misc)
+(require 'init-utils)
+
+;; Set up Emacs' `exec-path' and PATH environment variable to match
+;; that used by the user's shell.
+(+set-emacs-exec-path-from-shell-PATH)
+
+(message "-----------------------------------------")
+(message "                exec-path                ")
+(message "-----------------------------------------")
+(message "%s" exec-path)
+(message "-----------------------------------------")
+
+(message "-----------------------------------------")
+(message "           url-proxy-services            ")
+(message "-----------------------------------------")
+(message "%s" url-proxy-services)
+(message "-----------------------------------------")
+
+;; -----------------------------------------------------------
+;; DONE Setup packages
+;; -----------------------------------------------------------
+
+;; Enable package
+(require 'package)
+
 ;; setup elpa pacakges (if not set)
 (when (not (boundp 'package-archives))
-  (setq package-archives
-      '(("gnu"   . "http://elpa.gnu.org/packages/")
-        ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-        ("org"   . "http://orgmode.org/elpa/")
-        ("melpa" . "http://melpa.org/packages/"))))
+  (setopt package-archives
+          '(("gnu"   . "http://elpa.gnu.org/packages/")
+            ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
+            ("org"   . "http://orgmode.org/elpa/")
+            ("melpa" . "http://melpa.org/packages/"))))
 
+;; initialize packages
 (package-initialize)
 
 ;; make sure package-refresh-contents will only run once
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-;; compress warning at start-up
-(setopt warning-minimum-level :emergency)
+;; -----------------------------------------------------------
+;; DONE Configure Core
+;; -----------------------------------------------------------
 
-;; add load path
-(add-to-list 'load-path (expand-file-name "lisp" jc-emacs-directory))
-
-(require 'init-funs)
 (require 'init-core)
 (require 'init-evil)
 (require 'init-dired)
@@ -46,11 +75,7 @@
 (require 'init-latex)
 (require 'init-chinese)
 (require 'init-os)
-(require 'init-misc)
 
-;; Set up Emacs' `exec-path' and PATH environment variable to match
-;; that used by the user's shell.
-(+set-emacs-exec-path-from-shell-PATH)
 
 ;; -----------------------------------------------------------
 ;; DONE programming modes
