@@ -90,6 +90,7 @@
   ;; HACK redefine special display rule
   (popwin:special-display-config
    '(
+     (help-mode :stick t)
      (helpful-mode :stick t)
      ("*Flycheck errors*" :stick t)
      ("*DeepSeek*" :stick t)
