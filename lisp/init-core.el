@@ -415,12 +415,10 @@
 (use-package eat
   :ensure t
   :config
-  ;; For `eat-eshell-visual-command-mode'.
-  (add-hook 'eshell-first-time-mode-hook
-            #'eat-eshell-visual-command-mode)
-
   ;; For `eat-eshell-mode'.
-  (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode)
+  (add-hook 'eshell-load-hook #'eat-eshell-mode)
+  ;; For `eat-eshell-visual-command-mode'.
+  (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
   )
 
 ;; projectile
