@@ -426,14 +426,14 @@
   :ensure t
   :custom
   (projectile-project-name-function '+projectile-project-name--lower-case)
-  (projectile-indexing-method 'hybrid)
+  (projectile-indexing-method 'native)
   (projectile-enable-caching t)
   :config
   (defun +projectile-project-name--lower-case (project-root)
     (downcase (file-name-nondirectory (directory-file-name project-root))))
-  (advice-add 'projectile-project-root :before-while
-              (lambda (&optional dir)
-                (not (file-remote-p (or dir default-directory)))))
+  ;; (advice-add 'projectile-project-root :before-while
+  ;;             (lambda (&optional dir)
+  ;; (not (file-remote-p (or dir default-directory))))
   (projectile-mode +1)
   )
 
