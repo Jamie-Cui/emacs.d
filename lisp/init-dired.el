@@ -8,6 +8,7 @@
  '(
    ;; better dired
    ;; dirvish
+   dired-filter
    dired-subtree
    diredfl ;; color
    ))
@@ -37,6 +38,13 @@
    :states 'normal
    :keymaps 'dired-mode-map
    "TAB" #'dired-subtree-toggle)
+  )
+
+(use-package dired-filter
+  :ensure t
+  :after dired
+  :config
+  (add-hook 'dired-mode-hook 'dired-filter-mode)
   )
 
 (use-package diredfl
