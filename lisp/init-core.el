@@ -17,7 +17,8 @@
    ;; complete engine
    corfu
    ;; better terminal emulater
-   vterm
+   ;; vterm
+   eat
    ;; the killer app: git ui
    magit
    ;; lsp
@@ -48,7 +49,7 @@
    ;; make line-break look nicer
    page-break-lines
    ;; Colorize color names in buffers
-   rainbow-mode
+   ;;  rainbow-mode
    ;; code auto formating
    apheleia
    ;; Emacs Mini-Buffer Actions Rooted in Keymaps
@@ -61,17 +62,26 @@
    ;; pdf tools
    pdf-tools
    ;; latex support 
-   auctex
+   ;;  auctex
    ;; better snippet
    yasnippet
    consult-yasnippet
    ;; workspace
    perspective
+   persp-projectile
    ;; smart-parens
    smartparens
    ;; popup window
    popwin
+   ;; treesit-auto
+   treesit-auto
    ))
+
+(use-package persp-projectile
+  :ensure t)
+
+(use-package treesit-auto
+  :ensure t)
 
 (use-package popwin
   :ensure t
@@ -79,17 +89,12 @@
   (popwin:popup-window-height 0.5)
   ;; HACK redefine special display rule
   (popwin:special-display-config
-   '(;; Emacs
-     ;; ("*Miniedit Help*" :noselect t)
-     help-mode
-     ;; (completion-list-mode :noselect t)
-     ;; (compilation-mode :noselect t)
-     ;; (grep-mode :noselect t)
-     ;; (occur-mode :noselect t)
-     ;; "*Shell Command Output*"
-     ("*Flycheck errors*" :stick t)
-     ;; ("*DeepSeek*" :stick t)
+   '(
+     (help-mode :stick t)
      (helpful-mode :stick t)
+     ("*Flycheck errors*" :stick t)
+     ("*DeepSeek*" :stick t)
+     ("*scratch*" :stick t)
      )
    )
   :config
@@ -107,11 +112,10 @@
   :custom 
   (persp-suppress-no-prefix-key-warning t)
   (persp-sort 'created)
-  (persp-modestring-dividers '("[ " " ]" " | "))
+  (persp-modestring-dividers '("[" "]" "|"))
   :init
   (persp-mode)
   )
-
 
 (use-package gptel
   :ensure t
@@ -135,19 +139,21 @@
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** @jc\n")
   (setf (alist-get 'org-mode gptel-response-prefix-alist) "** @ai\n"))
 
-(use-package auctex
-  :ensure t)
+;; (use-package auctex
+;;   :ensure t)
 
 (use-package yasnippet
   :ensure t
   :config
   (require 'consult-yasnippet)
-  (yas-global-mode 1)
-  ;; TODO
   (let ((my-yas-dir (concat jc-emacs-directory "/snippets")))
     (add-to-list 'yas-snippet-dirs my-yas-dir))
-  (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  ;; start mode globally
+  (yas-global-mode 1)
+  ;; reload all snippets
+  (yas-reload-all)
+  ;; (define-key yas-minor-mode-map (kbd "<tab>") nil)
+  ;; (define-key yas-minor-mode-map (kbd "TAB") nil)
   )
 
 (use-package eldoc-box
@@ -224,9 +230,9 @@
   (flycheck-idle-change-delay 4)
   )
 
-(use-package rainbow-mode
-  :ensure t
-  :hook (emacs-lisp-mode text-mode lisp-mode cc-mode cmake-mode))
+;; (use-package rainbow-mode
+;;   :ensure t
+;;   :hook (emacs-lisp-mode text-mode lisp-mode cc-mode cmake-mode))
 
 (use-package page-break-lines
   :ensure t
@@ -330,6 +336,7 @@
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-items '((recents   . 5)
+                          (bookmarks . 5)
                           (projects  . 5)))
   (setq dashboard-projects-backend 'projectile)
   (setq initial-buffer-choice (lambda() (dashboard-open)))
@@ -354,15 +361,14 @@
 
 (use-package corfu
   :ensure t
-  :init
+  :custom
+  (corfu-auto t)
+  (corfu-cycle t)
+  (corfu-preview-current 'nil) ; do not insert unless i select it
+  (corfu-preselect 'nil) ; do not preselect anything
+  (corfu-quit-no-match 'separator) ;; or t
   :config
   (global-corfu-mode)
-  ;; Enable auto completion and configure quitting
-  (setq corfu-auto t
-        corfu-cycle t
-        corfu-preview-current 'nil ; do not insert unless i select it
-        corfu-preselect 'nil ; do not preselect anything
-        corfu-quit-no-match 'separator) ;; or t
   )
 
 (use-package orderless
@@ -396,13 +402,22 @@
    "C-c C-c"     #'smerge-keep-current))
 
 ;; vterm
-(use-package vterm
+;; (use-package vterm
+;;   :ensure t
+;;   :config
+;;   (setq vterm-mode-hook (lambda() (display-line-numbers-mode -1)))
+
+;;   ;; set tramp default encoding shell to zsh
+;;   (add-to-list 'vterm-tramp-shells '("sshx" login-shell))
+;;   )
+
+(use-package eat
   :ensure t
   :config
-  (setq vterm-mode-hook (lambda() (display-line-numbers-mode -1)))
-
-  ;; set tramp default encoding shell to zsh
-  (add-to-list 'vterm-tramp-shells '("sshx" login-shell))
+  ;; For `eat-eshell-mode'.
+  (add-hook 'eshell-load-hook #'eat-eshell-mode)
+  ;; For `eat-eshell-visual-command-mode'.
+  (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
   )
 
 ;; projectile
@@ -410,11 +425,15 @@
   :ensure t
   :custom
   (projectile-project-name-function '+projectile-project-name--lower-case)
+  (projectile-indexing-method 'hybrid)
+  (projectile-enable-caching t)
   :config
-  (projectile-mode +1)
-  (setq projectile-enable-caching t)
   (defun +projectile-project-name--lower-case (project-root)
     (downcase (file-name-nondirectory (directory-file-name project-root))))
+  ;; (advice-add 'projectile-project-root :before-while
+  ;;             (lambda (&optional dir)
+  ;; (not (file-remote-p (or dir default-directory))))
+  (projectile-mode +1)
   )
 
 ;; helpful
@@ -427,6 +446,7 @@
   :config
   (which-key-setup-minibuffer)
   (which-key-mode 1))
+
 
 ;; vertico
 (use-package vertico

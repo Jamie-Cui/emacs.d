@@ -3,7 +3,6 @@
 ;;; Code:
 
 (require 'init-utils)
-(require 'init-org)
 
 ;;; --------------------------------------
 ;;; WLS2
@@ -43,9 +42,23 @@
 ;;; Darwin (MacOs)
 ;;; --------------------------------------
 
-;; HACK for mac only
 (when (eq system-type 'darwin)
   (setq mac-command-modifier 'meta)
-  (add-to-list 'default-frame-alist '(undecorated . t)))
+  (add-to-list 'default-frame-alist '(undecorated . t))
+  ;; Fix, macos dired permission
+  (setq insert-directory-program "gls" dired-use-ls-dired t)
+  )
+
+;;; --------------------------------------
+;;; Windows
+;;; --------------------------------------
+
+(when (eq system-type 'windows-nt)
+  (setq tramp-default-method "plink")
+  (prefer-coding-system 'utf-8)
+  ;;(set-terminal-coding-system 'utf-8)
+  ;;(set-keyboard-coding-system 'utf-8)
+  ;;(set-language-environment "UTF-8")
+  )
 
 (provide 'init-os)

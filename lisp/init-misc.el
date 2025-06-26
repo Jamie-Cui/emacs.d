@@ -4,6 +4,9 @@
 
 (require 'init-utils)
 
+;; stop the BELL!
+(setq ring-bell-function 'ignore)
+
 ;; stop makding ~ files!
 (setq make-backup-files nil) 
 
@@ -107,6 +110,64 @@
   :init
   (savehist-mode))
 
+;; commit mode scroll to bottom
 (setopt comint-scroll-to-bottom-on-output t)
+
+;; allow to use .dir_locals on remote files
+(setopt enable-remote-dir-locals t)
+
+;; compress warning at start-up
+;; (setopt warning-minimum-level :emergency)
+
+;; Imporove tramp speed
+;; see: https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
+(setq tramp-allow-unsafe-temporary-files t ; do not warn me, please
+      remote-file-name-inhibit-locks t
+      tramp-use-scp-direct-remote-copying t
+      remote-file-name-inhibit-auto-save-visited t)
+
+(connection-local-set-profile-variables
+ 'remote-direct-async-process
+ '((tramp-direct-async-process . t)))
+
+(connection-local-set-profiles
+ '(:application tramp :protocol "scp")
+ 'remote-direct-async-process)
+
+(with-eval-after-load 'tramp
+  (with-eval-after-load 'compile
+    (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
+
+;; forgot why I add this ...
+(setq magit-tramp-pipe-stty-settings 'pty)
+
+;; don't show the diff by default in the commit buffer. Use `C-c C-d' to display it
+(setq magit-commit-show-diff nil)
+;; don't show git variables in magit branch
+(setq magit-branch-direct-configure nil)
+;; don't automatically refresh the status buffer after running a git command
+(setq magit-refresh-status-buffer nil)
+
+;;; eshell
+(setopt eshell-scroll-show-maximum-output nil)
+
+;; fancy eshell 
+;; see: https://lambdaland.org/posts/2024-08-19_fancy_eshell_prompt/
+(setopt eshell-prompt-function '+eshell/fancy-shell)
+(setopt eshell-prompt-regexp "^[^#$\n]* [$#] ")
+(setopt eshell-highlight-prompt nil)
+
+(defun +eshell/fancy-shell ()
+  "A pretty shell with git status"
+  (let* ((cwd (abbreviate-file-name (eshell/pwd)))
+         (x-stat eshell-last-command-status))
+    (propertize
+     (format "%s %s $ "
+             (if (< 0 x-stat) (format (propertize "!%s" 'font-lock-face '(:foreground "red")) x-stat)
+               (propertize "➤" 'font-lock-face (list :foreground (if (< 0 x-stat) "red" "green"))))
+             (propertize cwd 'font-lock-face '(:foreground "#45babf")))
+     ;; 'read-only t
+     'front-sticky   '(font-lock-face read-only)
+     'rear-nonsticky '(font-lock-face read-only))))
 
 (provide 'init-misc)

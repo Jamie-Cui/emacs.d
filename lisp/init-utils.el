@@ -1,20 +1,8 @@
-;;; init-core.el --- core functionality support -*- lexical-binding: t -*-
+;;; init-utils.el --- core functionality support -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 
-;; Enable package
-(require 'package)
-(setq package-archives
-      '(("gnu"   . "http://elpa.gnu.org/packages/")
-        ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-        ("org"   . "http://orgmode.org/elpa/")
-        ("melpa" . "http://melpa.org/packages/")))
-
-(package-initialize)
-
-;; make sure package-refresh-contents will only run once
-(when (not package-archive-contents)
-  (package-refresh-contents))
+(require 'cl-macs)
 
 (defun +ensure-packages-installed (packages-alist)
   "Make sure the given package is installed."
@@ -86,23 +74,25 @@ in the search."
   "Revert buffer without confirmation."
   (interactive) (revert-buffer t t))
 
-;; HACK setup environment
-;; see: https://www.emacswiki.org/emacs/ExecPath
-(defun +set-emacs-exec-path-from-shell-PATH ()
-  "Set up Emacs' `exec-path' and PATH environment variable to match
-  that used by the user's shell.
 
-  This is particularly useful under Mac OS X and macOS, where GUI
-  apps are not started from a shell."
+(defun +persp/move-buffer-prev ()
+  "Like persp-prev, but move current."
   (interactive)
-  (let ((path-from-shell
-         (replace-regexp-in-string
-          "[ \t\n]*$" "" (shell-command-to-string
-                          "$SHELL --login -c 'echo $PATH'"
-                          ))))
-    ;; (message path-from-shell)
-    (setenv "PATH" path-from-shell)
-    (message path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
+  (let ((tmp-buffer (current-buffer)))
+    (persp-forget-buffer tmp-buffer)
+    (persp-prev)
+    (persp-set-buffer tmp-buffer)
+    (persp-switch-to-buffer tmp-buffer))
+  )
+
+(defun +persp/move-buffer-next ()
+  "Like persp-next, but move current."
+  (interactive)
+  (let ((tmp-buffer (current-buffer)))
+    (persp-forget-buffer tmp-buffer)
+    (persp-next)
+    (persp-set-buffer tmp-buffer)
+    (persp-switch-to-buffer tmp-buffer))
+  )
 
 (provide 'init-utils)

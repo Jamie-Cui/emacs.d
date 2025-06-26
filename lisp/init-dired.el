@@ -7,43 +7,50 @@
 (+ensure-packages-installed
  '(
    ;; better dired
-   dirvish
+   ;; dirvish
+   dired-filter
+   dired-subtree
+   diredfl ;; color
    ))
 
 ;; dired hide .. and .
 (add-hook 'dired-mode-hook 'dired-omit-mode)
 
-(use-package dired-x
-  :custom
-  (dired-dwim-target t)
-  (dired-omit-extensions nil)
-  )
-
-(use-package dirvish
-  :ensure t
-  :init
-  (dirvish-override-dired-mode)
-  :after (:and general nerd-icons)
+(use-package dired
   :custom
   (dired-listing-switches (purecopy "-alh --human-readable --group-directories-first --no-group"))
   (dired-kill-when-opening-new-dired-buffer t)
-  (dirvish-subtree-state-style 'plus)
+  (dired-omit-extensions nil)
+  (dired-dwim-target t)
   :config
-  ;; HACK for macos, see: https://github.com/d12frosted/homebrew-emacs-plus/issues/383#issuecomment-899157143
-  (when (eq system-type 'darwin)
-    (setq insert-directory-program "gls" dired-use-ls-dired t))
-  (setq dirvish-mode-line-format
-        '(:left (sort symlink) :right (omit yank index)))
-  (setq dirvish-attributes           ; The order *MATTERS* for some attributes
-        '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size)
-        dirvish-side-attributes
-        '(vc-state nerd-icons collapse file-size))
   (general-define-key
    :states 'normal
-   :keymaps 'dirvish-mode-map
-   "TAB" #'dirvish-subtree-toggle
+   :keymaps 'dired-mode-map
    "h"   #'dired-up-directory
    "l"   #'dired-find-file)
+  )
+
+(use-package dired-subtree
+  :ensure t
+  :after dired
+  :config
+  (general-define-key
+   :states 'normal
+   :keymaps 'dired-mode-map
+   "TAB" #'dired-subtree-toggle)
+  )
+
+(use-package dired-filter
+  :ensure t
+  :after dired
+  :config
+  (add-hook 'dired-mode-hook 'dired-filter-mode)
+  )
+
+(use-package diredfl
+  :ensure t
+  :config
+  (diredfl-global-mode)
   )
 
 (use-package tramp
@@ -62,3 +69,4 @@
   (setq tramp-ssh-controlmaster-options nil))
 
 (provide 'init-dired)
+

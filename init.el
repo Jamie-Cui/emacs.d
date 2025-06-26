@@ -7,26 +7,83 @@
 (let ((minver "29.1"))
   (when (version< emacs-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
+
 (when (version< emacs-version "28.1")
   (message "Your Emacs is old, and some functionality in this config will be disabled. Please upgrade if possible."))
 
-;; setup 
+;; setup emacs configuration dir
 (when (not (boundp' jc-emacs-directory))
-  (defconst jc-emacs-directory "~/Desktop/emacs.d"))
+  (defconst jc-emacs-directory "~/emacs.d"))
 
+;; setup emacs org dir
+(when (not (boundp' jc-org-root-dir))
+  (defconst jc-org-root-dir "~/org-root"))
+
+;; add load path
 (add-to-list 'load-path (expand-file-name "lisp" jc-emacs-directory))
+
+;; HACK setup environment
+;; see: https://www.emacswiki.org/emacs/ExecPath
+;; Set up Emacs' `exec-path' and PATH environment variable to match
+;; that used by the user's shell.
+;; 
+;; This is particularly useful under Mac OS X and macOS, where GUI
+;; apps are not started from a shell.
+(when (not (eq system-type 'windows-nt))
+  (let ((path-from-shell
+         (replace-regexp-in-string
+          "[ \t\n]*$" "" (shell-command-to-string
+                          "$SHELL --login -c 'echo $PATH'"
+                          ))))
+    ;; (message path-from-shell)
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+
+(message "%s" exec-path)
+
+;; additional emacs-native configurations
+(require 'init-misc)
+
+;; -----------------------------------------------------------
+;; DONE Setup packages
+;; -----------------------------------------------------------
+
+;; Enable package
+(require 'package)
+
+;; setup elpa pacakges
+(setq package-archives
+      '(
+        ("gnu"   . "http://elpa.gnu.org/packages/")
+        ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
+        ("org"   . "http://orgmode.org/elpa/")
+        ("melpa" . "http://melpa.org/packages/")))
+
+;; initialize packages
+(package-initialize)
+
+;; make sure package-refresh-contents will only run once
+(when (not package-archive-contents)
+  (package-refresh-contents))
+
+;; HACK see: https://emacs.stackexchange.com/a/53142
+(setq package-check-signature nil)
+(package-install 'gnu-elpa-keyring-update)
+(gnu-elpa-keyring-update)
+(setq package-check-signature 'allow-unsigned)
+
+;; -----------------------------------------------------------
+;; DONE Configure Core
+;; -----------------------------------------------------------
+
 (require 'init-utils)
 (require 'init-core)
 (require 'init-evil)
 (require 'init-dired)
 (require 'init-org)
+(require 'init-latex)
 (require 'init-chinese)
 (require 'init-os)
-(require 'init-misc)
-
-;; Set up Emacs' `exec-path' and PATH environment variable to match
-;; that used by the user's shell.
-(+set-emacs-exec-path-from-shell-PATH)
 
 ;; -----------------------------------------------------------
 ;; DONE programming modes
@@ -46,6 +103,8 @@
    markdown-mode
    ;; yaml mode
    yaml-mode
+   ;; pdf-tools
+   pdf-tools
    ))
 
 (use-package protobuf-mode)
@@ -133,6 +192,17 @@
    :states '(insert replace normal visual operator)
    "C-g" #'evil-escape
    )
+  
+  ;; HACK always get a new eshell
+  (defun +eshell/new ()
+    (interactive)
+    (eshell '(t)))
+
+  ;; HACK kill current persp without asking
+  (defun +persp/kill-current ()
+    (interactive)
+    (persp-kill (persp-current-name)))
+
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
@@ -151,9 +221,11 @@
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
    "C-SPC"   #'toggle-input-method
+   "C-S-h"   #'+persp/move-buffer-prev
+   "C-S-l"   #'+persp/move-buffer-next
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
-   "C-q"     #'persp-kill
+   "C-q"     #'+persp/kill-current
    )
 
   ;; ** Global Keybindings
@@ -188,8 +260,8 @@
     "Bd"     #'bookmark-delete
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
-    "ot"     #'vterm
-    "oT"     #'projectile-run-vterm
+    "ot"     #'+eshell/new
+    "oT"     #'project-eshell
     "od"     #'dired-jump
     "oD"     #'projectile-dired
     "og"     #'magit-status-quick
@@ -203,7 +275,6 @@
     "pc"     #'projectile-compile-project
     "pt"     #'projectile-test-project
     "pr"     #'projectile-run-project
-    "pq"     #'projectile-kill-buffers
     "pi"     #'projectile-invalidate-cache
     "pf"     #'+vertico/project-search
     "po"     #'find-sibling-file
@@ -218,7 +289,7 @@
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
     "nrs"     #'org-roam-db-sync
-    "nb"     #'citar-open
+    "nb"      #'citar-open
     ;; help functions
     "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
@@ -246,6 +317,7 @@
     ;; search
     "s" '(:ignore t :which-key "search")
     "si"     #'consult-imenu ;; search item
+    "sh"     #'consult-history ;; search history
     ;; other
     "RET"    #'gptel
     "x"      #'scratch-buffer
@@ -277,5 +349,28 @@
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :hook org-mode)
 
-(+ensure-packages-installed '(persp-projectile))
-(use-package persp-projectile)
+
+(use-package ultra-scroll
+  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
+  :init
+  (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
+        scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+  :config
+  (ultra-scroll-mode 1)
+  )
+
+;; -----------------------------------------------------------
+;; DONE pdf-tools
+;; -----------------------------------------------------------
+
+(use-package pdf-tools
+  :ensure t
+  :mode (("\\.pdf\\'" . pdf-view-mode))
+  :config
+  (pdf-loader-install)
+  (add-hook
+   'org-mode-hook
+   '(lambda ()
+      (delete '("\\.pdf\\'" . default) org-file-apps)
+      (add-to-list 'org-file-apps '("\\.pdf\\'" . org-pdftools-open))))
+  )
