@@ -117,7 +117,6 @@
   (persp-mode)
   )
 
-
 (use-package gptel
   :ensure t
   :config
@@ -426,7 +425,7 @@
   :ensure t
   :custom
   (projectile-project-name-function '+projectile-project-name--lower-case)
-  (projectile-indexing-method 'native)
+  (projectile-indexing-method 'hybrid)
   (projectile-enable-caching t)
   :config
   (defun +projectile-project-name--lower-case (project-root)
