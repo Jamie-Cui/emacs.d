@@ -56,9 +56,9 @@
 (when (eq system-type 'windows-nt)
   (setq tramp-default-method "plink")
   (prefer-coding-system 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
-  (set-language-environment "UTF-8")
+  ;;(set-terminal-coding-system 'utf-8)
+  ;;(set-keyboard-coding-system 'utf-8)
+  ;;(set-language-environment "UTF-8")
   )
 
 (provide 'init-os)
