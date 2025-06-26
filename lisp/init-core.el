@@ -75,6 +75,8 @@
    popwin
    ;; treesit-auto
    treesit-auto
+   ;; sudo-edit
+   sudo-edit
    ))
 
 (use-package persp-projectile
@@ -475,5 +477,8 @@
    )
   )
 
+;; sudo-edit
+(use-package sudo-edit
+  :ensure t)
 
 (provide 'init-core)
