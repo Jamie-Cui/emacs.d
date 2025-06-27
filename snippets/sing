@@ -1,0 +1,18 @@
+# -*- mode: c++-ts-mode -*-
+# name: singleton class
+# key: sing
+# --
+
+class $1 {
+public:
+    ~$1 () = default;
+    $1(const $1 &) = delete;
+    void operator=(const $1 &) = delete;
+
+    static $1 &GetInstance(){
+        static $1 instance;
+        return instance;
+    }
+private:
+    $1 () = default;
+};
