@@ -197,6 +197,8 @@
 
 (use-package apheleia
   :ensure t
+  :custom
+  (apheleia-remote-algorithm 'local)
   :config
   (apheleia-global-mode +1)
   ;; HACK use elgot-format when possible
