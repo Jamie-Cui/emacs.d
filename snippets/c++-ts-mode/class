@@ -1,0 +1,11 @@
+# -*- mode: c++-ts-mode -*-
+# name: class
+# key: class
+# --
+
+class $1 {
+public:
+    $1 () = default;
+    ~$1 () = default;
+    $2
+};
