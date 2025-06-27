@@ -8,13 +8,24 @@
  '(
    ;; better dired
    ;; dirvish
-   dired-filter
    dired-subtree
+   dired-filter
    diredfl ;; color
+   nerd-icons
+   nerd-icons-dired
    ))
 
 ;; dired hide .. and .
 (add-hook 'dired-mode-hook 'dired-omit-mode)
+
+(use-package nerd-icons
+  :ensure t)
+
+(use-package nerd-icons-dired
+  :ensure t
+  :after dired
+  :config
+  (add-hook 'dired-mode-hook 'nerd-icons-dired-mode))
 
 (use-package dired
   :custom
