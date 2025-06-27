@@ -1,0 +1,6 @@
+# -*- mode: c++-ts-mode -*-
+# name: std::vector<>
+# key: vec
+# --
+
+std::vector<$1> $2
