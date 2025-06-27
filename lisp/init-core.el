@@ -114,7 +114,8 @@
   :custom 
   (persp-suppress-no-prefix-key-warning t)
   (persp-sort 'created)
-  (persp-modestring-dividers '("[" "]" "|"))
+  (persp-modestring-dividers '("[ " " ]" " | "))
+  (persp-show-modestring 'header)
   :init
   (persp-mode)
   )
@@ -302,7 +303,7 @@
   :ensure t
   :after nerd-icons
   :custom
-  (doom-modeline-buffer-file-name-style 'relative-from-project)
+  (doom-modeline-buffer-file-name-style 'auto)
   :config
   (setq doom-modeline-icon nil) ; optional
   ;; (if (facep 'mode-line-active)
