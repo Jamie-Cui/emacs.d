@@ -220,6 +220,8 @@
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
+   "C-h"     #'persp-prev
+   "C-l"     #'persp-next
    ;; "C-SPC"   #'toggle-input-method
    )
 
