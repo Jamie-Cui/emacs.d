@@ -207,11 +207,11 @@
   (general-define-key
    :keymaps 'override
    "M-f"     #'consult-line
-   "M-Y"     #'consult-yasnippet
+   ;; "M-Y"     #'consult-yasnippet
    "M-y"     #'yas-expand
-   "M-s"     #'save-buffer
-   "M-c"     #'evil-yank
-   "M-v"     #'evil-paste-before
+   "M-s"     #'save-buffer ; like mac
+   "M-c"     #'evil-yank ; like mac
+   "M-v"     #'evil-paste-before ; like mac
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-z"     #'evil-undo
    "M-Z"     #'evil-redo
@@ -220,12 +220,7 @@
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
-   "C-SPC"   #'toggle-input-method
-   "C-S-h"   #'+persp/move-buffer-prev
-   "C-S-l"   #'+persp/move-buffer-next
-   "C-h"     #'persp-prev
-   "C-l"     #'persp-next
-   "C-q"     #'+persp/kill-current
+   ;; "C-SPC"   #'toggle-input-method
    )
 
   ;; ** Global Keybindings
@@ -278,6 +273,11 @@
     "pi"     #'projectile-invalidate-cache
     "pf"     #'+vertico/project-search
     "po"     #'find-sibling-file
+    "pH"     #'+persp/move-buffer-prev
+    "pL"     #'+persp/move-buffer-next
+    "ph"     #'persp-prev
+    "pl"     #'persp-next
+    "pq"     #'+persp/kill-current
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "n@"      #'citar-insert-citation
