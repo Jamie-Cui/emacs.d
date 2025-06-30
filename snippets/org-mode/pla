@@ -4,4 +4,5 @@
 # --
 
 #+begin_src plantuml :file img/$0.png
+skinparam defaultFontName Maple Mono NF CN
 #+end_src
