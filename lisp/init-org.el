@@ -57,16 +57,7 @@
   (add-hook 'org-present-mode-quit-hook 'org-remove-inline-images)
   ;; (add-hook 'org-present-mode-quit-hook 'org-present-show-cursor)
   (add-hook 'org-present-mode-quit-hook 'org-present-read-write)
-  (add-hook 'org-present-mode-quit-hook '+org-present/quit)
-
-  (+my-local-leader-def
-    :keymaps 'org-present-mode-keymap
-    :states '(normal visual)
-    "j" #'org-present-next
-    "k" #'org-present-prev
-    "q" #'org-present-quit
-    )
-  )
+  (add-hook 'org-present-mode-quit-hook '+org-present/quit))
 
 (use-package org
   :custom

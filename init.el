@@ -347,6 +347,9 @@
     :keymaps 'org-mode-map
     :states '(normal visual)
     "e" #'org-export-dispatch
+    "j" #'org-present-next
+    "k" #'org-present-prev
+    "q" #'org-present-quit
     )
   )
 
