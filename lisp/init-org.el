@@ -29,23 +29,43 @@
    plantuml-mode
    ;; presentation
    org-present
+   visual-fill-column
    ))
+
+(use-package visual-fill-column
+  :ensure t)
 
 (use-package org-present
   :ensure t
   :config
-  (add-hook 'org-present-mode-hook
-            (lambda ()
-              (org-present-big)
-              (org-display-inline-images)
-              (org-present-hide-cursor)
-              (org-present-read-only)))
-  (add-hook 'org-present-mode-quit-hook
-            (lambda ()
-              (org-present-small)
-              (org-remove-inline-images)
-              (org-present-show-cursor)
-              (org-present-read-write)))
+  (defun +org-present/start ()
+    ;; Center the presentation and wrap lines
+    (visual-fill-column-mode 1)
+    (visual-line-mode 1))
+
+  (defun +org-present/quit ()
+    ;; Stop centering the document
+    (visual-fill-column-mode 0)
+    (visual-line-mode 0))
+
+  (add-hook 'org-present-mode-hook 'org-present-big)
+  (add-hook 'org-present-mode-hook 'org-display-inline-images)
+  ;; (add-hook 'org-present-mode-hook 'org-present-hide-cursor)
+  (add-hook 'org-present-mode-hook 'org-present-read-only)
+  (add-hook 'org-present-mode-hook '+org-present/start)
+  (add-hook 'org-present-mode-quit-hook 'org-present-small)
+  (add-hook 'org-present-mode-quit-hook 'org-remove-inline-images)
+  ;; (add-hook 'org-present-mode-quit-hook 'org-present-show-cursor)
+  (add-hook 'org-present-mode-quit-hook 'org-present-read-write)
+  (add-hook 'org-present-mode-quit-hook '+org-present/quit)
+
+  (+my-local-leader-def
+    :keymaps 'org-present-mode-keymap
+    :states '(normal visual)
+    "j" #'org-present-next
+    "k" #'org-present-prev
+    "q" #'org-present-quit
+    )
   )
 
 (use-package org
