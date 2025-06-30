@@ -170,4 +170,17 @@
      'front-sticky   '(font-lock-face read-only)
      'rear-nonsticky '(font-lock-face read-only))))
 
+(use-package proced
+  :custom
+  (proced-auto-update-flag t)
+  (proced-goal-attribute nil)
+  (proced-show-remote-processes t)
+  (proced-enable-color-flag t)
+  (proced-format 'custom)
+  (proced-auto-update-interval 1)
+  :config
+  (add-to-list
+   'proced-format-alist
+   '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm))))
+
 (provide 'init-misc)
