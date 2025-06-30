@@ -341,6 +341,13 @@
     "d" #'deft-delete-file
     "g" #'deft-refresh
     )
+  
+  ;; org mode map
+  (+my-local-leader-def
+    :keymaps 'org-mode-map
+    :states '(normal visual)
+    "e" #'org-export-dispatch
+    )
   )
 
 ;; -----------------------------------------------------------
