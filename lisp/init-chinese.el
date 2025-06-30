@@ -43,6 +43,7 @@
                                 ("Symbols Nerd Font Mono") ;; Symbol
                                 nil ;; Others
                                 ))
+  (cnfonts-use-face-font-rescale t)
   :config
   ;; use this to list all fonts
   ;; (cl-prettyprint (font-family-list))
