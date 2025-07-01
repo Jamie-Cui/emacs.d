@@ -1,0 +1,6 @@
+# -*- mode: org-mode -*-
+# name: orgmode img attr
+# key: img
+# --
+
+#+attr_org: :width $0px
