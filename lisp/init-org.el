@@ -61,6 +61,7 @@
 
 (use-package org
   :custom
+  (org-image-actual-width nil)
   (org-export-dispatch-use-expert-ui t)
   :config
   (setq org-log-done t)
