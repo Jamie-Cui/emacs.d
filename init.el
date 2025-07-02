@@ -222,6 +222,8 @@
    "C--"     #'cnfonts-decrease-fontsize
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
+   "C-S-h"   #'+persp/move-buffer-prev
+   "C-S-l"   #'+persp/move-buffer-next
    ;; "C-SPC"   #'toggle-input-method
    )
 
