@@ -63,13 +63,37 @@
   :custom
   (org-image-actual-width nil)
   (org-export-dispatch-use-expert-ui t)
+  (org-src-preserve-indentation t)
+  (org-src-tab-acts-natively t)
+  (org-confirm-babel-evaluate nil) ; don't ask, just do it
+  (org-link-elisp-confirm-function nil)
+  (org-startup-indented t)
+  (org-log-done t)
+  (org-src-window-setup 'other-window)
+  (org-startup-with-inline-images t)
   :config
-  (setq org-log-done t)
-  (setq org-src-window-setup 'other-window)
-  (add-hook 'org-mode-hook 'org-indent-mode)
-  (setq org-confirm-babel-evaluate nil) ; don't ask, just do it
-  (setq org-startup-with-inline-images t)
   (add-to-list 'org-export-backends 'beamer)
+
+  (defadvice! +org-fix-newline-and-indent-in-src-blocks-a (&optional indent _arg _interactive)
+    "Mimic `newline-and-indent' in src blocks w/ lang-appropriate indentation."
+    :after #'org-return
+    (when (and indent
+               org-src-tab-acts-natively
+               (org-in-src-block-p t))
+      (save-window-excursion
+        (org-babel-do-in-edit-buffer
+         (call-interactively #'indent-for-tab-command)))))
+  ;; HACK Fix #6061. Seems `org-babel-do-in-edit-buffer' has the side effect of
+  ;;   deleting side windows. Should be reported upstream! This advice
+  ;;   suppresses this behavior wherever it is known to be used.
+  (defadvice! +org-fix-window-excursions-a (fn &rest args)
+    "Suppress changes to the window config anywhere
+`org-babel-do-in-edit-buffer' is used."
+    :around #'evil-org-open-below
+    :around #'evil-org-open-above
+    :around #'org-indent-region
+    :around #'org-indent-line
+    (save-window-excursion (apply fn args)))
 
   (org-babel-do-load-languages
    'org-babel-load-languages
