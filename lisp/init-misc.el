@@ -110,8 +110,17 @@
   :init
   (savehist-mode))
 
-;; commit mode scroll to bottom
+;; commit mode
 (setopt comint-scroll-to-bottom-on-output t)
+(setopt ansi-color-for-comint-mode t)
+(setopt comint-prompt-read-only t)
+(setopt comint-buffer-maximum-size 2048)
+
+;; compilation mode
+(setopt compilation-always-kill t)
+(setopt ansi-color-for-compilation-mode t)
+(setopt compilation-ask-about-save t)
+(setopt compilation-scroll-output 'first-error)
 
 ;; allow to use .dir_locals on remote files
 (setopt enable-remote-dir-locals t)
