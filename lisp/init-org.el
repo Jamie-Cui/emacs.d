@@ -108,6 +108,8 @@
   :custom
   (org-journal-dir (concat jc-org-root-dir "/journal"))
   (org-journal-find-file-fn 'find-file)
+  (org-journal-file-type 'monthly)
+  (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\"")
   )
 
 (use-package org-superstar
