@@ -199,4 +199,28 @@
   :config
   (add-hook 'org-mode-hook 'org-appear-mode))
 
+;; HACK Face specs fed directly to `org-todo-keyword-faces' don't respect
+;;      underlying faces like the `org-todo' face does, so we define our own
+;;      intermediary faces that extend from org-todo.
+(with-no-warnings
+  (custom-declare-face '+org-todo-active  '((t (:inherit (bold font-lock-constant-face org-todo)))) "")
+  (custom-declare-face '+org-todo-project '((t (:inherit (bold font-lock-doc-face org-todo)))) "")
+  (custom-declare-face '+org-todo-onhold  '((t (:inherit (bold warning org-todo)))) "")
+  (custom-declare-face '+org-todo-cancel  '((t (:inherit (bold error org-todo)))) ""))
+
+(setopt org-todo-keywords
+        '((sequence
+           "[ ](T)"   ; A task that needs doing
+           "[-](S)"   ; Task is in progress
+           "[?](W)"   ; Task is being held up or paused
+           "|"
+           "[X](D)")  ; Task was completed
+          )
+        )
+
+(setopt org-todo-keyword-faces
+        '(("[-]" . +org-todo-active)
+          ("[?]" . +org-todo-onhold))
+        )
+
 (provide 'init-org)
