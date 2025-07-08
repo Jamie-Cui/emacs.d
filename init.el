@@ -52,12 +52,17 @@
 (require 'package)
 
 ;; setup elpa pacakges
-(setq package-archives
-      '(
-        ("gnu"   . "http://elpa.gnu.org/packages/")
-        ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-        ("org"   . "http://orgmode.org/elpa/")
-        ("melpa" . "http://melpa.org/packages/")))
+;; (setq package-archives
+;;       '(
+;;         ("gnu"   . "http://elpa.gnu.org/packages/")
+;;         ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
+;;         ("org"   . "http://orgmode.org/elpa/")
+;;         ("melpa" . "http://melpa.org/packages/")))
+
+(setq package-archives '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+                         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                         ("org" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+                         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 
 ;; initialize packages
 (package-initialize)
@@ -67,10 +72,10 @@
   (package-refresh-contents))
 
 ;; HACK see: https://emacs.stackexchange.com/a/53142
-(setq package-check-signature nil)
-(package-install 'gnu-elpa-keyring-update)
-(gnu-elpa-keyring-update)
-(setq package-check-signature 'allow-unsigned)
+;; (setq package-check-signature nil)
+;; (package-install 'gnu-elpa-keyring-update)
+;; (gnu-elpa-keyring-update)
+;; (setq package-check-signature 'allow-unsigned)
 
 ;; -----------------------------------------------------------
 ;; DONE Configure Core
