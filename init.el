@@ -357,6 +357,8 @@
     "j" #'org-present-next
     "k" #'org-present-prev
     "q" #'org-present-quit
+    "t" #'org-todo
+    "p" #'org-priority
     )
   )
 
