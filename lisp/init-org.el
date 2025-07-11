@@ -212,11 +212,11 @@
 
 (setopt org-todo-keywords
         '((sequence
-           "[ ](T)"   ; A task that needs doing
-           "[-](S)"   ; Task is in progress
-           "[?](W)"   ; Task is being held up or paused
+           "[ ](t)"   ; A task that needs doing
+           "[-](s)"   ; Task is in progress
+           "[?](w)"   ; Task is being held up or paused
            "|"
-           "[X](D)")  ; Task was completed
+           "[X](d)")  ; Task was completed
           )
         )
 
@@ -224,5 +224,7 @@
         '(("[-]" . +org-todo-active)
           ("[?]" . +org-todo-onhold))
         )
+
+(setopt org-use-fast-todo-selectiona t)
 
 (provide 'init-org)
