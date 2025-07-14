@@ -56,6 +56,7 @@
 (when (eq system-type 'windows-nt)
   (setq tramp-default-method "plink")
   (setq tramp-use-connection-share t)
+  (setq inhibit-eol-conversion t)
   (prefer-coding-system 'utf-8)
   (setq buffer-file-coding-system 'utf-8-unix)
   ;;(set-terminal-coding-system 'utf-8)
