@@ -9,7 +9,7 @@
    ;; enrich org mode
    citar
    ;; preview org math
-   xenops
+   ;; xenops
    ;; export org code in colors
    engrave-faces
    ))
@@ -45,31 +45,31 @@
   (org-mode . citar-capf-setup))
 
 
-(use-package xenops
-  :ensure t
-  :if window-system ;; do not load xenops on termial emacs
-  :config
-  (add-hook 'org-mode-hook #'xenops-mode)
-  (setq xenops-math-image-current-scale-factor 1.2)
-  (setq xenops-math-image-margin 0)
-  ;; HACK error from xenops with org>9.7
-  ;; https://github.com/syl20bnr/spacemacs/issues/16577
-  ;; https://github.com/dandavison/xenops/pull/74/files
-  ;; https://github.com/dandavison/xenops/issues/73
-  (defun fn/xenops-src-parse-at-point ()
-    (-if-let* ((element (xenops-parse-element-at-point 'src))
-               (org-babel-info
-                (xenops-src-do-in-org-mode
-                 (org-babel-get-src-block-info 'light (org-element-context)))))
-        (xenops-util-plist-update
-         element
-         :type 'src
-         :language (nth 0 org-babel-info)
-         :org-babel-info org-babel-info)))
+;; (use-package xenops
+;;   :ensure t
+;;   :if window-system ;; do not load xenops on termial emacs
+;;   :config
+;;   (add-hook 'org-mode-hook #'xenops-mode)
+;;   (setq xenops-math-image-current-scale-factor 1.2)
+;;   (setq xenops-math-image-margin 0)
+;;   ;; HACK error from xenops with org>9.7
+;;   ;; https://github.com/syl20bnr/spacemacs/issues/16577
+;;   ;; https://github.com/dandavison/xenops/pull/74/files
+;;   ;; https://github.com/dandavison/xenops/issues/73
+;;   (defun fn/xenops-src-parse-at-point ()
+;;     (-if-let* ((element (xenops-parse-element-at-point 'src))
+;;                (org-babel-info
+;;                 (xenops-src-do-in-org-mode
+;;                  (org-babel-get-src-block-info 'light (org-element-context)))))
+;;         (xenops-util-plist-update
+;;          element
+;;          :type 'src
+;;          :language (nth 0 org-babel-info)
+;;          :org-babel-info org-babel-info)))
 
-  (advice-add 'xenops-src-parse-at-point
-              :override 'fn/xenops-src-parse-at-point)
-  )
+;;   (advice-add 'xenops-src-parse-at-point
+;;               :override 'fn/xenops-src-parse-at-point)
+;;   )
 
 (use-package engrave-faces
   :ensure t)
