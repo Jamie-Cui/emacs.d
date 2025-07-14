@@ -86,7 +86,7 @@
 (require 'init-evil)
 (require 'init-dired)
 (require 'init-org)
-(require 'init-latex)
+;; (require 'init-latex)
 (require 'init-chinese)
 (require 'init-os)
 

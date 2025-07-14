@@ -15,7 +15,8 @@ fi
 
 SHA256SUM=e34c12bbe9944f1f338ca3d88c9b116b86300cc8e90b35c4086b825b5ae96d24
 FILENAME=plantuml.jar
-URL=https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar
+URL=
+https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar
 
 # ======================
 # plantuml

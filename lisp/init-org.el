@@ -131,14 +131,15 @@
   (setq org-download-link-format-function
         #'org-download-link-format-function-default))
 
+;; https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar
 (use-package plantuml-mode
   :ensure t
   :after org
   :custom 
+  (plantuml-jar-path
+   (concat (file-name-directory user-init-file) "plantuml.jar"))
   (org-plantuml-jar-path plantuml-jar-path)
   :config
-  (setq plantuml-jar-path
-        (concat (file-name-directory user-init-file) "bin/plantuml.jar"))
   (setq plantuml-default-exec-mode 'executable)
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
   (org-babel-do-load-languages
