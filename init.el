@@ -265,11 +265,9 @@
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ot"     #'+eshell/new
-    "oT"     #'project-eshell
     "od"     #'dired-jump
-    "oD"     #'projectile-dired
+    "oc"     #'compile
     "og"     #'magit-status-quick
-    "oG"     #'magit-project-status
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project
