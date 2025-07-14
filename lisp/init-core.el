@@ -374,13 +374,18 @@
 (use-package corfu
   :ensure t
   :custom
-  (corfu-auto t)
+  ;; (corfu-auto t)
   (corfu-cycle t)
   (corfu-preview-current 'nil) ; do not insert unless i select it
   (corfu-preselect 'nil) ; do not preselect anything
   (corfu-quit-no-match 'separator) ;; or t
   :config
   (global-corfu-mode)
+
+  ;; use corfu in eshell
+  (add-hook 'eshell-mode-hook (lambda ()
+                                (setq-local corfu-auto nil)
+                                (corfu-mode)))
   )
 
 (use-package orderless

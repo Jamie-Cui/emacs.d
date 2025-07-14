@@ -7,6 +7,10 @@
 ;; stop the BELL!
 (setq ring-bell-function 'ignore)
 
+;; Emacs 30 and newer: Disable Ispell completion function.
+;; Try `cape-dict' as an alternative.
+(setopt text-mode-ispell-word-completion nil)
+
 ;; stop makding ~ files!
 (setq make-backup-files nil) 
 
@@ -161,25 +165,47 @@
 
 ;;; eshell
 (setopt eshell-scroll-show-maximum-output nil)
-
-;; fancy eshell 
-;; see: https://lambdaland.org/posts/2024-08-19_fancy_eshell_prompt/
-(setopt eshell-prompt-function '+eshell/fancy-shell)
-(setopt eshell-prompt-regexp "^[^#$\n]* [$#] ")
 (setopt eshell-highlight-prompt nil)
+(setopt eshell-destroy-buffer-when-process-dies t)
 
-(defun +eshell/fancy-shell ()
-  "A pretty shell with git status"
-  (let* ((cwd (abbreviate-file-name (eshell/pwd)))
-         (x-stat eshell-last-command-status))
-    (propertize
-     (format "%s %s $ "
-             (if (< 0 x-stat) (format (propertize "!%s" 'font-lock-face '(:foreground "red")) x-stat)
-               (propertize "➤" 'font-lock-face (list :foreground (if (< 0 x-stat) "red" "green"))))
-             (propertize cwd 'font-lock-face '(:foreground "#45babf")))
-     ;; 'read-only t
-     'front-sticky   '(font-lock-face read-only)
-     'rear-nonsticky '(font-lock-face read-only))))
+;;;###autoload
+(defface +eshell-prompt-pwd '((t (:inherit font-lock-constant-face)))
+  "TODO"
+  :group 'eshell)
+
+;;;###autoload
+(defun +eshell-default-prompt-fn ()
+  "Generate the prompt string for eshell. Use for `eshell-prompt-function'."
+  (require 'shrink-path)
+  (concat (if (bobp) "" "\n")
+          (let ((pwd (eshell/pwd)))
+            (propertize (if (equal pwd "~")
+                            pwd
+                          (abbreviate-file-name (shrink-path-file pwd)))
+                        'face '+eshell-prompt-pwd))
+          (propertize " λ" 'face (if (zerop eshell-last-command-status) 'success 'error))
+          " "))
+(setq eshell-banner-message
+      '(format "%s %s\n"
+               (propertize (format " %s " (string-trim (buffer-name)))
+                           'face 'mode-line-highlight)
+               (propertize (current-time-string)
+                           'face 'font-lock-keyword-face))
+      eshell-scroll-to-bottom-on-input 'all
+      eshell-scroll-to-bottom-on-output 'all
+      eshell-kill-processes-on-exit t
+      eshell-hist-ignoredups t
+      eshell-input-filter (lambda (input) (not (string-match-p "\\`\\s-+" input)))
+      ;; em-prompt
+      eshell-prompt-regexp "^[^#$\n]* [#$λ] "
+      eshell-prompt-function #'+eshell-default-prompt-fn
+      ;; em-glob
+      eshell-glob-case-insensitive t
+      eshell-error-if-no-glob t)
+
+(advice-add 'eshell/clear :override #'eshell/clear-scrollback)
+
+;;; proced, show processes
 
 (use-package proced
   :custom

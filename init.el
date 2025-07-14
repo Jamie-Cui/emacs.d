@@ -212,23 +212,21 @@
   (general-define-key
    :keymaps 'override
    "M-f"     #'consult-line
-   ;; "M-Y"     #'consult-yasnippet
+   "C-M-i"   #'completion-at-point
    "M-y"     #'yas-expand
+   "M-a"     #'mark-whole-buffer ; like mac
    "M-s"     #'save-buffer ; like mac
    "M-c"     #'evil-yank ; like mac
    "M-v"     #'evil-paste-before ; like mac
    "M-/"     #'evilnc-comment-or-uncomment-lines
-   "M-z"     #'evil-undo
-   "M-Z"     #'evil-redo
-   "M-a"     #'mark-whole-buffer
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
-   "C-S-h"   #'+persp/move-buffer-prev
-   "C-S-l"   #'+persp/move-buffer-next
+   "C-M-h"   #'+persp/move-buffer-prev
+   "C-M-l"   #'+persp/move-buffer-next
    ;; "C-SPC"   #'toggle-input-method
    )
 
