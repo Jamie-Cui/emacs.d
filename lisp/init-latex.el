@@ -44,16 +44,16 @@
   (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup))
 
-;; (setopt org-startup-with-latex-preview t)
-;; (setopt org-preview-latex-default-process 'dvisvgm)
+(setopt org-startup-with-latex-preview t)
+(setopt org-preview-latex-default-process 'dvisvgm)
 
-(use-package xenops
-  :ensure t
-  :if window-system ;; do not load xenops on termial emacs
-  :config
-  (add-hook 'org-mode-hook #'xenops-mode)
-  (setq xenops-math-image-current-scale-factor 1.2)
-  (setq xenops-math-image-margin 0))
+;; (use-package xenops
+;;   :ensure t
+;;   :if window-system ;; do not load xenops on termial emacs
+;;   :config
+;;   (add-hook 'org-mode-hook #'xenops-mode)
+;;   (setq xenops-math-image-current-scale-factor 1.2)
+;;   (setq xenops-math-image-margin 0))
 
 (use-package engrave-faces
   :ensure t)
