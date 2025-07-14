@@ -139,6 +139,8 @@
  'remote-direct-async-process
  '((tramp-direct-async-process . t)))
 
+(setq tramp-auto-save-directory (concat user-emacs-directory "tramp-autosave/"))
+
 (connection-local-set-profiles
  '(:application tramp :protocol "scp")
  'remote-direct-async-process)
