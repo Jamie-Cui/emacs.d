@@ -186,7 +186,7 @@
                                           (propertize cwd 'font-lock-face '(:foreground "#45babf")))
                                   ;; 'read-only t
                                   'front-sticky   '(font-lock-face read-only)
-                                  'rear-nonsticky '(font-lock-face read-only))))))
+                                  'rear-nonsticky '(font-lock-face read-only)))))
 
 (setq eshell-banner-message
       '(format "%s %s\n"
