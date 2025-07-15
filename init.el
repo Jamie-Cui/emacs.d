@@ -308,6 +308,7 @@
     ;; toggles
     "t" '(:ignore t :which-key "toggle")
     "th"     #'hs-hide-level
+    "tf"     #'toggle-frame-maximized
     "tf"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
     "tc"     #'display-fill-column-indicator-mode
