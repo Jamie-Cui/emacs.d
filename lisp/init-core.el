@@ -444,6 +444,7 @@
   (projectile-project-name-function '+projectile-project-name--lower-case)
   (projectile-indexing-method 'hybrid)
   (projectile-enable-caching t)
+  (projectile-per-project-compilation-buffer t)
   :config
   (defun +projectile-project-name--lower-case (project-root)
     (downcase (file-name-nondirectory (directory-file-name project-root))))
