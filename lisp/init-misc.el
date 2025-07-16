@@ -195,7 +195,7 @@
                (propertize (current-time-string)
                            'face 'font-lock-keyword-face)))
 
-(advice-add 'eshell/clear :override #'eshell/clear-scrollback)
+;; (advice-add 'eshell/clear :override #'eshell/clear-scrollback)
 
 ;;; proced, show processes
 
