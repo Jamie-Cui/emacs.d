@@ -430,6 +430,8 @@
 
 (use-package eat
   :ensure t
+  :custom
+  (eat-term-name "xterm-256color")
   :config
   ;; For `eat-eshell-mode'.
   (add-hook 'eshell-load-hook #'eat-eshell-mode)
