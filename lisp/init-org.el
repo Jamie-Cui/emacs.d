@@ -68,6 +68,7 @@
   (org-confirm-babel-evaluate nil) ; don't ask, just do it
   (org-link-elisp-confirm-function nil)
   (org-startup-indented t)
+  (org-startup-folded 'fold)
   (org-log-done t)
   (org-src-window-setup 'other-window)
   (org-startup-with-inline-images t)
