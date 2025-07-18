@@ -38,10 +38,12 @@ My personal emacs config
 
 machine api.deepseek.com login apikey password whatever-your-api-key-is
 
+** Tweak keyboard
+
 #+begin_src bash
 # ubuntu
-gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 10
-gsettings set org.gnome.desktop.peripherals.keyboard delay 150
+gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 15
+gsettings set org.gnome.desktop.peripherals.keyboard delay 200
 
 # macos
 defaults write -g InitialKeyRepeat -int 15 // I think 15 is better, you can set this to 10

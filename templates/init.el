@@ -4,6 +4,8 @@
 
 (load (concat jc-emacs-directory "/init.el"))
 
+;; (add-to-list 'default-frame-alist '(undecorated . t))
+
 ;;; Set Proxy
 
 ;; (setq url-proxy-services
