@@ -37,3 +37,11 @@ My personal emacs config
 ~/.authinfo
 
 machine api.deepseek.com login apikey password whatever-your-api-key-is
+
+gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 10
+gsettings set org.gnome.desktop.peripherals.keyboard delay 150
+
+defaults write -g InitialKeyRepeat -int 15 // I think 15 is better, you can set this to 10
+defaults write -g KeyRepeat -int 1
+# or, config those values though GUI
+open ~/Library/Preferences/.GlobalPreferences.plist
