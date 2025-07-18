@@ -13,6 +13,8 @@
  /////    //////        //////// ///  //  //  ////////  /////  ////// 
 #+end_src
 
+font: https://github.com/subframe7536/maple-font
+
 My personal emacs config
 
 * What this config does?
