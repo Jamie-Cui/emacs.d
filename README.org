@@ -45,6 +45,8 @@ machine api.deepseek.com login apikey password whatever-your-api-key-is
 gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 15
 gsettings set org.gnome.desktop.peripherals.keyboard delay 200
 
+ibus-setup # trun off emoji shortcut => which defaults to C-;
+
 # macos
 defaults write -g InitialKeyRepeat -int 15 // I think 15 is better, you can set this to 10
 defaults write -g KeyRepeat -int 1
