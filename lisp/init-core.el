@@ -101,10 +101,10 @@
    '(
      (help-mode :stick t)
      (helpful-mode :stick t)
-     (compilation-mode :stick t)
+     ;; (compilation-mode :stick t)
      ("*Flycheck errors*" :stick t)
-     ("*DeepSeek*" :stick t)
-     ("*scratch*" :stick t)
+     ;; ("*DeepSeek*" :stick t)
+     ;; ("*scratch*" :stick t)
      )
    )
   :config
