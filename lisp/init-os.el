@@ -62,6 +62,21 @@
   (set-terminal-coding-system 'utf-8)
   ;;(set-keyboard-coding-system 'utf-8)
   (set-language-environment "UTF-8")
+  
+  ;; see: https://github.com/magit/magit/issues/2219#issuecomment-157219646
+  (define-derived-mode magit-staging-mode magit-status-mode "Magit staging"
+    "Mode for showing staged and unstaged changes."
+    :group 'magit-status)
+  
+  (defun magit-staging-refresh-buffer ()
+         (magit-insert-section (status)
+                               (magit-insert-unstaged-changes)
+                               (magit-insert-staged-changes)))
+  
+  (defun magit-staging ()
+         (interactive)
+         (magit-mode-setup #'magit-staging-mode))
   )
+
 
 (provide 'init-os)
