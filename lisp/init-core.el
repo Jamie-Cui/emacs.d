@@ -42,8 +42,6 @@
    flycheck-google-cpplint
    ;; show key frenquency
    keyfreq
-   ;; llm client
-   gptel
    ;; adds marginalia to the minibuffer completions
    marginalia
    ;; make line-break look nicer
@@ -127,31 +125,6 @@
   :init
   (persp-mode)
   )
-
-(use-package gptel
-  :ensure t
-  :config
-  (setq gptel-model   'deepseek-r1
-        gptel-default-mode 'org-mode
-        gptel-org-branching-context 't
-        gptel-log-level 'info
-        gptel-backend
-        (gptel-make-deepseek "DeepSeek"
-          :host "dashscope.aliyuncs.com/compatible-mode/v1"
-          :endpoint "/chat/completions"
-          :stream t
-          :key (auth-source-pick-first-password :host "api.deepseek.com")
-          :models '(deepseek-r1)))
-
-  (general-define-key
-   :keymaps 'gptel-mode-map
-   "C-c C-c" #'gptel-send)
-
-  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** @jc\n")
-  (setf (alist-get 'org-mode gptel-response-prefix-alist) "** @ai\n"))
-
-;; (use-package auctex
-;;   :ensure t)
 
 (use-package yasnippet
   :ensure t

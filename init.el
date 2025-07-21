@@ -89,6 +89,7 @@
 (require 'init-latex)
 (require 'init-chinese)
 (require 'init-os)
+(require 'init-llm)
 
 ;; -----------------------------------------------------------
 ;; DONE programming modes
