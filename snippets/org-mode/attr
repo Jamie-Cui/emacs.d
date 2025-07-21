@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: latex attr
+# key: attr
+# --
+
+#+ATTR_LATEX: :width $0\textwidth
