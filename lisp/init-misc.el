@@ -231,7 +231,16 @@
                (propertize (current-time-string)
                            'face 'font-lock-keyword-face)))
 
-;; (advice-add 'eshell/clear :override #'eshell/clear-scrollback)
+(use-package esh-mode
+  :config
+  ;; HACK redefine eshell/clear function
+  (defun eshell/clear (&optional scrollback)
+    "Scroll contents of eshell window out of sight, leaving a blank window.
+If SCROLLBACK is non-nil, clear the scrollback contents."
+    (interactive)
+    (let ((inhibit-read-only t))
+      (erase-buffer)))
+  )
 
 ;;; proced, show processes
 
