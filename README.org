@@ -50,4 +50,6 @@ open ~/Library/Preferences/.GlobalPreferences.plist
 
 ** native build emacs cannot find the installed tree-sitter?
 
+./configure --with-native-compilation --with-tree-sitter --with-x-toolkit=no --with-xpm=no --with-gif=no --with-tiff=no --with-gnutls=no
+
 see: https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/
