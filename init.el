@@ -222,18 +222,30 @@
    "C-h"     #'persp-prev
    "C-l"     #'persp-next
    "C-M-h"   #'+persp/move-buffer-prev
-   "C-M-l"   #'+persp/move-buffer-next
-   ;; "C-SPC"   #'toggle-input-method
-   )
+   "C-M-l"   #'+persp/move-buffer-next)
 
   ;; ** Global Keybindings
   (+my-leader-def
     :states 'normal
     :keymaps 'override ; prevent from being override
+    ;; most-frequency keys
+    "RET"    #'gptel
+    "x"      #'scratch-buffer
+    "."      #'find-file
+    "<"      #'consult-buffer
+    ","      #'consult-project-buffer
+    "/"      #'+vertico/project-search
+    "TAB"    #'evil-switch-to-windows-last-buffer
+    "SPC"    #'projectile-find-file
+    ;; llm-related key bindings
+    "i" '(:ignore t :which-key "search")
+    "i RET"  #'gptel-send
+    "ir"     #'gptel-rewrite
+    "ii"     #'gptel-menu
+    ;; action-related key bindings
     "a" '(:ignore t :which-key "actions")
     "a RET"  #'embark-dwim
     ;; window-related key bindings
-
     "w" '(:ignore t :which-key "window")
     "wh"     #'evil-window-left
     "wj"     #'evil-window-down
@@ -320,15 +332,6 @@
     "s" '(:ignore t :which-key "search")
     "si"     #'consult-imenu ;; search item
     "sh"     #'consult-history ;; search history
-    ;; other
-    "RET"    #'gptel
-    "x"      #'scratch-buffer
-    "."      #'find-file
-    "<"      #'consult-buffer
-    ","      #'consult-project-buffer
-    "/"      #'+vertico/project-search
-    "TAB"    #'evil-switch-to-windows-last-buffer
-    "SPC"    #'projectile-find-file
     )
 
   ;; deft mode map
