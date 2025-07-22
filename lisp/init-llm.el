@@ -31,9 +31,10 @@
   (general-define-key
    :keymaps 'gptel-mode-map
    "C-c C-c" #'gptel-send)
+  )
 
-  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@jamie\n")
-  (setf (alist-get 'org-mode gptel-response-prefix-alist) "@deepseek\n"))
+;; (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@jamie\n")
+;; (setf (alist-get 'org-mode gptel-response-prefix-alist) "@deepseek\n"))
 
 ;; (use-package aidermacs
 ;;   :bind (("C-c a" . aidermacs-transient-menu))
