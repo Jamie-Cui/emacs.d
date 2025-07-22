@@ -27,8 +27,8 @@
           :stream t
           :key (auth-source-pick-first-password :host "api.deepseek.com")
           :models '(deepseek-r1)))
-  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@jamie\n")
-  (setf (alist-get 'org-mode gptel-response-prefix-alist) "@deepseek\n"))
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "*Jamie*\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "*@Deepseek*\n"))
 
 ;; (use-package aidermacs
 ;;   :bind (("C-c a" . aidermacs-transient-menu))
