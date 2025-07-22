@@ -53,3 +53,5 @@ open ~/Library/Preferences/.GlobalPreferences.plist
 ./configure --with-native-compilation --with-tree-sitter --without-x-toolkit --without-xpm --without-gif --without-tiff --without-gnutls
 
 see: https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/
+
+tree-sitter pre-built binaries: https://github.com/emacs-tree-sitter/tree-sitter-langs
