@@ -47,3 +47,11 @@ defaults write -g KeyRepeat -int 1
 # or, config those values though GUI
 open ~/Library/Preferences/.GlobalPreferences.plist
 #+end_src
+
+** native build emacs cannot find the installed tree-sitter?
+
+./configure --with-native-compilation --with-tree-sitter --without-x-toolkit --without-xpm --without-gif --without-tiff --without-gnutls
+
+see: https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/
+
+tree-sitter pre-built binaries: https://github.com/emacs-tree-sitter/tree-sitter-langs
