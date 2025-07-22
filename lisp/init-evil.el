@@ -15,7 +15,6 @@
    evil-nerd-commenter
    evil-args
    evil-surround
-   evil-escape ; quit everything with C-g!
    general ; more convenient way of defining keys
    which-key
    ))
@@ -49,29 +48,16 @@
   (evil-collection-define-key '(normal visual) 'evil-mc-key-map (kbd "gz") evil-mc-cursors-map)
   )
 
-(use-package evil-escape
-  :ensure t
-  :after (evil general)
-  :custom
-  (evil-escape-excluded-states '(normal visual multiedit emacs motion))
-  (evil-escape-excluded-major-modes '(vterm-mode))
-  (evil-escape-key-sequence nil)
-  (evil-escape-delay 0.15)
-  :config
-  ;; `evil-escape' in the minibuffer is more disruptive than helpful. That is,
-  ;; unless we have `evil-collection-setup-minibuffer' enabled, in which case we
-  ;; want the same behavior in insert mode as we do in normal buffers.
-  (add-hook 'evil-escape-inhibit-functions
-            (defun +evil-inhibit-escape-in-minibuffer-fn ()
-              (and (minibufferp)
-                   (or (not (bound-and-true-p evil-collection-setup-minibuffer))
-                       (evil-normal-state-p)))))
-  (general-define-key
-   :states '(insert replace visual operator)
-   "C-g" #'evil-escape)
-
-  (evil-escape-mode)
-  )
+;; HACK https://www.reddit.com/r/emacs/comments/45w9mv/comment/d3ud03t/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+(defun normal-escape-pre-command-handler ()
+       (interactive)
+       (pcase this-command
+         (_ (when (and (string= "C-g" (key-description (this-command-keys)))
+                       (bound-and-true-p evil-mode)
+                       (or (evil-insert-state-p)
+                           (evil-emacs-state-p)))
+                           (evil-force-normal-state)))))
+(add-hook 'pre-command-hook 'normal-escape-pre-command-handler)
 
 (use-package evil-args
   :ensure t
@@ -80,11 +66,11 @@
   ;; bind evil-args text objects
   (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
   (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
-
+  
   ;; bind evil-forward/backward-args
   (define-key evil-normal-state-map "L" 'evil-forward-arg)
   (define-key evil-normal-state-map "H" 'evil-backward-arg)
-
+  
   ;; bind evil-jump-out-args
   (define-key evil-normal-state-map "K" 'evil-jump-out-args))
 
@@ -103,13 +89,13 @@
         evil-goggles-enable-change nil)
   )
 
-
 (use-package evil-mc
   :ensure t
   :after evil
   :config
+  (setq evil-mc-undo-cursors-on-keyboard-quit t)
   (global-evil-mc-mode  1) ;; enable
-  (setq evil-mc-undo-cursors-on-keyboard-quit t))
+  )
 
 (use-package evil-multiedit
   :ensure t
