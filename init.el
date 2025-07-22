@@ -239,8 +239,10 @@
     "SPC"    #'projectile-find-file
     ;; llm-related key bindings
     "i" '(:ignore t :which-key "search")
-    "i RET"  #'gptel-send
-    "ir"     #'gptel-rewrite
+    "i RET"  #'gptel
+    "is"     #'gptel-send
+    "iq"     #'gptel-abort
+    "ic"     #'gptel-add
     "ii"     #'gptel-menu
     ;; action-related key bindings
     "a" '(:ignore t :which-key "actions")
