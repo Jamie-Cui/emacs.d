@@ -16,7 +16,7 @@
 (use-package gptel
   :ensure t
   :config
-  (setq gptel-model   'deepseek-r1
+  (setq gptel-model 'deepseek-r1
         gptel-default-mode 'org-mode
         gptel-org-branching-context t
         gptel-log-level 'info
@@ -27,14 +27,8 @@
           :stream t
           :key (auth-source-pick-first-password :host "api.deepseek.com")
           :models '(deepseek-r1)))
-
-  (general-define-key
-   :keymaps 'gptel-mode-map
-   "C-c C-c" #'gptel-send)
-  )
-
-;; (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@jamie\n")
-;; (setf (alist-get 'org-mode gptel-response-prefix-alist) "@deepseek\n"))
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@jamie\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "@deepseek\n"))
 
 ;; (use-package aidermacs
 ;;   :bind (("C-c a" . aidermacs-transient-menu))
