@@ -193,11 +193,6 @@
 
   (general-create-definer +my-local-leader-def
     :prefix my-local-leader)
-
-  (general-define-key
-   :states '(insert replace normal visual operator)
-   "C-g" #'evil-escape
-   )
   
   ;; HACK always get a new eshell
   (defun +eshell/new ()

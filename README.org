@@ -1,7 +1,5 @@
 * Emacs.d
 
-(version 31.0.50)
-
 #+begin_src
       **   ******        ********                                      
      /**  **////**      /**/////                                       
@@ -13,33 +11,29 @@
  /////    //////        //////// ///  //  //  ////////  /////  ////// 
 #+end_src
 
-font: https://github.com/subframe7536/maple-font
-
-My personal emacs config
-
 * What this config does?
-
 1. Use melpa only.
+2. Use emacs version 31.0.50.
+3. Use font: [[https://github.com/subframe7536/maple-font][repo]], [[https://github.com/subframe7536/maple-font/releases/download/v7.4/MapleMono-NF-CN-unhinted.zip][download]]
 
 * Getting started
-
 ** $HOME/.emacs.d/init.el
-
 #+begin_src elisp
 (defvar jc-emacs-directory "~/Desktop/emacs.d")
 (load (concat jc-emacs-directory "/init.el"))
 #+end_src
 
 * Q & A 
-
 ** gptel api key location
-
+#+begin_src bash
+# file location
 ~/.authinfo
 
+# format
 machine api.deepseek.com login apikey password whatever-your-api-key-is
+#+end_src
 
 ** Tweak keyboard
-
 #+begin_src bash
 # ubuntu
 gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 15
