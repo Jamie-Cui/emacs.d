@@ -86,10 +86,15 @@
 (require 'init-evil)
 (require 'init-dired)
 (require 'init-org)
-(require 'init-latex)
 (require 'init-chinese)
 (require 'init-os)
 (require 'init-llm)
+
+(when (display-graphic-p)
+  (require 'init-latex))
+
+(when (not (display-graphic-p))
+  (require 'init-tty))
 
 ;; -----------------------------------------------------------
 ;; DONE programming modes
