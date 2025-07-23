@@ -75,14 +75,7 @@
    treesit-auto
    ;; sudo-edit
    sudo-edit
-   ;; fancy compilation
-   fancy-compilation
    ))
-
-(use-package fancy-compilation
-  :ensure t
-  :config 
-  (fancy-compilation-mode +1))
 
 (use-package persp-projectile
   :ensure t)

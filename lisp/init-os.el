@@ -69,13 +69,13 @@
     :group 'magit-status)
   
   (defun magit-staging-refresh-buffer ()
-         (magit-insert-section (status)
-                               (magit-insert-unstaged-changes)
-                               (magit-insert-staged-changes)))
+    (magit-insert-section (status)
+      (magit-insert-unstaged-changes)
+      (magit-insert-staged-changes)))
   
   (defun magit-staging ()
-         (interactive)
-         (magit-mode-setup #'magit-staging-mode))
+    (interactive)
+    (magit-mode-setup #'magit-staging-mode))
   )
 
 
