@@ -9,7 +9,6 @@
    ;; better dired
    ;; dirvish
    dired-subtree
-   dired-filter
    diredfl ;; color
    nerd-icons
    nerd-icons-dired
@@ -49,13 +48,6 @@
    :states 'normal
    :keymaps 'dired-mode-map
    "TAB" #'dired-subtree-toggle)
-  )
-
-(use-package dired-filter
-  :ensure t
-  :after dired
-  :config
-  (add-hook 'dired-mode-hook 'dired-filter-mode)
   )
 
 (use-package diredfl

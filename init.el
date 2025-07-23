@@ -86,10 +86,15 @@
 (require 'init-evil)
 (require 'init-dired)
 (require 'init-org)
-(require 'init-latex)
 (require 'init-chinese)
 (require 'init-os)
 (require 'init-llm)
+
+(when (display-graphic-p)
+  (require 'init-latex))
+
+(when (not (display-graphic-p))
+  (require 'init-tty))
 
 ;; -----------------------------------------------------------
 ;; DONE programming modes
@@ -208,7 +213,7 @@
   (general-define-key
    :keymaps 'override
    "M-f"     #'consult-line
-   "C-M-i"   #'completion-at-point
+   "M-i"     #'completion-at-point
    "M-y"     #'yas-expand
    "M-a"     #'mark-whole-buffer ; like mac
    "M-s"     #'save-buffer ; like mac
