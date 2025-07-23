@@ -213,7 +213,7 @@
   (general-define-key
    :keymaps 'override
    "M-f"     #'consult-line
-   "C-M-i"   #'completion-at-point
+   "M-i"     #'completion-at-point
    "M-y"     #'yas-expand
    "M-a"     #'mark-whole-buffer ; like mac
    "M-s"     #'save-buffer ; like mac
