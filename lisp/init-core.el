@@ -36,7 +36,7 @@
    ;; icons
    nerd-icons
    ;; modeline
-   doom-modeline
+   ;; doom-modeline
    ;; cpplint
    flycheck-google-cpplint
    ;; show key frenquency
@@ -253,15 +253,15 @@
   ;; forces loading the package.
   (marginalia-mode))
 
-(use-package doom-modeline
-  :ensure t
-  :after nerd-icons
-  :custom
-  (doom-modeline-buffer-file-name-style 'auto)
-  :config
-  (setq doom-modeline-icon nil) ; optional
-  (doom-modeline-mode 1)
-  )
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :after nerd-icons
+;;   :custom
+;;   (doom-modeline-buffer-file-name-style 'auto)
+;;   :config
+;;   (setq doom-modeline-icon nil) ; optional
+;;   (doom-modeline-mode 1)
+;;   )
 
 (use-package nerd-icons
   :ensure t)
