@@ -11,16 +11,45 @@
  /////    //////        //////// ///  //  //  ////////  /////  ////// 
 #+end_src
 
-* What this config does?
+** What this config does?
 1. Use melpa only.
 2. Use emacs version 31.0.50.
 3. Use font: [[https://github.com/subframe7536/maple-font][repo]], [[https://github.com/subframe7536/maple-font/releases/download/v7.4/MapleMono-NF-CN-unhinted.zip][download]]
+4. Plantuml: https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar
 
 * Getting started
-** $HOME/.emacs.d/init.el
+** Dwonload and Compile Emacs
+
+#+begin_src bash
+wget -c https://github.com/emacs-mirror/emacs/archive/refs/tags/emacs-30.1.tar.gz
+
+# unzip and enter emacs folder
+autoconf
+./configure --with-native-compilation --with-tree-sitter --without-x-toolkit --without-xpm --without-gif --without-tiff --without-gnutls
+sudo make install
+#+end_src
+
+** Setup ~$HOME/.emacs.d/init.el~
 #+begin_src elisp
 (defvar jc-emacs-directory "~/Desktop/emacs.d")
 (load (concat jc-emacs-directory "/init.el"))
+
+#+end_src
+
+** C/C++ Dev Tools
+*** clangd
+*** clang-format
+*** clang-tidy
+*** cpplint
+
+#+begin_src bash
+pip3 install cpplint
+#+end_src
+
+*** cmake-format
+
+#+begin_src bash
+pip3 install cmake-format
 #+end_src
 
 * Q & A 
@@ -48,9 +77,10 @@ defaults write -g KeyRepeat -int 1
 open ~/Library/Preferences/.GlobalPreferences.plist
 #+end_src
 
-** native build emacs cannot find the installed tree-sitter?
+**** native build emacs cannot find the installed tree-sitter?
 
-./configure --with-native-compilation --with-tree-sitter --without-x-toolkit --without-xpm --without-gif --without-tiff --without-gnutls
+
+
 
 see: https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/
 

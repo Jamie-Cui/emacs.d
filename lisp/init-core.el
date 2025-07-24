@@ -17,7 +17,6 @@
    ;; complete engine
    corfu
    ;; better terminal emulater
-   ;; vterm
    eat
    ;; the killer app: git ui
    magit
@@ -44,23 +43,13 @@
    keyfreq
    ;; adds marginalia to the minibuffer completions
    marginalia
-   ;; make line-break look nicer
-   page-break-lines
-   ;; Colorize color names in buffers
-   ;;  rainbow-mode
    ;; code auto formating
    apheleia
    ;; Emacs Mini-Buffer Actions Rooted in Keymaps
    embark
    embark-consult
-   ;; colorful compilation output
-   ansi-color
    ;; make eldoc looks nicer
    eldoc-box
-   ;; pdf tools
-   pdf-tools
-   ;; latex support 
-   ;;  auctex
    ;; better snippet
    yasnippet
    consult-yasnippet
@@ -75,6 +64,11 @@
    treesit-auto
    ;; sudo-edit
    sudo-edit
+   ;; dired
+   dired-subtree
+   diredfl ;; color
+   nerd-icons
+   nerd-icons-dired
    ))
 
 (use-package persp-projectile
@@ -92,10 +86,7 @@
    '(
      (help-mode :stick t)
      (helpful-mode :stick t)
-     ;; (compilation-mode :stick t)
      ("*Flycheck errors*" :stick t)
-     ;; ("*DeepSeek*" :stick t)
-     ;; ("*scratch*" :stick t)
      )
    )
   :config
@@ -129,8 +120,6 @@
   (yas-global-mode 1)
   ;; reload all snippets
   (yas-reload-all)
-  ;; (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  ;; (define-key yas-minor-mode-map (kbd "TAB") nil)
   )
 
 (use-package eldoc-box
@@ -209,15 +198,6 @@
   (flycheck-idle-change-delay 4)
   )
 
-;; (use-package rainbow-mode
-;;   :ensure t
-;;   :hook (emacs-lisp-mode text-mode lisp-mode cc-mode cmake-mode))
-
-(use-package page-break-lines
-  :ensure t
-  :config
-  (global-page-break-lines-mode 1))
-
 (use-package flycheck-google-cpplint
   :ensure t
   :custom
@@ -280,10 +260,6 @@
   (doom-modeline-buffer-file-name-style 'auto)
   :config
   (setq doom-modeline-icon nil) ; optional
-  ;; (if (facep 'mode-line-active)
-  ;;     (set-face-attribute 'mode-line-active nil :family "0xProto Nerd Font Mono 14") ; For 29+
-  ;;   (set-face-attribute 'mode-line nil :family "0xProto Nerd Font Mono 14"))
-  ;; (set-face-attribute 'mode-line-inactive nil :family "0xProto Nerd Font Mono 14")
   (doom-modeline-mode 1)
   )
 
@@ -307,7 +283,6 @@
 
   ;; Set the title  
   (setq dashboard-banner-logo-title "It's possible to build a cabin with no foundations, but not a lasting building.")
-  ;; (setq dashboard-page-separator "\n\f\n")
 
   ;; To disable shortcut "jump" indicators for each section, set
   (setq dashboard-show-shortcuts nil)
@@ -385,16 +360,6 @@
    :keymaps 'smerge-mode-map
    "C-c C-c"     #'smerge-keep-current))
 
-;; vterm
-;; (use-package vterm
-;;   :ensure t
-;;   :config
-;;   (setq vterm-mode-hook (lambda() (display-line-numbers-mode -1)))
-
-;;   ;; set tramp default encoding shell to zsh
-;;   (add-to-list 'vterm-tramp-shells '("sshx" login-shell))
-;;   )
-
 (use-package eat
   :ensure t
   :custom
@@ -417,9 +382,6 @@
   :config
   (defun +projectile-project-name--lower-case (project-root)
     (downcase (file-name-nondirectory (directory-file-name project-root))))
-  ;; (advice-add 'projectile-project-root :before-while
-  ;;             (lambda (&optional dir)
-  ;; (not (file-remote-p (or dir default-directory))))
   (projectile-mode +1)
   )
 
@@ -465,5 +427,62 @@
 ;; sudo-edit
 (use-package sudo-edit
   :ensure t)
+
+;; dired hide .. and .
+(add-hook 'dired-mode-hook 'dired-omit-mode)
+
+(use-package nerd-icons
+  :ensure t)
+
+(use-package nerd-icons-dired
+  :ensure t
+  :after dired
+  :config
+  (add-hook 'dired-mode-hook 'nerd-icons-dired-mode))
+
+(use-package dired
+  :custom
+  (dired-listing-switches (purecopy "-alh --human-readable --group-directories-first --no-group"))
+  (dired-kill-when-opening-new-dired-buffer t)
+  (dired-omit-extensions nil)
+  (dired-dwim-target t)
+  :config
+  (general-define-key
+   :states 'normal
+   :keymaps 'dired-mode-map
+   "h"   #'dired-up-directory
+   "l"   #'dired-find-file)
+  )
+
+(use-package dired-subtree
+  :ensure t
+  :after dired
+  :config
+  (general-define-key
+   :states 'normal
+   :keymaps 'dired-mode-map
+   "TAB" #'dired-subtree-toggle)
+  )
+
+(use-package diredfl
+  :ensure t
+  :config
+  (diredfl-global-mode)
+  )
+
+(use-package tramp
+  :config
+  ;; Enable full-featured Dirvish over TRAMP on ssh connections
+  ;; https://www.gnu.org/software/tramp/#Improving-performance-of-asynchronous-remote-processes
+  (connection-local-set-profile-variables
+   'remote-direct-async-process
+   '((tramp-direct-async-process . t)))
+  (connection-local-set-profiles
+   '(:application tramp :protocol "ssh")
+   'remote-direct-async-process)
+  ;; Tips to speed up connections
+  (setq tramp-verbose 0)
+  (setq tramp-chunksize 2000)
+  (setq tramp-ssh-controlmaster-options nil))
 
 (provide 'init-core)

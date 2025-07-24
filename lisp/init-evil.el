@@ -6,6 +6,9 @@
 
 (+ensure-packages-installed
  '(
+   ;; more convenient way of defining keys
+   general 
+   which-key
    ;; evil-related
    evil
    evil-collection
@@ -15,8 +18,7 @@
    evil-nerd-commenter
    evil-args
    evil-surround
-   general ; more convenient way of defining keys
-   which-key
+   evil-terminal-cursor-changer
    ))
 
 ;; evil
@@ -50,13 +52,13 @@
 
 ;; HACK https://www.reddit.com/r/emacs/comments/45w9mv/comment/d3ud03t/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 (defun normal-escape-pre-command-handler ()
-       (interactive)
-       (pcase this-command
-         (_ (when (and (string= "C-g" (key-description (this-command-keys)))
-                       (bound-and-true-p evil-mode)
-                       (or (evil-insert-state-p)
-                           (evil-emacs-state-p)))
-                           (evil-force-normal-state)))))
+  (interactive)
+  (pcase this-command
+    (_ (when (and (string= "C-g" (key-description (this-command-keys)))
+                  (bound-and-true-p evil-mode)
+                  (or (evil-insert-state-p)
+                      (evil-emacs-state-p)))
+         (evil-force-normal-state)))))
 (add-hook 'pre-command-hook 'normal-escape-pre-command-handler)
 
 (use-package evil-args
@@ -108,5 +110,18 @@
   :after evil
   :config
   (global-evil-surround-mode 1))
+
+(when (not (display-graphic-p))
+  (use-package evil-terminal-cursor-changer
+    :ensure t
+    :after evil
+    :config
+    (evil-terminal-cursor-changer-activate) ; or (etcc-on)
+    (setq evil-motion-state-cursor 'box)  ; █
+    (setq evil-visual-state-cursor 'box)  ; █
+    (setq evil-normal-state-cursor 'box)  ; █
+    (setq evil-insert-state-cursor 'bar)  ; ⎸
+    (setq evil-emacs-state-cursor  'hbar) ; _
+    ))
 
 (provide 'init-evil)

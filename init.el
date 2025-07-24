@@ -51,18 +51,15 @@
 ;; Enable package
 (require 'package)
 
-;; setup elpa pacakges
-;; (setq package-archives
-;;       '(
-;;         ("gnu"   . "http://elpa.gnu.org/packages/")
-;;         ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-;;         ("org"   . "http://orgmode.org/elpa/")
-;;         ("melpa" . "http://melpa.org/packages/")))
-
 (setq package-archives '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
                          ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("org" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
-                         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
+                         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+                         ;; ("gnu"   . "http://elpa.gnu.org/packages/")
+                         ;; ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
+                         ;; ("org"   . "http://orgmode.org/elpa/")
+                         ;; ("melpa" . "http://melpa.org/packages/")
+                         ))
 
 ;; initialize packages
 (package-initialize)
@@ -84,7 +81,6 @@
 (require 'init-utils)
 (require 'init-core)
 (require 'init-evil)
-(require 'init-dired)
 (require 'init-org)
 (require 'init-chinese)
 (require 'init-os)
@@ -116,12 +112,15 @@
    yaml-mode
    ;; pdf-tools
    pdf-tools
+   ;; go-mode
+   go-mode
    ))
 
 (use-package protobuf-mode)
 (use-package meson-mode)
 (use-package markdown-mode)
 (use-package yaml-mode)
+(use-package go-mode)
 
 ;; ------------------------------------------------------------------
 ;; DONE C/C++, cmake and bazel
