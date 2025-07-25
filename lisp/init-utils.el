@@ -27,7 +27,7 @@
     (user-error "Couldn't find ripgrep in your PATH"))
   (require 'consult)
   (setq deactivate-mark t)
-  (let* ((project-root (or (doom-modeline--project-root) default-directory))
+  (let* ((project-root (or (projectile-project-root) default-directory))
          (directory (or in project-root))
          (consult-ripgrep-args
           (concat "rg "
