@@ -32,6 +32,8 @@ autoconf
 sudo make install
 #+end_src
 
+tree-sitter problem? see: https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+
 ** Setup ~$HOME/.emacs.d/init.el~
 #+begin_src elisp
 (defvar jc-emacs-directory "~/Desktop/emacs.d")
