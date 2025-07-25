@@ -25,7 +25,10 @@ wget -c https://github.com/emacs-mirror/emacs/archive/refs/tags/emacs-30.1.tar.g
 
 # unzip and enter emacs folder
 autoconf
-./configure --with-native-compilation --with-tree-sitter --without-x-toolkit --without-xpm --without-gif --without-tiff --without-gnutls
+# terminal
+./configure --with-native-compilation --with-tree-sitter --without-x-toolkit --without-xpm --without-gif --without-tiff --without-gnutls --with-sqlite3
+# gui 
+./configure --with-native-compilation --with-tree-sitter --without-gnutls --with-sqlite3
 sudo make install
 #+end_src
 
@@ -78,9 +81,6 @@ open ~/Library/Preferences/.GlobalPreferences.plist
 #+end_src
 
 **** native build emacs cannot find the installed tree-sitter?
-
-
-
 
 see: https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/
 
