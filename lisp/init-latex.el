@@ -10,9 +10,14 @@
    citar
    ;; preview org math
    ;; xenops
+   ;; latex support
+   auctex
    ;; export org code in colors
    engrave-faces
    ))
+
+(use-package auctex
+  :ensure t)
 
 (use-package org
   :config
@@ -44,7 +49,7 @@
   (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup))
 
-(setopt org-startup-with-latex-preview t)
+(setopt org-startup-with-latex-preview 'nil) ;; do not preview
 (setopt org-preview-latex-default-process 'dvisvgm)
 
 ;; (use-package xenops
