@@ -5,7 +5,47 @@
 (require 'init-utils)
 
 ;;; --------------------------------------
-;;; WLS2
+;;; Darwin (MacOs)
+;;; --------------------------------------
+
+(when (eq system-type 'darwin)
+  (setq mac-command-modifier 'meta)
+  (add-to-list 'default-frame-alist '(undecorated . t))
+  ;; Fix, macos dired permission
+  (setq insert-directory-program "gls" dired-use-ls-dired t)
+  )
+
+;;; --------------------------------------
+;;; Windows-NT
+;;; --------------------------------------
+
+(when (eq system-type 'windows-nt)
+  (setq tramp-default-method "plink")
+  (setq tramp-use-connection-share t)
+  (setq inhibit-eol-conversion t)
+  (prefer-coding-system 'utf-8)
+  (setq buffer-file-coding-system 'utf-8-unix)
+  (set-terminal-coding-system 'utf-8)
+  ;;(set-keyboard-coding-system 'utf-8)
+  (set-language-environment "UTF-8")
+  
+  ;; see: https://github.com/magit/magit/issues/2219#issuecomment-157219646
+  (define-derived-mode magit-staging-mode magit-status-mode "Magit staging"
+    "Mode for showing staged and unstaged changes."
+    :group 'magit-status)
+  
+  (defun magit-staging-refresh-buffer ()
+    (magit-insert-section (status)
+      (magit-insert-unstaged-changes)
+      (magit-insert-staged-changes)))
+  
+  (defun magit-staging ()
+    (interactive)
+    (magit-mode-setup #'magit-staging-mode))
+  )
+
+;;; --------------------------------------
+;;; Windows-WSL
 ;;; --------------------------------------
 
 (when (getenv "WSLENV")
@@ -37,46 +77,5 @@
     (org-download-screenshot-method
      "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\""))
   )
-
-;;; --------------------------------------
-;;; Darwin (MacOs)
-;;; --------------------------------------
-
-(when (eq system-type 'darwin)
-  (setq mac-command-modifier 'meta)
-  (add-to-list 'default-frame-alist '(undecorated . t))
-  ;; Fix, macos dired permission
-  (setq insert-directory-program "gls" dired-use-ls-dired t)
-  )
-
-;;; --------------------------------------
-;;; Windows
-;;; --------------------------------------
-
-(when (eq system-type 'windows-nt)
-  (setq tramp-default-method "plink")
-  (setq tramp-use-connection-share t)
-  (setq inhibit-eol-conversion t)
-  (prefer-coding-system 'utf-8)
-  (setq buffer-file-coding-system 'utf-8-unix)
-  (set-terminal-coding-system 'utf-8)
-  ;;(set-keyboard-coding-system 'utf-8)
-  (set-language-environment "UTF-8")
-  
-  ;; see: https://github.com/magit/magit/issues/2219#issuecomment-157219646
-  (define-derived-mode magit-staging-mode magit-status-mode "Magit staging"
-    "Mode for showing staged and unstaged changes."
-    :group 'magit-status)
-  
-  (defun magit-staging-refresh-buffer ()
-    (magit-insert-section (status)
-      (magit-insert-unstaged-changes)
-      (magit-insert-staged-changes)))
-  
-  (defun magit-staging ()
-    (interactive)
-    (magit-mode-setup #'magit-staging-mode))
-  )
-
 
 (provide 'init-os)
