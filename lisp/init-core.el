@@ -35,12 +35,8 @@
    dashboard
    ;; icons
    nerd-icons
-   ;; modeline
-   ;; doom-modeline
    ;; cpplint
    flycheck-google-cpplint
-   ;; show key frenquency
-   keyfreq
    ;; adds marginalia to the minibuffer completions
    marginalia
    ;; code auto formating
@@ -52,7 +48,6 @@
    eldoc-box
    ;; better snippet
    yasnippet
-   consult-yasnippet
    ;; workspace
    perspective
    persp-projectile
@@ -60,8 +55,6 @@
    smartparens
    ;; popup window
    popwin
-   ;; treesit-auto
-   treesit-auto
    ;; sudo-edit
    sudo-edit
    ;; dired
@@ -72,9 +65,6 @@
    ))
 
 (use-package persp-projectile
-  :ensure t)
-
-(use-package treesit-auto
   :ensure t)
 
 (use-package popwin
@@ -113,7 +103,6 @@
 (use-package yasnippet
   :ensure t
   :config
-  (require 'consult-yasnippet)
   (let ((my-yas-dir (concat jc-emacs-directory "/snippets")))
     (add-to-list 'yas-snippet-dirs my-yas-dir))
   ;; start mode globally
@@ -252,16 +241,6 @@
   ;; such that ;; the mode gets enabled right away. Note that this
   ;; forces loading the package.
   (marginalia-mode))
-
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :after nerd-icons
-;;   :custom
-;;   (doom-modeline-buffer-file-name-style 'auto)
-;;   :config
-;;   (setq doom-modeline-icon nil) ; optional
-;;   (doom-modeline-mode 1)
-;;   )
 
 (use-package nerd-icons
   :ensure t)

@@ -110,17 +110,15 @@
    markdown-mode
    ;; yaml mode
    yaml-mode
-   ;; pdf-tools
-   pdf-tools
-   ;; go-mode
-   go-mode
+   ;; treesit-auto
+   treesit-auto
    ))
 
+(use-package treesit-auto)
 (use-package protobuf-mode)
 (use-package meson-mode)
 (use-package markdown-mode)
 (use-package yaml-mode)
-(use-package go-mode)
 
 ;; ------------------------------------------------------------------
 ;; DONE C/C++, cmake and bazel
@@ -132,7 +130,7 @@
 (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
 
-;; sibling files
+;; sibling files (for cpp)
 (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
 (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
 
@@ -155,23 +153,31 @@
   (setq bazel-buildifier-before-save 't))
 
 ;; ------------------------------------------------------------------
-;; TODO Rust mode
+;; DONE Rust mode
 ;; ------------------------------------------------------------------
 
-(let* ((rust-files '(".rs"))
-       (rust-regexp (concat (regexp-opt rust-files t) "\\'")))
-  (add-to-list 'auto-mode-alist (cons rust-regexp 'rust-ts-mode)))
+(let* ((lang-files '(".rs"))
+       (lang-regexp (concat (regexp-opt lang-files t) "\\'")))
+  (add-to-list 'auto-mode-alist (cons lang-regexp 'rust-ts-mode)))
 
-(let* ((rust-files '("Cargo.lock"))
-       (rust-regexp (concat (regexp-opt rust-files t) "\\'")))
-  (add-to-list 'auto-mode-alist (cons rust-regexp 'conf-toml-mode)))
+(let* ((lang-files '("Cargo.lock"))
+       (lang-regexp (concat (regexp-opt lang-files t) "\\'")))
+  (add-to-list 'auto-mode-alist (cons lang-regexp 'conf-toml-mode)))
+
+;; ------------------------------------------------------------------
+;; TODO Go mode
+;; ------------------------------------------------------------------
+
+;; (let* ((lang-files '(".go"))
+;;        (lang-regexp (concat (regexp-opt lang-files t) "\\'")))
+;;   (add-to-list 'auto-mode-alist (cons lang-regexp 'go-ts-mode)))
 
 ;; ------------------------------------------------------------------
 ;; TODO Zig mode 
 ;; ------------------------------------------------------------------
 
 ;; ------------------------------------------------------------------
-;; Markdown mode
+;; DONE Markdown mode
 ;; ------------------------------------------------------------------
 
 (use-package markdown-mode
@@ -211,14 +217,13 @@
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
-   "M-f"     #'consult-line
    "M-i"     #'completion-at-point
    "M-y"     #'yas-expand
-   "M-a"     #'mark-whole-buffer ; like mac
-   "M-s"     #'save-buffer ; like mac
-   "M-c"     #'evil-yank ; like mac
-   "M-v"     #'evil-paste-before ; like mac
    "M-/"     #'evilnc-comment-or-uncomment-lines
+   "M-f"     #'consult-line ; search like mac
+   "M-a"     #'mark-whole-buffer ; select like mac
+   "M-s"     #'save-buffer ; save like mac
+   "M-v"     #'evil-paste-before ; paste like mac
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
@@ -380,20 +385,4 @@
         scroll-margin 0)        ; important: scroll-margin>0 not yet supported
   :config
   (ultra-scroll-mode 1)
-  )
-
-;; -----------------------------------------------------------
-;; DONE pdf-tools
-;; -----------------------------------------------------------
-
-(use-package pdf-tools
-  :ensure t
-  :mode (("\\.pdf\\'" . pdf-view-mode))
-  :config
-  (pdf-loader-install)
-  (add-hook
-   'org-mode-hook
-   '(lambda ()
-      (delete '("\\.pdf\\'" . default) org-file-apps)
-      (add-to-list 'org-file-apps '("\\.pdf\\'" . org-pdftools-open))))
   )

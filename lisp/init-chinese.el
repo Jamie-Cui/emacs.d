@@ -6,21 +6,11 @@
 
 (+ensure-packages-installed
  '(
-   ;; Chinese input
-   rime
    ;; chinese spacing
    pangu-spacing
    ;; chinese s alignment, or valign (maybe?)
    cnfonts
    ))
-
-;; linux use rime
-(use-package rime
-  :ensure t
-  :when (not (eq system-type 'darwin)) ;; do not load rime on macos
-  :config
-  (setq default-input-method "rime")
-  (setq rime-show-candidate 'popup))
 
 (use-package pangu-spacing
   :ensure t
