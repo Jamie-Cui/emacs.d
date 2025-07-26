@@ -74,6 +74,7 @@
   ;; HACK redefine special display rule
   (popwin:special-display-config
    '(
+     ;; (TeX-output-mode :stick t)
      (help-mode :stick t)
      (helpful-mode :stick t)
      ("*Flycheck errors*" :stick t)

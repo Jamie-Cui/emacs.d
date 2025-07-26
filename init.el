@@ -235,7 +235,7 @@
 
   ;; ** Global Keybindings
   (+my-leader-def
-    :states 'normal
+    :states '(normal visual)
     :keymaps 'override ; prevent from being override
     ;; most-frequency keys
     "RET"    #'gptel
@@ -249,6 +249,7 @@
     ;; llm-related key bindings
     "i" '(:ignore t :which-key "search")
     "i RET"  #'gptel
+    "ir"     #'gptel-rewrite
     "is"     #'gptel-send
     "iq"     #'gptel-abort
     "ic"     #'gptel-add
