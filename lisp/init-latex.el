@@ -10,11 +10,27 @@
    citar
    ;; preview org math
    ;; xenops
+   ;; pdf-tools support`'
+   pdf-tools
    ;; latex support
    auctex
    ;; export org code in colors
    engrave-faces
    ))
+
+(use-package pdf-tools
+  :ensure t
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode) ; Associate .pdf files with pdf-view-mode
+  :magic ("%PDF" . pdf-view-mode) ; Use magic number to identify PDF files
+  :custom
+  ;; to use pdfview with auctex
+  (TeX-view-program-selection '((output-pdf "PDF Tools")))
+  :init
+  (pdf-tools-install)
+  :config
+  ;; pdf-tools have the buffer refresh after compilation
+  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+  )
 
 (use-package auctex
   :ensure t)
