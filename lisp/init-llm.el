@@ -15,6 +15,8 @@
 
 (use-package gptel
   :ensure t
+  :custom
+  (gptel-rewrite-default-action 'merge)
   :config
   (setq gptel-model 'deepseek-r1
         gptel-default-mode 'org-mode
