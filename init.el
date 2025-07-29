@@ -114,7 +114,39 @@
    treesit-auto
    ))
 
-(use-package treesit-auto)
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  ;; compatiable with libtree-sitter-dev/noble,now 0.20.8-2 amd64 [installed]
+  (setq my-cpp-tsauto-config
+        (make-treesit-auto-recipe
+         :lang 'cpp
+         :ts-mode 'c++-ts-mode
+         :remap 'c++-mode
+         :url "https://github.com/tree-sitter/tree-sitter-cpp"
+         :revision "v0.22.0"
+         :requires 'c
+         :source-dir "src"
+         :ext "\\.cpp\\'"))
+  (add-to-list 'treesit-auto-recipe-list my-cpp-tsauto-config)
+
+  (setq my-c-tsauto-config
+        (make-treesit-auto-recipe
+         :lang 'c
+         :ts-mode 'c-ts-mode
+         :remap 'c-mode
+         :url "https://github.com/tree-sitter/tree-sitter-c"
+         :revision "v0.23.0"
+         :requires 'cpp
+         :source-dir "src"
+         :ext "\\.c\\'"))
+  (add-to-list 'treesit-auto-recipe-list my-c-tsauto-config)
+
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode)
+  )
+
 (use-package protobuf-mode)
 (use-package meson-mode)
 (use-package markdown-mode)
@@ -126,9 +158,9 @@
 
 ;; add auto-mode list
 ;; I prefer to use treesit-mode
-(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
+;; (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+;; (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+;; (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
 
 ;; sibling files (for cpp)
 (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
@@ -156,13 +188,13 @@
 ;; DONE Rust mode
 ;; ------------------------------------------------------------------
 
-(let* ((lang-files '(".rs"))
-       (lang-regexp (concat (regexp-opt lang-files t) "\\'")))
-  (add-to-list 'auto-mode-alist (cons lang-regexp 'rust-ts-mode)))
+;; (let* ((lang-files '(".rs"))
+;;        (lang-regexp (concat (regexp-opt lang-files t) "\\'")))
+;;   (add-to-list 'auto-mode-alist (cons lang-regexp 'rust-ts-mode)))
 
-(let* ((lang-files '("Cargo.lock"))
-       (lang-regexp (concat (regexp-opt lang-files t) "\\'")))
-  (add-to-list 'auto-mode-alist (cons lang-regexp 'conf-toml-mode)))
+;; (let* ((lang-files '("Cargo.lock"))
+;;        (lang-regexp (concat (regexp-opt lang-files t) "\\'")))
+;;   (add-to-list 'auto-mode-alist (cons lang-regexp 'conf-toml-mode)))
 
 ;; ------------------------------------------------------------------
 ;; TODO Go mode
