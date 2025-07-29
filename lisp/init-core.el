@@ -411,7 +411,7 @@
 
 (use-package dired
   :custom
-  (dired-listing-switches (purecopy "-alh --human-readable --group-directories-first --no-group"))
+  (dired-listing-switches (purecopy "-alX --human-readable --group-directories-first --no-group"))
   (dired-kill-when-opening-new-dired-buffer t)
   (dired-omit-extensions nil)
   (dired-dwim-target t)
