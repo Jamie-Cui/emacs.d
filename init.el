@@ -240,6 +240,12 @@
   (defun +eshell/new ()
     (interactive)
     (eshell '(t)))
+             
+  ;; HACK always get a new eat terminal
+  (defun +eat/new ()
+    (interactive)
+    (let ((current-prefix-arg '(t)))
+      (call-interactively 'eat)))
 
   ;; HACK kill current persp without asking
   (defun +persp/kill-current ()
@@ -315,6 +321,7 @@
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ot"     #'+eshell/new
+    "oT"     #'+eat/new
     "od"     #'dired-jump
     "oc"     #'compile
     "og"     #'magit-status-quick
