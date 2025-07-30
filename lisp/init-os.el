@@ -22,11 +22,11 @@
 (when (eq system-type 'windows-nt)
   (setq tramp-default-method "plink")
   (setq tramp-use-connection-share t)
-  (setq inhibit-eol-conversion t)
+  ;; (setq inhibit-eol-conversion t)
   (prefer-coding-system 'utf-8)
   (setq buffer-file-coding-system 'utf-8-unix)
   (set-terminal-coding-system 'utf-8)
-  ;;(set-keyboard-coding-system 'utf-8)
+  ;; (set-keyboard-coding-system 'utf-8)
   (set-language-environment "UTF-8")
   
   ;; see: https://github.com/magit/magit/issues/2219#issuecomment-157219646
