@@ -125,7 +125,7 @@
          :ts-mode 'c++-ts-mode
          :remap 'c++-mode
          :url "https://github.com/tree-sitter/tree-sitter-cpp"
-         :revision "v0.22.0"
+         :revision "v0.23.0"
          :requires 'c
          :source-dir "src"
          :ext "\\.cpp\\'"))
@@ -137,11 +137,22 @@
          :ts-mode 'c-ts-mode
          :remap 'c-mode
          :url "https://github.com/tree-sitter/tree-sitter-c"
-         :revision "v0.23.0"
+         :revision "v0.22.0"
          :requires 'cpp
          :source-dir "src"
          :ext "\\.c\\'"))
   (add-to-list 'treesit-auto-recipe-list my-c-tsauto-config)
+
+  (setq my-bash-tsauto-config
+        (make-treesit-auto-recipe
+         :lang 'bash
+         :ts-mode 'bash-ts-mode
+         :remap 'bash-mode
+         :url "https://github.com/tree-sitter/tree-sitter-bash"
+         :revision "v0.22.0"
+         :source-dir "src"
+         :ext "\\.c\\'"))
+  (add-to-list 'treesit-auto-recipe-list my-bash-tsauto-config)
 
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode)
@@ -240,7 +251,7 @@
   (defun +eshell/new ()
     (interactive)
     (eshell '(t)))
-             
+  
   ;; HACK always get a new eat terminal
   (defun +eat/new ()
     (interactive)
