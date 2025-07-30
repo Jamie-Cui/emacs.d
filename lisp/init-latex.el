@@ -14,8 +14,6 @@
    pdf-tools
    ;; latex support
    auctex
-   ;; export org code in colors
-   engrave-faces
    ))
 
 (use-package pdf-tools
@@ -35,32 +33,13 @@
 (use-package auctex
   :ensure t)
 
-(use-package org
-  :config
-  (add-to-list 'org-latex-packages-alist
-               '("lambda, advantage, operators, sets, adversary, landau,\
- probability, notions, logic, ff, mm, primitives, events, complexity, oracles,\
- asymptotics, keys" "cryptocode" t))
-  (add-to-list 'org-latex-packages-alist
-               '("" "booktabs" t))
-  )
-
-(use-package ox-latex
-  :after (engrave-faces citar)
-  :custom
-  (org-export-with-toc nil)
-  :config
-  (setq org-latex-src-block-backend 'engraved)
-  (setq org-latex-engraved-theme 't)
-  ;; this var is used by org-export
-  (add-to-list 'org-cite-global-bibliography (concat jc-org-root-dir "/all-ref.bib"))
-  )
-
 (use-package citar
   :ensure t
   :config
   (add-to-list 'citar-bibliography (concat jc-org-root-dir "/all-ref.bib"))
   (add-to-list 'citar-notes-paths (concat jc-org-root-dir "/roam"))
+  ;; NOTE this var is used by org-export
+  (add-to-list 'org-cite-global-bibliography (concat jc-org-root-dir "/all-ref.bib"))
   :hook
   (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup))

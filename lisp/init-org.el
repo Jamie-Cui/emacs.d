@@ -18,46 +18,18 @@
 (+ensure-packages-installed
  '(
    org-download
-   org-superstar
    org-roam
+   ;; make org prettier
    org-appear
    ;; better place to write diaries
    org-journal
    ;; deft for note taking
    deft
-   ;; allow drawing
+   ;; allow drawing plantuml
    plantuml-mode
-   ;; presentation
-   org-present
-   visual-fill-column
+   ;; export org code in colors
+   engrave-faces
    ))
-
-(use-package visual-fill-column
-  :ensure t)
-
-(use-package org-present
-  :ensure t
-  :config
-  (defun +org-present/start ()
-    ;; Center the presentation and wrap lines
-    (visual-fill-column-mode 1)
-    (visual-line-mode 1))
-
-  (defun +org-present/quit ()
-    ;; Stop centering the document
-    (visual-fill-column-mode 0)
-    (visual-line-mode 0))
-
-  (add-hook 'org-present-mode-hook 'org-present-big)
-  (add-hook 'org-present-mode-hook 'org-display-inline-images)
-  ;; (add-hook 'org-present-mode-hook 'org-present-hide-cursor)
-  (add-hook 'org-present-mode-hook 'org-present-read-only)
-  (add-hook 'org-present-mode-hook '+org-present/start)
-  (add-hook 'org-present-mode-quit-hook 'org-present-small)
-  (add-hook 'org-present-mode-quit-hook 'org-remove-inline-images)
-  ;; (add-hook 'org-present-mode-quit-hook 'org-present-show-cursor)
-  (add-hook 'org-present-mode-quit-hook 'org-present-read-write)
-  (add-hook 'org-present-mode-quit-hook '+org-present/quit))
 
 (use-package org
   :custom
@@ -105,7 +77,41 @@
    '((C . t) ; c, c++, and D
      (shell . t)
      (latex . t)
-     )))
+     ))
+
+  ;; HACK Face specs fed directly to `org-todo-keyword-faces' don't respect
+  ;;      underlying faces like the `org-todo' face does, so we define our own
+  ;;      intermediary faces that extend from org-todo.
+  (with-no-warnings
+    (custom-declare-face '+org-todo-active  '((t (:inherit (bold font-lock-constant-face org-todo)))) "")
+    (custom-declare-face '+org-todo-project '((t (:inherit (bold font-lock-doc-face org-todo)))) "")
+    (custom-declare-face '+org-todo-onhold  '((t (:inherit (bold warning org-todo)))) "")
+    (custom-declare-face '+org-todo-cancel  '((t (:inherit (bold error org-todo)))) ""))
+
+  (setopt org-todo-keywords
+          '((sequence
+             "[ ](t)"   ; A task that needs doing
+             "[-](s)"   ; Task is in progress
+             "[?](w)"   ; Task is being held up or paused
+             "|"
+             "[X](d)")  ; Task was completed
+            )
+          )
+
+  (setopt org-todo-keyword-faces
+          '(("[-]" . +org-todo-active)
+            ("[?]" . +org-todo-onhold))
+          )
+
+  (setopt org-use-fast-todo-selectiona t)
+
+  (add-to-list 'org-latex-packages-alist
+               '("lambda, advantage, operators, sets, adversary, landau,\
+ probability, notions, logic, ff, mm, primitives, events, complexity, oracles,\
+ asymptotics, keys" "cryptocode" t))
+  (add-to-list 'org-latex-packages-alist
+               '("" "booktabs" t))
+  )
 
 (use-package org-journal
   :ensure t
@@ -114,12 +120,6 @@
   (org-journal-find-file-fn 'find-file)
   (org-journal-file-type 'monthly)
   (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\"")
-  )
-
-(use-package org-superstar
-  :ensure t
-  :config
-  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
   )
 
 (use-package org-download
@@ -206,30 +206,13 @@
   :config
   (add-hook 'org-mode-hook 'org-appear-mode))
 
-;; HACK Face specs fed directly to `org-todo-keyword-faces' don't respect
-;;      underlying faces like the `org-todo' face does, so we define our own
-;;      intermediary faces that extend from org-todo.
-(with-no-warnings
-  (custom-declare-face '+org-todo-active  '((t (:inherit (bold font-lock-constant-face org-todo)))) "")
-  (custom-declare-face '+org-todo-project '((t (:inherit (bold font-lock-doc-face org-todo)))) "")
-  (custom-declare-face '+org-todo-onhold  '((t (:inherit (bold warning org-todo)))) "")
-  (custom-declare-face '+org-todo-cancel  '((t (:inherit (bold error org-todo)))) ""))
-
-(setopt org-todo-keywords
-        '((sequence
-           "[ ](t)"   ; A task that needs doing
-           "[-](s)"   ; Task is in progress
-           "[?](w)"   ; Task is being held up or paused
-           "|"
-           "[X](d)")  ; Task was completed
-          )
-        )
-
-(setopt org-todo-keyword-faces
-        '(("[-]" . +org-todo-active)
-          ("[?]" . +org-todo-onhold))
-        )
-
-(setopt org-use-fast-todo-selectiona t)
+(use-package ox-latex
+  :after (engrave-faces citar)
+  :custom
+  (org-export-with-toc nil)
+  :config
+  (setq org-latex-src-block-backend 'engraved)
+  (setq org-latex-engraved-theme 't)
+  )
 
 (provide 'init-org)

@@ -11,6 +11,7 @@
    helpful
    ;; search engine
    vertico
+   ;; search with no order
    orderless
    ;; project engine
    projectile
@@ -22,7 +23,9 @@
    magit
    ;; lsp
    eglot
+   ;; jump to eglot symbol
    consult-eglot
+   ;; show lsp error
    flycheck-eglot
    ;; highlight todo keywords
    hl-todo
@@ -30,6 +33,7 @@
    rg
    ;; better error checking
    flycheck
+   ;; show fly check in a popup way
    flycheck-popup-tip
    ;; dashboard at startup
    dashboard
@@ -59,8 +63,9 @@
    sudo-edit
    ;; dired
    dired-subtree
-   diredfl ;; color
-   nerd-icons
+   ;; colored dired
+   diredfl 
+   ;; let dired use nerd icons
    nerd-icons-dired
    ))
 
@@ -409,8 +414,6 @@
 ;; dired hide .. and .
 (add-hook 'dired-mode-hook 'dired-omit-mode)
 
-(use-package nerd-icons
-  :ensure t)
 
 (use-package nerd-icons-dired
   :ensure t
