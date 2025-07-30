@@ -53,13 +53,13 @@
   (setq org-latex-src-block-backend 'engraved)
   (setq org-latex-engraved-theme 't)
   ;; this var is used by org-export
-  (add-to-list 'org-cite-global-bibliography (concat jc-org-root-dir "/zotero_all.bib"))
+  (add-to-list 'org-cite-global-bibliography (concat jc-org-root-dir "/all-ref.bib"))
   )
 
 (use-package citar
   :ensure t
   :config
-  (add-to-list 'citar-bibliography (concat jc-org-root-dir "/zotero_all.bib"))
+  (add-to-list 'citar-bibliography (concat jc-org-root-dir "/all-ref.bib"))
   (add-to-list 'citar-notes-paths (concat jc-org-root-dir "/roam"))
   :hook
   (LaTeX-mode . citar-capf-setup)
