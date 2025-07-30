@@ -332,11 +332,18 @@
   :ensure t
   :custom
   (eat-term-name "xterm-256color")
+  (eat-kill-buffer-on-exit t)
+  (eat-enable-yank-to-terminal t)
   :config
   ;; For `eat-eshell-mode'.
   (add-hook 'eshell-load-hook #'eat-eshell-mode)
   ;; For `eat-eshell-visual-command-mode'.
   (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
+
+  (general-define-key
+   :states 'normal
+   :keymaps 'eat-mode-map
+   "p"   #'eat-yank)
   )
 
 ;; projectile
