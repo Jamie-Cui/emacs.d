@@ -352,6 +352,7 @@
     "Bd"     #'bookmark-delete
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
+    "ob"     #'ebib
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
     "od"     #'dired-jump
