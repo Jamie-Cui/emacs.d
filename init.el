@@ -120,7 +120,16 @@
 (use-package kubernetes
   :ensure t
   :custom
-  (kubernetes-show-message nil))
+  (kubernetes-show-message nil)
+  :config
+  ;; set custom display function
+  (defun kubernetes-commands-display-buffer-same-window (buffer)
+    (display-buffer buffer '(display-buffer-same-window)))
+  (setopt kubernetes-commands-display-buffer-function 'kubernetes-commands-display-buffer-same-window)
+
+  ;; disable auto refresh
+  (setq kubernetes-poll-frequency 3600
+        kubernetes-redraw-frequency 3600))
 
 (use-package kubernetes-evil
   :ensure t
