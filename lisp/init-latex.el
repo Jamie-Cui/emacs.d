@@ -9,9 +9,9 @@
    ;; enrich bib frontend from bib file
    citar
    ;; modifying bib file in a better way
-   ebib
+   ;; ebib
    ;; download ref from web
-   biblio
+   ;; biblio
    ;; pdf-tools support
    pdf-tools
    ;; latex support
@@ -20,19 +20,19 @@
    ;; xenops
    ))
 
-(use-package biblio
-  :ensure t
-  :custom
-  (biblio-bibtex-use-autokey t) 
-  :config
-  (setopt biblio-download-directory (concat jc-org-root-dir "/paper"))
-  )
+;; (use-package biblio
+;;   :ensure t
+;;   :custom
+;;   (biblio-bibtex-use-autokey t) 
+;;   :config
+;;   (setopt biblio-download-directory (concat jc-org-root-dir "/paper"))
+;;   )
 
-(use-package ebib
-  :ensure t
-  :config
-  (add-to-list 'ebib-preload-bib-files (concat jc-org-root-dir "/all-ref.bib"))
-  )
+;; (use-package ebib
+;;   :ensure t
+;;   :config
+;;   (add-to-list 'ebib-preload-bib-files (concat jc-org-root-dir "/all-ref.bib"))
+;;   )
 
 (use-package pdf-tools
   :ensure t

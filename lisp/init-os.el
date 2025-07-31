@@ -87,6 +87,6 @@
   )
 
 ;; if you are using magic keyboard
-;; (setq x-super-keysym 'meta)
+(setq x-super-keysym 'meta)
 
 (provide 'init-os)
