@@ -112,7 +112,17 @@
    yaml-mode
    ;; treesit-auto
    treesit-auto
+   ;; k8s
+   kubernetes 
+   kubernetes-evil
    ))
+
+(use-package kubernetes
+  :ensure t)
+
+(use-package kubernetes-evil
+  :ensure t
+  :after kubernetes)
 
 (use-package treesit-auto
   :custom
@@ -336,6 +346,7 @@
     "od"     #'dired-jump
     "oc"     #'compile
     "og"     #'magit-status-quick
+    "ok"     #'kubernetes-overview
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project
