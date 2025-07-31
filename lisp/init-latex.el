@@ -10,6 +10,8 @@
    citar
    ;; modifying bib file in a better way
    ebib
+   ;; download ref from web
+   biblio
    ;; pdf-tools support
    pdf-tools
    ;; latex support
@@ -17,6 +19,14 @@
    ;; preview org math
    ;; xenops
    ))
+
+(use-package biblio
+  :ensure t
+  :custom
+  (biblio-bibtex-use-autokey t) 
+  :config
+  (setopt biblio-download-directory (concat jc-org-root-dir "/paper"))
+  )
 
 (use-package ebib
   :ensure t
