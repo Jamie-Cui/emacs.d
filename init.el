@@ -118,7 +118,9 @@
    ))
 
 (use-package kubernetes
-  :ensure t)
+  :ensure t
+  :custom
+  (kubernetes-show-message nil))
 
 (use-package kubernetes-evil
   :ensure t
@@ -294,7 +296,7 @@
 
   ;; ** Global Keybindings
   (+my-leader-def
-    :states '(normal visual)
+    :states '(normal visual motion)
     :keymaps 'override ; prevent from being override
     ;; most-frequency keys
     "RET"    #'gptel
@@ -410,7 +412,7 @@
   ;; deft mode map
   (+my-local-leader-def
     :keymaps 'deft-mode-map
-    :states '(normal visual)
+    :states '(normal visual motion)
     "A" #'deft-archive-file
     "n" #'deft-new-file
     "f" #'deft-filter
@@ -421,7 +423,7 @@
   ;; org mode map
   (+my-local-leader-def
     :keymaps 'org-mode-map
-    :states '(normal visual)
+    :states '(normal visual motion)
     "e" #'org-export-dispatch
     "j" #'org-present-next
     "k" #'org-present-prev
