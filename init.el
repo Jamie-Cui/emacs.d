@@ -161,7 +161,7 @@
          :ts-mode 'bash-ts-mode
          :remap 'bash-mode
          :url "https://github.com/tree-sitter/tree-sitter-bash"
-         :revision "v0.22.0"
+         :revision "v0.23.0"
          :source-dir "src"
          :ext "\\.c\\'"))
   (add-to-list 'treesit-auto-recipe-list my-bash-tsauto-config)
