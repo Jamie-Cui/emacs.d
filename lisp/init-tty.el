@@ -26,6 +26,8 @@
     :config
     (corfu-terminal-mode +1)
     )
+
+  (xterm-mouse-mode 1)
   
   (setopt eldoc-echo-area-use-multiline-p nil)
   )
