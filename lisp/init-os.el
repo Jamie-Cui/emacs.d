@@ -13,6 +13,14 @@
   (add-to-list 'default-frame-alist '(undecorated . t))
   ;; Fix, macos dired permission
   (setq insert-directory-program "gls" dired-use-ls-dired t)
+
+  (use-package ultra-scroll
+    :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
+    :init
+    (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
+          scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+    :config
+    (ultra-scroll-mode 1))
   )
 
 ;;; --------------------------------------
@@ -79,6 +87,6 @@
   )
 
 ;; if you are using magic keyboard
-;; (setq x-super-keysym 'meta)
+(setq x-super-keysym 'meta)
 
 (provide 'init-os)

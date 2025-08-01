@@ -6,15 +6,33 @@
 
 (+ensure-packages-installed
  '(
-   ;; enrich org mode
+   ;; enrich bib frontend from bib file
    citar
-   ;; preview org math
-   ;; xenops
-   ;; pdf-tools support`'
+   ;; modifying bib file in a better way
+   ;; ebib
+   ;; download ref from web
+   ;; biblio
+   ;; pdf-tools support
    pdf-tools
    ;; latex support
    auctex
+   ;; preview org math
+   ;; xenops
    ))
+
+;; (use-package biblio
+;;   :ensure t
+;;   :custom
+;;   (biblio-bibtex-use-autokey t) 
+;;   :config
+;;   (setopt biblio-download-directory (concat jc-org-root-dir "/paper"))
+;;   )
+
+;; (use-package ebib
+;;   :ensure t
+;;   :config
+;;   (add-to-list 'ebib-preload-bib-files (concat jc-org-root-dir "/all-ref.bib"))
+;;   )
 
 (use-package pdf-tools
   :ensure t

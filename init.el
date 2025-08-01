@@ -38,8 +38,7 @@
     ;; (message path-from-shell)
     (setenv "PATH" path-from-shell)
     (setq exec-path (split-string path-from-shell path-separator))))
-
-(message "%s" exec-path)
+;; (message "%s" exec-path)
 
 ;; additional emacs-native configurations
 (require 'init-misc)
@@ -67,12 +66,6 @@
 ;; make sure package-refresh-contents will only run once
 (when (not package-archive-contents)
   (package-refresh-contents))
-
-;; HACK see: https://emacs.stackexchange.com/a/53142
-;; (setq package-check-signature nil)
-;; (package-install 'gnu-elpa-keyring-update)
-;; (gnu-elpa-keyring-update)
-;; (setq package-check-signature 'allow-unsigned)
 
 ;; -----------------------------------------------------------
 ;; DONE Configure Core
@@ -188,12 +181,6 @@
 ;; DONE C/C++, cmake and bazel
 ;; ------------------------------------------------------------------
 
-;; add auto-mode list
-;; I prefer to use treesit-mode
-;; (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
-;; (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
-;; (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
-
 ;; sibling files (for cpp)
 (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
 (add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
@@ -215,26 +202,6 @@
   :config
   (add-to-list 'auto-mode-alist '("\\.BUILD\\'" . bazel-mode))
   (setq bazel-buildifier-before-save 't))
-
-;; ------------------------------------------------------------------
-;; DONE Rust mode
-;; ------------------------------------------------------------------
-
-;; (let* ((lang-files '(".rs"))
-;;        (lang-regexp (concat (regexp-opt lang-files t) "\\'")))
-;;   (add-to-list 'auto-mode-alist (cons lang-regexp 'rust-ts-mode)))
-
-;; (let* ((lang-files '("Cargo.lock"))
-;;        (lang-regexp (concat (regexp-opt lang-files t) "\\'")))
-;;   (add-to-list 'auto-mode-alist (cons lang-regexp 'conf-toml-mode)))
-
-;; ------------------------------------------------------------------
-;; TODO Go mode
-;; ------------------------------------------------------------------
-
-;; (let* ((lang-files '(".go"))
-;;        (lang-regexp (concat (regexp-opt lang-files t) "\\'")))
-;;   (add-to-list 'auto-mode-alist (cons lang-regexp 'go-ts-mode)))
 
 ;; ------------------------------------------------------------------
 ;; TODO Zig mode 
@@ -377,7 +344,9 @@
     "pq"     #'+persp/kill-current
     ;; note functions
     "n" '(:ignore t :which-key "note")
-    "n@"      #'citar-insert-citation
+    "n@"      #'citar-insert-citation ;; insert bib
+    "nb"      #'ebib ;; edit bib
+    "nB"      #'biblio-dblp-lookup ;; search bib
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "ne"      #'org-export-dispatch
@@ -386,7 +355,6 @@
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
     "nrs"     #'org-roam-db-sync
-    "nb"      #'citar-open
     ;; help functions
     "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
@@ -449,13 +417,3 @@
 (use-package org-imgtog
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :hook org-mode)
-
-
-(use-package ultra-scroll
-  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
-  :init
-  (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
-        scroll-margin 0)        ; important: scroll-margin>0 not yet supported
-  :config
-  (ultra-scroll-mode 1)
-  )
