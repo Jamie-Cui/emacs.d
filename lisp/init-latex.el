@@ -46,6 +46,26 @@
 (use-package bibtex
   :ensure t
   :config
+  (defun +bibtex/add-doi ()
+    (interactive)
+    (progn
+      (setq doi-to-query (read-string "DOI: "))
+      (find-file (concat jc-org-root-dir "/all-ref.bib"))
+      (end-of-buffer)
+      (doi-insert-bibtex doi-to-query)
+      )
+    )
+
+  (defun +bibtex/consult-bibtex-file ()
+    (interactive)
+    (let ((file (consult--read bibtex-files
+                               :prompt "bibtex-files: "
+                               :sort nil
+                               :require-match t
+                               :category 'file
+                               :history 'file-name-history)))
+      (find-file file)))
+
   ;; HACK the following may not work
   ;; (eval-after-load "bibtex"
   ;;   '(defun bibtex-generate-autokey ()
