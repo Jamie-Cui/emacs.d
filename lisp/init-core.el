@@ -163,11 +163,10 @@
   (apheleia-remote-algorithm 'local)
   :config
   (apheleia-global-mode +1)
-  ;; HACK use elgot-format when possible
+  ;; HACK use elgot-format
   ;; https://github.com/radian-software/apheleia/issues/153#issuecomment-1446651497
   (cl-defun apheleia-indent-eglot-managed-buffer
       (&key buffer scratch callback &allow-other-keys)
-    "Copy BUFFER to SCRATCH, then format scratch, then call CALLBACK."
     (with-current-buffer scratch
       (setq-local eglot--cached-server
                   (with-current-buffer buffer
@@ -175,14 +174,31 @@
       (let ((buffer-file-name (buffer-local-value 'buffer-file-name buffer)))
         (eglot-format-buffer))
       (funcall callback)))
+
+  ;; declare new formatters for eglot
   (add-to-list 'apheleia-formatters
                '(eglot-managed . apheleia-indent-eglot-managed-buffer))
+
+  ;; HACK use bibtex-reformat
+  ;; https://github.com/radian-software/apheleia/pull/294
+  (cl-defun apheleia-reformat-bibtex-buffer
+      (&key buffer scratch callback &allow-other-keys)
+    (with-current-buffer scratch
+      (funcall (with-current-buffer buffer major-mode))
+      (bibtex-reformat)
+      (funcall callback)))
+
+  ;; declare new formatters for eglot
+  (add-to-list 'apheleia-formatters
+               '(bibtex-format . apheleia-reformat-bibtex-buffer))
+
   ;; HACK add all eglot-ensured modes 
   ;; This determines what formatter to use in buffers without a
   ;; setting for apheleia-formatter. The keys are major mode
   (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(rust-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(cmake-mode . cmake-format))
+  (add-to-list 'apheleia-mode-alist '(bibtex-mode . bibtex-format))
   )
 
 (use-package flycheck

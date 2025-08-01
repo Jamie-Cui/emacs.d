@@ -45,19 +45,38 @@
 ;; this package is built-in
 (use-package bibtex
   :ensure t
-  :custom
-  (bibtex-autokey-name-year-separator ":")
-  (bibtex-autokey-year-title-separator ":")
-  (bibtex-autokey-year-length 4)
-  (bibtex-autokey-titlewords 3)
-  (bibtex-autokey-titleword-length -1) ;; -1 means exactly one
-  (bibtex-autokey-titlewords-stretch 0)
-  (bibtex-autokey-titleword-separator "")
-  (bibtex-autokey-titleword-case-convert 'upcase)
   :config
+  ;; HACK the following may not work
+  ;; (eval-after-load "bibtex"
+  ;;   '(defun bibtex-generate-autokey ()
+  ;;      (let* ((author (bibtex-autokey-get-field "author"))
+  ;;             (names (if author (bibtex-autokey-get-names author)))))
+  ;;      (concat
+  ;;       ;; Author part
+  ;;       (upcase 
+  ;;        names
+  ;;        (cond
+  ;;         ((null names) "???")
+  ;;         ((= (length names) 1) (car names)) ; Full last name for single author
+  ;;         (t (mapconcat (lambda (n) (substring n 0 1)) ; Initials for multiple
+  ;;                       (seq-take names (min (length names) 4)) 
+  ;;                       "")))
+  ;;        )
+  ;;       ;; Year part
+  ;;       (if-let ((year (bibtex-autokey-get-field "year")))
+  ;;           (substring (concat "????" year) -4)
+  ;;         "????"))
+  ;;      ))
+
+  ;; Configure uniquification (appends a/b/c for duplicates)
+  (setq bibtex-autokey-add-year t)
+  (setq bibtex-autokey-year-length 4)
+  (setq bibtex-autokey-titlewords 0)
+  (setq bibtex-autokey-titlewords-stretch 0)
+  (setq bibtex-autokey-name-year-separator "")
+
+  ;; default bib file
   (add-to-list 'bibtex-files (concat jc-org-root-dir "/all-ref.bib"))
-  ;; call bibtex-reformat to reformat all bib file
-  ;; C-c C-e : add a new entry
   )
 
 (use-package citar

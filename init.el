@@ -345,8 +345,8 @@
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "n@"      #'citar-insert-citation ;; insert bib
-    "nbi"     #'bibtex-initialize ;; check bib source
-    "nbf"     #'citar-open ;; check bib source
+    "nbb"     #'bibtex-initialize ;; check bib source
+    "nbf"     #'biblio-dblp-lookup ;; lookup for new bib
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "ne"      #'org-export-dispatch
