@@ -8,10 +8,8 @@
  '(
    ;; enrich bib frontend from bib file
    citar
-   ;; modifying bib file in a better way
-   ;; ebib
-   ;; download ref from web
-   ;; biblio
+   ;; download from web
+   biblio
    ;; pdf-tools support
    pdf-tools
    ;; latex support
@@ -19,20 +17,6 @@
    ;; preview org math
    ;; xenops
    ))
-
-;; (use-package biblio
-;;   :ensure t
-;;   :custom
-;;   (biblio-bibtex-use-autokey t) 
-;;   :config
-;;   (setopt biblio-download-directory (concat jc-org-root-dir "/paper"))
-;;   )
-
-;; (use-package ebib
-;;   :ensure t
-;;   :config
-;;   (add-to-list 'ebib-preload-bib-files (concat jc-org-root-dir "/all-ref.bib"))
-;;   )
 
 (use-package pdf-tools
   :ensure t
@@ -48,8 +32,33 @@
   (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
   )
 
+(use-package biblio
+  :ensure t
+  :custom
+  (biblio-bibtex-use-autokey t)
+  :config
+  )
+
 (use-package auctex
   :ensure t)
+
+;; this package is built-in
+(use-package bibtex
+  :ensure t
+  :custom
+  (bibtex-autokey-name-year-separator ":")
+  (bibtex-autokey-year-title-separator ":")
+  (bibtex-autokey-year-length 4)
+  (bibtex-autokey-titlewords 3)
+  (bibtex-autokey-titleword-length -1) ;; -1 means exactly one
+  (bibtex-autokey-titlewords-stretch 0)
+  (bibtex-autokey-titleword-separator "")
+  (bibtex-autokey-titleword-case-convert 'upcase)
+  :config
+  (add-to-list 'bibtex-files (concat jc-org-root-dir "/all-ref.bib"))
+  ;; call bibtex-reformat to reformat all bib file
+  ;; C-c C-e : add a new entry
+  )
 
 (use-package citar
   :ensure t
@@ -61,9 +70,6 @@
   :hook
   (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup))
-
-(setopt org-startup-with-latex-preview 'nil) ;; do not preview
-(setopt org-preview-latex-default-process 'dvisvgm)
 
 ;; (use-package xenops
 ;;   :ensure t

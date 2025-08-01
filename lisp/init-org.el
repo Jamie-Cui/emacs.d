@@ -47,6 +47,8 @@
   (org-log-done t)
   (org-src-window-setup 'other-window)
   (org-startup-with-inline-images t)
+  (org-startup-with-latex-preview 'nil) 
+  (org-preview-latex-default-process 'dvisvgm)
   :config
   (add-to-list 'org-export-backends 'beamer)
 

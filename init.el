@@ -345,8 +345,8 @@
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "n@"      #'citar-insert-citation ;; insert bib
-    "nb"      #'ebib ;; edit bib
-    "nB"      #'biblio-dblp-lookup ;; search bib
+    "nbi"     #'bibtex-initialize ;; check bib source
+    "nbf"     #'citar-open ;; check bib source
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "ne"      #'org-export-dispatch
@@ -372,7 +372,7 @@
     "tF"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
     "tc"     #'display-fill-column-indicator-mode
-    "tg"     #'magit-blame-addition
+    "tl"     #'display-line-numbers-mode
     ;; code
     "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors
