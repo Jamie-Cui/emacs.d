@@ -14,6 +14,29 @@
 ;; stop makding ~ files!
 (setq make-backup-files nil) 
 
+;; stop makding #...# files!
+(setq create-lockfiles nil)
+
+;; if use backup, put it in .emacs.d/backup
+(setq backup-directory-alist (list (cons "." (concat user-emacs-directory "backup/")))
+      tramp-backup-directory-alist backup-directory-alist)
+
+;; But turn on auto-save, so we have a fallback in case of crashes or lost data.
+;; Use `recover-file' or `recover-session' to recover them.
+(setq auto-save-default t
+      ;; Don't auto-disable auto-save after deleting big chunks. This defeats
+      ;; the purpose of a failsafe. This adds the risk of losing the data we
+      ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
+      auto-save-include-big-deletions t
+      ;; Keep it out of `doom-emacs-dir' or the local directory.
+      auto-save-list-file-prefix (concat user-emacs-directory "autosave/")
+      tramp-auto-save-directory  (concat user-emacs-directory "tramp-autosave/")
+      auto-save-file-name-transforms
+      (list (list "\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+                  ;; Prefix tramp autosaves to prevent conflicts with local ones
+                  (concat auto-save-list-file-prefix "tramp-\\2") t)
+            (list ".*" auto-save-list-file-prefix t)))
+
 ;; disable electric-indent-mode, forever
 (electric-indent-mode -1)
 (add-hook 'after-change-major-mode-hook (lambda() (electric-indent-mode -1)))
