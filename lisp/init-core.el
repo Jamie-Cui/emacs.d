@@ -22,6 +22,8 @@
    eat
    ;; the killer app: git ui
    magit
+   ;; highlight diff
+   diff-hl
    ;; lsp
    eglot
    ;; jump to eglot symbol
@@ -69,6 +71,13 @@
    ;; let dired use nerd icons
    nerd-icons-dired
    ))
+
+
+(use-package diff-hl
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
+  (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode))
 
 (use-package zenburn-theme
   :ensure t)
