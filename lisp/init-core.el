@@ -6,6 +6,9 @@
 
 (+ensure-packages-installed
  '(
+   ;; theme
+   zenburn-theme
+   ;; consult framework
    consult
    ;; show helps of fun, key, mode
    helpful
@@ -68,6 +71,9 @@
    ;; let dired use nerd icons
    nerd-icons-dired
    ))
+
+(use-package zenburn-theme
+  :ensure t)
 
 (use-package persp-projectile
   :ensure t)
