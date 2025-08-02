@@ -2,8 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-utils)
-
 (unless (display-graphic-p)
   (+ensure-packages-installed
    '(

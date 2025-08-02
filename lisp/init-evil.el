@@ -2,8 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-utils)
-
 (+ensure-packages-installed
  '(
    ;; more convenient way of defining keys

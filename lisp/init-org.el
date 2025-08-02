@@ -2,8 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-utils)
-
 ;; defining your own
 ;; macos: ~/Library/Mobile Documents/com~apple~CloudDocs/org-root
 ;; linux: ~/org-root
@@ -31,6 +29,10 @@
    engrave-faces
    ))
 
+(use-package org-imgtog
+  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
+  :hook org-mode)
+
 (use-package org
   :custom
   (org-image-actual-width nil)
@@ -51,6 +53,22 @@
   (org-preview-latex-default-process 'dvisvgm)
   :config
   (add-to-list 'org-export-backends 'beamer)
+
+  ;; HACK from doom emacs
+  (defmacro defadvice! (symbol arglist &optional docstring &rest body)
+    (declare (doc-string 3) (indent defun))
+    (unless (stringp docstring)
+      (push docstring body)
+      (setq docstring nil))
+    (let (where-alist)
+      (while (keywordp (car body))
+        (push `(cons ,(pop body) (ensure-list ,(pop body)))
+              where-alist))
+      `(progn
+         (defun ,symbol ,arglist ,docstring ,@body)
+         (dolist (targets (list ,@(nreverse where-alist)))
+           (dolist (target (cdr targets))
+             (advice-add target (car targets) #',symbol))))))
 
   (defadvice! +org-fix-newline-and-indent-in-src-blocks-a (&optional indent _arg _interactive)
     "Mimic `newline-and-indent' in src blocks w/ lang-appropriate indentation."

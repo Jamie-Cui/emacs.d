@@ -2,8 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-utils)
-
 (+ensure-packages-installed
  '(
    ;; llm client

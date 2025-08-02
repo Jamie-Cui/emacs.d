@@ -2,8 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-utils)
-
 ;; stop the BELL!
 (setq ring-bell-function 'ignore)
 
@@ -176,8 +174,9 @@
 ;; allow asyn in tramp
 (setq tramp-async-enabled t)
 
-
-;;; eshell
+;; ------------------------------------------------------------------
+;; Eshell Configuration
+;; ------------------------------------------------------------------
 (setopt eshell-scroll-show-maximum-output nil
         eshell-highlight-prompt nil
         eshell-destroy-buffer-when-process-dies t)
@@ -190,17 +189,20 @@
       eshell-glob-case-insensitive t
       eshell-error-if-no-glob t)
 
-(setq eshell-prompt-function (lambda nil
-                               (let* ((cwd (abbreviate-file-name (eshell/pwd)))
-                                      (x-stat eshell-last-command-status))
-                                 (propertize
-                                  (format "%s %s $ "
-                                          (if (< 0 x-stat) (format (propertize "!%s" 'font-lock-face '(:foreground "red")) x-stat)
-                                            (propertize "➤" 'font-lock-face (list :foreground (if (< 0 x-stat) "red" "green"))))
-                                          (propertize cwd 'font-lock-face '(:foreground "#45babf")))
-                                  ;; 'read-only t
-                                  'front-sticky   '(font-lock-face read-only)
-                                  'rear-nonsticky '(font-lock-face read-only)))))
+(setq eshell-prompt-function 
+      (lambda nil
+        (let* ((cwd (abbreviate-file-name (eshell/pwd)))
+               (x-stat eshell-last-command-status))
+          (propertize
+           (format "%s %s $ "
+                   (if (< 0 x-stat)
+                       (format (propertize "!%s" 'font-lock-face 
+                                           '(:foreground "red")) x-stat)
+                     (propertize "➤" 'font-lock-face 
+                                 (list :foreground (if (< 0 x-stat) "red" "green"))))
+                   (propertize cwd 'font-lock-face '(:foreground "#45babf")))
+           'front-sticky   '(font-lock-face read-only)
+           'rear-nonsticky '(font-lock-face read-only)))))
 
 (setq eshell-banner-message
       '(format "%s %s\n"
@@ -209,19 +211,20 @@
                (propertize (current-time-string)
                            'face 'font-lock-keyword-face)))
 
-(use-package esh-mode
-  :config
-  ;; HACK redefine eshell/clear function
-  (defun eshell/clear (&optional scrollback)
-    "Scroll contents of eshell window out of sight, leaving a blank window.
-If SCROLLBACK is non-nil, clear the scrollback contents."
+;; HACK always get a new eshell
+(defun +eshell/new ()
+  (interactive)
+  (eshell '(t)))
+
+;; HACK redefine eshell/clear function
+(with-eval-after-load 'esh-mode
+  (cl-defun eshell/clear (&optional scrollback)
     (interactive)
     (let ((inhibit-read-only t))
       (erase-buffer)))
   )
 
 ;;; proced, show processes
-
 (use-package proced
   :custom
   (proced-auto-update-flag t)

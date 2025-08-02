@@ -8,9 +8,6 @@
   (when (version< emacs-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
 
-(when (version< emacs-version "28.1")
-  (message "Your Emacs is old, and some functionality in this config will be disabled. Please upgrade if possible."))
-
 ;; setup emacs configuration dir
 (when (not (boundp' jc-emacs-directory))
   (defconst jc-emacs-directory "~/emacs.d"))
@@ -49,15 +46,16 @@
 ;; Enable package
 (require 'package)
 
-(setq package-archives '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-                         ("org" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
-                         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-                         ;; ("gnu"   . "http://elpa.gnu.org/packages/")
-                         ;; ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-                         ;; ("org"   . "http://orgmode.org/elpa/")
-                         ;; ("melpa" . "http://melpa.org/packages/")
-                         ))
+(setq package-archives 
+      '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+        ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+        ("org" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+        ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+        ;; ("gnu"   . "http://elpa.gnu.org/packages/")
+        ;; ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
+        ;; ("org"   . "http://orgmode.org/elpa/")
+        ;; ("melpa" . "http://melpa.org/packages/")
+        ))
 
 ;; initialize packages
 (package-initialize)
@@ -66,11 +64,18 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+(require 'cl-macs)
+
+(defun +ensure-packages-installed (packages-alist)
+  "Make sure the given package is installed."
+  (dolist (p packages-alist)
+    (unless (package-installed-p p)
+      (package-install p))))
+
 ;; -----------------------------------------------------------
 ;; DONE Configure Core
 ;; -----------------------------------------------------------
 
-(require 'init-utils)
 (require 'init-core)
 (require 'init-evil)
 (require 'init-org)
@@ -117,7 +122,8 @@
   ;; set custom display function
   (defun kubernetes-commands-display-buffer-same-window (buffer)
     (display-buffer buffer '(display-buffer-same-window)))
-  (setopt kubernetes-commands-display-buffer-function 'kubernetes-commands-display-buffer-same-window)
+  (setopt kubernetes-commands-display-buffer-function
+          'kubernetes-commands-display-buffer-same-window)
 
   ;; disable auto refresh
   (setq kubernetes-poll-frequency 3600
@@ -182,8 +188,10 @@
 ;; ------------------------------------------------------------------
 
 ;; sibling files (for cpp)
-(add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
-(add-to-list 'find-sibling-rules '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
+(add-to-list 'find-sibling-rules
+             '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
+(add-to-list 'find-sibling-rules
+             '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
 
 ;; formatter
 (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
@@ -235,10 +243,6 @@
   (general-create-definer +my-local-leader-def
     :prefix my-local-leader)
   
-  ;; HACK always get a new eshell
-  (defun +eshell/new ()
-    (interactive)
-    (eshell '(t)))
   
   ;; HACK always get a new eat terminal
   (defun +eat/new ()
@@ -411,11 +415,3 @@
     "p" #'org-priority
     )
   )
-
-;; -----------------------------------------------------------
-;; DONE org-imgtog
-;; -----------------------------------------------------------
-
-(use-package org-imgtog
-  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
-  :hook org-mode)
