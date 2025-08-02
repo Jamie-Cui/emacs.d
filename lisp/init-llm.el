@@ -8,14 +8,15 @@
  '(
    ;; llm client
    gptel
-   ;; TODO cursor-like coding assistent
-   ;; aidermacs
+   ;; magit gptel commit message
+   gptel-magit
    ))
 
 
 (use-package gptel
   :ensure t
   :custom
+  (gptel-include-reasoning nil)
   (gptel-rewrite-default-action 'merge)
   :config
   (setq gptel-model 'deepseek-r1
@@ -32,13 +33,9 @@
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "*Jamie*\n")
   (setf (alist-get 'org-mode gptel-response-prefix-alist) "*@Deepseek*\n"))
 
-;; (use-package aidermacs
-;;   :bind (("C-c a" . aidermacs-transient-menu))
-;;   :config
-;;   (setenv "ANTHROPIC_API_KEY" "sk-...")
-;;   (setenv "OPENROUTER_API_KEY" (my-get-openrouter-api-key))
-;;   :custom
-;;   (aidermacs-default-chat-mode 'architect)
-;;   (aidermacs-default-model "sonnet"))
+(use-package gptel-magit
+  :ensure t
+  :after gptel
+  :hook (magit-mode . gptel-magit-install))
 
 (provide 'init-llm)
