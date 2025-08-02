@@ -76,13 +76,22 @@
   :ensure t
   :custom 
   (popwin:popup-window-height 0.5)
-  ;; HACK redefine special display rule
+  (popwin:popup-window-width 0.5)
   (popwin:special-display-config
    '(
-     ;; (TeX-output-mode :stick t)
+     ;;
+     ;; bottom
+     ;;
      (help-mode :stick t)
      (helpful-mode :stick t)
      ("*Flycheck errors*" :stick t)
+     ("*Messages*" :stick t)
+     ;;
+     ;; right, where you might need to write something inside
+     ;;
+     ("*DeepSeek*" :position right :stick t)
+     ("*scratch*" :position right :stick t)
+     (compilation-mode :position right :stick t)
      )
    )
   :config

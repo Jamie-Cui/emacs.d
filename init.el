@@ -38,7 +38,6 @@
     ;; (message path-from-shell)
     (setenv "PATH" path-from-shell)
     (setq exec-path (split-string path-from-shell path-separator))))
-;; (message "%s" exec-path)
 
 ;; additional emacs-native configurations
 (require 'init-misc)
@@ -276,7 +275,6 @@
     :keymaps 'override ; prevent from being override
     ;; most-frequency keys
     "RET"    #'gptel
-    "x"      #'scratch-buffer
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer
@@ -322,9 +320,11 @@
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
     "od"     #'dired-jump
-    "oc"     #'compile
     "og"     #'magit-status-quick
     "ok"     #'kubernetes-overview
+    "oc"     #'compile ; popup
+    "ox"     #'scratch-buffer ; popup
+    "om"     #'popwin:messages ; popup
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project
