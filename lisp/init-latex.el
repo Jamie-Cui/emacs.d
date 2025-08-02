@@ -8,6 +8,7 @@
  '(
    ;; enrich bib frontend from bib file
    citar
+   citar-embark
    ;; download from web
    biblio
    ;; pdf-tools support
@@ -134,6 +135,13 @@
   :hook
   (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup))
+
+(use-package citar-embark
+  :ensure t
+  :after citar embark
+  :no-require
+  :config
+  (citar-embark-mode))
 
 ;; (use-package xenops
 ;;   :ensure t

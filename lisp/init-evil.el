@@ -32,7 +32,6 @@
   (setq evil-want-C-g-bindings t) ; this need to be set before evil
   ;; whether to use emacs bindings in insert-mode
   (setq evil-disable-insert-state-bindings nil)
-  (setq evil-want-keybinding t)
   :config
   (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
