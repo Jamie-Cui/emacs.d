@@ -19,7 +19,6 @@
    ;; xenops
    ))
 
-
 (use-package pdf-tools
   :ensure t
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode) ; Associate .pdf files with pdf-view-mode
@@ -46,7 +45,7 @@
     (let ((pdf-file (expand-file-name (concat (TeX-master-file "pdf") ".pdf")))
           (tex-file buffer-file-name)
           (line (line-number-at-pos)))
-      (pdf-view-open pdf-file)
+      (find-file pdf-file) ;; default should be pdf-tools
       (pdf-sync-forward-search tex-file line)))
 
   ;; Enable Inverse Search in PDFs
@@ -91,28 +90,6 @@
                                :category 'file
                                :history 'file-name-history)))
       (find-file file)))
-
-  ;; HACK the following may not work
-  ;; (eval-after-load "bibtex"
-  ;;   '(defun bibtex-generate-autokey ()
-  ;;      (let* ((author (bibtex-autokey-get-field "author"))
-  ;;             (names (if author (bibtex-autokey-get-names author)))))
-  ;;      (concat
-  ;;       ;; Author part
-  ;;       (upcase 
-  ;;        names
-  ;;        (cond
-  ;;         ((null names) "???")
-  ;;         ((= (length names) 1) (car names)) ; Full last name for single author
-  ;;         (t (mapconcat (lambda (n) (substring n 0 1)) ; Initials for multiple
-  ;;                       (seq-take names (min (length names) 4)) 
-  ;;                       "")))
-  ;;        )
-  ;;       ;; Year part
-  ;;       (if-let ((year (bibtex-autokey-get-field "year")))
-  ;;           (substring (concat "????" year) -4)
-  ;;         "????"))
-  ;;      ))
 
   ;; Configure uniquification (appends a/b/c for duplicates)
   (setq bibtex-autokey-add-year t)
