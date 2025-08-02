@@ -12,6 +12,7 @@
   ;; Fix, macos dired permission
   (setq insert-directory-program "gls" dired-use-ls-dired t)
 
+  ;; site-lisp
   (use-package ultra-scroll
     :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
     :init
@@ -35,7 +36,7 @@
   ;; (set-keyboard-coding-system 'utf-8)
   (set-language-environment "UTF-8")
   
-  ;; see: https://github.com/magit/magit/issues/2219#issuecomment-157219646
+  ;; HACK see: https://github.com/magit/magit/issues/2219#issuecomment-157219646
   (define-derived-mode magit-staging-mode magit-status-mode "Magit staging"
     "Mode for showing staged and unstaged changes."
     :group 'magit-status)
@@ -65,16 +66,6 @@
             browse-url-generic-args     cmd-args
             browse-url-browser-function 'browse-url-generic
             search-web-default-browser 'browse-url-generic)))
-  
-  ;; declare new functions
-  (defun cp-current-file-to-windows()
-    "Copy the current file to windows"
-    (interactive)
-    (let ((dest-path (concat "~/Desktop/tmp/" (format-time-string "%Y-%m-%d") "/")))
-      (when buffer-file-name
-        (make-directory dest-path 'parents)
-        (message (concat "cp -r " buffer-file-name " " dest-path))
-        (shell-command (concat "cp -r " buffer-file-name " " dest-path)))))
   
   ;; org-download from windows clipboard
   (use-package org-download

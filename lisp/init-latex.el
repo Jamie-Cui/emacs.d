@@ -4,7 +4,7 @@
 
 (require 'init-org)
 
-(+ensure-packages-installed
+(+package/ensure-install
  '(
    ;; enrich bib frontend from bib file
    citar

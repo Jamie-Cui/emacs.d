@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(+ensure-packages-installed
+(+package/ensure-install
  '(
    ;; chinese spacing
    pangu-spacing

@@ -13,7 +13,7 @@
 (make-directory (concat jc-org-root-dir "/deft") t)
 (make-directory (concat (file-name-directory user-init-file) "/bin") t)
 
-(+ensure-packages-installed
+(+package/ensure-install
  '(
    org-download
    org-roam
@@ -29,6 +29,7 @@
    engrave-faces
    ))
 
+;; site-lisp
 (use-package org-imgtog
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :hook org-mode)

@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(+ensure-packages-installed
+(+package/ensure-install
  '(
    ;; llm client
    gptel
@@ -28,7 +28,13 @@
           :models '(qwen-plus deepseek-r1)
           ))
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
-  (setf (alist-get 'org-mode gptel-response-prefix-alist) "=@AI=\n"))
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "=@AI=\n")
+
+  (add-hook 'gptel-mode-hook
+            (lambda ()
+              (insert "** Default Context\n=@Jamie=")
+              ))
+  )
 
 (use-package gptel-magit
   :ensure t

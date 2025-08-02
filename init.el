@@ -66,23 +66,32 @@
 
 (require 'cl-macs)
 
-(defun +ensure-packages-installed (packages-alist)
+(defun +package/ensure-install (packages-alist)
   "Make sure the given package is installed."
   (dolist (p packages-alist)
     (unless (package-installed-p p)
       (package-install p))))
 
+(defun +package/ensure-install-and-use (packages-alist)
+  "Make sure the given package is installed."
+  (dolist (p packages-alist)
+    (unless (package-installed-p p)
+      (package-install p)
+      (use-package p)
+      )))
+
 ;; -----------------------------------------------------------
 ;; DONE Configure Core
 ;; -----------------------------------------------------------
 
+(require 'init-evil) ;; keybindings get loaded first
 (require 'init-core)
-(require 'init-evil)
 (require 'init-org)
 (require 'init-chinese)
 (require 'init-os)
 (require 'init-llm)
 
+;; only load latex when using graphic
 (when (display-graphic-p)
   (require 'init-latex))
 
@@ -93,47 +102,33 @@
 ;; DONE programming modes
 ;; -----------------------------------------------------------
 
-(+ensure-packages-installed
+;; modes that does not require additional config
+(+package/ensure-install-and-use
+ '(
+   protobuf-mode
+   meson-mode
+   )
+ )
+
+(+package/ensure-install
  '(
    ;; bazel mode (need config)
    bazel
    ;; cmake mode (need config)
    cmake-mode
-   ;; protobuf mdoe
-   protobuf-mode
-   ;; meson mode
-   meson-mode
    ;; markdown mode
    markdown-mode
-   ;; yaml mode
-   yaml-mode
-   ;; treesit-auto
-   treesit-auto
    ;; k8s
    kubernetes 
    kubernetes-evil
    ))
 
-(use-package kubernetes
-  :ensure t
-  :custom
-  (kubernetes-show-message nil)
-  :config
-  ;; set custom display function
-  (defun kubernetes-commands-display-buffer-same-window (buffer)
-    (display-buffer buffer '(display-buffer-same-window)))
-  (setopt kubernetes-commands-display-buffer-function
-          'kubernetes-commands-display-buffer-same-window)
-
-  ;; disable auto refresh
-  (setq kubernetes-poll-frequency 3600
-        kubernetes-redraw-frequency 3600))
-
-(use-package kubernetes-evil
-  :ensure t
-  :after kubernetes)
+;; -----------------------------------------------------------
+;; DONE tree-sitter (site-lisp)
+;; -----------------------------------------------------------
 
 (use-package treesit-auto
+  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :custom
   (treesit-auto-install 'prompt)
   :config
@@ -174,14 +169,32 @@
   (add-to-list 'treesit-auto-recipe-list my-bash-tsauto-config)
 
   (treesit-auto-add-to-auto-mode-alist 'all)
-  ;; FIXME global-treesit-auto-mode is lagging
-  ;; (global-treesit-auto-mode)
+  ;; global-treesit-auto-mode is lagging
+  (global-treesit-auto-mode)
   )
 
-(use-package protobuf-mode)
-(use-package meson-mode)
-(use-package markdown-mode)
-(use-package yaml-mode)
+;; -----------------------------------------------------------
+;; DONE kubenetes
+;; -----------------------------------------------------------
+
+(use-package kubernetes
+  :ensure t
+  :custom
+  (kubernetes-show-message nil)
+  :config
+  ;; set custom display function
+  (defun kubernetes-commands-display-buffer-same-window (buffer)
+    (display-buffer buffer '(display-buffer-same-window)))
+  (setopt kubernetes-commands-display-buffer-function
+          'kubernetes-commands-display-buffer-same-window)
+
+  ;; disable auto refresh
+  (setq kubernetes-poll-frequency 3600
+        kubernetes-redraw-frequency 3600))
+
+(use-package kubernetes-evil
+  :ensure t
+  :after kubernetes)
 
 ;; ------------------------------------------------------------------
 ;; DONE C/C++, cmake and bazel
@@ -212,10 +225,6 @@
   (setq bazel-buildifier-before-save 't))
 
 ;; ------------------------------------------------------------------
-;; TODO Zig mode 
-;; ------------------------------------------------------------------
-
-;; ------------------------------------------------------------------
 ;; DONE Markdown mode
 ;; ------------------------------------------------------------------
 
@@ -226,192 +235,3 @@
   :bind (:map markdown-mode-map
               ("C-c C-e" . markdown-do)))
 
-;; ------------------------------------------------------------------
-;; DONE Key Bindings
-;; ------------------------------------------------------------------
-
-(use-package general
-  :ensure t
-  :after (evil evil-mc)
-  :config
-  (defconst my-leader "SPC")
-  (defconst my-local-leader "SPC m")
-
-  (general-create-definer +my-leader-def
-    :prefix my-leader)
-
-  (general-create-definer +my-local-leader-def
-    :prefix my-local-leader)
-  
-  
-  ;; HACK always get a new eat terminal
-  (defun +eat/new ()
-    (interactive)
-    (let ((current-prefix-arg '(t)))
-      (call-interactively 'eat)))
-
-  ;; HACK kill current persp without asking
-  (defun +persp/kill-current ()
-    (interactive)
-    (persp-kill (persp-current-name)))
-
-  ;; ** keybindings that should not be overriden
-  (general-define-key
-   :keymaps 'override
-   "M-i"     #'completion-at-point
-   "M-y"     #'yas-expand
-   "M-/"     #'evilnc-comment-or-uncomment-lines
-   "M-f"     #'consult-line ; search like mac
-   "M-a"     #'mark-whole-buffer ; select like mac
-   "M-s"     #'save-buffer ; save like mac
-   "M-v"     #'evil-paste-after ; paste like mac
-   "C-u"     #'evil-scroll-up
-   "C-d"     #'evil-scroll-down
-   "C-="     #'cnfonts-increase-fontsize
-   "C--"     #'cnfonts-decrease-fontsize
-   "C-h"     #'persp-prev
-   "C-l"     #'persp-next
-   "C-M-h"   #'+persp/move-buffer-prev
-   "C-M-l"   #'+persp/move-buffer-next)
-  ;; ** Global Keybindings
-  (+my-leader-def
-    :states '(normal visual motion)
-    :keymaps 'override ; prevent from being override
-    ;; most-frequency keys
-    "RET"    #'gptel
-    "."      #'find-file
-    "<"      #'consult-buffer
-    ","      #'consult-project-buffer
-    "/"      #'+vertico/project-search
-    "TAB"    #'evil-switch-to-windows-last-buffer
-    "SPC"    #'projectile-find-file
-    ;; llm-related key bindings
-    "i" '(:ignore t :which-key "search")
-    "i RET"  #'gptel
-    "ir"     #'gptel-rewrite
-    "is"     #'gptel-send
-    "iq"     #'gptel-abort
-    "ic"     #'gptel-add
-    "ii"     #'gptel-menu
-    ;; action-related key bindings
-    "a" '(:ignore t :which-key "actions")
-    "a RET"  #'embark-dwim
-    ;; window-related key bindings
-    "w" '(:ignore t :which-key "window")
-    "wh"     #'evil-window-left
-    "wj"     #'evil-window-down
-    "wk"     #'evil-window-up
-    "wl"     #'evil-window-right
-    "ww"     #'other-window
-    "wx"     #'evil-window-exchange
-    "wd"     #'evil-window-delete
-    "ws"     #'evil-window-split
-    "wv"     #'evil-window-vsplit
-    "wm"     #'delete-other-windows
-    ;; buffeer-related key bindings
-    "b" '(:ignore t :which-key "buffer")
-    "bn"     #'evil-buffer-new
-    "bd"     #'kill-current-buffer
-    "br"     #'+revert-buffer-no-confirm
-    "bc"     #'clean-buffer-list
-    "bo"     #'persp-kill-other-buffers
-    "B" '(:ignore t :which-key "bookmark")
-    "BB"     #'consult-bookmark
-    "Bn"     #'bookmark-set
-    "Bd"     #'bookmark-delete
-    ;; open-related key bindings
-    "o" '(:ignore t :which-key "open")
-    "ot"     #'+eshell/new
-    "oT"     #'+eat/new
-    "od"     #'dired-jump
-    "og"     #'magit-status-quick
-    "ok"     #'kubernetes-overview
-    "oc"     #'compile ; popup
-    "ox"     #'scratch-buffer ; popup
-    "om"     #'popwin:messages ; popup
-    "oi"     #'gptel ; popup
-    ;; project-related key bindings
-    "p" '(:ignore t :which-key "project")
-    "pa"     #'projectile-add-known-project
-    "pd"     #'projectile-remove-known-project
-    "pp"     #'projectile-switch-project
-    "pC"     #'projectile-configure-project
-    "pc"     #'projectile-compile-project
-    "pt"     #'projectile-test-project
-    "pr"     #'projectile-run-project
-    "pi"     #'projectile-invalidate-cache
-    "pf"     #'+vertico/project-search
-    "po"     #'find-sibling-file
-    "pH"     #'+persp/move-buffer-prev
-    "pL"     #'+persp/move-buffer-next
-    "ph"     #'persp-prev
-    "pl"     #'persp-next
-    "pq"     #'+persp/kill-current
-    ;; note functions
-    "n" '(:ignore t :which-key "note")
-    "n@"      #'citar-insert-citation ;; insert bib
-    "nba"     #'+bibtex/add-doi ;; add bib from doi
-    "nbb"     #'+bibtex/consult-bibtex-file ;; check bib source
-    "nbf"     #'citar-open ;; consult for entry
-    "ny"      #'org-store-link
-    "np"      #'org-insert-link
-    "ne"      #'org-export-dispatch
-    "nd"      #'deft
-    "nj"      #'org-journal-new-entry
-    "nrf"     #'org-roam-node-find
-    "nri"     #'org-roam-node-insert
-    "nrs"     #'org-roam-db-sync
-    ;; help functions
-    "h" '(:ignore t :which-key "help")
-    "hf"     #'helpful-callable
-    "hk"     #'helpful-key
-    "hv"     #'helpful-variable
-    "hm"     #'describe-mode
-    ;; quit emacs
-    "q" '(:ignore t :which-key "quit")
-    "qq"     #'save-buffers-kill-terminal
-    "qr"     #'restart-emacs
-    ;; toggles
-    "t" '(:ignore t :which-key "toggle")
-    "th"     #'hs-hide-level
-    "tf"     #'toggle-frame-maximized
-    "tF"     #'toggle-frame-fullscreen
-    "tt"     #'toggle-truncate-lines
-    "tc"     #'display-fill-column-indicator-mode
-    "tl"     #'display-line-numbers-mode
-    ;; code
-    "c" '(:ignore t :which-key "code")
-    "cx"     #'list-flycheck-errors
-    "ca"     #'eglot-code-actions
-    "cr"     #'eglot-rename
-    "cf"     #'eglot-format-buffer
-    "cj"     #'consult-eglot-symbols
-    ;; search
-    "s" '(:ignore t :which-key "search")
-    "si"     #'consult-imenu ;; search item
-    "sh"     #'consult-history ;; search history
-    )
-
-  ;; deft mode map
-  (+my-local-leader-def
-    :keymaps 'deft-mode-map
-    :states '(normal visual motion)
-    "A" #'deft-archive-file
-    "n" #'deft-new-file
-    "f" #'deft-filter
-    "d" #'deft-delete-file
-    "g" #'deft-refresh
-    )
-  
-  ;; org mode map
-  (+my-local-leader-def
-    :keymaps 'org-mode-map
-    :states '(normal visual motion)
-    "e" #'org-export-dispatch
-    "j" #'org-present-next
-    "k" #'org-present-prev
-    "q" #'org-present-quit
-    "t" #'org-todo
-    "p" #'org-priority
-    )
-  )

@@ -2,7 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
-(+ensure-packages-installed
+(require 'init-evil)
+
+(+package/ensure-install
  '(
    ;; theme
    zenburn-theme
@@ -296,11 +298,11 @@
 
   ;; HACK from https://github.com/emacs-dashboard/emacs-dashboard/issues/153#issuecomment-714406661
   (defvar my-banners-dir (concat jc-emacs-directory "/data/"))
-  (defun install-banners ()
+  (defun +dashboard/install-banners ()
     "Copy all files under under banners directory to dashboard banners directory"
     (when (boundp 'dashboard-banners-directory)
       (copy-directory my-banners-dir dashboard-banners-directory nil nil t)))
-  (install-banners)
+  (+dashboard/install-banners)
 
   ;; Set the title  
   (setq dashboard-banner-logo-title "It's possible to build a cabin with no foundations, but not a lasting building.")

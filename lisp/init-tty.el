@@ -3,7 +3,7 @@
 ;;; Code:
 
 (unless (display-graphic-p)
-  (+ensure-packages-installed
+  (+package/ensure-install
    '(
      corfu-terminal
      ))
