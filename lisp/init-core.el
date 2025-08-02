@@ -86,16 +86,21 @@
   (popwin:special-display-config
    '(
      ;;
-     ;; bottom
+     ;; One-time notification
      ;;
-     (help-mode :stick t)
-     (helpful-mode :stick t)
-     ("*Flycheck errors*" :stick t)
-     ("*Messages*" :stick t)
+     ("*xref*" :position bottom)
+     ;;
+     ;; bottom (only for display)
+     ;;
+     (help-mode :position bottom :stick t)
+     (helpful-mode :position bottom :stick t)
+     ("*Flycheck errors*" :position bottom :stick t)
+     ("*Messages*" :position bottom :stick t)
+     ("*LLM response*" :position bottom :stick t)
      ;;
      ;; right, where you might need to write something inside
      ;;
-     ("*DeepSeek*" :position right :stick t)
+     ("*bailian.aliyun*" :position right :stick t)
      ("*scratch*" :position right :stick t)
      (compilation-mode :position right :stick t)
      )
@@ -136,6 +141,7 @@
   :ensure t
   :after eglot
   :config
+  (setopt eldoc-echo-area-use-multiline-p 1) ;; use just one line
   (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
   (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
   )

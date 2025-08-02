@@ -8,28 +8,47 @@
  '(
    ;; llm client
    gptel
+   ;; add-ons
+   gptel-magit
    ))
-
 
 (use-package gptel
   :ensure t
   :custom
   (gptel-rewrite-default-action 'merge)
-  (gptel-include-reasoning nil)
+  ;; (gptel-include-reasoning nil)
   :config
-  (setq gptel-model 'deepseek-r1
+  (setq gptel-model 'qwen-plus
         gptel-default-mode 'org-mode
         gptel-org-branching-context t
         gptel-log-level 'info
         gptel-backend
-        (gptel-make-deepseek "DeepSeek"
+        (gptel-make-deepseek "bailian.aliyun"
           :host "dashscope.aliyuncs.com/compatible-mode/v1"
           :endpoint "/chat/completions"
           :stream t
-          :key (auth-source-pick-first-password :host "api.deepseek.com")
-          :models '(deepseek-r1)
+          :key (auth-source-pick-first-password :host "bailian.console.aliyun.com")
+          :models '(qwen-plus deepseek-r1)
           ))
-  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "*Jamie*\n")
-  (setf (alist-get 'org-mode gptel-response-prefix-alist) "*@Deepseek*\n"))
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "=@AI=\n"))
+
+(defun +gptel/ask-commit-msg ()
+  )
+
+(use-package gptel-magit
+  :ensure t
+  :hook (magit-mode . gptel-magit-install)
+  :config
+  ;; HACK override this function cause it does not handling (reasoning . text)
+  (cl-defun gptel-magit--format-commit-message (message)
+    "Format commit message MESSAGE nicely."
+    (with-temp-buffer
+      (insert (cdr message))
+      (text-mode)
+      (setq fill-column git-commit-summary-max-length)
+      (fill-region (point-min) (point-max))
+      (buffer-string)))
+  )
 
 (provide 'init-llm)
