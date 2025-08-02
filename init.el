@@ -325,6 +325,7 @@
     "oc"     #'compile ; popup
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
+    "oi"     #'gptel ; popup
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project

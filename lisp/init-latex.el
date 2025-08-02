@@ -18,6 +18,7 @@
    ;; xenops
    ))
 
+
 (use-package pdf-tools
   :ensure t
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode) ; Associate .pdf files with pdf-view-mode
@@ -30,6 +31,22 @@
   :config
   ;; pdf-tools have the buffer refresh after compilation
   (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+
+  ;; Enable SyncTeX
+  (setq TeX-source-correlate-mode t)
+  (setq TeX-source-correlate-start-server t)
+
+  ;; Set PDF-Tools as the default viewer
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+        TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
+
+  ;; Define forward search function
+  (defun TeX-pdf-tools-sync-view ()
+    (let ((pdf-file (expand-file-name (concat (TeX-master-file "pdf") ".pdf")))
+          (tex-file buffer-file-name)
+          (line (line-number-at-pos)))
+      (pdf-view-open pdf-file)
+      (pdf-sync-forward-search tex-file line)))
   )
 
 (use-package biblio
