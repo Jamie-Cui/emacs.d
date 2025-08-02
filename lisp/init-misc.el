@@ -168,8 +168,6 @@
 
 (setq tramp-auto-save-directory (concat user-emacs-directory "tramp-autosave/"))
 
-(setq magit-tramp-pipe-stty-settings 'pty)
-
 (connection-local-set-profiles
  '(:application tramp :protocol "scp")
  'remote-direct-async-process)
@@ -179,7 +177,6 @@
     (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
 
 ;; forgot why I add this ...
-;; (setq magit-tramp-pipe-stty-settings 'pty)
 (setq tramp-pipe-stty-settings "")
 
 ;; this improves magit efficiency
@@ -189,38 +186,6 @@
 ;; allow asyn in tramp
 (setq tramp-async-enabled t)
 
-;; don't show the diff by default in the commit buffer. Use `C-c C-d' to display it
-(setq magit-commit-show-diff nil)
-;; don't show git variables in magit branch
-(setq magit-branch-direct-configure nil)
-;; don't automatically refresh the status buffer after running a git command
-(setq magit-refresh-status-buffer nil)
-
-(setq magit-log-section-commit-count 20)  ; Show fewer commits
-
-(setq magit-auto-revert-mode nil)
-
-(setq magit-diff-refine-hunk t)
-
-(setq magit-save-repository-buffers nil)
-
-(setq magit-revision-insert-related-refs nil)
-
-(setq magit-uniquify-buffer-names nil)
-
-(setq magit-status-sections-hook
-      '(magit-insert-status-headers
-        magit-insert-merge-log
-        magit-insert-rebase-sequence
-        magit-insert-am-sequence
-        magit-insert-sequencer-sequence
-        magit-insert-bisect-output
-        magit-insert-bisect-rest
-        magit-insert-bisect-log
-        magit-insert-untracked-files
-        magit-insert-unstaged-changes
-        magit-insert-staged-changes
-        magit-insert-stashes))
 
 ;;; eshell
 (setopt eshell-scroll-show-maximum-output nil
