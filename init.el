@@ -132,45 +132,10 @@
   :custom
   (treesit-auto-install 'prompt)
   :config
-  ;; compatiable with libtree-sitter-dev/noble,now 0.20.8-2 amd64 [installed]
-  (setq my-cpp-tsauto-config
-        (make-treesit-auto-recipe
-         :lang 'cpp
-         :ts-mode 'c++-ts-mode
-         :remap 'c++-mode
-         :url "https://github.com/tree-sitter/tree-sitter-cpp"
-         :revision "v0.23.0"
-         :requires 'c
-         :source-dir "src"
-         :ext "\\.cpp\\'"))
-  (add-to-list 'treesit-auto-recipe-list my-cpp-tsauto-config)
+  ;; (treesit-auto-add-to-auto-mode-alist 'all)
 
-  (setq my-c-tsauto-config
-        (make-treesit-auto-recipe
-         :lang 'c
-         :ts-mode 'c-ts-mode
-         :remap 'c-mode
-         :url "https://github.com/tree-sitter/tree-sitter-c"
-         :revision "v0.22.0"
-         :requires 'cpp
-         :source-dir "src"
-         :ext "\\.c\\'"))
-  (add-to-list 'treesit-auto-recipe-list my-c-tsauto-config)
-
-  (setq my-bash-tsauto-config
-        (make-treesit-auto-recipe
-         :lang 'bash
-         :ts-mode 'bash-ts-mode
-         :remap 'bash-mode
-         :url "https://github.com/tree-sitter/tree-sitter-bash"
-         :revision "v0.23.0"
-         :source-dir "src"
-         :ext "\\.c\\'"))
-  (add-to-list 'treesit-auto-recipe-list my-bash-tsauto-config)
-
-  (treesit-auto-add-to-auto-mode-alist 'all)
   ;; global-treesit-auto-mode is lagging
-  (global-treesit-auto-mode)
+  (global-treesit-auto-mode +1)
   )
 
 ;; -----------------------------------------------------------

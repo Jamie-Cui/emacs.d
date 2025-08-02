@@ -38,7 +38,11 @@
 ;; display a yes/no question in the minibuffer and wait for confirmation before
 ;; attempting the installation.
 
-;; NOTE https://github.com/noctuid/treesit-auto/tree/bind-around-set-auto-mode-0
+;; Code modified by @noctuid, see:
+;; https://github.com/noctuid/treesit-auto/tree/bind-around-set-auto-mode-0
+
+;; Code modified by @Jamie-Cui, make treesit-auto compatiable with
+;; libtree-sitter-dev/noble,now 0.20.8-2
 
 ;;; Code:
 
@@ -98,6 +102,12 @@ by manipulating the `treesit-auto-recipe-list' variable."
       :ts-mode 'c-ts-mode
       :remap 'c-mode
       :url "https://github.com/tree-sitter/tree-sitter-c"
+      ;; -----------------
+      ;; HACK by @Jamie-Cui
+      ;; -----------------
+      :revision "v0.23.0"
+      :requires 'cpp
+      ;; -----------------
       :ext "\\.c\\'")
     ,(make-treesit-auto-recipe
       :lang 'c-sharp
@@ -116,6 +126,11 @@ by manipulating the `treesit-auto-recipe-list' variable."
       :ts-mode 'cmake-ts-mode
       :remap 'cmake-mode
       :url "https://github.com/uyha/tree-sitter-cmake"
+      ;; -----------------
+      ;; HACK by @Jamie-Cui
+      ;; -----------------
+      :revision "v0.6.1"
+      ;; -----------------
       :ext "\\.cmake\\'")
     ,(make-treesit-auto-recipe
       :lang 'commonlisp
@@ -128,6 +143,12 @@ by manipulating the `treesit-auto-recipe-list' variable."
       :ts-mode 'c++-ts-mode
       :remap 'c++-mode
       :url "https://github.com/tree-sitter/tree-sitter-cpp"
+      ;; -----------------
+      ;; HACK by @Jamie-Cui
+      ;; -----------------
+      :revision "v0.22.0"
+      :requires 'c
+      ;; -----------------
       :ext "\\.cpp\\'")
     ,(make-treesit-auto-recipe
       :lang 'css
