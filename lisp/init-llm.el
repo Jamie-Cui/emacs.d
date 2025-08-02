@@ -16,7 +16,6 @@
   :ensure t
   :custom
   (gptel-rewrite-default-action 'merge)
-  ;; (gptel-include-reasoning nil)
   :config
   (setq gptel-model 'qwen-plus
         gptel-default-mode 'org-mode
@@ -32,9 +31,6 @@
           ))
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
   (setf (alist-get 'org-mode gptel-response-prefix-alist) "=@AI=\n"))
-
-(defun +gptel/ask-commit-msg ()
-  )
 
 (use-package gptel-magit
   :ensure t

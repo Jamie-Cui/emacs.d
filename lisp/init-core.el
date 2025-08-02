@@ -463,7 +463,6 @@
    consult--source-recent-file consult--source-project-recent-file
    ;; my/command-wrapping-consult    ;; disable auto previews inside my command
    :preview-key '(:debounce 1 any) ;; Option 1: Delay preview
-   ;; :preview-key "M-.")            ;; Option 2: Manual preview
    )
   )
 

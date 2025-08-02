@@ -260,7 +260,6 @@
    "M-f"     #'consult-line ; search like mac
    "M-a"     #'mark-whole-buffer ; select like mac
    "M-s"     #'save-buffer ; save like mac
-   "M-v"     #'evil-paste-before ; paste like mac
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
@@ -269,7 +268,6 @@
    "C-l"     #'persp-next
    "C-M-h"   #'+persp/move-buffer-prev
    "C-M-l"   #'+persp/move-buffer-next)
-
   ;; ** Global Keybindings
   (+my-leader-def
     :states '(normal visual motion)

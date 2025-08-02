@@ -30,6 +30,9 @@
   (setq evil-auto-indent nil)
   (setq evil-want-Y-yank-to-eol t) ; this need to be set before evil
   (setq evil-want-C-g-bindings t) ; this need to be set before evil
+  ;; use emacs bindings in insert-mode
+  (setq evil-disable-insert-state-bindings t)
+  (setq evil-want-keybinding nil)
   :config
   (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
