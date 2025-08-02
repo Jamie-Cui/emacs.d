@@ -168,7 +168,8 @@
   (add-to-list 'treesit-auto-recipe-list my-bash-tsauto-config)
 
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode)
+  ;; FIXME global-treesit-auto-mode is lagging
+  ;; (global-treesit-auto-mode)
   )
 
 (use-package protobuf-mode)
