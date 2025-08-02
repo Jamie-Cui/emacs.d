@@ -14,71 +14,56 @@
 ** What this config does?
 1. Use melpa only.
 2. Use emacs version 30.1.
-3. Use Maple Mono NF CN: [[https://github.com/subframe7536/maple-font][repo]], [[https://github.com/subframe7536/maple-font/releases/download/v7.4/MapleMono-NF-CN-unhinted.zip][download]]
-4. Plantuml: https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar
+3. Use Maple Mono NF CN: [[https://github.com/subframe7536/maple-font][repo]], [[https://github.com/subframe7536/maple-font/releases/download/v7.4/MapleMono-NF-CN-unhinted.zip][download]].
+4. Use Plantuml for uml drawing: [[https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar][download]].
+5. Use emacs build-in tree-sitter.
 
 * Getting started
+** Prerequisite
+- gcc toolchain (gcc, g++, cmake, makefile, autotools, ...): compile environment
+- libgccjit: for emacs's native compilation feature
+- libsqlite3: for org-roam database
+- libtree-sitter: for tree-sitter
+- texlive: for latex
+
 ** Dwonload and Compile Emacs
 
 #+begin_src bash
+# download
 wget -c https://github.com/emacs-mirror/emacs/archive/refs/tags/emacs-30.1.tar.gz
-
 # unzip and enter emacs folder
 autoconf
-# terminal
+# (alt) configure terminal emacs
 ./configure --with-native-compilation --with-tree-sitter --without-x-toolkit --without-xpm --without-gif --without-tiff --without-gnutls --with-sqlite3
-# gui 
-./configure --with-native-compilation --with-tree-sitter --without-gnutls --with-sqlite3
+# (alt) configure gui emacs
+./configure --with-native-compilation --with-tree-sitter --with-sqlite3
+# compile
 sudo make install
 #+end_src
 
-tree-sitter problem? see: https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
-tree-sitter pre-built binaries: https://github.com/emacs-tree-sitter/tree-sitter-langs
+Have tree-sitter problem? see: [[https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button][link]]. Or download tree-sitter pre-built binaries [[https://github.com/emacs-tree-sitter/tree-sitter-langs][here]]. 
 
 ** Setup ~$HOME/.emacs.d/init.el~
 #+begin_src elisp
 (defvar jc-emacs-directory "~/Desktop/emacs.d")
 (load (concat jc-emacs-directory "/init.el"))
-
 #+end_src
 
 ** C/C++ Dev Tools
-*** clangd
-*** clang-format
-*** clang-tidy
-*** cpplint
+- clangd, clang-format, clang-tidy
+#+begin_src bash 
+# ubuntu
+sudo apt install clangd, clang-format, clang-tidy
+# macos
+brew install clangd, clang-format, clang-tidy
+#+end_src
 
+- cpplint
 #+begin_src bash
 pip3 install cpplint
 #+end_src
 
-*** cmake-format
-
+- cmake-format
 #+begin_src bash
 pip3 install cmake-format
-#+end_src
-
-* Q & A 
-** gptel api key location
-#+begin_src bash
-# file location
-~/.authinfo
-
-# format
-machine api.deepseek.com login apikey password whatever-your-api-key-is
-#+end_src
-
-** Tweak keyboard
-#+begin_src bash
-# ubuntu
-gsettings set org.gnome.desktop.peripherals.keyboard repeat-interval 15
-gsettings set org.gnome.desktop.peripherals.keyboard delay 200
-
-ibus-setup # trun off emoji shortcut => which defaults to C-;
-
-# macos
-defaults write -g InitialKeyRepeat -int 15 // I think 15 is better, you can set this to 10
-defaults write -g KeyRepeat -int 1
-# or, config those values though GUI
-open ~/Library/Preferences/.GlobalPreferences.plist
 #+end_src
