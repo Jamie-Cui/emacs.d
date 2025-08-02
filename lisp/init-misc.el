@@ -47,20 +47,10 @@
 ;; scrolling
 (setq hscroll-margin 2
       hscroll-step 1
-      ;; Emacs spends too much effort recentering the screen if you scroll the
-      ;; cursor more than N lines past window edges (where N is the settings of
-      ;; `scroll-conservatively'). This is especially slow in larger files
-      ;; during large-scale scrolling commands. If kept over 100, the window is
-      ;; never automatically recentered. The default (0) triggers this too
-      ;; aggressively, so I've set it to 10 to recenter if scrolling too far
-      ;; off-screen.
-      scroll-conservatively 10
+      scroll-conservatively 10000
       scroll-margin 0
       scroll-preserve-screen-position t
-      ;; Reduce cursor lag by a tiny bit by not auto-adjusting `window-vscroll'
-      ;; for tall lines.
       auto-window-vscroll nil
-      ;; mouse
       mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
       mouse-wheel-scroll-amount-horizontal 2)
 
