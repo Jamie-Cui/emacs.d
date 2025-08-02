@@ -8,16 +8,14 @@
  '(
    ;; llm client
    gptel
-   ;; magit gptel commit message
-   gptel-magit
    ))
 
 
 (use-package gptel
   :ensure t
   :custom
-  (gptel-include-reasoning nil)
   (gptel-rewrite-default-action 'merge)
+  (gptel-include-reasoning nil)
   :config
   (setq gptel-model 'deepseek-r1
         gptel-default-mode 'org-mode
@@ -29,13 +27,9 @@
           :endpoint "/chat/completions"
           :stream t
           :key (auth-source-pick-first-password :host "api.deepseek.com")
-          :models '(deepseek-r1)))
+          :models '(deepseek-r1)
+          ))
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "*Jamie*\n")
   (setf (alist-get 'org-mode gptel-response-prefix-alist) "*@Deepseek*\n"))
-
-(use-package gptel-magit
-  :ensure t
-  :after gptel
-  :hook (magit-mode . gptel-magit-install))
 
 (provide 'init-llm)
