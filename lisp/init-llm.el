@@ -44,11 +44,16 @@
   (cl-defun gptel-magit--format-commit-message (message)
     "Format commit message MESSAGE nicely."
     (with-temp-buffer
-      (insert (cdr message))
+      (cond
+       ((stringp message)
+        (insert message))
+       ((listp message)
+        (insert (cdr message)))
+       (t
+        (message "Unknown message type")))
       (text-mode)
       (setq fill-column git-commit-summary-max-length)
       (fill-region (point-min) (point-max))
-      (buffer-string)))
-  )
+      (buffer-string))))
 
 (provide 'init-llm)
