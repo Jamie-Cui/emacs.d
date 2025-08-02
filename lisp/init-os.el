@@ -75,7 +75,7 @@
      "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\""))
   )
 
-;; if you are using magic keyboard
-(setq x-super-keysym 'meta)
+;; NOTE if you are using magic keyboard
+;; (setq x-super-keysym 'meta)
 
 (provide 'init-os)
