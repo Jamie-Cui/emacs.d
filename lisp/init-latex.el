@@ -47,6 +47,14 @@
           (line (line-number-at-pos)))
       (pdf-view-open pdf-file)
       (pdf-sync-forward-search tex-file line)))
+
+  ;; Enable Inverse Search in PDFs
+  (setq pdf-sync-backward-search-method 'generic
+        pdf-sync-generic-forward-search-command
+        "emacsclient --no-wait +%l '%f'")
+
+  (setq TeX-PDF-mode t) ; Ensure PDF output
+  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode) ; Auto-enable SyncTeX
   )
 
 (use-package biblio
