@@ -217,8 +217,10 @@
   (eshell '(t)))
 
 ;; HACK redefine eshell/clear function
-(with-eval-after-load 'esh-mode
-  (cl-defun eshell/clear (&optional scrollback)
+(use-package esh-mode
+  :config
+  ;; HACK redefine eshell/clear function
+  (defun eshell/clear (&optional scrollback)
     (interactive)
     (let ((inhibit-read-only t))
       (erase-buffer)))
