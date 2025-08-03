@@ -177,7 +177,7 @@
     :states '(normal visual motion)
     :keymaps 'override ; prevent from being override
     ;; most-frequency keys
-    "RET"    #'gptel
+    "RET"    #'gptel ;; popup
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer
@@ -227,10 +227,8 @@
     "od"     #'dired-jump
     "og"     #'magit-status-quick
     "ok"     #'kubernetes-overview
-    "oc"     #'compile ; popup
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
-    "oi"     #'gptel ; popup
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project

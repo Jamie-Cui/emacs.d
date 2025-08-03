@@ -150,7 +150,8 @@
   :ensure t
   :after eglot
   :config
-  (eldoc-box-hover-mode +1)
+  (add-hook 'eldoc-mode-hook #'eldoc-box-hover-mode)
+  
   ;; (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
   (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
   )
@@ -491,7 +492,8 @@
 
 (use-package dired
   :custom
-  (dired-listing-switches (purecopy "-alX --human-readable --group-directories-first --no-group"))
+  (dired-listing-switches 
+   (purecopy "-alX --human-readable --group-directories-first --no-group"))
   (dired-kill-when-opening-new-dired-buffer t)
   (dired-omit-extensions nil)
   (dired-dwim-target t)
@@ -500,7 +502,9 @@
    :states 'normal
    :keymaps 'dired-mode-map
    "h"   #'dired-up-directory
-   "l"   #'dired-find-file)
+   "l"   #'dired-find-file
+   "T"   #'dired-create-empty-file
+   )
   )
 
 (use-package dired-subtree
