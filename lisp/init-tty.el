@@ -22,12 +22,13 @@
   (use-package corfu-terminal
     :ensure t
     :config
-    (corfu-terminal-mode +1)
-    )
+    (corfu-terminal-mode +1))
 
   (xterm-mouse-mode 1)
+
+  ;; Disable eldoc in terminal
+  (eldoc-mode -1)
   
-  (setopt eldoc-echo-area-use-multiline-p nil)
   )
 
 (provide 'init-tty)

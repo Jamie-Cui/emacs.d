@@ -31,6 +31,7 @@
   ;; whether to use emacs bindings in insert-mode
   (setq evil-disable-insert-state-bindings nil)
   :config
+  (setq evil-mode-line-format '(before . mode-line-front-space))
   (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
   (setq-default evil-symbol-word-search t)
@@ -279,8 +280,8 @@
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
-    "tc"     #'display-fill-column-indicator-mode
-    "tl"     #'display-line-numbers-mode
+    "tn"     #'display-line-numbers-mode
+    "ta"     #'+treesit-auto/toggle
     ;; code
     "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors

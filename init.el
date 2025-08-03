@@ -121,6 +121,8 @@
    ;; k8s
    kubernetes 
    kubernetes-evil
+   ;; automatically install treesit grammar
+   treesit-auto
    ))
 
 ;; -----------------------------------------------------------
@@ -128,14 +130,21 @@
 ;; -----------------------------------------------------------
 
 (use-package treesit-auto
-  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :custom
   (treesit-auto-install 'prompt)
   :config
-  ;; (treesit-auto-add-to-auto-mode-alist 'all)
+  (treesit-auto-add-to-auto-mode-alist 'all)
 
-  ;; global-treesit-auto-mode is lagging
-  (global-treesit-auto-mode +1)
+  ;; HACK toggle mode automatically
+  (defun +treesit-auto/toggle ()
+    "Toggle global-treesit-auto-mode."
+    (interactive)
+    (if global-treesit-auto-mode
+        (progn
+          (global-treesit-auto-mode -1)
+          (message "global-treesit-auto-mode disabled"))
+      (global-treesit-auto-mode 1)
+      (message "global-treesit-auto-mode enabled")))
   )
 
 ;; -----------------------------------------------------------

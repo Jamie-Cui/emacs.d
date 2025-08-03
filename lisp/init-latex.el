@@ -17,7 +17,12 @@
    auctex
    ;; preview org math
    ;; xenops
+   ;; proof assist
+   proof-general
    ))
+
+(use-package proof-general
+  :ensure t)
 
 (use-package pdf-tools
   :ensure t

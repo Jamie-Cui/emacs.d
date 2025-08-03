@@ -150,8 +150,8 @@
   :ensure t
   :after eglot
   :config
-  (setopt eldoc-echo-area-use-multiline-p 1) ;; use just one line
-  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
+  (eldoc-box-hover-mode +1)
+  ;; (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
   (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
   )
 
