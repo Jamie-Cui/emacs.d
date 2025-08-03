@@ -432,6 +432,7 @@
   (projectile-indexing-method 'hybrid)
   (projectile-enable-caching t)
   (projectile-per-project-compilation-buffer t)
+  (projectile-switch-project-action 'projectile-dired)
   :config
   (defun +projectile-project-name--lower-case (project-root)
     (downcase (file-name-nondirectory (directory-file-name project-root))))
@@ -441,14 +442,6 @@
 ;; helpful
 (use-package helpful
   :ensure t)
-
-;; which-key
-(use-package which-key
-  :ensure t
-  :config
-  (which-key-setup-minibuffer)
-  (which-key-mode 1))
-
 
 ;; vertico
 (use-package vertico

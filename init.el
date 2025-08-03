@@ -84,7 +84,8 @@
 ;; DONE Configure Core
 ;; -----------------------------------------------------------
 
-(require 'init-evil) ;; keybindings get loaded first
+(require 'init-kbd) ;; keybindings 
+(require 'init-evil) 
 (require 'init-core)
 (require 'init-org)
 (require 'init-chinese)
