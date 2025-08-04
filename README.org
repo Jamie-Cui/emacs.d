@@ -36,7 +36,7 @@ wget -c https://github.com/emacs-mirror/emacs/archive/refs/tags/emacs-30.1.tar.g
 # unzip and enter emacs folder
 autoconf
 # (alt) configure terminal emacs
-./configure --with-native-compilation --with-tree-sitter --without-x-toolkit --without-xpm --without-gif --without-tiff --without-gnutls --with-sqlite3
+./configure --with-native-compilation --with-tree-sitter --with-gnutls --without-x-toolkit --without-xpm --without-gif --without-tiff --with-sqlite3
 # (alt) configure gui emacs
 ./configure --with-native-compilation --with-tree-sitter --with-sqlite3
 # compile
