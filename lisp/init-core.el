@@ -467,7 +467,11 @@
    ;; my/command-wrapping-consult    ;; disable auto previews inside my command
    :preview-key '(:debounce 1 any) ;; Option 1: Delay preview
    )
+  :config 
+  (setq xref-show-xrefs-function       #'consult-xref
+        xref-show-definitions-function #'consult-xref)
   )
+
 
 ;; sudo-edit
 (use-package sudo-edit

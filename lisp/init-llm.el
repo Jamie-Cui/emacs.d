@@ -56,17 +56,20 @@
       (fill-region (point-min) (point-max))
       (buffer-string))))
 
+;; using claude-code from foreign api
 ;; see: https://help.aliyun.com/zh/model-studio/claude-code
-;; in bash, you need
+;; 
+;; just in case you want claude to work in bash shell terminal, you need
 ;; export ANTHROPIC_BASE_URL=https://dashscope.aliyuncs.com/api/v2/apps/claude-code-proxy
-;; export ANTHROPIC_AUTH_TOKEN=
-
-;; HACK Why not melpa? coz it requires vterm and i prefer eat.
-;; (use-package claude-code
-;;   :ensure t
-;;   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-;;   :config
-;;   (setq claude-code-terminal-backend 'eat) ;; this is the default
-;;   )
+;; export ANTHROPIC_AUTH_TOKEN=sk-***************************
+;; 
+;; HACK Why not melpa? coz it requires vterm and I prefer eat.
+;;
+(use-package claude-code
+  :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :config
+  (setq claude-code-terminal-backend 'eat) ;; this is the default
+  )
 
 (provide 'init-llm)
