@@ -2,6 +2,10 @@
 ;;; Commentary:
 ;;; Code:
 
+;; Set Lexical Binding Globally
+(setq lexical-binding t)
+(setq byte-compile-warnings '(not lexical))
+
 ;; stop the BELL!
 (setq ring-bell-function 'ignore)
 
