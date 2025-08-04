@@ -74,7 +74,6 @@
    nerd-icons-dired
    ))
 
-
 (use-package diff-hl
   :ensure t
   :config
@@ -111,6 +110,8 @@
      ;;
      ("*bailian.aliyun*" :position right :stick t)
      ("*scratch*" :position right :stick t)
+     ;; FIXME claude-code does not support customized window, for now
+     (claude-code--buffer-p :position right :stick t)
      (compilation-mode :position right :stick t)
      )
    )

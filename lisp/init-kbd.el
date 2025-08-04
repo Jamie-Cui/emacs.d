@@ -180,7 +180,7 @@
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
     "cr"     #'eglot-rename
-    "cf"     #'eglot-format-buffer
+    "cf"     #'apheleia-format-buffer
     "cj"     #'consult-eglot-symbols
     ;; search
     "s" '(:ignore t :which-key "search")
