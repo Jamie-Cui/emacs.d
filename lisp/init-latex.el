@@ -136,4 +136,17 @@
 (use-package engrave-faces
   :ensure t)
 
+(defun +latex/format-paragraph ()
+  "Replace '. ' with '.\n%\n' in the selected region, similar to Vim's :'<,'>s/\. /.\n%\n/g."
+  (interactive)
+  (if (use-region-p)
+      (let ((start (region-beginning))
+            (end (region-end)))
+        (save-excursion
+          (goto-char start)
+          (while (search-forward ". " end t)
+            (replace-match ".\n%\n" nil t))))
+    (message "No region selected!"))
+  (message "Replacement done!"))
+
 (provide 'init-latex)
