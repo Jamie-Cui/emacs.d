@@ -26,18 +26,20 @@
       :endpoint "/chat/completions"
       :stream t
       :key (auth-source-pick-first-password :host "bailian.console.aliyun.com")
-      :models '(qwen-plus deepseek-r1)))
+      :models '(qwen-plus deepseek-r1 qwen3-coder-plus)))
 
   ;; register local backend
+  ;; NOTE to make ollama work through LAN, on its server, set
+  ;; export OLLAMA_HOST=0.0.0.0:11434
   (defvar +gptel/local-backend
-    (gptel-make-ollama "ollama"        
-      :host "localhost:11434"           
-      :stream t                          
+    (gptel-make-ollama "ollama"
+      :host "localhost:11434"
+      :stream t
       :models '(deepseek-r1:7b)))
 
   ;; set default values
-  (setopt gptel-backend +gptel/local-backend)
-  (setopt gptel-model 'deepseek-r1:7b)
+  (setopt gptel-backend +gptel/remote-backend)
+  (setopt gptel-model 'qwen3-coder-plus)
 
   ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
@@ -45,10 +47,7 @@
 
   ;; set hook
   (add-hook 'gptel-mode-hook
-            (lambda ()
-              (insert "** Default Context\n=@Jamie=")
-              ))
-  )
+            (lambda () (insert "** Default Context\n=@Jamie="))))
 
 (use-package gptel-magit
   :ensure t
@@ -78,6 +77,9 @@
 ;; export ANTHROPIC_AUTH_TOKEN=sk-***************************
 ;; 
 ;; HACK Why not melpa? coz it requires vterm and I prefer eat.
+;;
+;; TODO how to use cluade-code in emacs with local model?
+;; see: https://github.com/musistudio/claude-code-router/tree/main
 ;;
 (use-package claude-code
   :ensure t
