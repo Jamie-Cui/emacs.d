@@ -49,7 +49,6 @@
 (setq package-archives 
       '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-        ("org" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
         ;; ("gnu"   . "http://elpa.gnu.org/packages/")
         ;; ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
