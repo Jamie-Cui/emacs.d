@@ -29,17 +29,17 @@
       :models '(qwen-plus deepseek-r1 qwen3-coder-plus)))
 
   ;; register local backend
-  ;; NOTE to make ollama work through LAN, on its server, set
-  ;; export OLLAMA_HOST=0.0.0.0:11434
+  ;; NOTE to make ollama work through LAN, on its server
+  ;; see: https://github.com/ollama/ollama/blob/main/docs/faq.md
   (defvar +gptel/local-backend
     (gptel-make-ollama "ollama"
       :host "localhost:11434"
       :stream t
-      :models '(deepseek-r1:7b)))
+      :models '(qwen3:8b qwen3-coder:30b)))
 
   ;; set default values
-  (setopt gptel-backend +gptel/remote-backend)
-  (setopt gptel-model 'qwen3-coder-plus)
+  (setopt gptel-backend +gptel/local-backend)
+  (setopt gptel-model 'qwen3-coder:30b)
 
   ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
