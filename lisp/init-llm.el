@@ -14,22 +14,36 @@
   :ensure t
   :custom
   (gptel-rewrite-default-action 'merge)
+  (gptel-default-mode 'org-mode)
+  (gptel-org-branching-context t)
+  (gptel-log-level 'info)
   :config
-  (setq gptel-model 'qwen-plus
-        gptel-default-mode 'org-mode
-        gptel-org-branching-context t
-        gptel-log-level 'info
-        gptel-backend
-        (gptel-make-deepseek "bailian.aliyun"
-          :host "dashscope.aliyuncs.com/compatible-mode/v1"
-          :endpoint "/chat/completions"
-          :stream t
-          :key (auth-source-pick-first-password :host "bailian.console.aliyun.com")
-          :models '(qwen-plus deepseek-r1)
-          ))
+
+  ;; register remote backend
+  (defvar +gptel/remote-backend
+    (gptel-make-deepseek "bailian.aliyun"
+      :host "dashscope.aliyuncs.com/compatible-mode/v1"
+      :endpoint "/chat/completions"
+      :stream t
+      :key (auth-source-pick-first-password :host "bailian.console.aliyun.com")
+      :models '(qwen-plus deepseek-r1)))
+
+  ;; register local backend
+  (defvar +gptel/local-backend
+    (gptel-make-ollama "ollama"        
+      :host "localhost:11434"           
+      :stream t                          
+      :models '(deepseek-r1:7b)))
+
+  ;; set default values
+  (setopt gptel-backend +gptel/local-backend)
+  (setopt gptel-model 'deepseek-r1:7b)
+
+  ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
   (setf (alist-get 'org-mode gptel-response-prefix-alist) "=@AI=\n")
 
+  ;; set hook
   (add-hook 'gptel-mode-hook
             (lambda ()
               (insert "** Default Context\n=@Jamie=")
