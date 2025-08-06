@@ -69,3 +69,10 @@ pip3 install cpplint
 #+begin_src bash
 pip3 install cmake-format
 #+end_src
+
+** Others
+
+#+begin_src bash
+alias et='tmux attach -t emacs-session || tmux new -s emacs-session "emacs -nw"'
+#+end_src
+
