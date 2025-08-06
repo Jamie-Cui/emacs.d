@@ -25,6 +25,7 @@
     (corfu-terminal-mode +1))
 
   (xterm-mouse-mode 1)
+  (setq x-stretch-cursor t)
 
   ;; Disable eldoc in terminal
   (eldoc-mode -1)
