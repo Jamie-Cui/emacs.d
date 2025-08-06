@@ -26,6 +26,7 @@
 
   (xterm-mouse-mode 1)
   (setq x-stretch-cursor t)
+  (setq frame-resize-pixelwise t)
 
   ;; Disable eldoc in terminal
   (eldoc-mode -1)
