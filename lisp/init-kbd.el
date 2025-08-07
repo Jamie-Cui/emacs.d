@@ -101,6 +101,7 @@
     "ws"     #'evil-window-split
     "wv"     #'evil-window-vsplit
     "wm"     #'delete-other-windows
+    "wr"     #'redraw-display
     ;; buffer-related key bindings
     "b" '(:ignore t :which-key "buffer")
     "bn"     #'evil-buffer-new
