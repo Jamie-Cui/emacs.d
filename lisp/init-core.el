@@ -72,7 +72,16 @@
    diredfl 
    ;; let dired use nerd icons
    nerd-icons-dired
+   ;; google
+   google-this
    ))
+
+(use-package google-this
+  :ensure t
+  :config
+  (setq browse-url-browser-function #'browse-url-firefox) ;; may reduant, but i like
+  (setq google-this-browse-url-function #'browse-url-firefox)
+  (google-this-mode 1))
 
 (use-package diff-hl
   :ensure t
