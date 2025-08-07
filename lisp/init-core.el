@@ -422,6 +422,7 @@
   (eat-term-name "xterm-256color")
   (eat-kill-buffer-on-exit t)
   (eat-enable-yank-to-terminal t)
+  (eat-eshell-fallback-if-stty-not-available t)
   :config
   ;; For `eat-eshell-mode'.
   (add-hook 'eshell-load-hook #'eat-eshell-mode)
@@ -489,7 +490,6 @@
 
 ;; dired hide .. and .
 (add-hook 'dired-mode-hook 'dired-omit-mode)
-
 
 (use-package nerd-icons-dired
   :ensure t
