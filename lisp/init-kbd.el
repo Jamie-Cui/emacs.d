@@ -51,6 +51,7 @@
   (general-define-key
    :keymaps 'override
    "M-i"     #'completion-at-point
+   "M-u"     #'nil
    "M-y"     #'yas-expand
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-f"     #'consult-line ; search like mac
