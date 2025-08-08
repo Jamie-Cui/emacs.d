@@ -349,7 +349,7 @@
 (use-package corfu
   :ensure t
   :custom
-  ;; (corfu-auto t)
+  (corfu-auto t)
   (corfu-cycle t)
   (corfu-preview-current 'nil) ; do not insert unless i select it
   (corfu-preselect 'nil) ; do not preselect anything
