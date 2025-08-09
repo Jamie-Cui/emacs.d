@@ -43,14 +43,14 @@
   (org-confirm-babel-evaluate nil) ; don't ask, just do it
   (org-link-elisp-confirm-function nil)
   (org-startup-indented t)
-  (org-startup-folded 'fold)
+  (org-startup-folded 'nofold)
   (org-cycle-hide-drawer-startup t)
   (org-cycle-hide-block-startup t)
   (org-cycle-open-archived-trees nil)
   (org-log-done t)
   (org-src-window-setup 'other-window)
   (org-startup-with-inline-images t)
-  (org-startup-with-latex-preview 'nil) 
+  (org-startup-with-latex-preview t) 
   (org-preview-latex-default-process 'dvisvgm)
   :config
   (add-to-list 'org-export-backends 'beamer)
