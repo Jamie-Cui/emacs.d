@@ -175,6 +175,7 @@
     "tF"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
     "tn"     #'display-line-numbers-mode
+    "tm"     #'+inhibit-mouse/toggle-mode
     "ta"     #'+treesit-auto/toggle
     "tc"     #'claude-code-toggle
     ;; code

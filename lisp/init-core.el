@@ -74,7 +74,25 @@
    nerd-icons-dired
    ;; disable mouse 
    inhibit-mouse
+   ;; modeline 
+   doom-modeline
    ))
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1)
+  :config
+  (setq doom-modeline-icon nil) ; no icon
+  (setq doom-modeline-major-mode-icon nil)
+  (setq doom-modeline-major-mode-color-icon nil)
+  (setq doom-modeline-buffer-state-icon nil)
+  (setq doom-modeline-buffer-modification-icon nil)
+  (setq doom-modeline-lsp-icon nil)
+  (setq doom-modeline-time-icon nil)
+  (setq doom-modeline-time-live-icon nil)
+  (setq doom-modeline-modal-icon nil) ; no icon
+  (setq doom-modeline-modal-modern-icon nil) ; no icon
+  )
 
 (use-package inhibit-mouse
   :ensure t
@@ -82,14 +100,20 @@
   ;; Disable highlighting of clickable text such as URLs and hyperlinks when
   ;; hovered by the mouse pointer.
   (inhibit-mouse-adjust-mouse-highlight t)
-
   ;; Disables the use of tooltips (show-help-function) during mouse events.
   (inhibit-mouse-adjust-show-help-function t)
-
   :config
-  (if (daemonp)
-      (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
-    (inhibit-mouse-mode 1)))
+  (defun +inhibit-mouse/toggle-mode ()
+    "Toggle inhibit-mouse-mode."
+    (interactive)
+    (if inhibit-mouse-mode
+        (progn
+          (inhibit-mouse-mode -1)
+          (message "inhibit-mouse-mode disabled"))
+      (progn
+        (inhibit-mouse-mode 1)
+        (message "inhibit-mouse-mode enabled"))))
+  )
 
 (use-package diff-hl
   :ensure t
