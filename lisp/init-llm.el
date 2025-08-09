@@ -38,8 +38,8 @@
       :models '(qwen3:8b qwen3-coder:30b)))
 
   ;; set default values
-  (setopt gptel-backend +gptel/local-backend)
-  (setopt gptel-model 'qwen3-coder:30b)
+  (setopt gptel-backend +gptel/remote-backend)
+  (setopt gptel-model 'qwen3-coder-plus)
 
   ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")

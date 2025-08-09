@@ -244,4 +244,16 @@
    'proced-format-alist
    '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm))))
 
+;;; modeline 
+
+;; make evil at the very front
+(setopt evil-mode-line-format '(before . mode-line-front-space))
+;; remove major modes
+(setq-default mode-line-format
+              (remove 'mode-line-modes mode-line-format))
+;; remove minior modes
+(setq-default mode-line-format
+              (remove '(which-func-mode ("" which-func-format))
+                      mode-line-format))
+
 (provide 'init-misc)

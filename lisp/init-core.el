@@ -72,16 +72,24 @@
    diredfl 
    ;; let dired use nerd icons
    nerd-icons-dired
-   ;; google
-   google-this
+   ;; disable mouse 
+   inhibit-mouse
    ))
 
-(use-package google-this
+(use-package inhibit-mouse
   :ensure t
+  :custom
+  ;; Disable highlighting of clickable text such as URLs and hyperlinks when
+  ;; hovered by the mouse pointer.
+  (inhibit-mouse-adjust-mouse-highlight t)
+
+  ;; Disables the use of tooltips (show-help-function) during mouse events.
+  (inhibit-mouse-adjust-show-help-function t)
+
   :config
-  (setq browse-url-browser-function #'browse-url-firefox) ;; may reduant, but i like
-  (setq google-this-browse-url-function #'browse-url-firefox)
-  (google-this-mode 1))
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
+    (inhibit-mouse-mode 1)))
 
 (use-package diff-hl
   :ensure t
@@ -140,7 +148,7 @@
   (persp-suppress-no-prefix-key-warning t)
   (persp-sort 'created)
   (persp-modestring-dividers '(" [" "] " "] ["))
-  (persp-show-modestring 'header)
+  (persp-show-modestring 't)
   :init
   (persp-mode)
   )
