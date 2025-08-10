@@ -39,26 +39,56 @@
 
 (use-package org
   :custom
-  (org-image-actual-width nil)
-  (org-export-dispatch-use-expert-ui t)
-  (org-src-preserve-indentation t)
-  (org-src-tab-acts-natively t)
-  (org-confirm-babel-evaluate nil) ; don't ask, just do it
+  ;; general
   (org-link-elisp-confirm-function nil)
-  (org-startup-indented t)
-  (org-startup-folded 'nofold)
+  (org-image-actual-width nil)
   (org-cycle-hide-drawer-startup t)
   (org-cycle-hide-block-startup t)
   (org-cycle-open-archived-trees nil)
   (org-log-done t)
+  (org-preview-latex-default-process 'dvisvgm)
+  (org-use-fast-todo-selection t)
+  (org-todo-keyword-faces
+   '(("[-]" . +org-todo-active)
+     ("[?]" . +org-todo-onhold))
+   )
+  (org-todo-keywords
+   '((sequence
+      "[ ](t)"   ; A task that needs doing
+      "[-](s)"   ; Task is in progress
+      "[?](w)"   ; Task is being held up or paused
+      "|"
+      "[X](d)")  ; Task was completed
+     )
+   )
+  ;; org export
+  (org-export-dispatch-use-expert-ui t)
+  (org-export-with-toc nil)
+  (org-latex-compiler "xelatex")
+  (org-latex t)
+  (org-latex-src-block-backend 'engraved)
+  (org-latex-engraved-theme 't)
+  (org-latex-packages-alist 
+   '(
+     ("" "xeCJK" t)
+     ("" "booktabs" t)
+     ("lambda, advantage, operators, sets, adversary, landau,\
+    probability, notions, logic, ff, mm, primitives, events, complexity, oracles,\
+    asymptotics, keys" "cryptocode" t)
+     )
+   )
+  ;; org src, org babel
+  (org-src-preserve-indentation t)
+  (org-src-tab-acts-natively t)
   (org-src-window-setup 'other-window)
+  (org-confirm-babel-evaluate nil) ; don't ask, just do it
+  ;; org startup
+  (org-startup-indented t)
+  (org-startup-folded 'nofold)
   (org-startup-with-inline-images t)
   (org-startup-with-latex-preview nil) 
-  (org-preview-latex-default-process 'dvisvgm)
   :config
   (add-to-list 'org-export-backends 'beamer)
-
-  ;; set org-latex
   (setq org-preview-latex-process-alist
         '((dvisvgm
 		   :programs ("xelatex" "dvisvgm")
@@ -73,10 +103,15 @@
 
   ;; HACK from doom emacs
   (defmacro defadvice! (symbol arglist &optional docstring &rest body)
+    "Define an advice called SYMBOL and add it to PLACES.
+
+ARGLIST is as in `defun'. WHERE is a keyword as passed to `advice-add', and
+PLACE is the function to which to add the advice, like in `advice-add'.
+DOCSTRING and BODY are as in `defun'.
+
+\(fn SYMBOL ARGLIST &optional DOCSTRING &rest [WHERE PLACES...] BODY\)"
     (declare (doc-string 3) (indent defun))
-    (unless (stringp docstring)
-      (push docstring body)
-      (setq docstring nil))
+    (unless (stringp docstring) (push docstring body) (setq docstring nil))
     (let (where-alist)
       (while (keywordp (car body))
         (push `(cons ,(pop body) (ensure-list ,(pop body)))
@@ -87,7 +122,8 @@
            (dolist (target (cdr targets))
              (advice-add target (car targets) #',symbol))))))
 
-  (defadvice! +org-fix-newline-and-indent-in-src-blocks-a (&optional indent _arg _interactive)
+  (defadvice! +org-fix-newline-and-indent-in-src-blocks-a 
+    (&optional indent _arg _interactive)
     "Mimic `newline-and-indent' in src blocks w/ lang-appropriate indentation."
     :after #'org-return
     (when (and indent
@@ -101,7 +137,7 @@
   ;;   suppresses this behavior wherever it is known to be used.
   (defadvice! +org-fix-window-excursions-a (fn &rest args)
     "Suppress changes to the window config anywhere
-`org-babel-do-in-edit-buffer' is used."
+    `org-babel-do-in-edit-buffer' is used."
     :around #'evil-org-open-below
     :around #'evil-org-open-above
     :around #'org-indent-region
@@ -120,34 +156,14 @@
   ;;      underlying faces like the `org-todo' face does, so we define our own
   ;;      intermediary faces that extend from org-todo.
   (with-no-warnings
-    (custom-declare-face '+org-todo-active  '((t (:inherit (bold font-lock-constant-face org-todo)))) "")
-    (custom-declare-face '+org-todo-project '((t (:inherit (bold font-lock-doc-face org-todo)))) "")
-    (custom-declare-face '+org-todo-onhold  '((t (:inherit (bold warning org-todo)))) "")
-    (custom-declare-face '+org-todo-cancel  '((t (:inherit (bold error org-todo)))) ""))
-
-  (setopt org-todo-keywords
-          '((sequence
-             "[ ](t)"   ; A task that needs doing
-             "[-](s)"   ; Task is in progress
-             "[?](w)"   ; Task is being held up or paused
-             "|"
-             "[X](d)")  ; Task was completed
-            )
-          )
-
-  (setopt org-todo-keyword-faces
-          '(("[-]" . +org-todo-active)
-            ("[?]" . +org-todo-onhold))
-          )
-
-  (setopt org-use-fast-todo-selectiona t)
-
-  (add-to-list 'org-latex-packages-alist
-               '("lambda, advantage, operators, sets, adversary, landau,\
- probability, notions, logic, ff, mm, primitives, events, complexity, oracles,\
- asymptotics, keys" "cryptocode" t))
-  (add-to-list 'org-latex-packages-alist
-               '("" "booktabs" t)))
+    (custom-declare-face '+org-todo-active  
+                         '((t (:inherit (bold font-lock-constant-face org-todo)))) "")
+    (custom-declare-face '+org-todo-project 
+                         '((t (:inherit (bold font-lock-doc-face org-todo)))) "")
+    (custom-declare-face '+org-todo-onhold  
+                         '((t (:inherit (bold warning org-todo)))) "")
+    (custom-declare-face 
+     '+org-todo-cancel  '((t (:inherit (bold error org-todo)))) "")))
 
 (use-package org-journal
   :ensure t
@@ -224,7 +240,6 @@
   :ensure t
   :config
   (setq org-roam-directory (concat jc-org-root-dir "/roam"))
-
   ;; If you're using a vertical completion framework, you might want
   ;; a more informative completion interface
   (setq org-roam-node-display-template
@@ -237,14 +252,6 @@
 (use-package org-appear
   :config
   (add-hook 'org-mode-hook 'org-appear-mode))
-
-(use-package ox-latex
-  :after (engrave-faces citar)
-  :custom
-  (org-export-with-toc nil)
-  :config
-  (setq org-latex-src-block-backend 'engraved)
-  (setq org-latex-engraved-theme 't))
 
 (use-package xenops
   :ensure t
