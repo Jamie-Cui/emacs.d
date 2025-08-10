@@ -16,6 +16,7 @@
 (+package/ensure-install
  '(
    org-download
+   ;; roam
    org-roam
    ;; make org prettier
    org-appear
@@ -27,6 +28,8 @@
    plantuml-mode
    ;; export org code in colors
    engrave-faces
+   ;; preview org math
+   xenops
    ))
 
 ;; site-lisp
@@ -50,10 +53,23 @@
   (org-log-done t)
   (org-src-window-setup 'other-window)
   (org-startup-with-inline-images t)
-  (org-startup-with-latex-preview t) 
+  (org-startup-with-latex-preview nil) 
   (org-preview-latex-default-process 'dvisvgm)
   :config
   (add-to-list 'org-export-backends 'beamer)
+
+  ;; set org-latex
+  (setq org-preview-latex-process-alist
+        '((dvisvgm
+		   :programs ("xelatex" "dvisvgm")
+		   :description "xdv > svg"
+		   :image-input-type "xdv"
+		   :image-output-type "svg"
+		   :image-size-adjust (1.7 . 1.5)
+		   :latex-compiler ;; Default `xelatex' as the process previewing LaTeX fragments
+		   ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
+		   :image-converter ;; Set `dvisvgm' with --exact option
+		   ("dvisvgm %f -e -n -b min -c %S -o %O"))))
 
   ;; HACK from doom emacs
   (defmacro defadvice! (symbol arglist &optional docstring &rest body)
@@ -131,8 +147,7 @@
  probability, notions, logic, ff, mm, primitives, events, complexity, oracles,\
  asymptotics, keys" "cryptocode" t))
   (add-to-list 'org-latex-packages-alist
-               '("" "booktabs" t))
-  )
+               '("" "booktabs" t)))
 
 (use-package org-journal
   :ensure t
@@ -203,11 +218,7 @@
           (file-notify-add-watch
            deft-directory
            '(change attribute-change)
-           'deft-auto-refresh
-           )
-          )
-    )
-  )
+           'deft-auto-refresh))))
 
 (use-package org-roam
   :ensure t
@@ -233,7 +244,31 @@
   (org-export-with-toc nil)
   :config
   (setq org-latex-src-block-backend 'engraved)
-  (setq org-latex-engraved-theme 't)
-  )
+  (setq org-latex-engraved-theme 't))
+
+(use-package xenops
+  :ensure t
+  :if window-system ;; do not load xenops on termial emacs
+  :config
+  (setopt xenops-math-image-scale-factor 0.4)
+  (add-hook 'org-mode-hook #'xenops-mode)
+  (defun fn/xenops-src-parse-at-point ()
+    (-if-let* 
+        ((element (xenops-parse-element-at-point 'src))
+         (org-babel-info
+          (xenops-src-do-in-org-mode
+           (org-babel-get-src-block-info 'light (org-element-context)))))
+        (xenops-util-plist-update
+         element
+         :type 'src
+         :language (nth 0 org-babel-info)
+         :org-babel-info org-babel-info)))
+
+  ;; HACK error from xenops with org>9.7
+  ;; https://github.com/syl20bnr/spacemacs/issues/16577
+  ;; https://github.com/dandavison/xenops/pull/74/files
+  ;; https://github.com/dandavison/xenops/issues/73
+  (advice-add 'xenops-src-parse-at-point
+              :override 'fn/xenops-src-parse-at-point))
 
 (provide 'init-org)

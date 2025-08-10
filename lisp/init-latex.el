@@ -15,8 +15,6 @@
    pdf-tools
    ;; latex support
    auctex
-   ;; preview org math
-   ;; xenops
    ;; proof assist
    proof-general
    ))
@@ -124,14 +122,6 @@
   :no-require
   :config
   (citar-embark-mode))
-
-;; (use-package xenops
-;;   :ensure t
-;;   :if window-system ;; do not load xenops on termial emacs
-;;   :config
-;;   (add-hook 'org-mode-hook #'xenops-mode)
-;;   (setq xenops-math-image-current-scale-factor 1.2)
-;;   (setq xenops-math-image-margin 0))
 
 (use-package engrave-faces
   :ensure t)

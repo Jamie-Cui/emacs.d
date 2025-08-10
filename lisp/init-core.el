@@ -191,10 +191,9 @@
 (use-package eldoc-box
   :ensure t
   :after eglot
+  :if window-system ;; do not load eldoc-box on termial emacs
   :config
   (add-hook 'eldoc-mode-hook #'eldoc-box-hover-mode)
-  
-  ;; (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
   (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
   )
 
