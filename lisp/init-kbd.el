@@ -121,6 +121,7 @@
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
     "od"     #'dired-jump
+    "or"     #'comint-run
     "og"     #'magit-status-quick
     "ok"     #'kubernetes-overview
     "ox"     #'scratch-buffer ; popup
