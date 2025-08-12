@@ -35,7 +35,6 @@
   (general-create-definer +my-local-leader-def
     :prefix my-local-leader)
   
-  
   ;; HACK always get a new eat terminal
   (defun +eat/new ()
     (interactive)
@@ -148,8 +147,8 @@
     "n@"      #'citar-insert-citation ;; insert bib
     "nb" '(:ignore t :which-key "bibtex")
     "nba"     #'+bibtex/add-doi ;; add bib from doi
-    "nbb"     #'+bibtex/consult-bibtex-file ;; check bib source
-    "nbf"     #'citar-open ;; consult for entry
+    "nbb"     #'citar-open ;; consult for entry
+    "nbf"     #'+bibtex/consult-bibtex-file ;; check bib source
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "ne"      #'org-export-dispatch
