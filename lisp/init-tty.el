@@ -15,7 +15,10 @@
 
   ;; Use OSC52 protocol, which is used by alacritty by default
   (defun copy-to-system-clipboard (text &optional push)
-    (send-string-to-terminal (format "\e]52;c;%s\a" (base64-encode-string text))))
+    (let ((encoded (base64-encode-string 
+                    (encode-coding-string text 'binary) 
+                    t)))
+      (send-string-to-terminal (format "\e]52;c;%s\a" encoded))))
 
   (setq interprogram-cut-function 'copy-to-system-clipboard)
 
