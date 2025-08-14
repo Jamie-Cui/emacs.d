@@ -14,6 +14,7 @@
    helpful
    ;; search engine
    vertico
+   vertico-posframe
    ;; search with no order
    orderless
    ;; project engine
@@ -77,6 +78,10 @@
    ;; modeline 
    doom-modeline
    ))
+
+(use-package vertico-posframe
+  :ensure t
+  :hook (vertico-mode vertico-posframe-mode))
 
 (use-package doom-modeline
   :ensure t
