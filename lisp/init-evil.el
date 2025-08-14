@@ -14,7 +14,23 @@
    evil-args
    evil-surround
    evil-terminal-cursor-changer
+   ;; move text as you like
+   move-text
    ))
+
+;; move-text
+(use-package move-text
+  :ensure t
+  :config
+  (defun indent-region-advice (&rest ignored)
+    (let ((deactivate deactivate-mark))
+      (if (region-active-p)
+          (indent-region (region-beginning) (region-end))
+        (indent-region (line-beginning-position) (line-end-position)))
+      (setq deactivate-mark deactivate)))
+
+  (advice-add 'move-text-up :after 'indent-region-advice)
+  (advice-add 'move-text-down :after 'indent-region-advice))
 
 ;; evil
 (use-package evil
