@@ -33,6 +33,9 @@
 #+begin_src bash
 # download
 wget -c https://github.com/emacs-mirror/emacs/archive/refs/tags/emacs-30.1.tar.gz
+# or the following dev branch with tty-child-frame feature
+wget -c https://github.com/emacs-mirror/emacs/archive/refs/heads/scratch/tty-child-frames.zip
+
 # unzip and enter emacs folder
 autoconf
 # (alt) configure terminal emacs
