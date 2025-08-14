@@ -57,8 +57,10 @@
    "M-a"     #'mark-whole-buffer ; select like mac
    "M-s"     #'save-buffer ; save like mac
    "M-v"     #'evil-paste-after ; paste like mac
+   "M-h"     #'nil
    "M-j"     #'move-text-down
    "M-k"     #'move-text-up
+   "M-l"     #'nil
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
