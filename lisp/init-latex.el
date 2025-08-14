@@ -16,11 +16,11 @@
    ;; latex support
    auctex
    ;; proof assist
-   proof-general
+   ;; proof-general
    ))
 
-(use-package proof-general
-  :ensure t)
+;; (use-package proof-general
+;;   :ensure t)
 
 (use-package pdf-tools
   :ensure t

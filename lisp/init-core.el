@@ -43,8 +43,6 @@
    flycheck-popup-tip
    ;; dashboard at startup
    dashboard
-   ;; icons
-   nerd-icons
    ;; cpplint
    flycheck-google-cpplint
    ;; adds marginalia to the minibuffer completions
@@ -71,8 +69,6 @@
    dired-subtree
    ;; colored dired
    diredfl 
-   ;; let dired use nerd icons
-   ;; nerd-icons-dired
    ;; disable mouse 
    inhibit-mouse
    ;; modeline 
@@ -333,9 +329,6 @@
   :init
   (marginalia-mode))
 
-(use-package nerd-icons
-  :ensure t)
-
 (use-package dashboard
   :ensure t
   :custom
@@ -521,19 +514,12 @@
         xref-show-definitions-function #'consult-xref)
   )
 
-
 ;; sudo-edit
 (use-package sudo-edit
   :ensure t)
 
 ;; dired hide .. and .
 (add-hook 'dired-mode-hook 'dired-omit-mode)
-
-;; (use-package nerd-icons-dired
-;;  :ensure t
-;;  :after dired
-;;  :config
-;;  (add-hook 'dired-mode-hook 'nerd-icons-dired-mode))
 
 (use-package dired
   :custom
