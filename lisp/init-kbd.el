@@ -115,8 +115,6 @@
     "BB"     #'consult-bookmark
     "Bn"     #'bookmark-set
     "Bd"     #'bookmark-delete
-    "f" '(:ignore t :which-key "file")
-    "fp"     #'consult-bookmark
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ot"     #'+eshell/new
@@ -124,7 +122,6 @@
     "od"     #'dired-jump
     "oc"     #'compile
     "og"     #'magit-status-quick
-    "ok"     #'kubernetes-overview
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
     ;; project-related key bindings
@@ -132,10 +129,11 @@
     "pa"     #'projectile-add-known-project
     "pd"     #'projectile-remove-known-project
     "pp"     #'projectile-switch-project
-    "pC"     #'projectile-configure-project
-    "pc"     #'projectile-compile-project
-    "pt"     #'projectile-test-project
-    "pr"     #'projectile-run-project
+    "pC"     #'projectile-configure-project ; popup
+    "pc"     #'projectile-compile-project ; popup
+    "pt"     #'projectile-test-project ; popup
+    "pr"     #'projectile-run-project ; popup
+    "pb"     #'consult-project-buffer 
     "pi"     #'projectile-invalidate-cache
     "pf"     #'+vertico/project-search
     "po"     #'find-sibling-file
@@ -166,6 +164,7 @@
     "hk"     #'helpful-key
     "hv"     #'helpful-variable
     "hm"     #'describe-mode
+    "hM"     #'consult-man
     ;; quit emacs
     "q" '(:ignore t :which-key "quit")
     "qq"     #'save-buffers-kill-terminal
@@ -191,6 +190,7 @@
     "s" '(:ignore t :which-key "search")
     "si"     #'consult-imenu ;; search item
     "sh"     #'consult-history ;; search history
+    "ss"     #'consult-locate ;; system wide search
     )
 
   ;; deft mode map

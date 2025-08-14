@@ -274,7 +274,7 @@
   ;; setting for apheleia-formatter. The keys are major mode
   (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(rust-ts-mode-hook . eglot-managed))
-  (add-to-list 'apheleia-mode-alist '(cmake-mode . cmake-format))
+  (add-to-list 'apheleia-mode-alist '(cmake-ts-mode . cmake-format))
   (add-to-list 'apheleia-mode-alist '(bibtex-mode . bibtex-format))
   )
 

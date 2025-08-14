@@ -103,27 +103,19 @@
 ;; -----------------------------------------------------------
 
 ;; modes that does not require additional config
-(+package/ensure-install-and-use
- '(
-   protobuf-mode
-   meson-mode
-   )
- )
+(+package/ensure-install-and-use '(
+                                   protobuf-mode
+                                   meson-mode
+                                   ))
 
-(+package/ensure-install
- '(
-   ;; bazel mode (need config)
-   bazel
-   ;; cmake mode (need config)
-   cmake-mode
-   ;; markdown mode
-   markdown-mode
-   ;; k8s
-   kubernetes 
-   kubernetes-evil
-   ;; automatically install treesit grammar
-   treesit-auto
-   ))
+(+package/ensure-install '(
+                           ;; bazel mode (need config)
+                           bazel
+                           ;; markdown mode
+                           markdown-mode
+                           ;; automatically install treesit grammar
+                           treesit-auto
+                           ))
 
 ;; -----------------------------------------------------------
 ;; DONE tree-sitter (site-lisp)
@@ -147,50 +139,9 @@
       (message "global-treesit-auto-mode enabled")))
   )
 
-;; -----------------------------------------------------------
-;; DONE kubenetes
-;; -----------------------------------------------------------
-
-(use-package kubernetes
-  :ensure t
-  :custom
-  (kubernetes-show-message nil)
-  :config
-  ;; set custom display function
-  (defun kubernetes-commands-display-buffer-same-window (buffer)
-    (display-buffer buffer '(display-buffer-same-window)))
-  (setopt kubernetes-commands-display-buffer-function
-          'kubernetes-commands-display-buffer-same-window)
-
-  ;; disable auto refresh
-  (setq kubernetes-poll-frequency 3600
-        kubernetes-redraw-frequency 3600))
-
-(use-package kubernetes-evil
-  :ensure t
-  :after kubernetes)
-
 ;; ------------------------------------------------------------------
-;; DONE C/C++, cmake and bazel
+;; DONE bazel mode
 ;; ------------------------------------------------------------------
-
-;; sibling files (for cpp)
-(add-to-list 'find-sibling-rules
-             '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
-(add-to-list 'find-sibling-rules
-             '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
-
-;; formatter
-(add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
-(add-to-list 'apheleia-mode-alist '(c-ts-mode-hook . eglot-managed))
-(add-to-list 'apheleia-mode-alist '(cmake-mode . cmake-format))
-
-(use-package cmake-mode
-  :ensure t
-  :config
-  (defun +my-modify-cmake-mode-syntax-table ()
-    (modify-syntax-entry ?/ "-" cmake-mode-syntax-table))
-  (add-hook 'cmake-mode-hook #'+my-modify-cmake-mode-syntax-table))
 
 (use-package bazel
   :ensure t

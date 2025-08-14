@@ -244,4 +244,10 @@
    'proced-format-alist
    '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm))))
 
+;; sibling files (for c/c++)
+(add-to-list 'find-sibling-rules
+             '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
+(add-to-list 'find-sibling-rules
+             '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
+
 (provide 'init-misc)
