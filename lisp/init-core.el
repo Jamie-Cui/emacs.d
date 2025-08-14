@@ -150,11 +150,12 @@
      ;;
      ;; right, where you might need to write something inside
      ;;
-     ("*bailian.aliyun*" :position right :stick t)
      ("*scratch*" :position right :stick t)
+     ("*bailian.aliyun*" :position right :stick t :tail t)
+     (compilation-mode :position bottom :stick t :tail t)
+     ;;
      ;; FIXME claude-code does not support customized window, for now
-     (claude-code--buffer-p :position right :stick t)
-     (compilation-mode :position right :stick t)
+     ;; (claude-code--buffer-p :position right :stick t)
      )
    )
   :config
