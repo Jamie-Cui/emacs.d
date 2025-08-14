@@ -81,7 +81,7 @@
 
 (use-package vertico-posframe
   :ensure t
-  :hook (vertico-mode vertico-posframe-mode))
+  :hook (vertico-mode . vertico-posframe-mode))
 
 (use-package doom-modeline
   :ensure t
