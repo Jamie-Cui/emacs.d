@@ -48,11 +48,12 @@
 
   (defun +compilation/open-projectile-compilation-buffer ()
     (interactive)
-    (let (target-buffer (projectile-compilation-buffer-name "compilation"))
-      (if (bufferp target-buffer)
+    (let ((target-buffer (projectile-compilation-buffer-name "compilation")))
+      (if (bufferp (get-buffer target-buffer))
           (display-buffer target-buffer) ;; should handled by popwin
-        (call-interactively 'projectile-compile-project))))
-             
+        (call-interactively 'projectile-compile-project))
+      ))
+
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
