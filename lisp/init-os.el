@@ -49,6 +49,14 @@
   (defun magit-staging ()
     (interactive)
     (magit-mode-setup #'magit-staging-mode))
+
+  (defun w32explore (file)
+    "Open Windows Explorer to FILE (a file or a folder)."
+    (interactive "fFile: ")
+    (let ((w32file (subst-char-in-string ?/ ?\\ (expand-file-name file))))
+      (if (file-directory-p w32file)
+          (w32-shell-execute "explore" w32file "/e,/select,")
+        (w32-shell-execute "open" "explorer" (concat "/e,/select," w32file)))))
   )
 
 ;;; --------------------------------------
@@ -83,6 +91,18 @@
   (add-to-list 'default-frame-alist '(undecorated . t))
   ;; NOTE if you are using magic keyboard
   (setq x-super-keysym 'meta)
+  )
+
+;;; --------------------------------------
+;;; Utilities work for all systems
+;;; --------------------------------------
+
+(defun +dired/os-explore ()
+  "Open Windows Explorer to current file or folder."
+  (interactive)
+  (cond
+   ((eq system-type 'windows-nt) (w32explore (dired-get-filename nil t)))
+   (t (message "Unimplemented")))
   )
 
 (provide 'init-os)
