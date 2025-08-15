@@ -173,7 +173,7 @@
   :custom 
   (persp-suppress-no-prefix-key-warning t)
   (persp-sort 'created)
-  (persp-modestring-dividers '(" [" "] " "] ["))
+  (persp-modestring-dividers '("[" "]" "|"))
   (persp-show-modestring 't)
   :init
   (persp-mode)
