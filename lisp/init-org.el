@@ -80,6 +80,7 @@
    '(
      ("" "xeCJK" t)
      ("" "booktabs" t)
+	 ("margin=1.5cm" "geometry" t)
      ("lambda, advantage, operators, sets, adversary, landau,\
     probability, notions, logic, ff, mm, primitives, events, complexity, oracles,\
     asymptotics, keys" "cryptocode" t)
