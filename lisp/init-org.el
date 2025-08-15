@@ -32,6 +32,7 @@
    xenops
    ))
 
+;; DEPRECATED I'm considering drop this package
 (use-package org-imgtog
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
   :config

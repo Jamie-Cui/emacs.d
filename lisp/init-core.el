@@ -155,7 +155,7 @@
      ("*scratch*" :position right :stick t)
      ("*bailian.aliyun*" :position right :stick t :tail t)
      ;;
-     ;; FIXME claude-code does not support customized window, for now
+     ;; FIXME claude-code uses full frame, temp
      ;; (claude-code--buffer-p :position right :stick t)
      )
    )

@@ -81,13 +81,12 @@
 ;; TODO how to use cluade-code in emacs with local model?
 ;; see: https://github.com/musistudio/claude-code-router/tree/main
 ;;
-;; (use-package claude-code
-;;   :ensure t
-;;   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-;;   :config
-;;   (setopt claude-code-terminal-backend 'eat) ;; this is the default
-;;   (setenv "ANTHROPIC_BASE_URL" "https://dashscope.aliyuncs.com/api/v2/apps/claude-code-proxy")
-;;   (setenv "ANTHROPIC_AUTH_TOKEN" (cadr (auth-source-user-and-password "bailian.console.aliyun.com")))
-;;   )
+(use-package claude-code
+  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
+  :config
+  (setopt claude-code-terminal-backend 'eat) ;; this is the default
+  (setenv "ANTHROPIC_BASE_URL" "https://dashscope.aliyuncs.com/api/v2/apps/claude-code-proxy")
+  (setenv "ANTHROPIC_AUTH_TOKEN" (cadr (auth-source-user-and-password "bailian.console.aliyun.com")))
+  )
 
 (provide 'init-llm)
