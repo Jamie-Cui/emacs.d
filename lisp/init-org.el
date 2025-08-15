@@ -32,10 +32,18 @@
    xenops
    ))
 
-;; site-lisp
 (use-package org-imgtog
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
-  :hook org-mode)
+  :config
+  (defun +org-imgtog/toggle ()
+    "Toggle global-treesit-auto-mode."
+    (interactive)
+    (if org-imgtog-mode
+        (progn
+          (org-imgtog-mode -1)
+          (message "org-imgtog-mode disabled"))
+      (org-imgtog-mode 1)
+      (message "org-imgtog-mode enabled"))))
 
 (use-package org
   :custom
@@ -85,8 +93,8 @@
   ;; org startup
   (org-startup-indented t)
   (org-startup-folded 'nofold)
-  (org-startup-with-inline-images t)
-  (org-startup-with-latex-preview nil) 
+  (org-startup-with-inline-images nil)
+  (org-startup-with-latex-preview nil)
   :config
   (add-to-list 'org-export-backends 'beamer)
   (setq org-preview-latex-process-alist
