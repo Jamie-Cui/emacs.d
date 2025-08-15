@@ -56,7 +56,8 @@
     (let ((w32file (subst-char-in-string ?/ ?\\ (expand-file-name file))))
       (if (file-directory-p w32file)
           (w32-shell-execute "explore" w32file "/e,/select,")
-        (w32-shell-execute "open" "explorer" (concat "/e,/select," w32file)))))
+        (w32-shell-execute "open" "explorer" (concat "/e,/select," w32file))))
+    )
   )
 
 ;;; --------------------------------------
@@ -97,12 +98,23 @@
 ;;; Utilities work for all systems
 ;;; --------------------------------------
 
-(defun +dired/os-explore ()
-  "Open Windows Explorer to current file or folder."
+(defun +dired/os-explorer-dwim ()
+  "Open Windows Explorer to current file or folder.w"
   (interactive)
-  (cond
-   ((eq system-type 'windows-nt) (w32explore (dired-get-filename nil t)))
-   (t (message "Unimplemented")))
+  (require 'dired)
+  (let ((target-file (dired-get-filename nil t)))
+    (message "%s" target-file)
+    (cond
+     ((eq system-type 'windows-nt)
+      (w32explore target-file))
+     ((eq system-type 'gnu/linux)
+      (start-process "xdg-open" nil "xdg-open" 
+                     (if (file-directory-p target-file)
+                         target-file
+                       (file-name-directory target-file))))
+     ((eq system-type 'darwin)
+      (start-process "finder" nil "open" "-R" target-file))
+     (t (message "Unimplemented!"))))
   )
 
 (provide 'init-os)
