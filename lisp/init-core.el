@@ -133,6 +133,7 @@
   :custom 
   (popwin:popup-window-height 0.5)
   (popwin:popup-window-width 0.5)
+  (popwin:adjust-other-windows t)
   (popwin:special-display-config
    '(
      ;;
@@ -144,6 +145,7 @@
      ;;
      (help-mode :position bottom :stick t)
      (helpful-mode :position bottom :stick t)
+     (compilation-mode :position bottom :stick t :tail t)
      ("*Flycheck errors*" :position bottom :stick t)
      ("*Messages*" :position bottom :stick t)
      ("*LLM response*" :position bottom :stick t)
@@ -152,7 +154,6 @@
      ;;
      ("*scratch*" :position right :stick t)
      ("*bailian.aliyun*" :position right :stick t :tail t)
-     (compilation-mode :position bottom :stick t :tail t)
      ;;
      ;; FIXME claude-code does not support customized window, for now
      ;; (claude-code--buffer-p :position right :stick t)

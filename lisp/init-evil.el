@@ -48,7 +48,10 @@
   ;; make evil-search-word look for symbol rather than word boundaries
   (setq-default evil-symbol-word-search t)
   (evil-set-undo-system 'undo-redo)
-  (evil-mode 1))
+  (evil-mode 1)
+  :config
+  (add-hook 'message-mode-hook 'evil-mode)
+  )
 
 ;;; evil-collection
 (use-package evil-collection
