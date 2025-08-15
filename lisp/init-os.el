@@ -98,11 +98,13 @@
 ;;; Utilities work for all systems
 ;;; --------------------------------------
 
-(defun +dired/os-explorer-dwim ()
+(defun +os-explorer/dwim ()
   "Open Windows Explorer to current file or folder.w"
   (interactive)
   (require 'dired)
-  (let ((target-file (dired-get-filename nil t)))
+  (let ((target-file (if (eq major-mode 'dired-mode)
+                         (dired-get-filename nil t)
+                       (buffer-file-name))))
     (message "%s" target-file)
     (cond
      ((eq system-type 'windows-nt)

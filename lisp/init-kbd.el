@@ -130,6 +130,7 @@
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
     "od"     #'dired-jump
+    "oD"     #'+os-explorer/dwim
     "oc"     #'+compilation/open-projectile-compilation-buffer
     "og"     #'magit-status-quick
     "ox"     #'scratch-buffer ; popup
