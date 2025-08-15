@@ -46,6 +46,13 @@
     (interactive)
     (persp-kill (persp-current-name)))
 
+  (defun +compilation/open-projectile-compilation-buffer ()
+    (interactive)
+    (let (target-buffer (projectile-compilation-buffer-name "compilation"))
+      (if (bufferp target-buffer)
+          (display-buffer target-buffer) ;; should handled by popwin
+        (call-interactively 'projectile-compile-project))))
+             
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
@@ -122,7 +129,7 @@
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
     "od"     #'dired-jump
-    "oc"     #'compile
+    "oc"     #'+compilation/open-projectile-compilation-buffer
     "og"     #'magit-status-quick
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
