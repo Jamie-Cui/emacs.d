@@ -83,6 +83,8 @@
 ;;
 (use-package claude-code
   :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
+  :custom 
+  (claude-code-toggle-auto-select t)
   :config
   (setopt claude-code-terminal-backend 'eat) ;; this is the default
   (setenv "ANTHROPIC_BASE_URL" "https://dashscope.aliyuncs.com/api/v2/apps/claude-code-proxy")

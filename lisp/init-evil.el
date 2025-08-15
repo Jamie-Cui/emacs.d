@@ -16,7 +16,16 @@
    evil-terminal-cursor-changer
    ;; move text as you like
    move-text
+   ;; undo-tree
+   undo-tree
    ))
+
+(use-package undo-tree
+  :ensure t
+  :custom (undo-tree-history-directory-alist 
+           `(("." . ,(concat user-emacs-directory "undo-tree-hist/"))))
+  :config
+  (global-undo-tree-mode 1))
 
 ;; move-text
 (use-package move-text
@@ -47,9 +56,8 @@
   (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
   (setq-default evil-symbol-word-search t)
-  (evil-set-undo-system 'undo-redo)
+  (evil-set-undo-system 'undo-tree)
   (evil-mode 1)
-  :config
   (add-hook 'message-mode-hook 'evil-mode)
   )
 
