@@ -475,7 +475,7 @@
   (projectile-indexing-method 'hybrid)
   (projectile-enable-caching t)
   (projectile-per-project-compilation-buffer t)
-  (projectile-switch-project-action 'projectile-dired)
+  (projectile-switch-project-action 'projectile-find-file)
   :config
   (defun +projectile-project-name--lower-case (project-root)
     (downcase (file-name-nondirectory (directory-file-name project-root))))
