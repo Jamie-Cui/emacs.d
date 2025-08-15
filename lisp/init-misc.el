@@ -250,4 +250,7 @@
 (add-to-list 'find-sibling-rules
              '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
 
+;; emacs minibufer completion
+(setopt minibuffer-completion-auto-choose nil)
+
 (provide 'init-misc)
