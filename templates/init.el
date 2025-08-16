@@ -1,6 +1,6 @@
 ;;; -*- lexical-binding: t; -*-
 (defvar +emacs/repo-directory (expand-file-name "~/emacs.d"))
-(defvar +emacs/repo-directory (expand-file-name "~/org-root"))
+(defvar +emacs/org-root-dir (expand-file-name "~/org-root"))
 
 (load (concat +emacs/repo-directory "/init.el"))
 
