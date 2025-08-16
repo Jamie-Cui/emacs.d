@@ -6,6 +6,8 @@
 
 (+package/ensure-install
  '(
+   ;; dashboard at startup
+   dashboard
    ;; theme
    zenburn-theme
    ;; consult framework
@@ -21,6 +23,7 @@
    projectile
    ;; complete engine
    corfu
+   corfu-terminal ; for tty
    ;; better terminal emulater
    eat
    ;; the killer app: git ui
@@ -31,8 +34,6 @@
    eglot
    ;; jump to eglot symbol
    consult-eglot
-   ;; show lsp error
-   flycheck-eglot
    ;; highlight todo keywords
    hl-todo
    ;; search tool based on ripgrep
@@ -41,8 +42,8 @@
    flycheck
    ;; show fly check in a popup way
    flycheck-popup-tip
-   ;; dashboard at startup
-   dashboard
+   ;; show lsp error
+   flycheck-eglot
    ;; cpplint
    flycheck-google-cpplint
    ;; adds marginalia to the minibuffer completions
@@ -73,7 +74,38 @@
    inhibit-mouse
    ;; modeline 
    doom-modeline
+   ;; chinese spacing
+   pangu-spacing
+   ;; chinese s alignment, or valign (maybe?)
+   cnfonts
    ))
+
+(use-package pangu-spacing
+  :ensure t
+  :config
+  (global-pangu-spacing-mode 1)
+  (setq pangu-spacing-real-insert-separtor nil)
+  (add-hook 'org-mode-hook
+            '(lambda ()
+               (set (make-local-variable
+                     'pangu-spacing-real-insert-separtor) t))))
+
+(use-package cnfonts
+  :ensure t
+  :custom
+  (cnfonts-personal-fontnames '(
+                                ("Maple Mono NF CN") ;; English
+                                ("Maple Mono NF CN") ;; Chinese
+                                nil  ;; Ext-B
+                                nil ;; Symbol
+                                nil ;; Others
+                                ))
+  (cnfonts-use-face-font-rescale t)
+  :config
+  ;; NOTE you can use this to list all fonts
+  ;; (cl-prettyprint (font-family-list))
+  (cnfonts-mode 1)
+  )
 
 (use-package vertico-posframe
   :ensure t
@@ -183,7 +215,7 @@
 (use-package yasnippet
   :ensure t
   :config
-  (let ((my-yas-dir (concat jc-emacs-directory "/snippets")))
+  (let ((my-yas-dir (concat +emacs/repo-directory "/snippets")))
     (add-to-list 'yas-snippet-dirs my-yas-dir))
   ;; start mode globally
   (yas-global-mode 1)
@@ -339,7 +371,7 @@
   (dashboard-setup-startup-hook)
 
   ;; HACK from https://github.com/emacs-dashboard/emacs-dashboard/issues/153#issuecomment-714406661
-  (defvar my-banners-dir (concat jc-emacs-directory "/data/"))
+  (defvar my-banners-dir (concat +emacs/repo-directory "/data/"))
   (defun +dashboard/install-banners ()
     "Copy all files under under banners directory to dashboard banners directory"
     (when (boundp 'dashboard-banners-directory)
@@ -394,6 +426,12 @@
                                 (setq-local corfu-auto nil)
                                 (corfu-mode)))
   )
+
+(when (not (display-graphic-p))
+  (use-package corfu-terminal
+    :ensure t
+    :config
+    (corfu-terminal-mode +1)))
 
 (use-package orderless
   :ensure t

@@ -8,9 +8,9 @@
 ;; it's recommended to symlink your remote file here
 ;; ln -s ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/org-root .
 
-(make-directory (concat jc-org-root-dir "/roam") t)
-(make-directory (concat jc-org-root-dir "/journal") t)
-(make-directory (concat jc-org-root-dir "/deft") t)
+(make-directory (concat +emacs/org-root-dir "/roam") t)
+(make-directory (concat +emacs/org-root-dir "/journal") t)
+(make-directory (concat +emacs/org-root-dir "/deft") t)
 (make-directory (concat (file-name-directory user-init-file) "/bin") t)
 
 (+package/ensure-install
@@ -34,7 +34,7 @@
 
 ;; DEPRECATED I'm considering drop this package
 (use-package org-imgtog
-  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp"))
   :config
   (defun +org-imgtog/toggle ()
     "Toggle global-treesit-auto-mode."
@@ -178,7 +178,7 @@ DOCSTRING and BODY are as in `defun'.
 (use-package org-journal
   :ensure t
   :custom
-  (org-journal-dir (concat jc-org-root-dir "/journal"))
+  (org-journal-dir (concat +emacs/org-root-dir "/journal"))
   (org-journal-find-file-fn 'find-file)
   (org-journal-file-type 'monthly)
   (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\"")
@@ -224,7 +224,7 @@ DOCSTRING and BODY are as in `defun'.
   (deft-auto-save-interval -1.0) 
   (deft-use-filter-string-for-filename nil)
   (deft-use-filename-as-title nil)
-  (deft-directory (concat jc-org-root-dir "/deft"))
+  (deft-directory (concat +emacs/org-root-dir "/deft"))
   (deft-ignore-file-regexp "^\\(?:\\.|$\\)")
   :config
   (setq deft-strip-summary-regexp
@@ -249,7 +249,7 @@ DOCSTRING and BODY are as in `defun'.
 (use-package org-roam
   :ensure t
   :config
-  (setq org-roam-directory (concat jc-org-root-dir "/roam"))
+  (setq org-roam-directory (concat +emacs/org-root-dir "/roam"))
   ;; If you're using a vertical completion framework, you might want
   ;; a more informative completion interface
   (setq org-roam-node-display-template

@@ -1,8 +1,8 @@
 ;;; -*- lexical-binding: t; -*-
-(defvar jc-emacs-directory (expand-file-name "~/emacs.d"))
-(defvar jc-emacs-directory (expand-file-name "~/org-root"))
+(defvar +emacs/repo-directory (expand-file-name "~/emacs.d"))
+(defvar +emacs/repo-directory (expand-file-name "~/org-root"))
 
-(load (concat jc-emacs-directory "/init.el"))
+(load (concat +emacs/repo-directory "/init.el"))
 
 ;; (add-to-list 'default-frame-alist '(undecorated . t))
 

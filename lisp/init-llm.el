@@ -82,7 +82,7 @@
 ;; see: https://github.com/musistudio/claude-code-router/tree/main
 ;;
 (use-package claude-code
-  :load-path (lambda () (concat jc-emacs-directory "/site-lisp"))
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp"))
   :custom 
   (claude-code-toggle-auto-select t)
   :config

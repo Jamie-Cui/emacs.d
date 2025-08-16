@@ -50,8 +50,8 @@ Have tree-sitter problem? see: [[https://www.reddit.com/r/emacs/comments/1e57kzy
 
 ** Setup ~$HOME/.emacs.d/init.el~
 #+begin_src elisp
-(defvar jc-emacs-directory "~/Desktop/emacs.d")
-(load (concat jc-emacs-directory "/init.el"))
+(defvar +emacs/repo-directory "~/Desktop/emacs.d")
+(load (concat +emacs/repo-directory "/init.el"))
 #+end_src
 
 ** C/C++ Dev Tools

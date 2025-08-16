@@ -25,6 +25,7 @@
   :custom (undo-tree-history-directory-alist 
            `(("." . ,(concat user-emacs-directory "undo-tree-hist/"))))
   :config
+  (setopt undo-tree-map nil)
   (global-undo-tree-mode 1))
 
 ;; move-text
@@ -147,6 +148,5 @@
     (setq evil-insert-state-cursor 'bar)  ; ⎸
     (setq evil-emacs-state-cursor  'hbar) ; _
     ))
-
 
 (provide 'init-evil)

@@ -188,8 +188,8 @@
     "tt"     #'toggle-truncate-lines
     "tn"     #'display-line-numbers-mode
     "tm"     #'+inhibit-mouse/toggle-mode
+    "tM"     #'+org-imgtog/toggle
     "ta"     #'+treesit-auto/toggle
-    "tc"     #'claude-code-toggle
     ;; code
     "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors

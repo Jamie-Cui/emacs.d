@@ -15,12 +15,9 @@
    pdf-tools
    ;; latex support
    auctex
-   ;; proof assist
+   ;; TODO proof assist
    ;; proof-general
    ))
-
-;; (use-package proof-general
-;;   :ensure t)
 
 (use-package pdf-tools
   :ensure t
@@ -78,7 +75,7 @@
     (interactive)
     (progn
       (setq doi-to-query (read-string "DOI: "))
-      (find-file (concat jc-org-root-dir "/all-ref.bib"))
+      (find-file (concat +emacs/org-root-dir "/all-ref.bib"))
       (end-of-buffer)
       (doi-insert-bibtex doi-to-query)
       )
@@ -102,16 +99,16 @@
   (setq bibtex-autokey-name-year-separator "")
 
   ;; default bib file
-  (add-to-list 'bibtex-files (concat jc-org-root-dir "/all-ref.bib"))
+  (add-to-list 'bibtex-files (concat +emacs/org-root-dir "/all-ref.bib"))
   )
 
 (use-package citar
   :ensure t
   :config
-  (add-to-list 'citar-bibliography (concat jc-org-root-dir "/all-ref.bib"))
-  (add-to-list 'citar-notes-paths (concat jc-org-root-dir "/roam"))
+  (add-to-list 'citar-bibliography (concat +emacs/org-root-dir "/all-ref.bib"))
+  (add-to-list 'citar-notes-paths (concat +emacs/org-root-dir "/roam"))
   ;; NOTE this var is used by org-export
-  (add-to-list 'org-cite-global-bibliography (concat jc-org-root-dir "/all-ref.bib"))
+  (add-to-list 'org-cite-global-bibliography (concat +emacs/org-root-dir "/all-ref.bib"))
   :hook
   (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup))
@@ -126,7 +123,7 @@
 (use-package engrave-faces
   :ensure t)
 
-(defun +latex/format-paragraph ()
+(defun +latex/isolate-sentence ()
   "Replace '. ' with '.\n%\n' in the selected region, similar to Vim's :'<,'>s/\. /.\n%\n/g."
   (interactive)
   (if (use-region-p)

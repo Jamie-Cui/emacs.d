@@ -20,24 +20,24 @@
 (setq create-lockfiles nil)
 
 ;; if use backup, put it in .emacs.d/backup
-(setq backup-directory-alist (list (cons "." (concat user-emacs-directory "backup/")))
-      tramp-backup-directory-alist backup-directory-alist)
+(setopt backup-directory-alist (list (cons "." (concat user-emacs-directory "backup/")))
+        tramp-backup-directory-alist backup-directory-alist)
 
 ;; But turn on auto-save, so we have a fallback in case of crashes or lost data.
 ;; Use `recover-file' or `recover-session' to recover them.
-(setq auto-save-default t
-      ;; Don't auto-disable auto-save after deleting big chunks. This defeats
-      ;; the purpose of a failsafe. This adds the risk of losing the data we
-      ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
-      auto-save-include-big-deletions t
-      ;; Keep it out of `doom-emacs-dir' or the local directory.
-      auto-save-list-file-prefix (concat user-emacs-directory "autosave/")
-      tramp-auto-save-directory  (concat user-emacs-directory "tramp-autosave/")
-      auto-save-file-name-transforms
-      (list (list "\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
-                  ;; Prefix tramp autosaves to prevent conflicts with local ones
-                  (concat auto-save-list-file-prefix "tramp-\\2") t)
-            (list ".*" auto-save-list-file-prefix t)))
+(setopt auto-save-default t
+        ;; Don't auto-disable auto-save after deleting big chunks. This defeats
+        ;; the purpose of a failsafe. This adds the risk of losing the data we
+        ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
+        auto-save-include-big-deletions t
+        ;; Keep it out of `doom-emacs-dir' or the local directory.
+        auto-save-list-file-prefix (concat user-emacs-directory "autosave/")
+        tramp-auto-save-directory  (concat user-emacs-directory "tramp-autosave/")
+        auto-save-file-name-transforms
+        (list (list "\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+                    ;; Prefix tramp autosaves to prevent conflicts with local ones
+                    (concat auto-save-list-file-prefix "tramp-\\2") t)
+              (list ".*" auto-save-list-file-prefix t)))
 
 ;; disable electric-indent-mode, forever
 (electric-indent-mode -1)
@@ -141,6 +141,23 @@
 (setopt compilation-ask-about-save t)
 (setopt compilation-scroll-output 'first-error)
 
+;;; proced, show processes
+(setopt proced-auto-update-flag t)
+(setopt proced-goal-attribute nil)
+(setopt proced-show-remote-processes t)
+(setopt proced-enable-color-flag t)
+(setopt proced-format 'custom)
+(setopt proced-auto-update-interval 1)
+(setopt proced-format-alist
+        '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
+
+;; emacs minibufer completion
+(setopt minibuffer-completion-auto-choose nil)
+
+;; ------------------------------------------------------------------
+;; Remote Configuration
+;; ------------------------------------------------------------------
+
 ;; allow to use .dir_locals on remote files
 (setopt enable-remote-dir-locals t)
 
@@ -149,16 +166,16 @@
 
 ;; Imporove tramp speed
 ;; see: https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
-(setq tramp-allow-unsafe-temporary-files t ; do not warn me, please
-      remote-file-name-inhibit-locks t
-      tramp-use-scp-direct-remote-copying t
-      remote-file-name-inhibit-auto-save-visited t)
+(setopt tramp-allow-unsafe-temporary-files t ; do not warn me, please
+        remote-file-name-inhibit-locks t
+        tramp-use-scp-direct-remote-copying t
+        remote-file-name-inhibit-auto-save-visited t)
 
 (connection-local-set-profile-variables
  'remote-direct-async-process
  '((tramp-direct-async-process . t)))
 
-(setq tramp-auto-save-directory (concat user-emacs-directory "tramp-autosave/"))
+(setopt tramp-auto-save-directory (concat user-emacs-directory "tramp-autosave/"))
 
 (connection-local-set-profiles
  '(:application tramp :protocol "scp")
@@ -169,51 +186,52 @@
     (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
 
 ;; forgot why I add this ...
-(setq tramp-pipe-stty-settings "")
+(setopt tramp-pipe-stty-settings "")
 
 ;; this improves magit efficiency
 (unless (featurep :system 'windows)
-  (setq tramp-default-method "ssh")) ; faster than the default scp
+  (setopt tramp-default-method "ssh")) ; faster than the default scp
 
 ;; allow asyn in tramp
-(setq tramp-async-enabled t)
+(setopt tramp-async-enabled t)
 
 ;; ------------------------------------------------------------------
 ;; Eshell Configuration
 ;; ------------------------------------------------------------------
+
 (setopt eshell-scroll-show-maximum-output nil
         eshell-highlight-prompt nil
         eshell-destroy-buffer-when-process-dies t)
 
-(setq eshell-scroll-to-bottom-on-input 'all
-      eshell-scroll-to-bottom-on-output 'all
-      eshell-kill-processes-on-exit t
-      eshell-hist-ignoredups t
-      eshell-input-filter (lambda (input) (not (string-match-p "\\`\\s-+" input)))
-      eshell-glob-case-insensitive t
-      eshell-error-if-no-glob t)
+(setopt eshell-scroll-to-bottom-on-input 'all
+        eshell-scroll-to-bottom-on-output 'all
+        eshell-kill-processes-on-exit t
+        eshell-hist-ignoredups t
+        eshell-input-filter (lambda (input) (not (string-match-p "\\`\\s-+" input)))
+        eshell-glob-case-insensitive t
+        eshell-error-if-no-glob t)
 
-(setq eshell-prompt-function 
-      (lambda nil
-        (let* ((cwd (abbreviate-file-name (eshell/pwd)))
-               (x-stat eshell-last-command-status))
-          (propertize
-           (format "%s %s $ "
-                   (if (< 0 x-stat)
-                       (format (propertize "!%s" 'font-lock-face 
-                                           '(:foreground "red")) x-stat)
-                     (propertize "➤" 'font-lock-face 
-                                 (list :foreground (if (< 0 x-stat) "red" "green"))))
-                   (propertize cwd 'font-lock-face '(:foreground "#45babf")))
-           'front-sticky   '(font-lock-face read-only)
-           'rear-nonsticky '(font-lock-face read-only)))))
+(setopt eshell-prompt-function 
+        (lambda nil
+          (let* ((cwd (abbreviate-file-name (eshell/pwd)))
+                 (x-stat eshell-last-command-status))
+            (propertize
+             (format "%s %s $ "
+                     (if (< 0 x-stat)
+                         (format (propertize "!%s" 'font-lock-face 
+                                             '(:foreground "red")) x-stat)
+                       (propertize "➤" 'font-lock-face 
+                                   (list :foreground (if (< 0 x-stat) "red" "green"))))
+                     (propertize cwd 'font-lock-face '(:foreground "#45babf")))
+             'front-sticky   '(font-lock-face read-only)
+             'rear-nonsticky '(font-lock-face read-only)))))
 
-(setq eshell-banner-message
-      '(format "%s %s\n"
-               (propertize (format " %s " (string-trim (buffer-name)))
-                           'face 'mode-line-highlight)
-               (propertize (current-time-string)
-                           'face 'font-lock-keyword-face)))
+(setopt eshell-banner-message
+        '(format "%s %s\n"
+                 (propertize (format " %s " (string-trim (buffer-name)))
+                             'face 'mode-line-highlight)
+                 (propertize (current-time-string)
+                             'face 'font-lock-keyword-face)))
 
 ;; HACK always get a new eshell
 (defun +eshell/new ()
@@ -227,30 +245,43 @@
   (defun eshell/clear (&optional scrollback)
     (interactive)
     (let ((inhibit-read-only t))
-      (erase-buffer)))
-  )
+      (erase-buffer))))
 
-;;; proced, show processes
-(use-package proced
-  :custom
-  (proced-auto-update-flag t)
-  (proced-goal-attribute nil)
-  (proced-show-remote-processes t)
-  (proced-enable-color-flag t)
-  (proced-format 'custom)
-  (proced-auto-update-interval 1)
-  :config
-  (add-to-list
-   'proced-format-alist
-   '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm))))
+
+;; ------------------------------------------------------------------
+;; TTY Configuration
+;; ------------------------------------------------------------------
+
+(when (not (display-graphic-p))
+  ;; HACK for state-of-art emacs (30.1.05 maybe?)
+  (when (featurep 'tty-child-frames)
+    (add-hook 'tty-setup-hook #'tty-tip-mode))
+
+  ;; Use OSC52 protocol, which is used by alacritty by default
+  (defun +tty/copy-to-system-clipboard (text &optional push)
+    (let ((encoded (base64-encode-string 
+                    (encode-coding-string text 'binary) 
+                    t)))
+      (send-string-to-terminal (format "\e]52;c;%s\a" encoded))))
+
+  (setq interprogram-cut-function '+tty/copy-to-system-clipboard)
+
+
+  (xterm-mouse-mode 1)
+  (setq x-stretch-cursor t)
+  (setq frame-resize-pixelwise t)
+
+  ;; Disable eldoc in terminal
+  (eldoc-mode -1))
+
+;; ------------------------------------------------------------------
+;; Dev Configuration
+;; ------------------------------------------------------------------
 
 ;; sibling files (for c/c++)
 (add-to-list 'find-sibling-rules
              '("/\\([^/]+\\)\\.c\\(c\\|pp\\)?\\'" "\\1.h\\(h\\|pp\\)?\\'"))
 (add-to-list 'find-sibling-rules
              '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
-
-;; emacs minibufer completion
-(setopt minibuffer-completion-auto-choose nil)
 
 (provide 'init-misc)

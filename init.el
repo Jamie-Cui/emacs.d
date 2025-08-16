@@ -9,15 +9,15 @@
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
 
 ;; setup emacs configuration dir
-(when (not (boundp' jc-emacs-directory))
-  (defconst jc-emacs-directory "~/emacs.d"))
+(when (not (boundp' +emacs/repo-directory))
+  (defconst +emacs/repo-directory "~/emacs.d"))
 
 ;; setup emacs org dir
-(when (not (boundp' jc-org-root-dir))
-  (defconst jc-org-root-dir "~/org-root"))
+(when (not (boundp' +emacs/org-root-dir))
+  (defconst +emacs/org-root-dir "~/org-root"))
 
 ;; add load path
-(add-to-list 'load-path (expand-file-name "lisp" jc-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lisp" +emacs/repo-directory))
 
 ;; HACK setup environment
 ;; see: https://www.emacswiki.org/emacs/ExecPath
@@ -86,17 +86,14 @@
 (require 'init-kbd) ;; keybindings 
 (require 'init-evil) 
 (require 'init-core)
+(require 'init-misc)
 (require 'init-org)
-(require 'init-chinese)
 (require 'init-os)
 (require 'init-llm)
 
 ;; only load latex when using graphic
 (when (display-graphic-p)
   (require 'init-latex))
-
-(when (not (display-graphic-p))
-  (require 'init-tty))
 
 ;; -----------------------------------------------------------
 ;; DONE programming modes
