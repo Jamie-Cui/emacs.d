@@ -44,12 +44,8 @@
    flycheck-popup-tip
    ;; show lsp error
    flycheck-eglot
-   ;; cpplint
-   flycheck-google-cpplint
    ;; adds marginalia to the minibuffer completions
    marginalia
-   ;; code auto formating
-   apheleia
    ;; Emacs Mini-Buffer Actions Rooted in Keymaps
    embark
    embark-consult
@@ -146,7 +142,7 @@
       (progn
         (inhibit-mouse-mode 1)
         (message "inhibit-mouse-mode enabled"))))
-  (inhibit-mouse-mode 1)
+  (inhibit-mouse-mode)
   )
 
 (use-package diff-hl
@@ -265,49 +261,6 @@
   :config
   (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode))
 
-(use-package apheleia
-  :ensure t
-  :custom
-  (apheleia-remote-algorithm 'local)
-  :config
-  (apheleia-global-mode +1)
-  ;; HACK use elgot-format
-  ;; https://github.com/radian-software/apheleia/issues/153#issuecomment-1446651497
-  (cl-defun apheleia-indent-eglot-managed-buffer
-      (&key buffer scratch callback &allow-other-keys)
-    (with-current-buffer scratch
-      (setq-local eglot--cached-server
-                  (with-current-buffer buffer
-                    (eglot-current-server)))
-      (let ((buffer-file-name (buffer-local-value 'buffer-file-name buffer)))
-        (eglot-format-buffer))
-      (funcall callback)))
-
-  ;; declare new formatters for eglot
-  (add-to-list 'apheleia-formatters
-               '(eglot-managed . apheleia-indent-eglot-managed-buffer))
-
-  ;; HACK use bibtex-reformat
-  ;; https://github.com/radian-software/apheleia/pull/294
-  (cl-defun apheleia-reformat-bibtex-buffer
-      (&key buffer scratch callback &allow-other-keys)
-    (with-current-buffer scratch
-      (funcall (with-current-buffer buffer major-mode))
-      (bibtex-reformat)
-      (funcall callback)))
-
-  ;; declare new formatters for eglot
-  (add-to-list 'apheleia-formatters
-               '(bibtex-format . apheleia-reformat-bibtex-buffer))
-
-  ;; HACK add all eglot-ensured modes 
-  ;; This determines what formatter to use in buffers without a
-  ;; setting for apheleia-formatter. The keys are major mode
-  (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
-  (add-to-list 'apheleia-mode-alist '(rust-ts-mode-hook . eglot-managed))
-  (add-to-list 'apheleia-mode-alist '(cmake-ts-mode . cmake-format))
-  (add-to-list 'apheleia-mode-alist '(bibtex-mode . bibtex-format))
-  )
 
 (use-package flycheck
   :ensure t
@@ -320,22 +273,6 @@
   (flycheck-idle-change-delay 4)
   )
 
-(use-package flycheck-google-cpplint
-  :ensure t
-  :custom
-  (flycheck-c/c++-googlelint-executable "cpplint")
-  (flycheck-googlelint-verbose "0")
-  (flycheck-cppcheck-standards "c++17")
-  (flycheck-googlelint-linelength "80")
-  (flycheck-googlelint-filter
-   (concat
-    "-whitespace,"
-    "-whitespace/braces,"
-    "-whitespace/indent,"
-    "-build/include_order,"
-    "-build/header_guard,"
-    "-runtime/reference,"
-    )))
 
 (use-package flycheck-eglot
   :ensure t
@@ -343,21 +280,7 @@
   :custom
   (flycheck-eglot-exclusive nil)
   :config
-  (global-flycheck-eglot-mode 1)
-  ;; see: https://github.com/kkholst/.doom.d/blob/main/config.org
-  ;; We need to tweak a little bit to make cpplint and eglot to work
-  ;; together.
-  ;; see: https://melpa.org/#/flycheck-eglot
-  ;;
-  ;; see: https://github.com/flycheck/flycheck-eglot
-  ;; By default, the Flycheck-Eglot considers the Eglot to be the only
-  ;; provider of syntax checks. Other Flycheck checkers are ignored.
-  ;; There is a variable `flycheck-eglot-exclusive' that controls this
-  ;; You can override it system wide or for some major modes.
-  ;;
-  (flycheck-add-next-checker 'eglot-check
-                             '(warning . c/c++-googlelint))
-  )
+  (global-flycheck-eglot-mode 1))
 
 (use-package marginalia
   :ensure t

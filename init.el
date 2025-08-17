@@ -19,25 +19,6 @@
 ;; add load path
 (add-to-list 'load-path (expand-file-name "lisp" +emacs/repo-directory))
 
-;; HACK setup environment
-;; see: https://www.emacswiki.org/emacs/ExecPath
-;; Set up Emacs' `exec-path' and PATH environment variable to match
-;; that used by the user's shell.
-;; 
-;; This is particularly useful under Mac OS X and macOS, where GUI
-;; apps are not started from a shell.
-(when (not (eq system-type 'windows-nt))
-  (let ((path-from-shell
-         (replace-regexp-in-string
-          "[ \t\n]*$" "" (shell-command-to-string
-                          "$SHELL --login -c 'echo $PATH'"
-                          ))))
-    ;; (message path-from-shell)
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
-
-;; additional emacs-native configurations
-(require 'init-misc)
 
 ;; -----------------------------------------------------------
 ;; DONE Setup packages
@@ -80,6 +61,16 @@
       )))
 
 ;; -----------------------------------------------------------
+;; DONE Setup environment
+;; -----------------------------------------------------------
+
+(+package/ensure-install '(exec-path-from-shell))
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
+
+;; -----------------------------------------------------------
 ;; DONE Configure Core
 ;; -----------------------------------------------------------
 
@@ -100,19 +91,99 @@
 ;; -----------------------------------------------------------
 
 ;; modes that does not require additional config
-(+package/ensure-install-and-use '(
-                                   protobuf-mode
-                                   meson-mode
-                                   ))
+(+package/ensure-install-and-use 
+ '(
+   protobuf-mode
+   meson-mode
+   ))
 
-(+package/ensure-install '(
-                           ;; bazel mode (need config)
-                           bazel
-                           ;; markdown mode
-                           markdown-mode
-                           ;; automatically install treesit grammar
-                           treesit-auto
-                           ))
+(+package/ensure-install 
+ '(
+   ;; code auto formating
+   apheleia
+   ;; bazel mode (need config)
+   bazel
+   ;; markdown mode
+   markdown-mode
+   ;; automatically install treesit grammar
+   treesit-auto
+   ;; cpplint
+   flycheck-google-cpplint
+   ))
+
+;; -----------------------------------------------------------
+;; DONE flycheck-google-cpplint
+;; -----------------------------------------------------------
+
+(use-package flycheck-google-cpplint
+  :ensure t
+  :after flycheck-eglot
+  :custom
+  (flycheck-c/c++-googlelint-executable "cpplint")
+  (flycheck-googlelint-verbose "0")
+  (flycheck-cppcheck-standards "c++17")
+  (flycheck-googlelint-linelength "80")
+  (flycheck-googlelint-filter
+   (concat
+    "-whitespace,"
+    "-whitespace/braces,"
+    "-whitespace/indent,"
+    "-build/include_order,"
+    "-build/header_guard,"
+    "-runtime/reference,"
+    ))
+  :config
+  (flycheck-add-next-checker 'eglot-check
+                             '(warning . c/c++-googlelint))
+  )
+
+;; -----------------------------------------------------------
+;; DONE apheleia
+;; -----------------------------------------------------------
+
+(use-package apheleia
+  :ensure t
+  :custom
+  (apheleia-remote-algorithm 'local)
+  :config
+  (apheleia-global-mode +1)
+  ;; HACK use elgot-format
+  ;; https://github.com/radian-software/apheleia/issues/153#issuecomment-1446651497
+  (cl-defun apheleia-indent-eglot-managed-buffer
+      (&key buffer scratch callback &allow-other-keys)
+    (with-current-buffer scratch
+      (setq-local eglot--cached-server
+                  (with-current-buffer buffer
+                    (eglot-current-server)))
+      (let ((buffer-file-name (buffer-local-value 'buffer-file-name buffer)))
+        (eglot-format-buffer))
+      (funcall callback)))
+
+  ;; declare new formatters for eglot
+  (add-to-list 'apheleia-formatters
+               '(eglot-managed . apheleia-indent-eglot-managed-buffer))
+
+  ;; HACK use bibtex-reformat
+  ;; https://github.com/radian-software/apheleia/pull/294
+  (cl-defun apheleia-reformat-bibtex-buffer
+      (&key buffer scratch callback &allow-other-keys)
+    (with-current-buffer scratch
+      (funcall (with-current-buffer buffer major-mode))
+      (bibtex-reformat)
+      (funcall callback)))
+
+  ;; declare new formatters for eglot
+  (add-to-list 'apheleia-formatters
+               '(bibtex-format . apheleia-reformat-bibtex-buffer))
+
+  ;; HACK add all eglot-ensured modes 
+  ;; This determines what formatter to use in buffers without a
+  ;; setting for apheleia-formatter. The keys are major mode
+  (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
+  (add-to-list 'apheleia-mode-alist '(rust-ts-mode-hook . eglot-managed))
+  (add-to-list 'apheleia-mode-alist '(cmake-ts-mode . cmake-format))
+  (add-to-list 'apheleia-mode-alist '(bibtex-mode . bibtex-format))
+  )
 
 ;; -----------------------------------------------------------
 ;; DONE tree-sitter (site-lisp)
