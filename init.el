@@ -75,7 +75,7 @@
 ;; DONE Configure Core
 ;; -----------------------------------------------------------
 
-(require 'init-kbd) ;; keybindings 
+(require 'init-kbd) 
 (require 'init-evil) 
 (require 'init-core)
 (require 'init-misc)

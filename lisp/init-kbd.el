@@ -8,6 +8,7 @@
  '(
    ;; more convenient way of defining keys
    general 
+   ;; consult which key
    which-key
    ))
 
@@ -15,7 +16,6 @@
 ;; DONE Key Bindings
 ;; ------------------------------------------------------------------
 
-;; which-key
 (use-package which-key
   :ensure t
   :config
