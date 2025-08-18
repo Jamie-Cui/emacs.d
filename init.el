@@ -64,11 +64,12 @@
 ;; DONE Setup environment
 ;; -----------------------------------------------------------
 
-(+package/ensure-install '(exec-path-from-shell))
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-  (exec-path-from-shell-initialize))
+(when (not (eq system-type 'windows-nt))
+  (+package/ensure-install '(exec-path-from-shell))
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (exec-path-from-shell-initialize)))
 
 ;; -----------------------------------------------------------
 ;; DONE Configure Core
