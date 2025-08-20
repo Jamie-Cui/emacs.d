@@ -87,6 +87,7 @@
   (claude-code-toggle-auto-select t)
   :config
   (setopt claude-code-terminal-backend 'eat) ;; this is the default
+  (setenv "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC" "1") ;; improves speed
   (setenv "ANTHROPIC_BASE_URL" "https://dashscope.aliyuncs.com/api/v2/apps/claude-code-proxy")
   (setenv "ANTHROPIC_AUTH_TOKEN" (cadr (auth-source-user-and-password "bailian.console.aliyun.com")))
   )
