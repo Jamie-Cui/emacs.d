@@ -90,7 +90,7 @@
     "TAB"    #'evil-switch-to-windows-last-buffer
     "SPC"    #'projectile-find-file
     ;; llm-related key bindings
-    "i" '(:ignore t :which-key "search")
+    "i" '(:ignore t :which-key "intelligence")
     "i RET"  #'gptel
     "ir"     #'gptel-rewrite
     "is"     #'gptel-send
@@ -141,10 +141,10 @@
     "pD"     #'projectile-remove-known-project
     "pd"     #'projectile-run-gdb
     "pp"     #'projectile-switch-project
-    "pC"     #'projectile-configure-project ; popup
-    "pc"     #'projectile-compile-project ; popup
-    "pt"     #'projectile-test-project ; popup
-    "pr"     #'projectile-run-project ; popup
+    "pC"     #'projectile-configure-project 
+    "pc"     #'projectile-compile-project 
+    "pt"     #'projectile-test-project 
+    "pr"     #'projectile-run-project 
     "pb"     #'consult-project-buffer 
     "pi"     #'projectile-invalidate-cache
     "pf"     #'+vertico/project-search
