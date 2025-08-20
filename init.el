@@ -195,6 +195,8 @@
   (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
+  (rassq-delete-all 'c++-mode auto-mode-alist)
+  (rassq-delete-all 'c-mode auto-mode-alist)
 
   ;; HACK toggle mode automatically
   (defun +treesit-auto/toggle ()
