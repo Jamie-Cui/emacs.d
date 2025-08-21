@@ -96,7 +96,6 @@
     "is"     #'gptel-send
     "iq"     #'gptel-abort
     "ia"     #'gptel-add
-    "ic"     #'claude-code
     "ii"     #'gptel-menu
     ;; action-related key bindings
     "a" '(:ignore t :which-key "actions")
@@ -131,7 +130,8 @@
     "oT"     #'+eat/new
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
-    "oc"     #'+compilation/open-projectile-compilation-buffer
+    "oc"     #'+compilation/open-projectile-compilation-buffer   
+    "oC"     #'claude-code-toggle
     "og"     #'magit-status-quick
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
