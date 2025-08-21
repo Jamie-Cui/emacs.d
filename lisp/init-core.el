@@ -74,7 +74,12 @@
    pangu-spacing
    ;; chinese s alignment, or valign (maybe?)
    cnfonts
+   ;; docker
+   docker
    ))
+
+(use-package docker
+  :ensure t)
 
 (use-package pangu-spacing
   :ensure t

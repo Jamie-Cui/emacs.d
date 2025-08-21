@@ -123,6 +123,11 @@
     "BB"     #'consult-bookmark
     "Bn"     #'bookmark-set
     "Bd"     #'bookmark-delete
+    ;; docker-related key bindings
+    "d" '(:ignore t :which-key "docker")
+    "dc"     #'docker-containers
+    "dm"     #'docker-images
+    "dn"     #'docker-networks
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ot"     #'+eshell/new
