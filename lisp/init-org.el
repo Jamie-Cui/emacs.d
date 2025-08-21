@@ -34,7 +34,7 @@
 
 ;; DEPRECATED I'm considering drop this package
 (use-package org-imgtog
-  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp"))
+  :load-path (lambda () (concat +emacs/repo-directory "/thirdparty/org-imgtog"))
   :config
   (defun +org-imgtog/toggle ()
     "Toggle global-treesit-auto-mode."

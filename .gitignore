@@ -6,7 +6,6 @@ bin
 projects
 
 .vscode
-*.el
 *.eld
 !site-lisp/*.el
 !lisp/*.el

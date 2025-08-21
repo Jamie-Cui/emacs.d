@@ -32,10 +32,13 @@
   ;; NOTE to make ollama work through LAN, on its server
   ;; see: https://github.com/ollama/ollama/blob/main/docs/faq.md
   (defvar +gptel/local-backend
-    (gptel-make-ollama "ollama"
-      :host "localhost:11434"
+    (gptel-make-openai "OpenWebUI"
+      :host "localhost:8080"
+      :protocol "http"
+      :endpoint "/api/chat/completions"
       :stream t
-      :models '(qwen3:8b qwen3-coder:30b)))
+      :key "sk-02bdf77754894f87b8988711c7d15b67"
+      :models '(qwen2.5-coder:latest)))
 
   ;; set default values
   (setopt gptel-backend +gptel/remote-backend)
@@ -82,7 +85,7 @@
 ;; see: https://github.com/musistudio/claude-code-router/tree/main
 ;;
 (use-package claude-code
-  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp"))
+  :load-path (lambda () (concat +emacs/repo-directory "/thirdparty/claude-code.el/"))
   :custom 
   (claude-code-toggle-auto-select t)
   :config
