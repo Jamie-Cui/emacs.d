@@ -182,7 +182,11 @@
      ;; right, where you might need to write something inside
      ;;
      ("*scratch*" :position right :stick t)
-     ("*bailian.aliyun*" :position right :stick t :tail t)
+     ((lambda (b) ; predicate
+        ;; NOTE: buffer check is required (#450)
+        (and-let* ((buf (get-buffer (or (car-safe b) b))))
+          (buffer-local-value 'gptel-mode buf)))
+      :position right :stick t :tail t)
      ;;
      ;; FIXME claude-code uses full frame, temp
      ;; (claude-code--buffer-p :position right :stick t)
