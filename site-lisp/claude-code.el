@@ -1649,7 +1649,8 @@ If the Claude buffer doesn't exist, create it."
             ;; Optionally select the window based on user preference
             (when claude-code-toggle-auto-select
               (select-window window))))
-      (claude-code--show-not-running-message))))
+      (claude-code--show-not-running-message))
+    (claude-code)))
 
 ;;;###autoload
 (defun claude-code--switch-to-all-instances-helper ()
