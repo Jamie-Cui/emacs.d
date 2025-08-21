@@ -91,7 +91,6 @@
     "SPC"    #'projectile-find-file
     ;; llm-related key bindings
     "i" '(:ignore t :which-key "intelligence")
-    "i RET"  #'gptel
     "ir"     #'gptel-rewrite
     "is"     #'gptel-send
     "iq"     #'gptel-abort
@@ -130,8 +129,9 @@
     "oT"     #'+eat/new
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
-    "oc"     #'+compilation/open-projectile-compilation-buffer   
-    "oC"     #'claude-code-toggle
+    "oc"     #'+compilation/open-projectile-compilation-buffer
+    "oi"     #'gptel
+    "oI"     #'claude-code-toggle
     "og"     #'magit-status-quick
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
