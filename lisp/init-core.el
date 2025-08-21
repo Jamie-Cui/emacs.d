@@ -161,7 +161,7 @@
   :ensure t
   :custom 
   (popwin:popup-window-height 0.5)
-  (popwin:popup-window-width 0.5)
+  (popwin:popup-window-width 0.3)
   (popwin:adjust-other-windows t)
   (popwin:special-display-config
    '(
