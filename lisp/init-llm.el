@@ -42,12 +42,12 @@
   (setopt gptel-model 'qwen3-coder-plus)
 
   ;; set context
-  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
-  (setf (alist-get 'org-mode gptel-response-prefix-alist) "=@AI=\n")
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** =@Jamie=\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "** =@AI=\n")
 
   ;; set hook
   (add-hook 'gptel-mode-hook
-            (lambda () (insert "** Default Context\n=@Jamie="))))
+            (lambda () (insert "* Default Context\n** =@Jamie="))))
 
 (use-package gptel-magit
   :ensure t
