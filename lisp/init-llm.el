@@ -41,16 +41,30 @@
       :models '(qwen2.5-coder:latest)))
 
   ;; set default values
-  (setopt gptel-backend +gptel/remote-backend)
-  (setopt gptel-model 'qwen3-coder-plus)
+  (setopt gptel-backend +gptel/private-backend)
+  (setopt gptel-model 'qwen3-coder-30b-a3b-instruct)
 
   ;; set context
-  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "** =@Jamie=\n")
-  (setf (alist-get 'org-mode gptel-response-prefix-alist) "** =@AI=\n")
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "=@AI=\n")
 
   ;; set hook
   (add-hook 'gptel-mode-hook
-            (lambda () (insert "* Default Context\n** =@Jamie="))))
+            (lambda () (insert "* Default Context\n=@Jamie=")))
+
+  (defun +gptel/remove-headings (beg end)
+    (when (derived-mode-p 'org-mode)
+      (save-excursion
+        (goto-char beg)
+        (while (re-search-forward org-heading-regexp end t)
+          (forward-line 0)
+          (delete-char (1+ (length (match-string 1))))
+          (insert-and-inherit "*")
+          (end-of-line)
+          (skip-chars-backward " \t\r")
+          (insert-and-inherit "*")))))
+
+  (add-hook 'gptel-post-response-functions #'+gptel/remove-headings))
 
 (use-package gptel-magit
   :ensure t
