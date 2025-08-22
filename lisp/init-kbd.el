@@ -1,4 +1,4 @@
-;;; init-kbd.el --- evil support -*- lexical-binding: t -*-
+;;; Init-kbd.el --- evil support -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -8,8 +8,8 @@
  '(
    ;; more convenient way of defining keys
    general 
-   ;; consult which key
-   which-key
+   ;; consult which key, which key in included in 30.1
+   ;; which-key
    ))
 
 ;; ------------------------------------------------------------------
@@ -18,8 +18,15 @@
 
 (use-package which-key
   :ensure t
+  :custom
+  (which-key-max-display-columns nil)
+  (which-key-min-display-lines 6)
+  (which-key-side-window-slot -10)
+  (which-key-add-column-padding 1)
+  (which-key-sort-order 'which-key-key-order-alpha)
+  (which-key-sort-uppercase-first nil)
   :config
-  (which-key-setup-minibuffer)
+  (which-key-setup-side-window-bottom)
   (which-key-mode 1))
 
 (use-package general
@@ -42,7 +49,7 @@
       (call-interactively 'eat)))
 
   ;; HACK kill current persp without asking
-  (defun +persp/kill-current ()
+  (defun +persp/kill-current-workspace ()
     (interactive)
     (persp-kill (persp-current-name)))
 
@@ -116,9 +123,8 @@
     "b" '(:ignore t :which-key "buffer")
     "bn"     #'evil-buffer-new
     "bd"     #'kill-current-buffer
+    "bD"     #'clean-buffer-list
     "br"     #'+revert-buffer-no-confirm
-    "bc"     #'clean-buffer-list
-    "bo"     #'persp-kill-other-buffers
     "B" '(:ignore t :which-key "bookmark")
     "BB"     #'consult-bookmark
     "Bn"     #'bookmark-set
@@ -154,11 +160,13 @@
     "pi"     #'projectile-invalidate-cache
     "pf"     #'+vertico/project-search
     "po"     #'find-sibling-file
-    "pH"     #'+persp/move-buffer-prev
-    "pL"     #'+persp/move-buffer-next
-    "ph"     #'persp-prev
-    "pl"     #'persp-next
-    "pq"     #'+persp/kill-current
+    "P" '(:ignore t :which-key "perspevtive")
+    "Ph"     #'persp-prev
+    "Pl"     #'persp-next
+    "PH"     #'+persp/move-buffer-prev
+    "PL"     #'+persp/move-buffer-next
+    "Pq"     #'+persp/kill-current-workspace
+    "Po"     #'persp-kill-other-buffers
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "n@"      #'citar-insert-citation ;; insert bib
