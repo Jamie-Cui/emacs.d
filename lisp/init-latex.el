@@ -21,36 +21,40 @@
 
 (use-package pdf-tools
   :ensure t
-  :after synctex
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode) ; Associate .pdf files with pdf-view-mode
   :magic ("%PDF" . pdf-view-mode) ; Use magic number to identify PDF files
   :custom
   ;; to use pdfview with auctex
   (TeX-view-program-selection '((output-pdf "PDF Tools")))
-  (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
-  (TeX-source-correlate-start-server t)
-  (TeX-PDF-mode t) ; Ensure PDF output
   :init
   (pdf-tools-install)
   :config
-  (require 'pdf-sync)
+  ;; pdf-tools have the buffer refresh after compilation
+  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+
+  ;; Enable SyncTeX
+  (setq TeX-source-correlate-mode t)
+  (setq TeX-source-correlate-start-server t)
+
+  ;; Set PDF-Tools as the default viewer
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+        TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
 
   ;; Define forward search function
   (defun TeX-pdf-tools-sync-view ()
-    (let ((pdf-file (expand-file-name (concat (TeX-master-file "pdf") ".pdf")))
-          (tex-file buffer-file-name)
+    (require 'pdf-sync)
+    (let ((pdf-file (expand-file-name (TeX-master-file "pdf")))
+          (tex-file buffer-file-name) ; unused
           (line (line-number-at-pos)))
-      (find-file pdf-file) ;; default should be pdf-tools
-      (pdf-sync-forward-search tex-file line)))
+      (pdf-sync-forward-search line)))
 
-  ;; ;; Enable Inverse Search in PDFs
-  ;; (setq pdf-sync-backward-search-method 'generic
-  ;;       pdf-sync-generic-forward-search-command
-  ;;       "emacsclient --no-wait +%l '%f'")
+  ;; Enable Inverse Search in PDFs
+  (setq pdf-sync-backward-search-method 'generic
+        pdf-sync-generic-forward-search-command
+        "emacsclient --no-wait +%l '%f'")
 
-  ;; pdf-tools have the buffer refresh after compilation
-  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
-  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode) 
+  (setq TeX-PDF-mode t) ; Ensure PDF output
+  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode) ; Auto-enable SyncTeX
   )
 
 (use-package biblio

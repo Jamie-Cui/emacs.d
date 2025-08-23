@@ -147,7 +147,6 @@
       (progn
         (inhibit-mouse-mode 1)
         (message "inhibit-mouse-mode enabled"))))
-  (inhibit-mouse-mode)
   )
 
 (use-package diff-hl
