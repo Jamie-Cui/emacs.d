@@ -185,7 +185,7 @@
      ;; right (long context, and you may need to write something)
      ;;
      ("*scratch*" :position right :stick t)
-     (compilation-mode :position right :stick t :tail t)
+     ;; (compilation-mode :position right :stick t :tail t)
      ((lambda (b) ; predicate for gptel buffer
         ;; NOTE: buffer check is required (#450)
         (and-let* ((buf (get-buffer (or (car-safe b) b))))
