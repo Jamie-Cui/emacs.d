@@ -37,6 +37,9 @@
         ;; ("melpa" . "http://melpa.org/packages/")
         ))
 
+;; HACK disable check of signature
+(setq package-check-signature nil)
+
 ;; initialize packages
 (package-initialize)
 
@@ -233,3 +236,13 @@
   :bind (:map markdown-mode-map
               ("C-c C-e" . markdown-do)))
 
+;; ------------------------------------------------------------------
+;; TODO EAF
+;; ------------------------------------------------------------------
+
+(use-package eaf
+  :load-path (lambda () (concat +emacs/repo-directory "/thirdparty/eaf"))
+  :config
+  (require 'eaf-browser)
+  (require 'eaf-pdf-viewer)
+  )

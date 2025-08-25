@@ -41,7 +41,7 @@
       :models '(qwen2.5-coder:latest)))
 
   ;; set default values
-  (setopt gptel-backend +gptel/local-backend)
+  (setopt gptel-backend +gptel/remote-backend)
   (setopt gptel-model 'qwen3-coder-plus)
 
   ;; set context

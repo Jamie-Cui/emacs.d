@@ -7,3 +7,6 @@
 [submodule "thirdparty/claude-code.el"]
 	path = thirdparty/claude-code.el
 	url = https://github.com/Jamie-Cui/claude-code.el
+[submodule "thirdparty/eaf"]
+	path = thirdparty/eaf
+	url = https://github.com/emacs-eaf/emacs-application-framework.git
