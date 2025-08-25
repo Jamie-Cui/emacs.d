@@ -108,9 +108,9 @@
   (cnfonts-mode 1)
   )
 
-(use-package vertico-posframe
-  :ensure t
-  :hook (vertico-mode . vertico-posframe-mode))
+;; (use-package vertico-posframe
+;;   :ensure t
+;;   :hook (vertico-mode . vertico-posframe-mode))
 
 (use-package doom-modeline
   :ensure t

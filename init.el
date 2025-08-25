@@ -19,7 +19,6 @@
 ;; add load path
 (add-to-list 'load-path (expand-file-name "lisp" +emacs/repo-directory))
 
-
 ;; -----------------------------------------------------------
 ;; DONE Setup packages
 ;; -----------------------------------------------------------
