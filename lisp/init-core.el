@@ -174,19 +174,19 @@
      ;;
      ("*xref*" :position bottom)
      ;;
-     ;; bottom (only for display)
+     ;; bottom (read-only short messages that should not take too much time)
      ;;
      (help-mode :position bottom :stick t)
      (helpful-mode :position bottom :stick t)
-     (compilation-mode :position bottom :stick t :tail t)
      ("*Flycheck errors*" :position bottom :stick t)
      ("*Messages*" :position bottom :stick t)
      ("*LLM response*" :position bottom :stick t)
      ;;
-     ;; right, where you might need to write something inside
+     ;; right (long context, and you may need to write something)
      ;;
      ("*scratch*" :position right :stick t)
-     ((lambda (b) ; predicate
+     (compilation-mode :position right :stick t :tail t)
+     ((lambda (b) ; predicate for gptel buffer
         ;; NOTE: buffer check is required (#450)
         (and-let* ((buf (get-buffer (or (car-safe b) b))))
           (buffer-local-value 'gptel-mode buf)))
