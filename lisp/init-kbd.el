@@ -160,6 +160,7 @@
     "pi"     #'projectile-invalidate-cache
     "pf"     #'+vertico/project-search
     "po"     #'find-sibling-file
+    "pq"     #'+persp/kill-current-workspace
     "P" '(:ignore t :which-key "perspevtive")
     "Ph"     #'persp-prev
     "Pl"     #'persp-next
