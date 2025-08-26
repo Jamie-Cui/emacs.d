@@ -20,6 +20,9 @@
           scroll-margin 0)        ; important: scroll-margin>0 not yet supported
     :config
     (ultra-scroll-mode 1))
+
+  (require 'inhibit-mouse)
+  (inhibit-mouse-mode 1)
   )
 
 ;;; --------------------------------------
