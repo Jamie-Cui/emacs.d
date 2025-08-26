@@ -239,9 +239,9 @@
 ;; TODO EAF
 ;; ------------------------------------------------------------------
 
-(use-package eaf
-  :load-path (lambda () (concat +emacs/repo-directory "/thirdparty/eaf"))
-  :config
-  (require 'eaf-browser)
-  (require 'eaf-pdf-viewer)
-  )
+;; (use-package eaf
+;;   :load-path (lambda () (concat +emacs/repo-directory "/thirdparty/eaf"))
+;;   :config
+;;   (require 'eaf-browser)
+;;   (require 'eaf-pdf-viewer)
+;;   )
