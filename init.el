@@ -90,14 +90,18 @@
   (require 'init-latex))
 
 ;; -----------------------------------------------------------
-;; DONE programming modes
+;; DONE modes and themes
 ;; -----------------------------------------------------------
 
-;; modes that does not require additional config
+;; modes and thems that does not require additional config
 (+package/ensure-install-and-use 
  '(
+   ;; modes
    protobuf-mode
    meson-mode
+   ;; themes
+   zenburn-theme
+   gruvbox-theme
    ))
 
 (+package/ensure-install 

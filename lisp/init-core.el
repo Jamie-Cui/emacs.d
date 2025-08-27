@@ -8,8 +8,6 @@
  '(
    ;; dashboard at startup
    dashboard
-   ;; theme
-   zenburn-theme
    ;; consult framework
    consult
    ;; show helps of fun, key, mode
@@ -154,9 +152,6 @@
   :config
   (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
   (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode))
-
-(use-package zenburn-theme
-  :ensure t)
 
 (use-package persp-projectile
   :ensure t)
