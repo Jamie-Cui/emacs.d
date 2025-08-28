@@ -1,4 +1,4 @@
-;; -*- lexical-binding: t; -*-
+;; -*- Lexical-binding: t; -*-
 
 ;; -----------------------------------------------------------
 ;; DONE Emacs native configurations
@@ -171,26 +171,12 @@
   (add-to-list 'apheleia-formatters
                '(eglot-managed . apheleia-indent-eglot-managed-buffer))
 
-  ;; HACK use bibtex-reformat
-  ;; https://github.com/radian-software/apheleia/pull/294
-  (cl-defun apheleia-reformat-bibtex-buffer
-      (&key buffer scratch callback &allow-other-keys)
-    (with-current-buffer scratch
-      (funcall (with-current-buffer buffer major-mode))
-      (bibtex-reformat)
-      (funcall callback)))
-
-  ;; declare new formatters for eglot
-  (add-to-list 'apheleia-formatters
-               '(bibtex-format . apheleia-reformat-bibtex-buffer))
-
   ;; HACK add all eglot-ensured modes 
   ;; This determines what formatter to use in buffers without a
   ;; setting for apheleia-formatter. The keys are major mode
   (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(rust-ts-mode-hook . eglot-managed))
   (add-to-list 'apheleia-mode-alist '(cmake-ts-mode . cmake-format))
-  (add-to-list 'apheleia-mode-alist '(bibtex-mode . bibtex-format))
   )
 
 ;; -----------------------------------------------------------
