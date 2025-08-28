@@ -82,15 +82,9 @@
       )
     )
 
-  (defun +bibtex/consult-bibtex-file ()
+  (defun +bibtex/open-bibtex-file ()
     (interactive)
-    (let ((file (consult--read bibtex-files
-                               :prompt "bibtex-files: "
-                               :sort nil
-                               :require-match t
-                               :category 'file
-                               :history 'file-name-history)))
-      (find-file file)))
+    (find-file (concat +emacs/org-root-dir "/all-ref.bib")))
 
   ;; Configure uniquification (appends a/b/c for duplicates)
   (setopt bibtex-autokey-name-case-convert-function #'upcase)

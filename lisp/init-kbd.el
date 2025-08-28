@@ -175,7 +175,7 @@
     "nba"     #'citar-add-file-to-library
     "nbA"     #'+bibtex/add-doi ;; add bib from doi
     "nbb"     #'citar-open ;; consult for entry
-    "nbf"     #'+bibtex/consult-bibtex-file ;; check bib source
+    "nbf"     #'+bibtex/open-bibtex-file ;; check bib source
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "ne"      #'org-export-dispatch
