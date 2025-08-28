@@ -20,6 +20,54 @@
    undo-tree
    ))
 
+
+;;;###autoload (autoload '+evil-join-a "editor/evil/autoload/advice" nil nil)
+(defun +evil-join-a (fn beg end)
+  "Join the selected lines.
+
+This advice improves on `evil-join' by removing comment delimiters when joining
+commented lines, without `fill-region-as-paragraph'.
+
+Adapted from https://github.com/emacs-evil/evil/issues/606"
+  (if-let* (((not (= (line-end-position) (point-max))))
+            (cend (save-excursion (goto-char end) (line-end-position)))
+            (cbeg (save-excursion
+                    (goto-char beg)
+                    (and (+point-in-comment-p
+                          (save-excursion
+                            (goto-char (line-beginning-position 2))
+                            (skip-syntax-forward " \t")
+                            (point)))
+                         (or (comment-search-backward (line-beginning-position) t)
+                             (comment-search-forward  (line-end-position) t)
+                             (and (+point-in-comment-p beg)
+                                  (stringp comment-continue)
+                                  (or (search-forward comment-continue (line-end-position) t)
+                                      beg)))))))
+      (let* ((count (count-lines beg end))
+             (count (if (> count 1) (1- count) count))
+             (fixup-mark (make-marker)))
+        (uncomment-region (line-beginning-position 2)
+                          (save-excursion
+                            (goto-char cend)
+                            (line-end-position 0)))
+        (unwind-protect
+            (dotimes (_ count)
+              (join-line 1)
+              (save-match-data
+                (when (or (and comment-continue
+                               (not (string-empty-p comment-continue))
+                               (looking-at (concat "\\(\\s-*" (regexp-quote comment-continue) "\\) ")))
+                          (and comment-start-skip
+                               (not (string-empty-p comment-start-skip))
+                               (looking-at (concat "\\(\\s-*" comment-start-skip "\\)"))))
+                  (replace-match "" t nil nil 1)
+                  (just-one-space))))
+          (set-marker fixup-mark nil)))
+    ;; But revert to the default we're not in a comment, where
+    ;; `fill-region-as-paragraph' is too greedy.
+    (funcall fn beg end)))
+
 (use-package undo-tree
   :ensure t
   :custom (undo-tree-history-directory-alist 
@@ -60,6 +108,8 @@
   (evil-set-undo-system 'undo-tree)
   (evil-mode 1)
   (add-hook 'message-mode-hook 'evil-mode)
+  ;; HACK: Fix joining commented lines with J (evil-join).
+  (advice-add #'evil-join :around #'+evil-join-a)
   )
 
 ;;; evil-collection
