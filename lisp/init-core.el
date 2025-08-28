@@ -262,8 +262,19 @@
 (use-package flycheck-popup-tip
   :ensure t
   :config
-  (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode))
-
+  (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode)
+  ;; see: 
+  ;; HACK: Only display the flycheck popup if we're in normal mode (for evil
+  ;;   users) or if no selection or completion is active. This popup can
+  ;;   interfere with the active evil mode, clear active regions, and other
+  ;;   funny business (see #7242).
+  (defadvice! +syntax--disable-flycheck-popup-tip-maybe-a (&rest _)
+    :before-while #'flycheck-popup-tip-show-popup
+    (if (and (bound-and-true-p evil-local-mode)
+             (not (evil-emacs-state-p)))
+        (evil-normal-state-p)
+      (and (not (region-active-p))
+           (not (ignore-errors (>= corfu--index 0)))))))
 
 (use-package flycheck
   :ensure t

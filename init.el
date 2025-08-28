@@ -77,6 +77,7 @@
 ;; DONE Configure Core
 ;; -----------------------------------------------------------
 
+(require 'init-utils) 
 (require 'init-kbd) 
 (require 'init-evil) 
 (require 'init-core)
