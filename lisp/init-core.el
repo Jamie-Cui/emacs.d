@@ -114,6 +114,7 @@
   :ensure t
   :init (doom-modeline-mode 1)
   :config
+  (setq doom-modeline-buffer-file-name-style 'relative-from-project)
   (setq doom-modeline-icon nil) ; no icon
   (setq doom-modeline-major-mode-icon nil)
   (setq doom-modeline-major-mode-color-icon nil)
