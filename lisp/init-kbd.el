@@ -210,6 +210,7 @@
     "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
+    "cc"     #'compile
     "cr"     #'eglot-rename
     "cf"     #'eglot-format-buffer
     "cj"     #'consult-eglot-symbols
