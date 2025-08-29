@@ -17,8 +17,11 @@
   (gptel-default-mode 'org-mode)
   (gptel-org-branching-context t)
   (gptel-log-level 'info)
+  ;; re-bind key
+  :bind (:map gptel-mode-map
+              ("C-c C-c" . #'gptel-send)
+              ("C-c RET" . nil))
   :config
-
   ;; register remote backend
   (defvar +gptel/remote-backend
     (gptel-make-deepseek "bailian.aliyun"
