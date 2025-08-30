@@ -193,6 +193,7 @@
   (rassq-delete-all 'c-or-c++-mode auto-mode-alist)
   (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.cc\\'" . c++-ts-mode))
+  (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
 
   ;; HACK toggle mode automatically
   (defun +treesit-auto/toggle ()
