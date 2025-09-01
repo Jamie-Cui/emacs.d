@@ -34,6 +34,7 @@
 
 ;; DEPRECATED I'm considering drop this package
 (use-package org-imgtog
+  :disabled
   :load-path (lambda () (concat +emacs/repo-directory "/thirdparty/org-imgtog"))
   :config
   (defun +org-imgtog/toggle ()
