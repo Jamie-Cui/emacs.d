@@ -103,6 +103,10 @@
    ;; themes
    zenburn-theme
    gruvbox-theme
+   ;; practice typing
+   speed-type 
+   ;; show key frequency
+   keyfreq
    ))
 
 (+package/ensure-install 
