@@ -23,6 +23,22 @@
 (setopt backup-directory-alist (list (cons "." (concat user-emacs-directory "backup/")))
         tramp-backup-directory-alist backup-directory-alist)
 
+;; Don't generate backups or lockfiles. While auto-save maintains a copy so long
+;; as a buffer is unsaved, backups create copies once, when the file is first
+;; written, and never again until it is killed and reopened. This is better
+;; suited to version control, and I don't want world-readable copies of
+;; potentially sensitive material floating around our filesystem.
+(setq create-lockfiles nil
+      make-backup-files nil
+      ;; But in case the user does enable it, some sensible defaults:
+      version-control t     ; number each backup file
+      backup-by-copying t   ; instead of renaming current file (clobbers links)
+      delete-old-versions t ; clean up after itself
+      kept-old-versions 5
+      kept-new-versions 5
+      backup-directory-alist (list (cons "." (concat user-emacs-directory "backup/")))
+      tramp-backup-directory-alist backup-directory-alist)
+
 ;; But turn on auto-save, so we have a fallback in case of crashes or lost data.
 ;; Use `recover-file' or `recover-session' to recover them.
 (setopt auto-save-default t
