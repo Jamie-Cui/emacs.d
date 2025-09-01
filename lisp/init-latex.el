@@ -22,6 +22,7 @@
 
 (use-package pdf-tools
   :ensure t
+  :if (not (eq system-type 'windows-nt)) ;; do not load on windows
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode) ; Associate .pdf files with pdf-view-mode
   :magic ("%PDF" . pdf-view-mode) ; Use magic number to identify PDF files
   :custom
