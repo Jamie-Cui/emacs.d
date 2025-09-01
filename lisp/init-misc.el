@@ -119,6 +119,12 @@
 ;; column
 (setopt fill-column 80)
 
+;; Remove RCS, CVS, SCCS, SRC, and Bzr, because it's a lot less work for vc to
+;; check them all (especially in TRAMP buffers), and who uses any of these in
+;; 2021, amirite? 
+;; NOTE I dont use svn and hg
+(setq-default vc-handled-backends '(Git))
+
 ;; enable hideshow in all programming modes
 (use-package hideshow
   :config
