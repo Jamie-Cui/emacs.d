@@ -55,6 +55,7 @@ Have tree-sitter problem? see: [[https://www.reddit.com/r/emacs/comments/1e57kzy
 #+end_src
 
 ** C/C++ Dev Tools
+
 - clangd, clang-format, clang-tidy
 #+begin_src bash 
 # ubuntu
@@ -82,7 +83,6 @@ cd ctags
 make
 make install
 #+end_src
-
 
 ** Others
 

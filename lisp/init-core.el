@@ -87,7 +87,6 @@
   (citre-default-create-tags-file-location 'global-cache)
   (citre-edit-ctags-options-manually nil)
   (citre-auto-enable-citre-mode-modes '(prog-mode))
-  (projectile-tags-backend 'xref)
   :config
   (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
 
