@@ -78,14 +78,16 @@
 
 (use-package citre
   :ensure t
+  :after (eglot projectile)
   :init
   ;; This is needed in `:init' block for lazy load to work.
   (require 'citre-config)
-  :config
-  (setq citre-project-root-function #'projectile-project-root
-        citre-default-create-tags-file-location 'global-cache
-        citre-edit-ctags-options-manually nil
-        citre-auto-enable-citre-mode-modes '(prog-mode)))
+  :custom
+  (citre-project-root-function #'projectile-project-root)
+  (citre-default-create-tags-file-location 'global-cache)
+  (citre-edit-ctags-options-manually nil)
+  (citre-auto-enable-citre-mode-modes '(prog-mode))
+  (projectile-tags-backend 'xref))
 
 (use-package pangu-spacing
   :ensure t
