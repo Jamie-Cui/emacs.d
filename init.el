@@ -97,6 +97,8 @@
 ;; modes and thems that does not require additional config
 (+package/ensure-install-and-use 
  '(
+   ;; docker
+   docker
    ;; modes
    protobuf-mode
    meson-mode
