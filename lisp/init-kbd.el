@@ -219,6 +219,7 @@
     "si"     #'consult-imenu ;; search item
     "sh"     #'consult-history ;; search history
     "ss"     #'consult-locate ;; system wide search
+    "sI"     #'projectile-find-tag
     )
 
   ;; deft mode map
