@@ -73,6 +73,17 @@ pip3 install cpplint
 pip3 install cmake-format
 #+end_src
 
+- ctags, see: https://github.com/universal-ctags/ctags
+#+begin_src bash
+git clone https://github.com/universal-ctags/ctags.git
+cd ctags
+./autogen.sh
+./configure --prefix=$HOME/.local
+make
+make install
+#+end_src
+
+
 ** Others
 
 #+begin_src bash

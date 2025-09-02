@@ -65,17 +65,17 @@
   (general-define-key
    :keymaps 'override
    "M-i"     #'completion-at-point
-   "M-u"     #'nil
+   "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
    "M-y"     #'yas-expand
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-f"     #'consult-line ; search like mac
    "M-a"     #'mark-whole-buffer ; select like mac
    "M-s"     #'save-buffer ; save like mac
    "M-v"     #'evil-paste-after ; paste like mac
-   "M-h"     #'nil
+   "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
    "M-j"     #'move-text-down
    "M-k"     #'move-text-up
-   "M-l"     #'nil
+   "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
@@ -156,6 +156,7 @@
     "pc"     #'projectile-compile-project 
     "pt"     #'projectile-test-project 
     "pr"     #'projectile-run-project 
+    "pr"     #'projectile-regenerate-tags
     "pb"     #'consult-project-buffer 
     "pi"     #'projectile-invalidate-cache
     "pf"     #'+vertico/project-search
@@ -232,7 +233,7 @@
     "d" #'deft-delete-file
     "g" #'deft-refresh
     )
-  
+
   ;; org mode map
   (+my-local-leader-def
     :keymaps 'org-mode-map
