@@ -72,12 +72,20 @@
    pangu-spacing
    ;; chinese s alignment, or valign (maybe?)
    cnfonts
-   ;; docker
-   docker
+   ;; better tags support
+   citre
    ))
 
-(use-package docker
-  :ensure t)
+(use-package citre
+  :ensure t
+  :init
+  ;; This is needed in `:init' block for lazy load to work.
+  (require 'citre-config)
+  :config
+  (setq citre-project-root-function #'projectile-project-root
+        citre-default-create-tags-file-location 'global-cache
+        citre-edit-ctags-options-manually nil
+        citre-auto-enable-citre-mode-modes '(prog-mode)))
 
 (use-package pangu-spacing
   :ensure t
@@ -174,19 +182,19 @@
      ;;
      (help-mode :position bottom :stick t)
      (helpful-mode :position bottom :stick t)
+     (Man-mode :position bottom :stick t)
      ("*Flycheck errors*" :position bottom :stick t)
      ("*Messages*" :position bottom :stick t)
      ("*LLM response*" :position bottom :stick t)
      ;;
-     ;; right (long context, and you may need to write something)
+     ;; bottom (long context, and you may need to write something)
      ;;
-     ("*scratch*" :position right :stick t)
-     ;; (compilation-mode :position right :stick t :tail t)
+     ("*scratch*" :position bottom :stick t)
      ((lambda (b) ; predicate for gptel buffer
         ;; NOTE: buffer check is required (#450)
         (and-let* ((buf (get-buffer (or (car-safe b) b))))
           (buffer-local-value 'gptel-mode buf)))
-      :position right :stick t :tail t)
+      :position bottom :stick t :tail t)
      ;;
      ;; FIXME claude-code uses full frame, temp
      ;; (claude-code--buffer-p :position right :stick t)
@@ -446,6 +454,8 @@
   )
 
 ;; projectile
+;; see: https://docs.projectile.mx/projectile/configuration.html#regenerate-tags
+;; should use: https://github.com/universal-ctags/ctags
 (use-package projectile
   :ensure t
   :custom
