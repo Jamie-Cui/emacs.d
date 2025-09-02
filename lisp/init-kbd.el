@@ -156,7 +156,6 @@
     "pc"     #'projectile-compile-project 
     "pt"     #'projectile-test-project 
     "pr"     #'projectile-run-project 
-    "pr"     #'projectile-regenerate-tags
     "pb"     #'consult-project-buffer 
     "pi"     #'projectile-invalidate-cache
     "pf"     #'+vertico/project-search
@@ -212,7 +211,9 @@
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
     "cc"     #'compile
+    "cC"     #'citre-create-tags-file
     "cr"     #'eglot-rename
+    "cR"     #'citre-update-this-tags-file
     "cf"     #'eglot-format-buffer
     "cj"     #'consult-eglot-symbols
     ;; search
@@ -220,7 +221,6 @@
     "si"     #'consult-imenu ;; search item
     "sh"     #'consult-history ;; search history
     "ss"     #'consult-locate ;; system wide search
-    "sI"     #'projectile-find-tag
     )
 
   ;; deft mode map
