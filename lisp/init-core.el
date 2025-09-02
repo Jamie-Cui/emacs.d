@@ -396,10 +396,10 @@
 (use-package eglot
   :ensure t
   :config
-  (add-hook 'c-ts-mode-hook 'eglot-ensure)
-  (add-hook 'c++-ts-mode-hook 'eglot-ensure)
-  (add-hook 'rust-ts-mode-hook 'eglot-ensure)
-  (add-hook 'go-ts-mode-hook 'eglot-ensure)
+  ;; (add-hook 'c-ts-mode-hook 'eglot-ensure)
+  ;; (add-hook 'c++-ts-mode-hook 'eglot-ensure)
+  ;; (add-hook 'rust-ts-mode-hook 'eglot-ensure)
+  ;; (add-hook 'go-ts-mode-hook 'eglot-ensure)
   (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
   (setq eglot-confirm-server-initiated-edits nil)
   )
