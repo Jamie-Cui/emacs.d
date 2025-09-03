@@ -352,9 +352,10 @@
         hl-todo-keyword-faces
         '(("TODO" warning bold) ;; require action
           ("DEPRECATED" warning bold) ;; require action
-          ("REVIEW" warning bold) ;; require action
+          ("REVIEW" warning bold) ;; require action (review)
           ("HACK" font-lock-keyword-face bold) ;; require notice
           ("NOTE" font-lock-keyword-face bold) ;; require notice
+          ("TEMP" font-lock-keyword-face bold) ;; require notice
           ("DONE" success bold)
           ("FIXME" error bold) ;; require immediate action
           ("BUG" error bold) ;; require immediate action
