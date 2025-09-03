@@ -350,14 +350,14 @@
   (global-hl-todo-mode 1)
   (setq hl-todo-highlight-punctuation ":"
         hl-todo-keyword-faces
-        '(("TODO" warning bold)
-          ("FIXME" error bold)
-          ("REVIEW" font-lock-keyword-face bold)
-          ("HACK" font-lock-constant-face bold)
-          ("DEPRECATED" font-lock-doc-face bold)
-          ("NOTE" success bold)
+        '(("TODO" warning bold) ;; require action
+          ("DEPRECATED" warning bold) ;; require action
+          ("REVIEW" warning bold) ;; require action
+          ("HACK" font-lock-keyword-face bold) ;; require notice
+          ("NOTE" font-lock-keyword-face bold) ;; require notice
           ("DONE" success bold)
-          ("BUG" error bold)
+          ("FIXME" error bold) ;; require immediate action
+          ("BUG" error bold) ;; require immediate action
           )))
 
 (use-package corfu
