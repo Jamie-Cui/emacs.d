@@ -149,7 +149,7 @@
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project
-    "pD"     #'projectile-remove-known-project
+    "px"     #'projectile-remove-known-project
     "pd"     #'projectile-run-gdb
     "pp"     #'projectile-switch-project
     "pC"     #'projectile-configure-project 
