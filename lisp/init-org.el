@@ -80,6 +80,7 @@
   (org-latex-engraved-theme 't)
   (org-latex-packages-alist 
    '(
+	 ("" "parskip" t)
      ("" "xeCJK" t)
      ("" "booktabs" t)
 	 ("margin=1.5cm" "geometry" t)
