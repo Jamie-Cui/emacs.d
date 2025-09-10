@@ -58,7 +58,7 @@
    smartparens
    ;; popup window
    popwin
-   ;; sudo-edit
+   ;; edit files with sudo (works over tramp)
    sudo-edit
    ;; dired
    dired-subtree
@@ -74,7 +74,15 @@
    cnfonts
    ;; better tags support
    citre
+   ;; highlight indent
+   highlight-indentation 
    ))
+
+(use-package highlight-indentation
+  :ensure t
+  :config
+  (highlight-indentation-mode 1)
+  )
 
 (use-package citre
   :ensure t
