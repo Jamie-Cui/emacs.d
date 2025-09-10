@@ -67,7 +67,7 @@
    ;; disable mouse 
    inhibit-mouse
    ;; modeline 
-   doom-modeline
+   ;; doom-modeline
    ;; chinese spacing
    pangu-spacing
    ;; chinese s alignment, or valign (maybe?)
@@ -146,22 +146,22 @@
   :ensure t
   :hook (vertico-mode . vertico-posframe-mode))
 
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-buffer-file-name-style 'relative-from-project)
-  (setq doom-modeline-icon nil) ; no icon
-  (setq doom-modeline-major-mode-icon nil)
-  (setq doom-modeline-major-mode-color-icon nil)
-  (setq doom-modeline-buffer-state-icon nil)
-  (setq doom-modeline-buffer-modification-icon nil)
-  (setq doom-modeline-lsp-icon nil)
-  (setq doom-modeline-time-icon nil)
-  (setq doom-modeline-time-live-icon nil)
-  (setq doom-modeline-modal-icon nil) ; no icon
-  (setq doom-modeline-modal-modern-icon nil) ; no icon
-  )
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :init (doom-modeline-mode 1)
+;;   :config
+;;   (setq doom-modeline-buffer-file-name-style 'relative-from-project)
+;;   (setq doom-modeline-icon nil) ; no icon
+;;   (setq doom-modeline-major-mode-icon nil)
+;;   (setq doom-modeline-major-mode-color-icon nil)
+;;   (setq doom-modeline-buffer-state-icon nil)
+;;   (setq doom-modeline-buffer-modification-icon nil)
+;;   (setq doom-modeline-lsp-icon nil)
+;;   (setq doom-modeline-time-icon nil)
+;;   (setq doom-modeline-time-live-icon nil)
+;;   (setq doom-modeline-modal-icon nil) ; no icon
+;;   (setq doom-modeline-modal-modern-icon nil) ; no icon
+;;   )
 
 (use-package inhibit-mouse
   :ensure t
@@ -496,7 +496,7 @@
   :config
   (defun +projectile-project-name--lower-case (project-root)
     (downcase (file-name-nondirectory (directory-file-name project-root))))
-  (projectile-mode +1)
+  (projectile-global-mode +1)
   )
 
 ;; helpful

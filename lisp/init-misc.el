@@ -306,17 +306,71 @@
 (add-to-list 'find-sibling-rules
              '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
 
-;; ;; ------------------------------------------------------------------
-;; ;;; Modeline 
-;; ;; ------------------------------------------------------------------
+;; ------------------------------------------------------------------
+;;; Modeline 
+;; ------------------------------------------------------------------
 
-;; ;; make evil at the very front
-;; (setopt evil-mode-line-format '(before . mode-line-front-space))
+;; evil
+(setopt evil-mode-line-format '(before . mode-line-front-space))
 
-;; ;; remove major and minior modes
-;; (setopt mode-line-format (remove 'mode-line-modes mode-line-format))
+;; projectile
+(setopt projectile-mode-line-prefix "")
+(setopt projectile-mode-line-function '+projectile/mode-line)
 
-;; ;; remove trailing dashes
-;; (setopt mode-line-end-spaces nil)
+;; custom
+(defun +projectile/mode-line ()
+  "Report project name and type in the modeline."
+  (let ((project-name (projectile-project-name)))
+    (format "%s[%s]"
+            projectile-mode-line-prefix
+            (or project-name "-")
+            )))
+
+;; remove trailing dashes
+(setopt mode-line-end-spaces nil)
+
+;; mode-line format
+(setopt mode-line-format
+        (list
+         ;; Error indicator
+         "%e" 
+         ;;
+         'mode-line-front-space
+         ;;
+         '(:propertize
+           ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
+            mode-line-window-dedicated)
+           display (min-width (6.0)))
+         ;;
+         'mode-line-frame-identification
+         ;;
+         'mode-line-buffer-identification
+         ;;
+         "   "
+         ;;
+         'projectile--mode-line
+         ;;
+         "   "
+         ;;
+         'mode-line-position
+         ;;
+         ;; REVIEW do not display version info
+         ;; '(vc-mode vc-mode)
+         ;;
+         "  "
+         ;; right align start
+         'mode-line-format-right-align
+         ;;
+         'mode-line-misc-info
+         ;;
+         "  "
+         ;; mode-line-modes 
+         'mode-name
+         ;;
+         'mode-line-end-spaces
+         ;;
+         "  "
+         )
+        )
 
 (provide 'init-misc)
