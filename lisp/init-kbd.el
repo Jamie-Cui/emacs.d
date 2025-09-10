@@ -203,6 +203,7 @@
     "tF"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
     "tn"     #'display-line-numbers-mode
+    "ti"     #'+highlight-indentation/toggle-mode
     "tm"     #'+inhibit-mouse/toggle-mode
     "tM"     #'+org-imgtog/toggle
     "ta"     #'+treesit-auto/toggle
