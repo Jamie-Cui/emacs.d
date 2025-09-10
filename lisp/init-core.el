@@ -76,7 +76,12 @@
    citre
    ;; highlight indent
    highlight-indentation 
+   ;; expand region increases the selected region by semantic units
+   expand-region
    ))
+
+(use-package expand-region
+  :ensure t)
 
 (use-package highlight-indentation
   :ensure t
