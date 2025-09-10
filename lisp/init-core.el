@@ -83,7 +83,18 @@
   :custom
   (highlight-indentation-blank-lines t)
   :config
-  (add-hook 'prog-mode-hook 'highlight-indentation-mode))
+  (defun +highlight-indentation/toggle-mode ()
+    "Toggle highlight-indentation"
+    (interactive)
+    (if highlight-indentation-mode
+        (progn
+          (highlight-indentation-mode -1)
+          (remove-hook 'prog-mode-hook 'highlight-indentation-mode)
+          (message "highlight-indentation disabled"))
+      (progn
+        (highlight-indentation-mode 1)
+        (add-hook 'prog-mode-hook 'highlight-indentation-mode)
+        (message "highlight-indentation enabled")))))
 
 (use-package citre
   :ensure t
