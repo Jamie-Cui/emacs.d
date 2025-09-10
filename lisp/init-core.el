@@ -81,8 +81,7 @@
 (use-package highlight-indentation
   :ensure t
   :config
-  (highlight-indentation-mode 1)
-  )
+  (add-hook 'prog-mode-hook 'highlight-indentation-mode))
 
 (use-package citre
   :ensure t
