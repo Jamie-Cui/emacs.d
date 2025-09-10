@@ -314,17 +314,13 @@
 (setopt evil-mode-line-format '(before . mode-line-front-space))
 
 ;; projectile
-(setopt projectile-mode-line-prefix "")
 (setopt projectile-mode-line-function '+projectile/mode-line)
 
 ;; custom
 (defun +projectile/mode-line ()
   "Report project name and type in the modeline."
   (let ((project-name (projectile-project-name)))
-    (format "%s[%s]"
-            projectile-mode-line-prefix
-            (or project-name "-")
-            )))
+    (format "proj:[%s]" (or project-name "-"))))
 
 ;; remove trailing dashes
 (setopt mode-line-end-spaces nil)
@@ -337,18 +333,20 @@
          ;;
          'mode-line-front-space
          ;;
-         '(:propertize
-           ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
-            mode-line-window-dedicated)
-           display (min-width (6.0)))
+         ;; '(:propertize
+         ;;   ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
+         ;;    mode-line-window-dedicated)
+         ;;   display (min-width (6.0)))
          ;;
          'mode-line-frame-identification
          ;;
-         'mode-line-buffer-identification
+         ;; 'mode-line-buffer-identification
+         ;; HACK
+         '(:propertize 
+           (:eval (concat (projectile-project-name) "/" (file-relative-name buffer-file-name (projectile-project-root))))
+           face mode-line-buffer-id
+           )
          ;;
-         "   "
-         ;;
-         'projectile--mode-line
          ;;
          "   "
          ;;
@@ -357,6 +355,9 @@
          ;; REVIEW do not display version info
          ;; '(vc-mode vc-mode)
          ;;
+         "   "
+         ;;
+         'projectile--mode-line
          "  "
          ;; right align start
          'mode-line-format-right-align
