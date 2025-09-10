@@ -306,4 +306,17 @@
 (add-to-list 'find-sibling-rules
              '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
 
+;; ;; ------------------------------------------------------------------
+;; ;;; Modeline 
+;; ;; ------------------------------------------------------------------
+
+;; ;; make evil at the very front
+;; (setopt evil-mode-line-format '(before . mode-line-front-space))
+
+;; ;; remove major and minior modes
+;; (setopt mode-line-format (remove 'mode-line-modes mode-line-format))
+
+;; ;; remove trailing dashes
+;; (setopt mode-line-end-spaces nil)
+
 (provide 'init-misc)
