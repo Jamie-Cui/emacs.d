@@ -72,6 +72,7 @@
    "M-a"     #'mark-whole-buffer ; select like mac
    "M-s"     #'save-buffer ; save like mac
    "M-v"     #'evil-paste-after ; paste like mac
+   "M-e"     #'er/expand-region ; expand region selection, in case you dont like evil
    "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
    "M-j"     #'move-text-down
    "M-k"     #'move-text-up
