@@ -80,6 +80,8 @@
 
 (use-package highlight-indentation
   :ensure t
+  :custom
+  (highlight-indentation-blank-lines t)
   :config
   (add-hook 'prog-mode-hook 'highlight-indentation-mode))
 
