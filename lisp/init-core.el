@@ -243,10 +243,14 @@
   :custom 
   (persp-suppress-no-prefix-key-warning t)
   (persp-sort 'created)
-  (persp-modestring-dividers '("[" "]" "|"))
-  (persp-show-modestring 't)
+  (persp-modestring-dividers '("[" "]" "] ["))
+  (persp-show-modestring 'header)
   :init
   (persp-mode)
+  :config
+  (set-face-attribute 'persp-selected-face nil
+                      :foreground "green"
+                      :weight 'bold)
   )
 
 (use-package yasnippet
