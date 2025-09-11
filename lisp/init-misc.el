@@ -335,13 +335,16 @@
          ;;
          ;; 'mode-line-buffer-identification
          ;;
-         ;; HACK
-         ;;
          "   "
-         '(:propertize 
-           (:eval (concat (projectile-project-name) "/" (file-relative-name buffer-file-name (projectile-project-root))))
-           face mode-line-buffer-id)
-         ;;
+         ;; HACK
+         '(:eval (format-mode-line 
+                  (propertized-buffer-identification 
+                   (or (when-let* ((buffer-file-truename buffer-file-truename)
+                                   (project (cdr-safe (project-current)))
+                                   (project-parent (file-name-directory (directory-file-name (expand-file-name project)))))
+                         (concat (file-relative-name (file-name-directory buffer-file-truename) project-parent)
+                                 (file-name-nondirectory buffer-file-truename)))
+                       "%b"))))
          ;;
          "   "
          ;;
@@ -361,11 +364,6 @@
          " "
          ;; mode-line-modes 
          'mode-name
-         ;;
-         ;; '(:propertize
-         ;;   ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
-         ;;    mode-line-window-dedicated)
-         ;;   display (min-width (6.0)))
          ;;
          'mode-line-end-spaces
          ;;
