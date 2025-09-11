@@ -337,13 +337,13 @@
          ;;
          ;; HACK
          ;;
-         " "
+         "   "
          '(:propertize 
            (:eval (concat (projectile-project-name) "/" (file-relative-name buffer-file-name (projectile-project-root))))
            face mode-line-buffer-id)
          ;;
          ;;
-         " "
+         "   "
          ;;
          'mode-line-position
          ;;
@@ -356,7 +356,7 @@
          'mode-line-misc-info
          ;;
          " "
-         '(:eval (format "%s" buffer-file-coding-system))
+         '(:eval (symbol-name buffer-file-coding-system))
          ;;
          " "
          ;; mode-line-modes 
