@@ -662,7 +662,7 @@ in the search."
 (defun +persp/prev ()
   "Like persp-prev, but show additional message in each area."
   (interactive)
-  (let ((sep (nth 2 persp-modestring-dividers)))
+  (let ((message-log-max nil))
     (persp-prev)
     (message (mapconcat 'identity 
                         (mapcar '+persp/format-name-as-in-echo
@@ -671,8 +671,17 @@ in the search."
 (defun +persp/next ()
   "Like persp-next, but show additional message in each area."
   (interactive)
-  (let ((sep (nth 2 persp-modestring-dividers)))
+  (let ((message-log-max nil))
     (persp-next)
+    (message (mapconcat 'identity 
+                        (mapcar '+persp/format-name-as-in-echo
+                                (persp-names))))))
+
+;; HACK kill current persp without asking
+(defun +persp/kill-current-workspace ()
+  (interactive)
+  (let ((message-log-max nil))
+    (persp-kill (persp-current-name))
     (message (mapconcat 'identity 
                         (mapcar '+persp/format-name-as-in-echo
                                 (persp-names))))))
