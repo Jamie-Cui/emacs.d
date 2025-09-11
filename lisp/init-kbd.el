@@ -41,21 +41,12 @@
 
   (general-create-definer +my-local-leader-def
     :prefix my-local-leader)
-  
+
   ;; HACK always get a new eat terminal
   (defun +eat/new ()
     (interactive)
     (let ((current-prefix-arg '(t)))
       (call-interactively 'eat)))
-
-  ;; HACK kill current persp without asking
-  (defun +persp/kill-current-workspace ()
-    (interactive)
-    (let ((sep (nth 2 persp-modestring-dividers)))
-      (persp-kill (persp-current-name))
-      (message (mapconcat 'identity 
-                          (mapcar '+persp/format-name-as-in-echo
-                                  (persp-names))))))
 
   (defun +compilation/open-projectile-compilation-buffer ()
     (interactive)
