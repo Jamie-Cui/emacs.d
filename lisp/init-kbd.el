@@ -81,8 +81,8 @@
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
-   "C-h"     #'persp-prev
-   "C-l"     #'persp-next
+   "C-h"     #'+persp/prev
+   "C-l"     #'+persp/next
    "C-M-h"   #'+persp/move-buffer-prev
    "C-M-l"   #'+persp/move-buffer-next)
   ;; ** Global Keybindings
