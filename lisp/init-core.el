@@ -244,7 +244,7 @@
   (persp-suppress-no-prefix-key-warning t)
   (persp-sort 'created)
   (persp-modestring-dividers '("[" "]" "] ["))
-  (persp-show-modestring 'header)
+  (persp-show-modestring 'nil)
   :init
   (persp-mode)
   :config
@@ -652,6 +652,32 @@ in the search."
   "Revert buffer without confirmation."
   (interactive) (revert-buffer t t))
 
+(defun +persp/format-name-as-in-echo (name)
+  "Format the perspective name given by NAME for display in the echo area."
+  (if (equal name (persp-current-name))
+      (setq name (format "[%s]" name)) 
+    (setq name (format "%s" name)) 
+    ))
+
+(defun +persp/prev ()
+  "Like persp-prev, but show additional message in each area."
+  (interactive)
+  (let ((sep (nth 2 persp-modestring-dividers)))
+    (persp-prev)
+    (message (mapconcat 'identity 
+                        (mapcar '+persp/format-name-as-in-echo
+                                (persp-names)) 
+                        " "))))
+
+(defun +persp/next ()
+  "Like persp-next, but show additional message in each area."
+  (interactive)
+  (let ((sep (nth 2 persp-modestring-dividers)))
+    (persp-next)
+    (message (mapconcat 'identity 
+                        (mapcar '+persp/format-name-as-in-echo
+                                (persp-names))
+                        " "))))
 
 (defun +persp/move-buffer-prev ()
   "Like persp-prev, but move current."
