@@ -313,63 +313,60 @@
 ;; evil
 (setopt evil-mode-line-format '(before . mode-line-front-space))
 
-;; projectile
-;; (setopt projectile-mode-line-function '+projectile/mode-line)
-
-;; custom
-;; (defun +projectile/mode-line ()
-;;   "Report project name and type in the modeline."
-;;   (let ((project-name (projectile-project-name)))
-;;     (format "proj:[%s]" (or project-name "-"))))
+;; turn on column-number on modeline
+;; (column-number-mode 1)
+;; (setopt mode-line-position-column-line-format '("%l:%c"))
 
 ;; remove trailing dashes
 (setopt mode-line-end-spaces nil)
+(setopt mode-line-front-space nil)
 
 ;; mode-line format
 (setopt mode-line-format
         (list
-         ;; Error indicator
+         ;; ?
          "%e" 
          ;;
          'mode-line-front-space
+         ;; 
+         '(:eval (format "%s" (count-lines (point-min) (point-max))))
          ;;
-         ;; '(:propertize
-         ;;   ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
-         ;;    mode-line-window-dedicated)
-         ;;   display (min-width (6.0)))
-         ;;
-         'mode-line-frame-identification
+         ;; 'mode-line-frame-identification
          ;;
          ;; 'mode-line-buffer-identification
+         ;;
          ;; HACK
+         ;;
+         " "
          '(:propertize 
            (:eval (concat (projectile-project-name) "/" (file-relative-name buffer-file-name (projectile-project-root))))
            face mode-line-buffer-id)
          ;;
          ;;
-         "   "
+         " "
          ;;
          'mode-line-position
          ;;
          ;; REVIEW do not display version info
          ;; '(vc-mode vc-mode)
          ;;
-         "   "
-         ;;
-         ;; 'projectile--mode-line
-         "  "
          ;; right align start
          'mode-line-format-right-align
          ;;
          'mode-line-misc-info
          ;;
-         "  "
+         " "
          ;; mode-line-modes 
          'mode-name
          ;;
+         '(:propertize
+           ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
+            mode-line-window-dedicated)
+           display (min-width (6.0)))
+         ;;
          'mode-line-end-spaces
          ;;
-         "  "
+         " "
          )
         )
 
