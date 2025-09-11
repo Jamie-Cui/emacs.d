@@ -248,10 +248,7 @@
   :init
   (persp-mode)
   :config
-  (set-face-attribute 'persp-selected-face nil
-                      :foreground "green"
-                      :weight 'bold)
-  )
+  (put 'persp-selected-face 'face-alias 'success))
 
 (use-package yasnippet
   :ensure t
