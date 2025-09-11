@@ -656,7 +656,7 @@ in the search."
   "Format the perspective name given by NAME for display in the echo area."
   (if (equal name (persp-current-name))
       (setq name (format "[%s]" name)) 
-    (setq name (format "%s" name)) 
+    (setq name (format " %s " name)) 
     ))
 
 (defun +persp/prev ()
@@ -666,8 +666,7 @@ in the search."
     (persp-prev)
     (message (mapconcat 'identity 
                         (mapcar '+persp/format-name-as-in-echo
-                                (persp-names)) 
-                        " "))))
+                                (persp-names))))))
 
 (defun +persp/next ()
   "Like persp-next, but show additional message in each area."
@@ -676,8 +675,7 @@ in the search."
     (persp-next)
     (message (mapconcat 'identity 
                         (mapcar '+persp/format-name-as-in-echo
-                                (persp-names))
-                        " "))))
+                                (persp-names))))))
 
 (defun +persp/move-buffer-prev ()
   "Like persp-prev, but move current."
