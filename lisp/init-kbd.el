@@ -51,7 +51,11 @@
   ;; HACK kill current persp without asking
   (defun +persp/kill-current-workspace ()
     (interactive)
-    (persp-kill (persp-current-name)))
+    (let ((sep (nth 2 persp-modestring-dividers)))
+      (persp-kill (persp-current-name))
+      (message (mapconcat 'identity 
+                          (mapcar '+persp/format-name-as-in-echo
+                                  (persp-names))))))
 
   (defun +compilation/open-projectile-compilation-buffer ()
     (interactive)
