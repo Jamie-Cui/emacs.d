@@ -356,13 +356,16 @@
          'mode-line-misc-info
          ;;
          " "
+         '(:eval (format "%s" buffer-file-coding-system))
+         ;;
+         " "
          ;; mode-line-modes 
          'mode-name
          ;;
-         '(:propertize
-           ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
-            mode-line-window-dedicated)
-           display (min-width (6.0)))
+         ;; '(:propertize
+         ;;   ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
+         ;;    mode-line-window-dedicated)
+         ;;   display (min-width (6.0)))
          ;;
          'mode-line-end-spaces
          ;;
