@@ -202,6 +202,7 @@
     ;; toggles
     "t" '(:ignore t :which-key "toggle")
     "th"     #'hs-hide-level
+    "tH"     #'hexl-mode
     "tb"     #'magit-blame-addition
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen
