@@ -704,7 +704,7 @@ in the search."
     (persp-switch-to-buffer tmp-buffer))
   (+persp/show-name-in-echo))
 
-;; TODO let C-g (or anything that sends a 'quit signal to show the persp names)
-;; (put 'quit 'error-message (+persp/show-name-in-echo))
+;; let C-g (or anything that sends a 'quit signal to show the persp names)
+(advice-add 'keyboard-quit :before #'(lambda () (put 'quit 'error-message (+persp/show-name-in-echo))))
 
 (provide 'init-core)
