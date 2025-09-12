@@ -659,32 +659,30 @@ in the search."
     (setq name (format " %s " name)) 
     ))
 
-(defun +persp/prev ()
-  "Like persp-prev, but show additional message in each area."
-  (interactive)
+(defun +persp/show-name-in-echo ()
+  "Show persp names in the echo area."
   (let ((message-log-max nil))
-    (persp-prev)
     (message (mapconcat 'identity 
                         (mapcar '+persp/format-name-as-in-echo
                                 (persp-names))))))
+
+(defun +persp/prev ()
+  "Like persp-prev, but show additional message in each area."
+  (interactive)
+  (persp-prev)
+  (+persp/show-name-in-echo))
 
 (defun +persp/next ()
   "Like persp-next, but show additional message in each area."
   (interactive)
-  (let ((message-log-max nil))
-    (persp-next)
-    (message (mapconcat 'identity 
-                        (mapcar '+persp/format-name-as-in-echo
-                                (persp-names))))))
+  (persp-next)
+  (+persp/show-name-in-echo))
 
 ;; HACK kill current persp without asking
 (defun +persp/kill-current-workspace ()
   (interactive)
-  (let ((message-log-max nil))
-    (persp-kill (persp-current-name))
-    (message (mapconcat 'identity 
-                        (mapcar '+persp/format-name-as-in-echo
-                                (persp-names))))))
+  (persp-kill (persp-current-name))
+  (+persp/show-name-in-echo))
 
 (defun +persp/move-buffer-prev ()
   "Like persp-prev, but move current."
@@ -694,7 +692,7 @@ in the search."
     (persp-prev)
     (persp-set-buffer tmp-buffer)
     (persp-switch-to-buffer tmp-buffer))
-  )
+  (+persp/show-name-in-echo))
 
 (defun +persp/move-buffer-next ()
   "Like persp-next, but move current."
@@ -704,6 +702,9 @@ in the search."
     (persp-next)
     (persp-set-buffer tmp-buffer)
     (persp-switch-to-buffer tmp-buffer))
-  )
+  (+persp/show-name-in-echo))
+
+;; let C-g (or anything that sends a 'quit signal to show the persp names)
+(put 'quit 'error-message (+persp/show-name-in-echo))
 
 (provide 'init-core)
