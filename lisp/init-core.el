@@ -101,6 +101,10 @@
         (add-hook 'prog-mode-hook 'highlight-indentation-mode)
         (message "highlight-indentation enabled")))))
 
+;; indexing tools:
+;;    universal ctags: https://github.com/universal-ctags/ctags
+;;    gtags: https://github.com/universal-ctags/ctags
+;;    eglot: built-in with modern emacs, uses external lsp servers
 (use-package citre
   :ensure t
   :after (eglot projectile)
@@ -485,7 +489,6 @@
 
 ;; projectile
 ;; see: https://docs.projectile.mx/projectile/configuration.html#regenerate-tags
-;; should use: https://github.com/universal-ctags/ctags
 (use-package projectile
   :ensure t
   :custom
