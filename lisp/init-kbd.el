@@ -56,6 +56,13 @@
         (call-interactively 'projectile-compile-project))
       ))
 
+  ;; tweak evil default key bindings
+  (general-define-key 
+   :keymaps 'override
+   :states 'motion
+   "gD"      #'citre-jump
+   "gR"      #'citre-jump-to-reference)
+
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
