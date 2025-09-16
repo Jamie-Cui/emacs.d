@@ -221,12 +221,12 @@
      ;;
      ;; bottom (long context, and you may need to write something)
      ;;
-     ("*scratch*" :position bottom :stick t :dedicated t)
-     ((lambda (b) ; predicate for gptel buffer
-        ;; NOTE: buffer check is required (#450)
-        (and-let* ((buf (get-buffer (or (car-safe b) b))))
-          (buffer-local-value 'gptel-mode buf)))
-      :position bottom :stick t :tail t :dedicated t)
+     ;; ("*scratch*" :position bottom :stick t :dedicated t)
+     ;; ((lambda (b) ; predicate for gptel buffer
+     ;;    ;; NOTE: buffer check is required (#450)
+     ;;    (and-let* ((buf (get-buffer (or (car-safe b) b))))
+     ;;      (buffer-local-value 'gptel-mode buf)))
+     ;;  :position bottom :stick t :tail t :dedicated t)
      ;;
      ;; FIXME claude-code uses full frame, temp
      ;; (claude-code--buffer-p :position right :stick t)
