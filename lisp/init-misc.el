@@ -237,17 +237,18 @@
         (lambda nil
           (let* ((cwd (abbreviate-file-name (eshell/pwd)))
                  (x-stat eshell-last-command-status))
-            (propertize
-             (format "%s %s $ "
-                     (if (< 0 x-stat)
-                         (format (propertize "!%s" 'font-lock-face 
-                                             '(:foreground "red")) x-stat)
-                       (propertize "➤" 'font-lock-face 
-                                   (list :foreground (if (< 0 x-stat) "red" "green"))))
-                     (propertize cwd 'font-lock-face '(:foreground "#45babf")))
-             'read-only t
-             'front-sticky   '(font-lock-face read-only)
-             'rear-nonsticky '(font-lock-face read-only)))))
+            (concat (propertize
+                     (format "%s %s"
+                             (if (< 0 x-stat)
+                                 (format (propertize "!%s" 'font-lock-face 
+                                                     '(:foreground "red")) x-stat)
+                               (propertize "➤" 'font-lock-face 
+                                           (list :foreground (if (< 0 x-stat) "red" "green"))))
+                             (propertize cwd 'font-lock-face '(:foreground "#45babf")))
+                     'read-only t
+                     'front-sticky   '(font-lock-face read-only)
+                     'rear-nonsticky '(font-lock-face read-only)) " ")
+            )))
 
 (setopt eshell-banner-message
         '(format "%s %s\n"
