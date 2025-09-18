@@ -62,6 +62,8 @@
    sudo-edit
    ;; dired
    dired-subtree
+   ;; dired show folder size (recursively!)
+   dired-du
    ;; colored dired
    diredfl 
    ;; disable mouse 
@@ -79,6 +81,14 @@
    ;; expand region increases the selected region by semantic units
    expand-region
    ))
+
+(use-package dired-du
+  :ensure t
+  :custom
+  (dired-du-size-format t)
+  :config
+  (add-hook 'dired-mode-hook #'dired-du-mode)
+  )
 
 (use-package expand-region
   :ensure t)
