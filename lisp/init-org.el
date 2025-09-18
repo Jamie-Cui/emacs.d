@@ -32,21 +32,6 @@
    xenops
    ))
 
-;; DEPRECATED I'm considering drop this package
-(use-package org-imgtog
-  :disabled
-  :load-path (lambda () (concat +emacs/repo-directory "/thirdparty/org-imgtog"))
-  :config
-  (defun +org-imgtog/toggle ()
-    "Toggle global-treesit-auto-mode."
-    (interactive)
-    (if org-imgtog-mode
-        (progn
-          (org-imgtog-mode -1)
-          (message "org-imgtog-mode disabled"))
-      (org-imgtog-mode 1)
-      (message "org-imgtog-mode enabled"))))
-
 (use-package org
   :custom
   ;; general

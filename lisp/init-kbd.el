@@ -204,6 +204,7 @@
     "th"     #'hs-hide-level
     "tH"     #'hexl-mode
     "tb"     #'magit-blame-addition
+    "td"     #'+dired-du/toggle-mode
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines

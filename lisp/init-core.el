@@ -83,10 +83,7 @@
 (use-package dired-du
   :ensure t
   :custom
-  (dired-du-size-format t)
-  :config
-  (add-hook 'dired-mode-hook #'dired-du-mode)
-  )
+  (dired-du-size-format t))
 
 (use-package expand-region
   :ensure t)

@@ -1,12 +1,3 @@
-[submodule "thirdparty/org-imgtog"]
-	path = thirdparty/org-imgtog
-	url = https://github.com/gaoDean/org-imgtog
-[submodule "thirdparty/ultra-scroll"]
-	path = thirdparty/ultra-scroll
-	url = https://github.com/jdtsmith/ultra-scroll
 [submodule "thirdparty/claude-code.el"]
 	path = thirdparty/claude-code.el
 	url = https://github.com/Jamie-Cui/claude-code.el
-[submodule "thirdparty/eaf"]
-	path = thirdparty/eaf
-	url = https://github.com/emacs-eaf/emacs-application-framework.git

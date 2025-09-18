@@ -14,7 +14,7 @@
 
   ;; site-lisp
   (use-package ultra-scroll
-    :load-path (lambda () (concat +emacs/repo-directory "/thirdparty/ultra-scroll"))
+    :ensure t
     :init
     (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
           scroll-margin 0)        ; important: scroll-margin>0 not yet supported
