@@ -80,6 +80,10 @@
    expand-region
    ))
 
+(use-package consult-citre
+  :after consult
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
+
 (use-package dired-du
   :ensure t
   :custom
