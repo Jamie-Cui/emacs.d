@@ -396,8 +396,7 @@
 
   ;; use corfu in eshell
   (add-hook 'eshell-mode-hook (lambda ()
-                                (setq-local corfu-auto nil)
-                                (corfu-mode)))
+                                (setq-local corfu-auto nil)))
   )
 
 (when (not (display-graphic-p))
