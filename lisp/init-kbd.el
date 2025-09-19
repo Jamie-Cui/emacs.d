@@ -109,6 +109,7 @@
     ;; action-related key bindings
     "a" '(:ignore t :which-key "actions")
     "a RET"  #'embark-dwim
+    "ar"     #'compile
     ;; window-related key bindings
     "w" '(:ignore t :which-key "window")
     "wh"     #'evil-window-left
@@ -217,17 +218,19 @@
     "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
-    "cc"     #'compile
-    "cC"     #'citre-create-tags-file
     "cr"     #'eglot-rename
-    "cR"     #'citre-update-this-tags-file
     "cf"     #'eglot-format-buffer
-    "cj"     #'consult-eglot-symbols
+    "ct" '(:ignore t :which-key "citre")
+    "cta"    #'citre-create-tags-file
+    "ctt"    #'citre-update-this-tags-file
     ;; search
     "s" '(:ignore t :which-key "search")
-    "si"     #'consult-imenu ;; search item
-    "sh"     #'consult-history ;; search history
-    "ss"     #'consult-locate ;; system wide search
+    "si"     #'consult-imenu ;; search for item
+    "sh"     #'consult-history ;; search for history
+    "sf"     #'consult-recent-file ;; search for recent file (system wide)
+    "sF"     #'consult-locate ;; search for file (system wide)
+    "sc"     #'consult-citre ;; search for citre symbols
+    "sC"     #'consult-eglot-symbols ;; search for eglot symbols
     )
 
   ;; deft mode map
