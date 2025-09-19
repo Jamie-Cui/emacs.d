@@ -196,6 +196,7 @@
     "hv"     #'helpful-variable
     "hm"     #'describe-mode
     "hM"     #'consult-man
+    "hh"     #'consult-history
     ;; quit emacs
     "q" '(:ignore t :which-key "quit")
     "qq"     #'save-buffers-kill-terminal
@@ -220,17 +221,14 @@
     "ca"     #'eglot-code-actions
     "cr"     #'eglot-rename
     "cf"     #'eglot-format-buffer
-    "ct" '(:ignore t :which-key "citre")
-    "cta"    #'citre-create-tags-file
-    "ctt"    #'citre-update-this-tags-file
+    "cj"     #'consult-eglot-symbols
     ;; search
     "s" '(:ignore t :which-key "search")
+    "sa"     #'citre-create-tags-file
     "si"     #'consult-imenu ;; search for item
-    "sh"     #'consult-history ;; search for history
-    "sf"     #'consult-recent-file ;; search for recent file (system wide)
-    "sF"     #'consult-locate ;; search for file (system wide)
-    "sc"     #'consult-citre ;; search for citre symbols
-    "sC"     #'consult-eglot-symbols ;; search for eglot symbols
+    "sg"     #'citre-update-this-tags-file
+    "ss"     #'consult-citre ;; search for citre symbols
+    "sf"     #'consult-locate ;; search for file (system wide)
     )
 
   ;; deft mode map
