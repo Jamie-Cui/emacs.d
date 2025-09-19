@@ -152,18 +152,18 @@
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pa"     #'projectile-add-known-project
-    "px"     #'projectile-remove-known-project
-    "pd"     #'projectile-run-gdb
-    "pp"     #'projectile-switch-project
-    "pC"     #'projectile-configure-project 
-    "pc"     #'projectile-compile-project 
-    "pt"     #'projectile-test-project 
-    "pr"     #'projectile-run-project 
     "pb"     #'consult-project-buffer 
-    "pi"     #'projectile-invalidate-cache
+    "pc"     #'projectile-compile-project 
+    "pC"     #'projectile-configure-project 
+    "pd"     #'projectile-remove-known-project
     "pf"     #'+vertico/project-search
+    "pi"     #'projectile-invalidate-cache
     "po"     #'find-sibling-file
+    "pp"     #'projectile-switch-project
     "pq"     #'+persp/kill-current-workspace
+    "pr"     #'projectile-run-project 
+    "pR"     #'projectile-run-gdb
+    "pt"     #'projectile-test-project 
     "P" '(:ignore t :which-key "perspevtive")
     "Ph"     #'persp-prev
     "Pl"     #'persp-next
