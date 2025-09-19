@@ -235,20 +235,21 @@
 
 (setopt eshell-prompt-function 
         (lambda nil
-          (let* ((cwd (abbreviate-file-name (eshell/pwd)))
-                 (x-stat eshell-last-command-status))
+          (let* ((cwd (abbreviate-file-name (eshell/pwd))))
             (concat (propertize
-                     (format "%s %s"
-                             (if (< 0 x-stat)
-                                 (format (propertize "!%s" 'font-lock-face 
-                                                     '(:foreground "red")) x-stat)
-                               (propertize "➤" 'font-lock-face 
-                                           (list :foreground (if (< 0 x-stat) "red" "green"))))
-                             (propertize cwd 'font-lock-face '(:foreground "#45babf")))
+                     ;; the above line
+                     (format "%s [%s]\n"
+                             (propertize (concat (user-login-name) "@" (system-name)) 
+                                         'font-lock-face 'font-lock-comment-face) 
+                             (propertize cwd 'font-lock-face 'font-lock-constant-face)
+                             )
                      'read-only t
                      'front-sticky   '(font-lock-face read-only)
-                     'rear-nonsticky '(font-lock-face read-only)) " ")
-            )))
+                     'rear-nonsticky '(font-lock-face read-only))
+                    ;; input line
+                    (propertize "λ " 'font-lock-face 'font-lock-warning-face
+                                'rear-nonsticky '(font-lock-face))
+                    ))))
 
 (setopt eshell-banner-message
         '(format "%s %s\n"
