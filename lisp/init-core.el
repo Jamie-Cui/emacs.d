@@ -342,9 +342,9 @@
   (dashboard-center-content t)
   (dashboard-vertically-center-content t)
   (dashboard-show-shortcuts nil)
-  (dashboard-set-heading-icons t)
+  (dashboard-set-heading-icons nil)
   (dashboard-startup-banner 4) ; 4 means using 4.txt
-  (dashboard-set-file-icons t)
+  (dashboard-set-file-icons nil)
   (dashboard-items '((recents  . 5)
                      (projects  . 5)
                      (bookmarks . 5)))
