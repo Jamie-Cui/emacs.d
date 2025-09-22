@@ -168,10 +168,8 @@
 (setopt proced-goal-attribute nil)
 (setopt proced-show-remote-processes t)
 (setopt proced-enable-color-flag t)
-(setopt proced-format 'custom)
+(setopt proced-format 'short)
 (setopt proced-auto-update-interval 1)
-(setopt proced-format-alist
-        '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
 
 ;; emacs minibufer completion
 (setopt minibuffer-completion-auto-choose nil)
