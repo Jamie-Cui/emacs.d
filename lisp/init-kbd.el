@@ -109,7 +109,6 @@
     ;; action-related key bindings
     "a" '(:ignore t :which-key "actions")
     "a RET"  #'embark-dwim
-    "ar"     #'compile
     ;; window-related key bindings
     "w" '(:ignore t :which-key "window")
     "wh"     #'evil-window-left
@@ -127,7 +126,6 @@
     "b" '(:ignore t :which-key "buffer")
     "bn"     #'evil-buffer-new
     "bd"     #'kill-current-buffer
-    "bD"     #'clean-buffer-list
     "br"     #'+revert-buffer-no-confirm
     "B" '(:ignore t :which-key "bookmark")
     "BB"     #'consult-bookmark
@@ -140,14 +138,15 @@
     "dn"     #'docker-networks
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
-    "ot"     #'+eshell/new
-    "oT"     #'+eat/new
+    "oc"     #'compile
+    "oC"     #'+compilation/open-projectile-compilation-buffer
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
-    "oc"     #'+compilation/open-projectile-compilation-buffer
     "oi"     #'gptel
     "oI"     #'claude-code-toggle
     "og"     #'magit-status-quick
+    "ot"     #'+eshell/new
+    "oT"     #'+eat/new
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
     ;; project-related key bindings
@@ -205,7 +204,7 @@
     "t" '(:ignore t :which-key "toggle")
     "th"     #'hs-hide-level
     "tH"     #'hexl-mode
-    "tb"     #'magit-blame-addition
+    "tg"     #'magit-blame-addition
     "td"     #'+dired-du/toggle-mode
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen
