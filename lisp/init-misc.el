@@ -332,13 +332,13 @@
          ;;
          'mode-line-front-space
          ;; 
-         '(:eval (format "%s" (count-lines (point-min) (point-max))))
+         ;; '(:eval (format "%s" (count-lines (point-min) (point-max))))
          ;;
          ;; 'mode-line-frame-identification
          ;;
          ;; 'mode-line-buffer-identification
          ;;
-         "   "
+         ;; "   "
          ;; HACK
          '(:eval (format-mode-line 
                   (propertized-buffer-identification 
@@ -362,7 +362,10 @@
          'mode-line-misc-info
          ;;
          " "
-         '(:eval (symbol-name buffer-file-coding-system))
+         ;; '(:eval (symbol-name buffer-file-coding-system))
+         '(:eval (format "%c%s" 
+                         (coding-system-mnemonic buffer-file-coding-system) 
+                         (coding-system-eol-type-mnemonic buffer-file-coding-system)))
          ;;
          " "
          ;; mode-line-modes 
