@@ -338,7 +338,17 @@
 (use-package dashboard
   :ensure t
   :custom
+  (dashboard-banner-logo-title "It's possible to build a cabin with no foundations, but not a lasting building.")
   (dashboard-center-content t)
+  (dashboard-vertically-center-content t)
+  (dashboard-show-shortcuts nil)
+  (dashboard-set-heading-icons t)
+  (dashboard-startup-banner 4) ; 4 means using 4.txt
+  (dashboard-set-file-icons t)
+  (dashboard-items '((recents  . 5)
+                     (projects  . 5)
+                     (bookmarks . 5)))
+  (dashboard-projects-backend 'projectile)
   :config
   (dashboard-setup-startup-hook)
 
@@ -350,21 +360,9 @@
       (copy-directory my-banners-dir dashboard-banners-directory nil nil t)))
   (+dashboard/install-banners)
 
-  ;; Set the title  
-  (setq dashboard-banner-logo-title "It's possible to build a cabin with no foundations, but not a lasting building.")
-
   ;; To disable shortcut "jump" indicators for each section, set
-  (setq dashboard-show-shortcuts nil)
-  (setq dashboard-startup-banner 4) ; 4 means using 4.txt
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  (setq dashboard-items '((recents  . 5)
-                          (projects  . 5)
-                          (bookmarks . 5)))
-  (setq dashboard-projects-backend 'projectile)
-  (setq initial-buffer-choice (lambda() (dashboard-open)))
   (setq dashboard-after-initialize-hook (lambda() (dashboard-open)))
-  )
+  (setq initial-buffer-choice (lambda() (dashboard-open))))
 
 (use-package hl-todo
   :ensure t
