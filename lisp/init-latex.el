@@ -16,9 +16,26 @@
    pdf-tools
    ;; latex support
    auctex
+   ;; edit bibs
+   ebib
    ;; TODO proof assist
    ;; proof-general
    ))
+
+(use-package ebib
+  :ensure t
+  :custom
+  (ebib-layout 'full)
+  (ebib-index-window-size 10)
+  :config
+  (add-to-list 'ebib-preload-bib-files (concat +emacs/org-root-dir "/all-ref.bib"))
+
+  (setq +ebib/index-window-scale 0.5)
+
+  ;; HACK
+  (advice-add 'ebib :around #'(lambda (fun &rest args)
+                                (let* ((ebib-index-window-size (* (frame-height) +ebib/index-window-scale)))
+                                  (apply fun args)))))
 
 (use-package pdf-tools
   :ensure t
