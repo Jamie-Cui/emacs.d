@@ -138,6 +138,8 @@
     "dn"     #'docker-networks
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
+    "ob"     #'citar-open
+    "oB"     #'ebib
     "oc"     #'compile
     "oC"     #'+compilation/open-projectile-compilation-buffer
     "od"     #'dired-jump
