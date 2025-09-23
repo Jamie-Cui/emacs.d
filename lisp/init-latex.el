@@ -32,9 +32,9 @@
 
   (setq +ebib/index-window-scale 0.5)
 
-  ;; HACK
+  ;; HACK use window scale
   (advice-add 'ebib :around #'(lambda (fun &rest args)
-                                (let* ((ebib-index-window-size (* (frame-height) +ebib/index-window-scale)))
+                                (let* ((ebib-index-window-size (round (* (frame-height) +ebib/index-window-scale))))
                                   (apply fun args)))))
 
 (use-package pdf-tools
