@@ -262,6 +262,7 @@
   :after eglot
   :if window-system ;; do not load eldoc-box on termial emacs
   :config
+  (setq eldoc-echo-area-use-multiline-p nil)
   (add-hook 'eldoc-mode-hook #'eldoc-box-hover-mode)
   (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
   )
