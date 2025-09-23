@@ -326,19 +326,8 @@
 ;; mode-line format
 (setopt mode-line-format
         (list
-         ;; ?
          "%e" 
-         ;;
          'mode-line-front-space
-         ;; 
-         ;; '(:eval (format "%s" (count-lines (point-min) (point-max))))
-         ;;
-         ;; 'mode-line-frame-identification
-         ;;
-         ;; 'mode-line-buffer-identification
-         ;;
-         ;; "   "
-         ;; HACK
          '(:eval (format-mode-line 
                   (propertized-buffer-identification 
                    (or (when-let* ((buffer-file-truename buffer-file-truename)
@@ -347,31 +336,23 @@
                          (concat (file-relative-name (file-name-directory buffer-file-truename) project-parent)
                                  (file-name-nondirectory buffer-file-truename)))
                        "%b"))))
-         ;;
          "   "
-         ;;
          'mode-line-position
-         ;;
-         ;; REVIEW do not display version info
-         ;; '(vc-mode vc-mode)
-         ;;
-         ;; right align start
+         "   "
+         '(:eval (if (region-active-p)
+                     (format " (Sel: %d)" (abs (- (point) (mark)))) ""))
          'mode-line-format-right-align
-         ;;
          'mode-line-misc-info
-         ;;
          " "
-         ;; '(:eval (symbol-name buffer-file-coding-system))
          '(:eval (format "%c%s" 
                          (coding-system-mnemonic buffer-file-coding-system) 
                          (coding-system-eol-type-mnemonic buffer-file-coding-system)))
-         ;;
          " "
-         ;; mode-line-modes 
          'mode-name
-         ;;
+         " (+"
+         '(:eval (format "%d" (length local-minor-modes)))
+         ")"
          'mode-line-end-spaces
-         ;;
          " "
          )
         )
