@@ -123,6 +123,8 @@
    treesit-auto
    ;; cpplint
    flycheck-google-cpplint
+   ;; rss feed
+   elfeed
    ))
 
 ;; -----------------------------------------------------------
@@ -243,12 +245,15 @@
               ("C-c C-e" . markdown-do)))
 
 ;; ------------------------------------------------------------------
-;; TODO EAF
+;; DONE elfeed
 ;; ------------------------------------------------------------------
 
-;; (use-package eaf
-;;   :load-path (lambda () (concat +emacs/repo-directory "/thirdparty/eaf"))
-;;   :config
-;;   (require 'eaf-browser)
-;;   (require 'eaf-pdf-viewer)
-;;   )
+(use-package elfeed
+  :ensure t
+  :custom
+  (elfeed-feeds '(
+                  ("https://eprint.iacr.org/rss/rss.xml" crypto)
+                  ("https://planet.emacslife.com/atom.xml" emacs)
+                  ("https://www.nist.gov/news-events/cybersecurity/rss.xml" security)
+                  ("http://googleonlinesecurity.blogspot.com/atom.xml" security)
+                  )))
