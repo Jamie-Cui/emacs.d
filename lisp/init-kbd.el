@@ -229,6 +229,8 @@
     "sg"     #'citre-update-this-tags-file
     "ss"     #'consult-citre ;; search for citre symbols
     "sf"     #'consult-locate ;; search for file (system wide)
+    "sl"     #'consult-focus-lines ;; search for lines
+    "sL"     #'consult-keep-lines ;; search for lines
     )
 
   ;; deft mode map
