@@ -111,22 +111,6 @@
    keyfreq
    ))
 
-(+package/ensure-install 
- '(
-   ;; code auto formating
-   apheleia
-   ;; bazel mode (need config)
-   bazel
-   ;; markdown mode
-   markdown-mode
-   ;; automatically install treesit grammar
-   treesit-auto
-   ;; cpplint
-   flycheck-google-cpplint
-   ;; rss feed
-   elfeed
-   ))
-
 ;; -----------------------------------------------------------
 ;; DONE flycheck-google-cpplint
 ;; -----------------------------------------------------------
@@ -265,5 +249,4 @@
   (define-advice elfeed-search--header (:around (oldfun &rest args))
     (if elfeed-db
         (apply oldfun args)
-      "No database loaded yet"))
-  )
+      "No database loaded yet")))
