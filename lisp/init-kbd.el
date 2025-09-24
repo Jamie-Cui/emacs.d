@@ -79,6 +79,7 @@
    "M-j"     #'move-text-down
    "M-k"     #'move-text-up
    "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
+   "M-n"     #'narrow-to-region
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
