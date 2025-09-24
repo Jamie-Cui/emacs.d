@@ -161,7 +161,7 @@
     "pd"     #'projectile-remove-known-project
     "pf"     #'+vertico/project-search
     "pi"     #'projectile-invalidate-cache
-    "po"     #'find-sibling-file
+    "po"     #'ff-find-related-file
     "pp"     #'projectile-switch-project
     "pq"     #'+persp/kill-current-workspace
     "pr"     #'projectile-run-project 
