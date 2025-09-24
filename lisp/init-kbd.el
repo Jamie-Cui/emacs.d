@@ -145,6 +145,7 @@
     "oC"     #'+compilation/open-projectile-compilation-buffer
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
+    "oe"     #'elfeed
     "oi"     #'gptel
     "oI"     #'claude-code-toggle
     "og"     #'magit-status-quick
