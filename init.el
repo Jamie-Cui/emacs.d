@@ -259,4 +259,11 @@
                   ("http://googleonlinesecurity.blogspot.com/atom.xml" security)
                   ("http://krebsonsecurity.com/feed/" security)
                   ("http://techcrunch.com/feed/" news)
-                  )))
+                  ))
+  :config
+  ;; HACK from https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
+  (define-advice elfeed-search--header (:around (oldfun &rest args))
+    (if elfeed-db
+        (apply oldfun args)
+      "No database loaded yet"))
+  )
