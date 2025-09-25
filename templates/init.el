@@ -6,6 +6,7 @@
 
 (defvar +emacs/repo-directory (expand-file-name "~/emacs.d"))
 (defvar +emacs/org-root-dir (expand-file-name "~/org-root"))
+(defvar +emacs/proxy "127.0.0.1:10808")
 
 ;;; ----------------------------
 ;;; REVIEW use undecorated frame

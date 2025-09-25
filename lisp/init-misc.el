@@ -282,7 +282,7 @@
 (defun eshell/set-proxy ()
   "Set proxy environment variables and git proxy configuration."
   (interactive)
-  (let ((my-proxy (getenv "MY_PROXY"))) ; HACK this requires MY_PROXY to be set in system-wide
+  (let ((my-proxy +emacs/proxy)) ; HACK this requires MY_PROXY to be set in system-wide
     (when my-proxy
       ;; Set proxy
       (+eshell/set-proxy my-proxy)

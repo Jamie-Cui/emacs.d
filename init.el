@@ -16,6 +16,10 @@
 (when (not (boundp' +emacs/org-root-dir))
   (defconst +emacs/org-root-dir "~/org-root"))
 
+;; setup emacs proxy url if possible
+(when (not (boundp' +emacs/proxy))
+  (defconst +emacs/proxy "127.0.0.1:10808"))
+
 ;; add load path
 (add-to-list 'load-path (expand-file-name "lisp" +emacs/repo-directory))
 

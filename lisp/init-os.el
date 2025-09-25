@@ -22,8 +22,7 @@
     (ultra-scroll-mode 1))
 
   (require 'inhibit-mouse)
-  (inhibit-mouse-mode 1)
-  )
+  (inhibit-mouse-mode 1))
 
 ;;; --------------------------------------
 ;;; Windows-NT
@@ -72,9 +71,7 @@
     (let ((w32file (subst-char-in-string ?/ ?\\ (expand-file-name file))))
       (if (file-directory-p w32file)
           (w32-shell-execute "explore" w32file "/e,/select,")
-        (w32-shell-execute "open" "explorer" (concat "/e,/select," w32file))))
-    )
-  )
+        (w32-shell-execute "open" "explorer" (concat "/e,/select," w32file))))))
 
 ;;; --------------------------------------
 ;;; Windows-WSL
@@ -97,8 +94,7 @@
     :ensure t
     :custom
     (org-download-screenshot-method
-     "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\""))
-  )
+     "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\"")))
 
 ;;; --------------------------------------
 ;;; GNU/Linux
@@ -107,8 +103,7 @@
 (when (eq system-type 'gnu/linux)
   (add-to-list 'default-frame-alist '(undecorated . t))
   ;; NOTE if you are using magic keyboard
-  (setq x-super-keysym 'meta)
-  )
+  (setq x-super-keysym 'meta))
 
 ;;; --------------------------------------
 ;;; Utilities work for all systems
@@ -132,7 +127,6 @@
                        (file-name-directory target-file))))
      ((eq system-type 'darwin)
       (start-process "finder" nil "open" "-R" target-file))
-     (t (message "Unimplemented!"))))
-  )
+     (t (message "Unimplemented!")))))
 
 (provide 'init-os)
