@@ -240,6 +240,7 @@
                   ("https://eprint.iacr.org/rss/rss.xml" crypto)
                   ("https://planet.emacslife.com/atom.xml" emacs)
                   ("https://sachachua.com/blog/category/emacs-news/feed/atom/index.xml" emacs)
+                  ("https://emacs-china.org/latest.rss" emacs)
                   ("https://www.nist.gov/news-events/cybersecurity/rss.xml" security)
                   ("http://googleonlinesecurity.blogspot.com/atom.xml" security)
                   ("http://krebsonsecurity.com/feed/" security)
