@@ -197,23 +197,14 @@
   (popwin:adjust-other-windows t)
   (popwin:special-display-config
    '(
-     ;;
-     ;; One-time notification
-     ;;
      ("*xref*" :position bottom)
-     ;;
-     ;; bottom (read-only short messages that should not take too much time)
-     ;;
      (help-mode :position bottom :stick t :dedicated t)
      (helpful-mode :position bottom :stick t :dedicated t)
      (Man-mode :position bottom :stick t :dedicated t)
      ("*Flycheck errors*" :position bottom :stick t :dedicated t)
      ("*Messages*" :position bottom :stick t :dedicated t)
      ("*LLM response*" :position bottom :stick t :dedicated t)
-     ;;
-     ;; bottom (long context, and you may need to write something)
-     ;;
-     ;; ("*scratch*" :position bottom :stick t :dedicated t)
+     ("*scratch*" :position bottom :stick t :dedicated t)
      ;; ((lambda (b) ; predicate for gptel buffer
      ;;    ;; NOTE: buffer check is required (#450)
      ;;    (and-let* ((buf (get-buffer (or (car-safe b) b))))
