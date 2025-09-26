@@ -5,23 +5,6 @@
 (require 'init-org)
 (require 'reftex)
 
-(+package/ensure-install
- '(
-   ;; enrich bib frontend from bib file
-   citar
-   citar-embark
-   ;; download from web
-   biblio
-   ;; pdf-tools support
-   pdf-tools
-   ;; latex support
-   auctex
-   ;; edit bibs
-   ebib
-   ;; TODO proof assist
-   ;; proof-general
-   ))
-
 (use-package ebib
   :ensure t
   :custom

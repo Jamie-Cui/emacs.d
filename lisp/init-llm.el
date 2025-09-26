@@ -2,13 +2,14 @@
 ;;; Commentary:
 ;;; Code:
 
-(+package/ensure-install
- '(
-   ;; llm client
-   gptel
-   ;; add-ons
-   gptel-magit
-   ))
+(use-package shell-maker
+  :ensure t)
+
+(use-package acp
+  :vc (:url "https://github.com/xenodium/acp.el"))
+
+(use-package agent-shell
+  :vc (:url "https://github.com/xenodium/agent-shell"))
 
 (use-package gptel
   :ensure t

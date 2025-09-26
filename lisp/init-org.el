@@ -13,25 +13,6 @@
 (make-directory (concat +emacs/org-root-dir "/deft") t)
 (make-directory (concat (file-name-directory user-init-file) "/bin") t)
 
-(+package/ensure-install
- '(
-   org-download
-   ;; roam
-   org-roam
-   ;; make org prettier
-   org-appear
-   ;; better place to write diaries
-   org-journal
-   ;; deft for note taking
-   deft
-   ;; allow drawing plantuml
-   plantuml-mode
-   ;; export org code in colors
-   engrave-faces
-   ;; preview org math
-   xenops
-   ))
-
 (use-package org
   :custom
   ;; general
@@ -227,6 +208,7 @@
   (require 'org-roam-protocol))
 
 (use-package org-appear
+  :ensure t
   :config
   (add-hook 'org-mode-hook 'org-appear-mode))
 

@@ -2,72 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(+package/ensure-install
- '(
-   ;; evil-related
-   evil
-   evil-collection
-   evil-multiedit
-   evil-mc
-   evil-goggles
-   evil-nerd-commenter
-   evil-args
-   evil-surround
-   evil-terminal-cursor-changer
-   ;; move text as you like
-   move-text
-   ;; undo-tree
-   undo-tree
-   ))
-
-
-;;;###autoload (autoload '+evil-join-a "editor/evil/autoload/advice" nil nil)
-(defun +evil-join-a (fn beg end)
-  "Join the selected lines.
-
-This advice improves on `evil-join' by removing comment delimiters when joining
-commented lines, without `fill-region-as-paragraph'.
-
-Adapted from https://github.com/emacs-evil/evil/issues/606"
-  (if-let* (((not (= (line-end-position) (point-max))))
-            (cend (save-excursion (goto-char end) (line-end-position)))
-            (cbeg (save-excursion
-                    (goto-char beg)
-                    (and (+point-in-comment-p
-                          (save-excursion
-                            (goto-char (line-beginning-position 2))
-                            (skip-syntax-forward " \t")
-                            (point)))
-                         (or (comment-search-backward (line-beginning-position) t)
-                             (comment-search-forward  (line-end-position) t)
-                             (and (+point-in-comment-p beg)
-                                  (stringp comment-continue)
-                                  (or (search-forward comment-continue (line-end-position) t)
-                                      beg)))))))
-      (let* ((count (count-lines beg end))
-             (count (if (> count 1) (1- count) count))
-             (fixup-mark (make-marker)))
-        (uncomment-region (line-beginning-position 2)
-                          (save-excursion
-                            (goto-char cend)
-                            (line-end-position 0)))
-        (unwind-protect
-            (dotimes (_ count)
-              (join-line 1)
-              (save-match-data
-                (when (or (and comment-continue
-                               (not (string-empty-p comment-continue))
-                               (looking-at (concat "\\(\\s-*" (regexp-quote comment-continue) "\\) ")))
-                          (and comment-start-skip
-                               (not (string-empty-p comment-start-skip))
-                               (looking-at (concat "\\(\\s-*" comment-start-skip "\\)"))))
-                  (replace-match "" t nil nil 1)
-                  (just-one-space))))
-          (set-marker fixup-mark nil)))
-    ;; But revert to the default we're not in a comment, where
-    ;; `fill-region-as-paragraph' is too greedy.
-    (funcall fn beg end)))
-
 (use-package undo-tree
   :ensure t
   :custom (undo-tree-history-directory-alist 
@@ -76,7 +10,6 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   (setopt undo-tree-map nil)
   (global-undo-tree-mode 1))
 
-;; move-text
 (use-package move-text
   :ensure t
   :config
@@ -90,7 +23,6 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   (advice-add 'move-text-up :after 'indent-region-advice)
   (advice-add 'move-text-down :after 'indent-region-advice))
 
-;; evil
 (use-package evil
   :ensure t
   :preface
@@ -109,6 +41,52 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   (evil-mode 1)
   (add-hook 'message-mode-hook 'evil-mode)
   ;; HACK: Fix joining commented lines with J (evil-join).
+
+  (defun +evil-join-a (fn beg end)
+    "Join the selected lines.
+
+This advice improves on `evil-join' by removing comment delimiters when joining
+commented lines, without `fill-region-as-paragraph'.
+
+Adapted from https://github.com/emacs-evil/evil/issues/606"
+    (if-let* (((not (= (line-end-position) (point-max))))
+              (cend (save-excursion (goto-char end) (line-end-position)))
+              (cbeg (save-excursion
+                      (goto-char beg)
+                      (and (+point-in-comment-p
+                            (save-excursion
+                              (goto-char (line-beginning-position 2))
+                              (skip-syntax-forward " \t")
+                              (point)))
+                           (or (comment-search-backward (line-beginning-position) t)
+                               (comment-search-forward  (line-end-position) t)
+                               (and (+point-in-comment-p beg)
+                                    (stringp comment-continue)
+                                    (or (search-forward comment-continue (line-end-position) t)
+                                        beg)))))))
+        (let* ((count (count-lines beg end))
+               (count (if (> count 1) (1- count) count))
+               (fixup-mark (make-marker)))
+          (uncomment-region (line-beginning-position 2)
+                            (save-excursion
+                              (goto-char cend)
+                              (line-end-position 0)))
+          (unwind-protect
+              (dotimes (_ count)
+                (join-line 1)
+                (save-match-data
+                  (when (or (and comment-continue
+                                 (not (string-empty-p comment-continue))
+                                 (looking-at (concat "\\(\\s-*" (regexp-quote comment-continue) "\\) ")))
+                            (and comment-start-skip
+                                 (not (string-empty-p comment-start-skip))
+                                 (looking-at (concat "\\(\\s-*" comment-start-skip "\\)"))))
+                    (replace-match "" t nil nil 1)
+                    (just-one-space))))
+            (set-marker fixup-mark nil)))
+      ;; But revert to the default we're not in a comment, where
+      ;; `fill-region-as-paragraph' is too greedy.
+      (funcall fn beg end)))
   (advice-add #'evil-join :around #'+evil-join-a)
   )
 
@@ -125,7 +103,7 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   (evil-collection-define-key '(normal visual) 'evil-mc-key-map (kbd "gz") evil-mc-cursors-map)
   )
 
-;; HACK https://www.reddit.com/r/emacs/comments/45w9mv/comment/d3ud03t/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+;; HACK https://www.reddit.com/r/emacs/comments/45w9mv/comment/d3ud03t/
 (defun normal-escape-pre-command-handler ()
   (interactive)
   (pcase this-command

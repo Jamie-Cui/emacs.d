@@ -4,82 +4,20 @@
 
 (require 'init-evil)
 
-(+package/ensure-install
- '(
-   ;; dashboard at startup
-   dashboard
-   ;; consult framework
-   consult
-   ;; show helps of fun, key, mode
-   helpful
-   ;; search engine
-   vertico
-   vertico-posframe
-   ;; search with no order
-   orderless
-   ;; project engine
-   projectile
-   ;; complete engine
-   corfu
-   corfu-terminal ; for tty
-   ;; better terminal emulater
-   eat
-   ;; the killer app: git ui
-   magit
-   ;; highlight diff
-   diff-hl
-   ;; lsp
-   eglot
-   ;; jump to eglot symbol
-   consult-eglot
-   ;; highlight todo keywords
-   hl-todo
-   ;; search tool based on ripgrep
-   rg
-   ;; better error checking
-   flycheck
-   ;; show fly check in a popup way
-   flycheck-popup-tip
-   ;; show lsp error
-   flycheck-eglot
-   ;; adds marginalia to the minibuffer completions
-   marginalia
-   ;; Emacs Mini-Buffer Actions Rooted in Keymaps
-   embark
-   embark-consult
-   ;; make eldoc looks nicer
-   eldoc-box
-   ;; better snippet
-   yasnippet
-   ;; workspace
-   perspective
-   persp-projectile
-   ;; smart-parens
-   smartparens
-   ;; popup window
-   popwin
-   ;; edit files with sudo (works over tramp)
-   sudo-edit
-   ;; dired
-   dired-subtree
-   ;; dired show folder size (recursively!)
-   dired-du
-   ;; colored dired
-   diredfl 
-   ;; disable mouse 
-   inhibit-mouse
-   ;; chinese spacing
-   pangu-spacing
-   ;; chinese s alignment, or valign (maybe?)
-   cnfonts
-   ;; better tags support
-   citre
-   ;; highlight indent
-   highlight-indentation 
-   ;; expand region increases the selected region by semantic units
-   expand-region
-   ))
+(use-package which-key
+  :ensure t
+  :custom
+  (which-key-max-display-columns nil)
+  (which-key-min-display-lines 6)
+  (which-key-side-window-slot -10)
+  (which-key-add-column-padding 1)
+  (which-key-sort-order 'which-key-key-order-alpha)
+  (which-key-sort-uppercase-first nil)
+  :config
+  (which-key-setup-side-window-bottom)
+  (which-key-mode 1))
 
+;;;  
 (use-package consult-citre
   :after consult
   :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))

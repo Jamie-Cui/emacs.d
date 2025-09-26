@@ -4,30 +4,9 @@
 
 (require 'init-evil)
 
-(+package/ensure-install
- '(
-   ;; more convenient way of defining keys
-   general 
-   ;; consult which key, which key in included in 30.1
-   ;; which-key
-   ))
-
 ;; ------------------------------------------------------------------
 ;; DONE Key Bindings
 ;; ------------------------------------------------------------------
-
-(use-package which-key
-  :ensure t
-  :custom
-  (which-key-max-display-columns nil)
-  (which-key-min-display-lines 6)
-  (which-key-side-window-slot -10)
-  (which-key-add-column-padding 1)
-  (which-key-sort-order 'which-key-key-order-alpha)
-  (which-key-sort-uppercase-first nil)
-  :config
-  (which-key-setup-side-window-bottom)
-  (which-key-mode 1))
 
 (use-package general
   :ensure t

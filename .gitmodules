@@ -1,3 +1,0 @@
-[submodule "thirdparty/claude-code.el"]
-	path = thirdparty/claude-code.el
-	url = https://github.com/Jamie-Cui/claude-code.el
