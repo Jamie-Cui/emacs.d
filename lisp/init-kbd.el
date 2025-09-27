@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'init-evil)
+(require 'which-key)
 
 ;; ------------------------------------------------------------------
 ;; DONE Key Bindings
@@ -20,20 +21,6 @@
 
   (general-create-definer +my-local-leader-def
     :prefix my-local-leader)
-
-  ;; HACK always get a new eat terminal
-  (defun +eat/new ()
-    (interactive)
-    (let ((current-prefix-arg '(t)))
-      (call-interactively 'eat)))
-
-  (defun +compilation/open-projectile-compilation-buffer ()
-    (interactive)
-    (let ((target-buffer (projectile-compilation-buffer-name "compilation")))
-      (if (bufferp (get-buffer target-buffer))
-          (display-buffer target-buffer) ;; should handled by popwin
-        (call-interactively 'projectile-compile-project))
-      ))
 
   ;; tweak evil default key bindings
   (general-define-key 
@@ -122,8 +109,8 @@
     "o" '(:ignore t :which-key "open")
     "ob"     #'citar-open
     "oB"     #'ebib
-    "oc"     #'compile
-    "oC"     #'+compilation/open-projectile-compilation-buffer
+    "oc"     #'+compile/do
+    "oC"     #'+compile/open-projectile-compilation-buffer
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
     "oe"     #'elfeed
@@ -198,18 +185,18 @@
     "tm"     #'+inhibit-mouse/toggle-mode
     "tM"     #'+org-imgtog/toggle
     "ta"     #'+treesit-auto/toggle
-    ;; code
+    ;; code (lsp)
     "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
     "cr"     #'eglot-rename
     "cf"     #'eglot-format-buffer
     "cj"     #'consult-eglot-symbols
+    "ct"     #'citre-create-tags-file
+    "cT"     #'citre-update-this-tags-file
     ;; search
     "s" '(:ignore t :which-key "search")
-    "sa"     #'citre-create-tags-file
     "si"     #'consult-imenu ;; search for item
-    "sg"     #'citre-update-this-tags-file
     "ss"     #'consult-citre ;; search for citre symbols
     "sf"     #'consult-locate ;; search for file (system wide)
     "sl"     #'consult-focus-lines ;; search for lines
@@ -239,5 +226,44 @@
     "p" #'org-priority
     )
   )
+
+;; ------------------------------------------------------------------
+;; DONE Small hack functions for keybindings
+;; ------------------------------------------------------------------
+
+;;; HACK eshell
+;;; Always get a new eat terminal
+(defun +eat/new ()
+  (interactive)
+  (let ((current-prefix-arg '(t)))
+    (call-interactively 'eat)))
+
+;;; HACK compile buffer
+;;; New or switch to existing compile buffer
+(defun +compile/open-projectile-compilation-buffer ()
+  (interactive)
+  (let ((target-buffer 
+         (projectile-compilation-buffer-name "compilation")))
+    (if (bufferp (get-buffer target-buffer))
+        (display-buffer target-buffer) 
+      (call-interactively 'projectile-compile-project))
+    ))
+
+;;; HACK compile
+;;; Do not promote for previous command
+(defun +compile/do ()
+  (interactive
+   (list
+    (let ((command ""))
+      (if (or compilation-read-command current-prefix-arg)
+	      (compilation-read-command command)
+	    command))
+    (consp current-prefix-arg)))
+  (unless (equal command (eval compile-command))
+    (setq compile-command command))
+  (save-some-buffers (not compilation-ask-about-save)
+                     compilation-save-buffers-predicate)
+  (setq-default compilation-directory default-directory)
+  (compilation-start command comint))
 
 (provide 'init-kbd)
