@@ -1,50 +1,37 @@
-;; -*- Lexical-binding: t; -*-
+;; -*- lexical-binding: t; -*-
 
-;; -----------------------------------------------------------
-;; DONE Emacs native configurations
-;; -----------------------------------------------------------
+;;; -----------------------------------------------------------
+;;; DONE Emacs native configurations
+;;; -----------------------------------------------------------
 
 (let ((minver "29.1"))
   (when (version< emacs-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
 
-;; setup emacs configuration dir
-(when (not (boundp' +emacs/repo-directory))
-  (defconst +emacs/repo-directory "~/emacs.d"))
+(defcustom +emacs/repo-directory (expand-file-name "~/emacs.d")
+  "Path to emacs.d folder"
+  :type 'string
+  :group 'convenience)
 
-;; setup emacs org dir
-(when (not (boundp' +emacs/org-root-dir))
-  (defconst +emacs/org-root-dir "~/org-root"))
+(defcustom +emacs/org-root-dir (expand-file-name "~/org-root")
+  "Path to org-root folder"
+  :type 'string
+  :group 'convenience)
 
-;; setup emacs proxy url if possible
-(when (not (boundp' +emacs/proxy))
-  (defconst +emacs/proxy "127.0.0.1:10808"))
+(defcustom +emacs/proxy "127.0.0.1:10808"
+  "http/https proxy."
+  :type 'string
+  :group 'convenience)
 
 ;; add load path
 (add-to-list 'load-path (expand-file-name "lisp" +emacs/repo-directory))
 
-;; -----------------------------------------------------------
-;; DONE Setup packages
-;; -----------------------------------------------------------
+;;; -----------------------------------------------------------
+;;; DONE Setup packages
+;;; -----------------------------------------------------------
 
 ;; Enable package
 (require 'package)
-
-;; REVIEW: use tuna mirros
-;; (setq package-archives 
-;;       '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-;;         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-;;         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-;;         ))
-
-;; REVIEW use official
-;; (setq package-archives 
-;;       '(
-;;         ("gnu"   . "http://elpa.gnu.org/packages/")
-;;         ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-;;         ("org"   . "http://orgmode.org/elpa/")
-;;         ("melpa" . "http://melpa.org/packages/")
-;;         ))
 
 ;; HACK disable check of signature
 (setq package-check-signature nil)
@@ -76,9 +63,9 @@
     :config
     (exec-path-from-shell-initialize)))
 
-;; -----------------------------------------------------------
-;; DONE Configure Core
-;; -----------------------------------------------------------
+;;; -----------------------------------------------------------
+;;; DONE Configure Core
+;;; -----------------------------------------------------------
 
 (require 'init-utils) 
 (require 'init-kbd) 
@@ -93,9 +80,9 @@
 (when (display-graphic-p)
   (require 'init-latex))
 
-;; -----------------------------------------------------------
-;; DONE modes and themes
-;; -----------------------------------------------------------
+;;; -----------------------------------------------------------
+;;; DONE modes and themes
+;;; -----------------------------------------------------------
 
 ;; modes and thems that does not require additional config
 (+package/ensure-install-and-use 
@@ -114,9 +101,9 @@
    keyfreq
    ))
 
-;; -----------------------------------------------------------
-;; DONE flycheck-google-cpplint
-;; -----------------------------------------------------------
+;;; -----------------------------------------------------------
+;;; DONE flycheck-google-cpplint
+;;; -----------------------------------------------------------
 
 (use-package flycheck-google-cpplint
   :ensure t
@@ -140,9 +127,9 @@
                              '(warning . c/c++-googlelint))
   )
 
-;; -----------------------------------------------------------
-;; DONE apheleia
-;; -----------------------------------------------------------
+;;; -----------------------------------------------------------
+;;; DONE apheleia
+;;; -----------------------------------------------------------
 
 (use-package apheleia
   :ensure t
@@ -174,9 +161,9 @@
   (add-to-list 'apheleia-mode-alist '(cmake-ts-mode . cmake-format))
   )
 
-;; -----------------------------------------------------------
-;; DONE tree-sitter 
-;; -----------------------------------------------------------
+;;; -----------------------------------------------------------
+;;; DONE tree-sitter 
+;;; -----------------------------------------------------------
 
 (use-package treesit-auto
   :ensure t
@@ -212,7 +199,7 @@
 (add-hook 'cmake-ts-mode-hook #'+cmake-ts-mode/fix-syntax-table)
 
 ;; ------------------------------------------------------------------
-;; DONE bazel mode
+;;; DONE bazel mode
 ;; ------------------------------------------------------------------
 
 (use-package bazel
@@ -222,7 +209,7 @@
   (setq bazel-buildifier-before-save 't))
 
 ;; ------------------------------------------------------------------
-;; DONE Markdown mode
+;;; DONE Markdown mode
 ;; ------------------------------------------------------------------
 
 (use-package markdown-mode
@@ -233,7 +220,7 @@
               ("C-c C-e" . markdown-do)))
 
 ;; ------------------------------------------------------------------
-;; DONE elfeed
+;;; DONE elfeed
 ;; ------------------------------------------------------------------
 
 (use-package elfeed

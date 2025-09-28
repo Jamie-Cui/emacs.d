@@ -4,6 +4,14 @@
 
 (require 'init-evil)
 
+;; -----------------------------------------------------------
+;; DONE Emacs native configurations
+;; -----------------------------------------------------------
+
+(use-package ido-completing-read+
+  :ensure t
+  )
+
 (use-package which-key
   :ensure t
   :custom
@@ -18,6 +26,7 @@
   (which-key-mode 1))
 
 ;;;  
+
 (use-package consult-citre
   :after consult
   :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
@@ -314,7 +323,7 @@
 (use-package corfu
   :ensure t
   :custom
-  (corfu-auto t)
+  (corfu-auto nil)
   (corfu-cycle t)
   (corfu-preview-current 'nil) ; do not insert unless i select it
   (corfu-preselect 'nil) ; do not preselect anything
