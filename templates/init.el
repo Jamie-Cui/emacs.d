@@ -1,12 +1,32 @@
 ;;; -*- lexical-binding: t; -*-
 
 ;;; ------------------------
-;;; DONE configure constants
+;;; REVIEW configure constants
 ;;; ------------------------
 
 (defvar +emacs/repo-directory (expand-file-name "~/emacs.d"))
 (defvar +emacs/org-root-dir (expand-file-name "~/org-root"))
 (defvar +emacs/proxy "127.0.0.1:10808")
+
+;;; ----------------------------
+;;; REVIEW package urls
+;;; ----------------------------
+
+;; use tuna mirros
+;; (setq package-archives 
+;;       '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+;;         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+;;         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+;;         ))
+
+;; use official
+(setq package-archives 
+      '(
+        ("gnu"   . "http://elpa.gnu.org/packages/")
+        ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
+        ("org"   . "http://orgmode.org/elpa/")
+        ("melpa" . "http://melpa.org/packages/")
+        ))
 
 ;;; ----------------------------
 ;;; REVIEW use undecorated frame

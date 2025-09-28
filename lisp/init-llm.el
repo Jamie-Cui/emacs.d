@@ -2,14 +2,14 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package shell-maker
-  :ensure t)
+;; (use-package shell-maker
+;;   :ensure t)
 
-(use-package acp
-  :vc (:url "https://github.com/xenodium/acp.el"))
+;; (use-package acp
+;;   :vc (:url "https://github.com/xenodium/acp.el"))
 
-(use-package agent-shell
-  :vc (:url "https://github.com/xenodium/agent-shell"))
+;; (use-package agent-shell
+;;   :vc (:url "https://github.com/xenodium/agent-shell"))
 
 (use-package gptel
   :ensure t

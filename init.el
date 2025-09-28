@@ -30,15 +30,21 @@
 ;; Enable package
 (require 'package)
 
-(setq package-archives 
-      '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-        ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-        ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-        ;; ("gnu"   . "http://elpa.gnu.org/packages/")
-        ;; ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-        ;; ("org"   . "http://orgmode.org/elpa/")
-        ;; ("melpa" . "http://melpa.org/packages/")
-        ))
+;; REVIEW: use tuna mirros
+;; (setq package-archives 
+;;       '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+;;         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+;;         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+;;         ))
+
+;; REVIEW use official
+;; (setq package-archives 
+;;       '(
+;;         ("gnu"   . "http://elpa.gnu.org/packages/")
+;;         ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
+;;         ("org"   . "http://orgmode.org/elpa/")
+;;         ("melpa" . "http://melpa.org/packages/")
+;;         ))
 
 ;; HACK disable check of signature
 (setq package-check-signature nil)
@@ -51,12 +57,6 @@
   (package-refresh-contents))
 
 (require 'cl-macs)
-
-(defun +package/ensure-install (packages-alist)
-  "Make sure the given package is installed."
-  (dolist (p packages-alist)
-    (unless (package-installed-p p)
-      (package-install p))))
 
 (defun +package/ensure-install-and-use (packages-alist)
   "Make sure the given package is installed."
@@ -71,7 +71,6 @@
 ;; -----------------------------------------------------------
 
 (when (not (eq system-type 'windows-nt))
-  (+package/ensure-install '(exec-path-from-shell))
   (use-package exec-path-from-shell
     :ensure t
     :config
