@@ -8,10 +8,6 @@
 ;; DONE Emacs native configurations
 ;; -----------------------------------------------------------
 
-(use-package ido-completing-read+
-  :ensure t
-  )
-
 (use-package which-key
   :ensure t
   :custom
