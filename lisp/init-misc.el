@@ -163,6 +163,23 @@
 (setopt compilation-ask-about-save t)
 (setopt compilation-scroll-output 'first-error)
 
+;;; HACK compile
+;;; Do not promote for previous command
+(defun +compile/do ()
+  (interactive
+   (list
+    (let ((command ""))
+      (if (or compilation-read-command current-prefix-arg)
+	      (compilation-read-command command)
+	    command))
+    (consp current-prefix-arg)))
+  (unless (equal command (eval compile-command))
+    (setq compile-command command))
+  (save-some-buffers (not compilation-ask-about-save)
+                     compilation-save-buffers-predicate)
+  (setq-default compilation-directory default-directory)
+  (compilation-start command comint))
+
 ;;; proced, show processes
 (setopt proced-auto-update-flag t)
 (setopt proced-goal-attribute nil)

@@ -5,71 +5,92 @@
 (require 'init-evil)
 
 ;; -----------------------------------------------------------
-;; DONE Emacs native configurations
+;; DONE Dired
+;;
+;; dired-du
+;; dired
+;; dired-subtree
+;; diredfl
 ;; -----------------------------------------------------------
 
-(use-package which-key
-  :ensure t
-  :custom
-  (which-key-max-display-columns nil)
-  (which-key-min-display-lines 6)
-  (which-key-side-window-slot -10)
-  (which-key-add-column-padding 1)
-  (which-key-sort-order 'which-key-key-order-alpha)
-  (which-key-sort-uppercase-first nil)
-  :config
-  (which-key-setup-side-window-bottom)
-  (which-key-mode 1))
-
-;;;  
-
-(use-package consult-citre
-  :after consult
-  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
+;; dired hide .. and .
+(add-hook 'dired-mode-hook 'dired-omit-mode)
 
 (use-package dired-du
   :ensure t
   :custom
   (dired-du-size-format t))
 
-(use-package expand-region
-  :ensure t)
-
-(use-package highlight-indentation
-  :ensure t
+(use-package dired
   :custom
-  (highlight-indentation-blank-lines t)
+  (dired-listing-switches 
+   (purecopy "-ahl -v --group-directories-first"))
+  (dired-kill-when-opening-new-dired-buffer t)
+  (dired-omit-extensions nil)
+  (dired-dwim-target t)
   :config
-  (defun +highlight-indentation/toggle-mode ()
-    "Toggle highlight-indentation"
-    (interactive)
-    (if highlight-indentation-mode
-        (progn
-          (highlight-indentation-mode -1)
-          (remove-hook 'prog-mode-hook 'highlight-indentation-mode)
-          (message "highlight-indentation disabled"))
-      (progn
-        (highlight-indentation-mode 1)
-        (add-hook 'prog-mode-hook 'highlight-indentation-mode)
-        (message "highlight-indentation enabled")))))
+  (general-define-key
+   :states 'normal
+   :keymaps 'dired-mode-map
+   "h"   #'dired-up-directory
+   "l"   #'dired-find-file
+   "T"   #'dired-create-empty-file))
 
-;; indexing tools:
-;;    universal ctags: https://github.com/universal-ctags/ctags
-;;    gtags: https://github.com/universal-ctags/ctags
-;;    eglot: built-in with modern emacs, uses external lsp servers
-(use-package citre
+(use-package dired-subtree
   :ensure t
-  :after (eglot projectile)
-  :init
-  ;; This is needed in `:init' block for lazy load to work.
-  (require 'citre-config)
-  :custom
-  (citre-project-root-function #'projectile-project-root)
-  (citre-default-create-tags-file-location 'global-cache)
-  (citre-edit-ctags-options-manually nil)
-  (citre-auto-enable-citre-mode-modes '(prog-mode))
+  :after dired
   :config
-  (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
+  (general-define-key
+   :states 'normal
+   :keymaps 'dired-mode-map
+   "TAB" #'dired-subtree-toggle))
+
+(use-package diredfl
+  :ensure t
+  :config
+  (diredfl-global-mode))
+
+;; -----------------------------------------------------------
+;; DONE Editing & editor
+;;
+;; hl-todo
+;; pangu-spacing
+;; diff-hl
+;; cnfonts
+;; smartparens
+;; which-key
+;; expand-region
+;; inhibit-mouse
+;; yasnippet
+;; embark
+;; embark-consult
+;; iedit
+;; ansi-color
+;; sudo-edit
+;; -----------------------------------------------------------
+
+(use-package hl-todo
+  :ensure t
+  :config
+  (global-hl-todo-mode 1)
+  (setq hl-todo-highlight-punctuation ":"
+        hl-todo-keyword-faces
+        '(("TODO" warning bold) ;; require action
+          ("DEPRECATED" warning bold) ;; require action
+          ("REVIEW" warning bold) ;; require action (review)
+          ("HACK" font-lock-keyword-face bold) ;; require notice
+          ("NOTE" font-lock-keyword-face bold) ;; require notice
+          ("TEMP" font-lock-keyword-face bold) ;; require notice
+          ("DONE" success bold)
+          ("FIXME" error bold) ;; require immediate action
+          ("BUG" error bold) ;; require immediate action
+          )))
+
+(use-package diff-hl
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
+  (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode))
 
 (use-package pangu-spacing
   :ensure t
@@ -84,23 +105,42 @@
 (use-package cnfonts
   :ensure t
   :custom
-  (cnfonts-personal-fontnames '(
-                                ("Maple Mono NF CN") ;; English
-                                ("Maple Mono NF CN") ;; Chinese
-                                nil  ;; Ext-B
-                                nil ;; Symbol
-                                nil ;; Others
-                                ))
+  (cnfonts-personal-fontnames 
+   '(
+     ("Maple Mono NF CN") ;; English
+     ("Maple Mono NF CN") ;; Chinese
+     nil  ;; Ext-B
+     nil ;; Symbol
+     nil ;; Others
+     ))
   (cnfonts-use-face-font-rescale t)
   :config
   ;; NOTE you can use this to list all fonts
   ;; (cl-prettyprint (font-family-list))
-  (cnfonts-mode 1)
-  )
+  (cnfonts-mode 1))
 
-(use-package vertico-posframe
+(use-package smartparens
+  :ensure t  ;; install the package
+  :hook (prog-mode text-mode markdown-mode org-mode) 
+  :config
+  ;; load default config
+  (require 'smartparens-config))
+
+(use-package which-key
   :ensure t
-  :hook (vertico-mode . vertico-posframe-mode))
+  :custom
+  (which-key-max-display-columns nil)
+  (which-key-min-display-lines 6)
+  (which-key-side-window-slot -10)
+  (which-key-add-column-padding 1)
+  (which-key-sort-order 'which-key-key-order-alpha)
+  (which-key-sort-uppercase-first nil)
+  :config
+  (which-key-setup-side-window-bottom)
+  (which-key-mode 1))
+
+(use-package expand-region
+  :ensure t)
 
 (use-package inhibit-mouse
   :ensure t
@@ -123,63 +163,6 @@
         (message "inhibit-mouse-mode enabled"))))
   )
 
-(use-package diff-hl
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
-  (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode))
-
-(use-package persp-projectile
-  :ensure t)
-
-(use-package popwin
-  :ensure t
-  :custom 
-  (popwin:popup-window-height 0.5)
-  (popwin:popup-window-width 0.5)
-  (popwin:adjust-other-windows t)
-  (popwin:special-display-config
-   '(
-     ("*xref*" :position bottom)
-     (help-mode :position bottom :stick t :dedicated t)
-     (helpful-mode :position bottom :stick t :dedicated t)
-     (Man-mode :position bottom :stick t :dedicated t)
-     ("*Flycheck errors*" :position bottom :stick t :dedicated t)
-     ("*Messages*" :position bottom :stick t :dedicated t)
-     ("*LLM response*" :position bottom :stick t :dedicated t)
-     ("*scratch*" :position bottom :stick t :dedicated t)
-     ;; ((lambda (b) ; predicate for gptel buffer
-     ;;    ;; NOTE: buffer check is required (#450)
-     ;;    (and-let* ((buf (get-buffer (or (car-safe b) b))))
-     ;;      (buffer-local-value 'gptel-mode buf)))
-     ;;  :position bottom :stick t :tail t :dedicated t)
-     ;;
-     ;; FIXME claude-code uses full frame, temp
-     ;; (claude-code--buffer-p :position right :stick t)
-     )
-   )
-  :config
-  (popwin-mode 1))
-
-(use-package smartparens
-  :ensure t  ;; install the package
-  :hook (prog-mode text-mode markdown-mode org-mode) 
-  :config
-  ;; load default config
-  (require 'smartparens-config))
-
-(use-package perspective
-  :ensure t
-  :custom 
-  (persp-suppress-no-prefix-key-warning t)
-  (persp-sort 'created)
-  (persp-modestring-dividers '("[" "]" "] ["))
-  (persp-show-modestring 'nil)
-  :init
-  (persp-mode)
-  :config
-  (put 'persp-selected-face 'face-alias 'success))
-
 (use-package yasnippet
   :ensure t
   :config
@@ -190,26 +173,6 @@
   ;; reload all snippets
   (yas-reload-all)
   )
-
-(use-package eldoc-box
-  :ensure t
-  :after eglot
-  :if window-system ;; do not load eldoc-box on termial emacs
-  :config
-  (setq eldoc-echo-area-use-multiline-p nil)
-  (add-hook 'eldoc-mode-hook #'eldoc-box-hover-mode)
-  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
-  )
-
-(use-package ansi-color
-  :ensure t
-  :hook (compilation-filter . ansi-color-compilation-filter))
-
-(use-package iedit
-  :ensure t
-  :init
-  ;; Fix conflict with embark.
-  (setq iedit-toggle-key-default nil))
 
 (use-package embark
   :ensure t
@@ -228,8 +191,57 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+(use-package iedit
+  :ensure t
+  :init
+  ;; Fix conflict with embark.
+  (setq iedit-toggle-key-default nil))
+
+(use-package ansi-color
+  :ensure t
+  :hook (compilation-filter . ansi-color-compilation-filter))
+
+(use-package sudo-edit
+  :ensure t)
+
+;; -----------------------------------------------------------
+;; DONE programming
+;;
+;; consult-citre
+;; citre
+;; flycheck-popup-tip
+;; flycheck
+;; flycheck-eglot
+;; eglot
+;; eldoc-box
+;; 
+;; NOTE You need to install indexing tools for citre:
+;;    universal ctags: https://github.com/universal-ctags/ctags
+;;    gtags: https://github.com/universal-ctags/ctags
+;;    eglot: built-in with modern emacs, uses external lsp servers
+;; -----------------------------------------------------------
+
+(use-package consult-citre
+  :after consult
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
+
+(use-package citre
+  :ensure t
+  :after (eglot projectile)
+  :init
+  ;; This is needed in `:init' block for lazy load to work.
+  (require 'citre-config)
+  :custom
+  (citre-project-root-function #'projectile-project-root)
+  (citre-default-create-tags-file-location 'global-cache)
+  (citre-edit-ctags-options-manually nil)
+  (citre-auto-enable-citre-mode-modes '(prog-mode))
+  :config
+  (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
+
 (use-package flycheck-popup-tip
   :ensure t
+  :after evil
   :config
   (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode)
   ;; see: 
@@ -256,7 +268,6 @@
   (flycheck-idle-change-delay 4)
   )
 
-
 (use-package flycheck-eglot
   :ensure t
   :after (flycheck eglot)
@@ -265,56 +276,74 @@
   :config
   (global-flycheck-eglot-mode 1))
 
+(use-package consult-eglot
+  :ensure t)
+
+(use-package eglot
+  :ensure t
+  :config
+  ;; (add-hook 'c-ts-mode-hook 'eglot-ensure)
+  ;; (add-hook 'c++-ts-mode-hook 'eglot-ensure)
+  ;; (add-hook 'rust-ts-mode-hook 'eglot-ensure)
+  ;; (add-hook 'go-ts-mode-hook 'eglot-ensure)
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  (setq eglot-confirm-server-initiated-edits nil)
+  )
+
+(use-package eldoc-box
+  :ensure t
+  :after eglot
+  :if window-system ;; do not load eldoc-box on termial emacs
+  :config
+  (setq eldoc-echo-area-use-multiline-p nil)
+  (add-hook 'eldoc-mode-hook #'eldoc-box-hover-mode)
+  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
+  )
+
+;; -----------------------------------------------------------
+;; DONE Completion, search
+;; 
+;; consult
+;; vertico
+;; vertico-posframe
+;; marginalia
+;; corfu
+;; corfu-terminal
+;; orderless
+;; -----------------------------------------------------------
+
+(use-package consult
+  :ensure t
+  :custom
+  (consult-preview-max-count 17)
+  (consult-customize
+   consult-ripgrep consult-git-grep consult-grep consult-man
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   :preview-key '(:debounce 1 any))
+  :config 
+  (setq xref-show-xrefs-function       #'consult-xref
+        xref-show-definitions-function #'consult-xref))
+
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode)
+  :custom
+  (vertico-cycle t)
+  (vertico-preselect 'first) 
+  (vertico-count 17)
+  )
+
+(use-package vertico-posframe
+  :ensure t
+  :hook (vertico-mode . vertico-posframe-mode))
+
 (use-package marginalia
   :ensure t
   :init
   (marginalia-mode))
-
-(use-package dashboard
-  :ensure t
-  :custom
-  (dashboard-banner-logo-title "It's possible to build a cabin with no foundations, but not a lasting building.")
-  (dashboard-center-content t)
-  (dashboard-vertically-center-content t)
-  (dashboard-show-shortcuts nil)
-  (dashboard-set-heading-icons nil)
-  (dashboard-startup-banner 4) ; 4 means using 4.txt
-  (dashboard-set-file-icons nil)
-  (dashboard-items '((recents  . 5)
-                     (projects  . 5)
-                     (bookmarks . 5)))
-  (dashboard-projects-backend 'projectile)
-  :config
-  (dashboard-setup-startup-hook)
-
-  ;; HACK from https://github.com/emacs-dashboard/emacs-dashboard/issues/153#issuecomment-714406661
-  (defvar my-banners-dir (concat +emacs/repo-directory "/data/"))
-  (defun +dashboard/install-banners ()
-    "Copy all files under under banners directory to dashboard banners directory"
-    (when (boundp 'dashboard-banners-directory)
-      (copy-directory my-banners-dir dashboard-banners-directory nil nil t)))
-  (+dashboard/install-banners)
-
-  ;; To disable shortcut "jump" indicators for each section, set
-  (setq dashboard-after-initialize-hook (lambda() (dashboard-open)))
-  (setq initial-buffer-choice (lambda() (dashboard-open))))
-
-(use-package hl-todo
-  :ensure t
-  :config
-  (global-hl-todo-mode 1)
-  (setq hl-todo-highlight-punctuation ":"
-        hl-todo-keyword-faces
-        '(("TODO" warning bold) ;; require action
-          ("DEPRECATED" warning bold) ;; require action
-          ("REVIEW" warning bold) ;; require action (review)
-          ("HACK" font-lock-keyword-face bold) ;; require notice
-          ("NOTE" font-lock-keyword-face bold) ;; require notice
-          ("TEMP" font-lock-keyword-face bold) ;; require notice
-          ("DONE" success bold)
-          ("FIXME" error bold) ;; require immediate action
-          ("BUG" error bold) ;; require immediate action
-          )))
 
 (use-package corfu
   :ensure t
@@ -346,19 +375,197 @@
         completion-category-overrides
         '((file (styles . (partial-completion))))))
 
-(use-package consult-eglot
+;;;###autoload
+(cl-defun +vertico-file-search 
+    (&key query in all-files (recursive t) prompt args)
+  "Conduct a file search using ripgrep.
+
+:query STRING
+  Determines the initial input to search for.
+:in PATH
+  Sets what directory to base the search out of. Defaults to the current project's root.
+:recursive BOOL
+  Whether or not to search files recursively from the base directory.
+:args LIST
+  Arguments to be appended to `consult-ripgrep-args'."
+  (declare (indent defun))
+  (unless (executable-find "rg")
+    (user-error "Couldn't find ripgrep in your PATH"))
+  (require 'consult)
+  (setq deactivate-mark t)
+  (let* ((project-root (or (projectile-project-root) default-directory))
+         (directory (or in project-root))
+         (consult-ripgrep-args
+          (concat "rg "
+                  (if all-files "-uu ")
+                  (unless recursive "--maxdepth 1 ")
+                  "--null --line-buffered --color=never --max-columns=1000 "
+                  "--smart-case --no-heading "
+                  "--with-filename --line-number --search-zip "
+                  "--hidden -g !.git -g !.svn -g !.hg "
+                  (mapconcat #'identity args " ")))
+         (prompt (if (stringp prompt) (string-trim prompt) "Search"))
+         (query query)
+         (consult-async-split-style consult-async-split-style)
+         (consult-async-split-styles-alist consult-async-split-styles-alist))
+    ;; Change the split style if the initial query contains the separator.
+    (when query
+      (cl-destructuring-bind (&key type separator initial _function)
+          (alist-get consult-async-split-style consult-async-split-styles-alist)
+        (pcase type
+          (`separator
+           (replace-regexp-in-string (regexp-quote (char-to-string separator))
+                                     (concat "\\" (char-to-string separator))
+                                     query t t))
+          (`perl
+           (when (string-match-p initial query)
+             (setf (alist-get 'perlalt consult-async-split-styles-alist)
+                   `(:initial ,(or (cl-loop for char in (list "%" "@" "!" "&" "/" ";")
+                                            unless (string-match-p char query)
+                                            return char)
+                                   "%")
+                              :type perl)
+                   consult-async-split-style 'perlalt))))))
+    (consult--grep prompt #'consult--ripgrep-make-builder directory query)))
+
+;;;###autoload
+(defun +vertico/project-search 
+    (&optional arg initial-query directory)
+  "Performs a live project search from the project root using ripgrep.
+If ARG (universal argument), include all files, even hidden or compressed ones,
+in the search."
+  (interactive "P")
+  (+vertico-file-search :query initial-query :in directory :all-files arg))
+
+;; -----------------------------------------------------------
+;; DONE Workspaces
+;;
+;; persp-projectile
+;; perspective
+;; projectile
+;; -----------------------------------------------------------
+
+(use-package persp-projectile
   :ensure t)
 
-(use-package eglot
+(use-package perspective
   :ensure t
+  :custom 
+  (persp-suppress-no-prefix-key-warning t)
+  (persp-sort 'created)
+  (persp-modestring-dividers '("[" "]" "] ["))
+  (persp-show-modestring 'nil)
+  :init
+  (persp-mode)
   :config
-  ;; (add-hook 'c-ts-mode-hook 'eglot-ensure)
-  ;; (add-hook 'c++-ts-mode-hook 'eglot-ensure)
-  ;; (add-hook 'rust-ts-mode-hook 'eglot-ensure)
-  ;; (add-hook 'go-ts-mode-hook 'eglot-ensure)
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
-  (setq eglot-confirm-server-initiated-edits nil)
-  )
+  (put 'persp-selected-face 'face-alias 'success))
+
+(use-package projectile
+  :ensure t
+  :custom (projectile-project-name-function 
+           '+projectile-project-name--lower-case)
+  (projectile-indexing-method 'hybrid)
+  (projectile-enable-caching t)
+  (projectile-per-project-compilation-buffer t)
+  (projectile-switch-project-action 'projectile-find-file)
+  :config
+  (defun +projectile-project-name--lower-case (project-root)
+    (downcase (file-name-nondirectory 
+               (directory-file-name project-root))))
+  (projectile-global-mode +1))
+
+(defun +persp/format-name-as-in-echo (name)
+  "Format the perspective name given by NAME for display in the echo area."
+  (if (equal name (persp-current-name))
+      (setq name (format "[%s]" name)) 
+    (setq name (format " %s " name)) 
+    ))
+
+(defun +persp/show-name-in-echo ()
+  "Show persp names in the echo area."
+  (let ((message-log-max nil))
+    (message (mapconcat 'identity 
+                        (mapcar '+persp/format-name-as-in-echo
+                                (persp-names))))))
+
+(defun +persp/prev ()
+  "Like persp-prev, but show additional message in each area."
+  (interactive)
+  (persp-prev)
+  (+persp/show-name-in-echo))
+
+(defun +persp/next ()
+  "Like persp-next, but show additional message in each area."
+  (interactive)
+  (persp-next)
+  (+persp/show-name-in-echo))
+
+(defun +persp/kill-current-workspace ()
+  (interactive)
+  (persp-kill (persp-current-name))
+  (+persp/show-name-in-echo))
+
+(defun +persp/move-buffer-prev ()
+  "Like persp-prev, but move current."
+  (interactive)
+  (let ((tmp-buffer (current-buffer)))
+    (persp-forget-buffer tmp-buffer)
+    (persp-prev)
+    (persp-set-buffer tmp-buffer)
+    (persp-switch-to-buffer tmp-buffer))
+  (+persp/show-name-in-echo))
+
+(defun +persp/move-buffer-next ()
+  "Like persp-next, but move current."
+  (interactive)
+  (let ((tmp-buffer (current-buffer)))
+    (persp-forget-buffer tmp-buffer)
+    (persp-next)
+    (persp-set-buffer tmp-buffer)
+    (persp-switch-to-buffer tmp-buffer))
+  (+persp/show-name-in-echo))
+
+;; let C-g (or anything that sends a 'quit signal to show the persp names)
+(advice-add 'keyboard-quit :before #'(lambda () (put 'quit 'error-message (+persp/show-name-in-echo))))
+
+;; -----------------------------------------------------------
+;; DONE other useful tools
+;;
+;; dashboard
+;; magit
+;; eat
+;; helpful
+;; popwin
+;; -----------------------------------------------------------
+
+(use-package dashboard
+  :ensure t
+  :custom
+  (dashboard-banner-logo-title "It's possible to build a cabin with no foundations, but not a lasting building.")
+  (dashboard-center-content t)
+  (dashboard-vertically-center-content t)
+  (dashboard-show-shortcuts nil)
+  (dashboard-set-heading-icons nil)
+  (dashboard-startup-banner 4) ; 4 means using 4.txt
+  (dashboard-set-file-icons nil)
+  (dashboard-items '((recents  . 5)
+                     (projects  . 5)
+                     (bookmarks . 5)))
+  (dashboard-projects-backend 'projectile)
+  :config
+  (dashboard-setup-startup-hook)
+
+  ;; HACK from https://github.com/emacs-dashboard/emacs-dashboard/issues/153#issuecomment-714406661
+  (defvar my-banners-dir (concat +emacs/repo-directory "/data/"))
+  (defun +dashboard/install-banners ()
+    "Copy all files under under banners directory to dashboard banners directory"
+    (when (boundp 'dashboard-banners-directory)
+      (copy-directory my-banners-dir dashboard-banners-directory nil nil t)))
+  (+dashboard/install-banners)
+
+  ;; To disable shortcut "jump" indicators for each section, set
+  (setq dashboard-after-initialize-hook (lambda() (dashboard-open)))
+  (setq initial-buffer-choice (lambda() (dashboard-open))))
 
 (use-package magit
   :ensure t
@@ -411,227 +618,36 @@
    "p"   #'eat-yank)
   )
 
-;; projectile
-;; see: https://docs.projectile.mx/projectile/configuration.html#regenerate-tags
-(use-package projectile
-  :ensure t
-  :custom
-  (projectile-project-name-function '+projectile-project-name--lower-case)
-  (projectile-indexing-method 'hybrid)
-  (projectile-enable-caching t)
-  (projectile-per-project-compilation-buffer t)
-  (projectile-switch-project-action 'projectile-find-file)
-  :config
-  (defun +projectile-project-name--lower-case (project-root)
-    (downcase (file-name-nondirectory (directory-file-name project-root))))
-  (projectile-global-mode +1)
-  )
-
-;; helpful
 (use-package helpful
   :ensure t)
 
-;; vertico
-(use-package vertico
+(use-package popwin
   :ensure t
-  :init
-  (vertico-mode)
-  :custom
-  (vertico-cycle t)
-  (vertico-preselect 'first) 
-  (vertico-count 17)
-  )
-
-;; consult
-(use-package consult
-  :ensure t
-  :custom
-  (consult-preview-max-count 17)
-  (consult-customize
-   consult-ripgrep consult-git-grep consult-grep consult-man
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
-   ;; my/command-wrapping-consult    ;; disable auto previews inside my command
-   :preview-key '(:debounce 1 any) ;; Option 1: Delay preview
+  :custom 
+  (popwin:popup-window-height 0.5)
+  (popwin:popup-window-width 0.5)
+  (popwin:adjust-other-windows t)
+  (popwin:special-display-config
+   '(
+     ("*xref*" :position bottom)
+     (help-mode :position bottom :stick t :dedicated t)
+     (helpful-mode :position bottom :stick t :dedicated t)
+     (Man-mode :position bottom :stick t :dedicated t)
+     ("*Flycheck errors*" :position bottom :stick t :dedicated t)
+     ("*Messages*" :position bottom :stick t :dedicated t)
+     ("*LLM response*" :position bottom :stick t :dedicated t)
+     ("*scratch*" :position bottom :stick t :dedicated t)
+     ;; ((lambda (b) ; predicate for gptel buffer
+     ;;    ;; NOTE: buffer check is required (#450)
+     ;;    (and-let* ((buf (get-buffer (or (car-safe b) b))))
+     ;;      (buffer-local-value 'gptel-mode buf)))
+     ;;  :position bottom :stick t :tail t :dedicated t)
+     ;;
+     ;; FIXME claude-code uses full frame, temp
+     ;; (claude-code--buffer-p :position right :stick t)
+     )
    )
-  :config 
-  (setq xref-show-xrefs-function       #'consult-xref
-        xref-show-definitions-function #'consult-xref)
-  )
-
-;; sudo-edit
-(use-package sudo-edit
-  :ensure t)
-
-;; dired hide .. and .
-(add-hook 'dired-mode-hook 'dired-omit-mode)
-
-(use-package dired
-  :custom
-  (dired-listing-switches 
-   (purecopy "-ahl -v --group-directories-first"))
-  (dired-kill-when-opening-new-dired-buffer t)
-  (dired-omit-extensions nil)
-  (dired-dwim-target t)
   :config
-  (general-define-key
-   :states 'normal
-   :keymaps 'dired-mode-map
-   "h"   #'dired-up-directory
-   "l"   #'dired-find-file
-   "T"   #'dired-create-empty-file
-   )
-  )
-
-(use-package dired-subtree
-  :ensure t
-  :after dired
-  :config
-  (general-define-key
-   :states 'normal
-   :keymaps 'dired-mode-map
-   "TAB" #'dired-subtree-toggle)
-  )
-
-(use-package diredfl
-  :ensure t
-  :config
-  (diredfl-global-mode)
-  )
-
-(use-package tramp
-  :config
-  ;; Enable full-featured Dirvish over TRAMP on ssh connections
-  ;; https://www.gnu.org/software/tramp/#Improving-performance-of-asynchronous-remote-processes
-  (connection-local-set-profile-variables
-   'remote-direct-async-process
-   '((tramp-direct-async-process . t)))
-  (connection-local-set-profiles
-   '(:application tramp :protocol "ssh")
-   'remote-direct-async-process)
-  ;; Tips to speed up connections
-  (setq tramp-verbose 0)
-  (setq tramp-chunksize 2000)
-  (setq tramp-ssh-controlmaster-options nil))
-
-;;;###autoload
-(cl-defun +vertico-file-search (&key query in all-files (recursive t) prompt args)
-  "Conduct a file search using ripgrep.
-
-:query STRING
-  Determines the initial input to search for.
-:in PATH
-  Sets what directory to base the search out of. Defaults to the current project's root.
-:recursive BOOL
-  Whether or not to search files recursively from the base directory.
-:args LIST
-  Arguments to be appended to `consult-ripgrep-args'."
-  (declare (indent defun))
-  (unless (executable-find "rg")
-    (user-error "Couldn't find ripgrep in your PATH"))
-  (require 'consult)
-  (setq deactivate-mark t)
-  (let* ((project-root (or (projectile-project-root) default-directory))
-         (directory (or in project-root))
-         (consult-ripgrep-args
-          (concat "rg "
-                  (if all-files "-uu ")
-                  (unless recursive "--maxdepth 1 ")
-                  "--null --line-buffered --color=never --max-columns=1000 "
-                  "--smart-case --no-heading "
-                  "--with-filename --line-number --search-zip "
-                  "--hidden -g !.git -g !.svn -g !.hg "
-                  (mapconcat #'identity args " ")))
-         (prompt (if (stringp prompt) (string-trim prompt) "Search"))
-         (query query)
-         (consult-async-split-style consult-async-split-style)
-         (consult-async-split-styles-alist consult-async-split-styles-alist))
-    ;; Change the split style if the initial query contains the separator.
-    (when query
-      (cl-destructuring-bind (&key type separator initial _function)
-          (alist-get consult-async-split-style consult-async-split-styles-alist)
-        (pcase type
-          (`separator
-           (replace-regexp-in-string (regexp-quote (char-to-string separator))
-                                     (concat "\\" (char-to-string separator))
-                                     query t t))
-          (`perl
-           (when (string-match-p initial query)
-             (setf (alist-get 'perlalt consult-async-split-styles-alist)
-                   `(:initial ,(or (cl-loop for char in (list "%" "@" "!" "&" "/" ";")
-                                            unless (string-match-p char query)
-                                            return char)
-                                   "%")
-                              :type perl)
-                   consult-async-split-style 'perlalt))))))
-    (consult--grep prompt #'consult--ripgrep-make-builder directory query)))
-
-;;;###autoload
-(defun +vertico/project-search (&optional arg initial-query directory)
-  "Performs a live project search from the project root using ripgrep.
-If ARG (universal argument), include all files, even hidden or compressed ones,
-in the search."
-  (interactive "P")
-  (+vertico-file-search :query initial-query :in directory :all-files arg))
-
-(defun +revert-buffer-no-confirm ()
-  "Revert buffer without confirmation."
-  (interactive) (revert-buffer t t))
-
-(defun +persp/format-name-as-in-echo (name)
-  "Format the perspective name given by NAME for display in the echo area."
-  (if (equal name (persp-current-name))
-      (setq name (format "[%s]" name)) 
-    (setq name (format " %s " name)) 
-    ))
-
-(defun +persp/show-name-in-echo ()
-  "Show persp names in the echo area."
-  (let ((message-log-max nil))
-    (message (mapconcat 'identity 
-                        (mapcar '+persp/format-name-as-in-echo
-                                (persp-names))))))
-
-(defun +persp/prev ()
-  "Like persp-prev, but show additional message in each area."
-  (interactive)
-  (persp-prev)
-  (+persp/show-name-in-echo))
-
-(defun +persp/next ()
-  "Like persp-next, but show additional message in each area."
-  (interactive)
-  (persp-next)
-  (+persp/show-name-in-echo))
-
-;; HACK kill current persp without asking
-(defun +persp/kill-current-workspace ()
-  (interactive)
-  (persp-kill (persp-current-name))
-  (+persp/show-name-in-echo))
-
-(defun +persp/move-buffer-prev ()
-  "Like persp-prev, but move current."
-  (interactive)
-  (let ((tmp-buffer (current-buffer)))
-    (persp-forget-buffer tmp-buffer)
-    (persp-prev)
-    (persp-set-buffer tmp-buffer)
-    (persp-switch-to-buffer tmp-buffer))
-  (+persp/show-name-in-echo))
-
-(defun +persp/move-buffer-next ()
-  "Like persp-next, but move current."
-  (interactive)
-  (let ((tmp-buffer (current-buffer)))
-    (persp-forget-buffer tmp-buffer)
-    (persp-next)
-    (persp-set-buffer tmp-buffer)
-    (persp-switch-to-buffer tmp-buffer))
-  (+persp/show-name-in-echo))
-
-;; let C-g (or anything that sends a 'quit signal to show the persp names)
-(advice-add 'keyboard-quit :before #'(lambda () (put 'quit 'error-message (+persp/show-name-in-echo))))
+  (popwin-mode 1))
 
 (provide 'init-core)

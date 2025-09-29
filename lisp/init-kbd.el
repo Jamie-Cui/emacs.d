@@ -7,11 +7,13 @@
 
 ;; ------------------------------------------------------------------
 ;; DONE Key Bindings
+;;
+;; general
 ;; ------------------------------------------------------------------
 
 (use-package general
   :ensure t
-  :after (evil evil-mc)
+  :after (evil evil-mc which-key)
   :config
   (defconst my-leader "SPC")
   (defconst my-local-leader "SPC m")
@@ -95,7 +97,7 @@
     "b" '(:ignore t :which-key "buffer")
     "bn"     #'evil-buffer-new
     "bd"     #'kill-current-buffer
-    "br"     #'+revert-buffer-no-confirm
+    "br"     #'(lambda () (interactive) (revert-buffer t t))
     "B" '(:ignore t :which-key "bookmark")
     "BB"     #'consult-bookmark
     "Bn"     #'bookmark-set
@@ -110,7 +112,6 @@
     "ob"     #'citar-open
     "oB"     #'ebib
     "oc"     #'+compile/do
-    "oC"     #'+compile/open-projectile-compilation-buffer
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
     "oe"     #'elfeed
@@ -226,44 +227,5 @@
     "p" #'org-priority
     )
   )
-
-;; ------------------------------------------------------------------
-;; DONE Small hack functions for keybindings
-;; ------------------------------------------------------------------
-
-;;; HACK eshell
-;;; Always get a new eat terminal
-(defun +eat/new ()
-  (interactive)
-  (let ((current-prefix-arg '(t)))
-    (call-interactively 'eat)))
-
-;;; HACK compile buffer
-;;; New or switch to existing compile buffer
-(defun +compile/open-projectile-compilation-buffer ()
-  (interactive)
-  (let ((target-buffer 
-         (projectile-compilation-buffer-name "compilation")))
-    (if (bufferp (get-buffer target-buffer))
-        (display-buffer target-buffer) 
-      (call-interactively 'projectile-compile-project))
-    ))
-
-;;; HACK compile
-;;; Do not promote for previous command
-(defun +compile/do ()
-  (interactive
-   (list
-    (let ((command ""))
-      (if (or compilation-read-command current-prefix-arg)
-	      (compilation-read-command command)
-	    command))
-    (consp current-prefix-arg)))
-  (unless (equal command (eval compile-command))
-    (setq compile-command command))
-  (save-some-buffers (not compilation-ask-about-save)
-                     compilation-save-buffers-predicate)
-  (setq-default compilation-directory default-directory)
-  (compilation-start command comint))
 
 (provide 'init-kbd)

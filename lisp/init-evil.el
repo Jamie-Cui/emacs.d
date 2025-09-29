@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+(use-package expand-region
+  :ensure t)
+
 (use-package undo-tree
   :ensure t
   :custom (undo-tree-history-directory-alist 
