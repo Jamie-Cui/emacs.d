@@ -5,26 +5,31 @@
 (require 'init-org)
 (require 'reftex)
 
+(use-package auctex
+  :ensure t)
+
 (use-package ebib
   :ensure t
   :custom
   (ebib-layout 'full)
   (ebib-index-window-size 10)
   :config
-  (add-to-list 'ebib-preload-bib-files (concat +emacs/org-root-dir "/all-ref.bib"))
-
+  (add-to-list 'ebib-preload-bib-files
+               (concat +emacs/org-root-dir "/all-ref.bib"))
   (setq +ebib/index-window-scale 0.5)
-
-  ;; HACK use window scale
-  (advice-add 'ebib :around #'(lambda (fun &rest args)
-                                (let* ((ebib-index-window-size (round (* (frame-height) +ebib/index-window-scale))))
-                                  (apply fun args)))))
+  (advice-add 'ebib 
+              :around 
+              #'(lambda (fun &rest args)
+                  (let* ((ebib-index-window-size 
+                          (round (* (frame-height)
+                                    +ebib/index-window-scale))))
+                    (apply fun args)))))
 
 (use-package pdf-tools
   :ensure t
-  :if (not (eq system-type 'windows-nt)) ;; do not load on windows
-  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode) ; Associate .pdf files with pdf-view-mode
-  :magic ("%PDF" . pdf-view-mode) ; Use magic number to identify PDF files
+  :if (not (eq system-type 'windows-nt)) 
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode) 
+  :magic ("%PDF" . pdf-view-mode) 
   :custom
   ;; to use pdfview with auctex
   (TeX-view-program-selection '((output-pdf "PDF Tools")))
@@ -32,7 +37,8 @@
   (pdf-tools-install)
   :config
   ;; pdf-tools have the buffer refresh after compilation
-  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+  (add-hook 'TeX-after-compilation-finished-functions 
+            #'TeX-revert-document-buffer)
 
   ;; Enable SyncTeX
   (setq TeX-source-correlate-mode t)
@@ -40,7 +46,8 @@
 
   ;; Set PDF-Tools as the default viewer
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-        TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
+        TeX-view-program-list 
+        '(("PDF Tools" TeX-pdf-tools-sync-view)))
 
   ;; Define forward search function
   (defun TeX-pdf-tools-sync-view ()
@@ -55,38 +62,12 @@
         pdf-sync-generic-forward-search-command
         "emacsclient --no-wait +%l '%f'")
 
-  (setq TeX-PDF-mode t) ; Ensure PDF output
-  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode) ; Auto-enable SyncTeX
-  )
+  (setq TeX-PDF-mode t) 
+  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode))
 
-(use-package biblio
-  :ensure t
-  :custom
-  (biblio-bibtex-use-autokey t)
-  :config
-  )
-
-(use-package auctex
-  :ensure t)
-
-;; this package is built-in
 (use-package bibtex
   :ensure t
   :config
-  (defun +bibtex/add-doi ()
-    (interactive)
-    (progn
-      (setq doi-to-query (read-string "DOI: "))
-      (find-file (concat +emacs/org-root-dir "/all-ref.bib"))
-      (end-of-buffer)
-      (doi-insert-bibtex doi-to-query)
-      )
-    )
-
-  (defun +bibtex/open-bibtex-file ()
-    (interactive)
-    (find-file (concat +emacs/org-root-dir "/all-ref.bib")))
-
   ;; Configure uniquification (appends a/b/c for duplicates)
   (setopt bibtex-autokey-name-case-convert-function #'upcase)
   (setopt bibtex-autokey-names 4)
@@ -123,17 +104,22 @@ is returned unchanged."
                  string)))))
 
   ;; default bib file
-  (add-to-list 'bibtex-files (concat +emacs/org-root-dir "/all-ref.bib"))
+  (add-to-list 'bibtex-files 
+               (concat +emacs/org-root-dir "/all-ref.bib"))
   )
 
 (use-package citar
   :ensure t
   :config
-  (add-to-list 'citar-bibliography (concat +emacs/org-root-dir "/all-ref.bib"))
-  (add-to-list 'citar-library-paths (concat +emacs/org-root-dir "/pdf"))
-  (add-to-list 'citar-notes-paths (concat +emacs/org-root-dir "/roam"))
+  (add-to-list 'citar-bibliography 
+               (concat +emacs/org-root-dir "/all-ref.bib"))
+  (add-to-list 'citar-library-paths 
+               (concat +emacs/org-root-dir "/pdf"))
+  (add-to-list 'citar-notes-paths 
+               (concat +emacs/org-root-dir "/roam"))
   ;; NOTE this var is used by org-export
-  (add-to-list 'org-cite-global-bibliography (concat +emacs/org-root-dir "/all-ref.bib"))
+  (add-to-list 'org-cite-global-bibliography 
+               (concat +emacs/org-root-dir "/all-ref.bib"))
   :hook
   (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup))

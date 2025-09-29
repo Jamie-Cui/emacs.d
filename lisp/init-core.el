@@ -481,8 +481,7 @@ in the search."
   "Format the perspective name given by NAME for display in the echo area."
   (if (equal name (persp-current-name))
       (setq name (format "[%s]" name)) 
-    (setq name (format " %s " name)) 
-    ))
+    (setq name (format " %s " name))))
 
 (defun +persp/show-name-in-echo ()
   "Show persp names in the echo area."
@@ -490,18 +489,6 @@ in the search."
     (message (mapconcat 'identity 
                         (mapcar '+persp/format-name-as-in-echo
                                 (persp-names))))))
-
-(defun +persp/prev ()
-  "Like persp-prev, but show additional message in each area."
-  (interactive)
-  (persp-prev)
-  (+persp/show-name-in-echo))
-
-(defun +persp/next ()
-  "Like persp-next, but show additional message in each area."
-  (interactive)
-  (persp-next)
-  (+persp/show-name-in-echo))
 
 (defun +persp/kill-current-workspace ()
   (interactive)
@@ -528,7 +515,7 @@ in the search."
     (persp-switch-to-buffer tmp-buffer))
   (+persp/show-name-in-echo))
 
-;; let C-g (or anything that sends a 'quit signal to show the persp names)
+;; let 'quit signal to show the persp names
 (advice-add 'keyboard-quit :before #'(lambda () (put 'quit 'error-message (+persp/show-name-in-echo))))
 
 ;; -----------------------------------------------------------

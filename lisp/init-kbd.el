@@ -52,8 +52,10 @@
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
-   "C-h"     #'+persp/prev
-   "C-l"     #'+persp/next
+   "C-h"     #'(lambda () (interactive) 
+                 (persp-prev) (+persp/show-name-in-echo))
+   "C-l"     #'(lambda () (interactive) 
+                 (persp-next) (+persp/show-name-in-echo))
    "C-M-h"   #'+persp/move-buffer-prev
    "C-M-l"   #'+persp/move-buffer-next)
   ;; ** Global Keybindings
@@ -109,14 +111,11 @@
     "dn"     #'docker-networks
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
-    "ob"     #'citar-open
-    "oB"     #'ebib
+    "ob"     #'ebib ; edit bib
     "oc"     #'+compile/do
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
     "oe"     #'elfeed
-    "oi"     #'gptel
-    "oI"     #'claude-code-toggle
     "og"     #'magit-status-quick
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
@@ -129,29 +128,18 @@
     "pc"     #'projectile-compile-project 
     "pC"     #'projectile-configure-project 
     "pd"     #'projectile-remove-known-project
+    "pD"     #'projectile-run-gdb
     "pf"     #'+vertico/project-search
     "pi"     #'projectile-invalidate-cache
     "po"     #'ff-find-related-file
     "pp"     #'projectile-switch-project
     "pq"     #'+persp/kill-current-workspace
     "pr"     #'projectile-run-project 
-    "pR"     #'projectile-run-gdb
     "pt"     #'projectile-test-project 
-    "P" '(:ignore t :which-key "perspevtive")
-    "Ph"     #'persp-prev
-    "Pl"     #'persp-next
-    "PH"     #'+persp/move-buffer-prev
-    "PL"     #'+persp/move-buffer-next
-    "Pq"     #'+persp/kill-current-workspace
-    "Po"     #'persp-kill-other-buffers
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "n@"      #'citar-insert-citation ;; insert bib
-    "nb" '(:ignore t :which-key "bibtex")
-    "nba"     #'citar-add-file-to-library
-    "nbA"     #'+bibtex/add-doi ;; add bib from doi
-    "nbb"     #'citar-open ;; consult for entry
-    "nbf"     #'+bibtex/open-bibtex-file ;; check bib source
+    "nb"      #'citar-open 
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "ne"      #'org-export-dispatch
@@ -167,7 +155,6 @@
     "hk"     #'helpful-key
     "hv"     #'helpful-variable
     "hm"     #'describe-mode
-    "hM"     #'consult-man
     "hh"     #'consult-history
     ;; quit emacs
     "q" '(:ignore t :which-key "quit")
@@ -182,7 +169,6 @@
     "tF"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
     "tn"     #'display-line-numbers-mode
-    "ti"     #'+highlight-indentation/toggle-mode
     "tm"     #'+inhibit-mouse/toggle-mode
     "tM"     #'+org-imgtog/toggle
     "ta"     #'+treesit-auto/toggle
@@ -212,8 +198,7 @@
     "n" #'deft-new-file
     "f" #'deft-filter
     "d" #'deft-delete-file
-    "g" #'deft-refresh
-    )
+    "g" #'deft-refresh)
 
   ;; org mode map
   (+my-local-leader-def
@@ -224,8 +209,6 @@
     "k" #'org-present-prev
     "q" #'org-present-quit
     "t" #'org-todo
-    "p" #'org-priority
-    )
-  )
+    "p" #'org-priority))
 
 (provide 'init-kbd)
