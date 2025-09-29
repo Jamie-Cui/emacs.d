@@ -89,6 +89,7 @@
 (use-package diff-hl
   :ensure t
   :config
+  (diff-hl-margin-mode 1)
   (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
   (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode))
 
@@ -338,7 +339,9 @@
 
 (use-package vertico-posframe
   :ensure t
-  :hook (vertico-mode . vertico-posframe-mode))
+  :after vertico
+  :config
+  (vertico-posframe-mode 1))
 
 (use-package marginalia
   :ensure t

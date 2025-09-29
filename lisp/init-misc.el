@@ -6,6 +6,9 @@
 (setq lexical-binding t)
 (setq byte-compile-warnings '(not lexical))
 
+;; make minimal margin
+(set-fringe-mode 0)
+
 ;; stop the BELL!
 (setq ring-bell-function 'ignore)
 
