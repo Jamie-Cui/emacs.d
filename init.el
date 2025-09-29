@@ -23,6 +23,10 @@
   :type 'string
   :group 'convenience)
 
+(when (boundp 'url-proxy-services)
+  (add-to-list 'url-proxy-services `("http" . ,+emacs/proxy))
+  (add-to-list 'url-proxy-services `("https" . ,+emacs/proxy)))
+
 ;; add load path
 (add-to-list 'load-path (expand-file-name "lisp" +emacs/repo-directory))
 
