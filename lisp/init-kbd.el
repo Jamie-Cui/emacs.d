@@ -184,7 +184,7 @@
     ;; search
     "s" '(:ignore t :which-key "search")
     "si"     #'consult-imenu ;; search for item
-    "ss"     #'consult-citre ;; search for citre symbols
+    "sI"     #'consult-citre ;; search for citre items
     "sf"     #'consult-locate ;; search for file (system wide)
     "sl"     #'consult-focus-lines ;; search for lines
     "sL"     #'consult-keep-lines ;; search for lines
