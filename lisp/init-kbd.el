@@ -112,7 +112,8 @@
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ob"     #'ebib ; edit bib
-    "oc"     #'+compile/do
+    "oc"     #'(lambda () (interactive) 
+                 (let* ((compile-command "")) (call-interactively 'compile)))
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
     "oe"     #'elfeed
