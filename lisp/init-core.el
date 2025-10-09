@@ -490,11 +490,6 @@ in the search."
                         (mapcar '+persp/format-name-as-in-echo
                                 (persp-names))))))
 
-(defun +persp/kill-current-workspace ()
-  (interactive)
-  (persp-kill (persp-current-name))
-  (+persp/show-name-in-echo))
-
 (defun +persp/move-buffer-prev ()
   "Like persp-prev, but move current."
   (interactive)
@@ -639,11 +634,5 @@ in the search."
    )
   :config
   (popwin-mode 1))
-
-;;; HACK eat, always get a new eat terminal
-(defun +eat/new ()
-  (interactive)
-  (let ((current-prefix-arg '(t)))
-    (call-interactively 'eat)))
 
 (provide 'init-core)

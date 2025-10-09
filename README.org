@@ -21,6 +21,7 @@
 5. Use emacs build-in tree-sitter.
 
 * Getting started
+
 ** Prerequisite
 - gcc toolchain (gcc, g++, cmake, makefile, autotools, ...): compile environment
 - libgccjit: for emacs's native compilation feature

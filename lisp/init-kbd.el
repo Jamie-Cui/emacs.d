@@ -100,6 +100,7 @@
     "b" '(:ignore t :which-key "buffer")
     "bn"     #'evil-buffer-new
     "bd"     #'kill-current-buffer
+    "br" '(:which-key "revert-buffer")
     "br"     #'(lambda () (interactive) (revert-buffer t t))
     "B" '(:ignore t :which-key "bookmark")
     "BB"     #'consult-bookmark
@@ -113,6 +114,7 @@
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ob"     #'ebib ; edit bib
+    "oc" '(:which-key "compile")
     "oc"     #'(lambda () (interactive) 
                  (let* ((compile-command "")) (call-interactively 'compile)))
     "od"     #'dired-jump
@@ -120,7 +122,10 @@
     "oe"     #'elfeed
     "og"     #'magit-status-quick
     "ot"     #'+eshell/new
-    "oT"     #'+eat/new
+    "oT" '(:which-key "eat/new")
+    "oT"     #'(lambda () (interactive) 
+                 (let ((current-prefix-arg '(t)))
+                   (call-interactively 'eat)))
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
     ;; project-related key bindings
@@ -135,7 +140,10 @@
     "pi"     #'projectile-invalidate-cache
     "po"     #'ff-find-related-file
     "pp"     #'projectile-switch-project
-    "pq"     #'+persp/kill-current-workspace
+    "pq" '(:which-key "persp/kill-current-workspace")
+    "pq"     #'(lambda () (interactive) 
+                 (persp-kill (persp-current-name))
+                 (+persp/show-name-in-echo))
     "pr"     #'projectile-run-project 
     "pt"     #'projectile-test-project 
     ;; note functions
@@ -155,6 +163,7 @@
     "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
     "hk"     #'helpful-key
+    "hK" '(:which-key "general-describe-keybindings")
     "hK"     #'(lambda () (interactive) 
                  (let* ((current-prefix-arg '(t))) 
                    (call-interactively 'general-describe-keybindings)))
