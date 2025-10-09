@@ -640,4 +640,10 @@ in the search."
   :config
   (popwin-mode 1))
 
+;;; HACK eat, always get a new eat terminal
+(defun +eat/new ()
+  (interactive)
+  (let ((current-prefix-arg '(t)))
+    (call-interactively 'eat)))
+
 (provide 'init-core)
