@@ -154,6 +154,9 @@
     "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
     "hk"     #'helpful-key
+    "hK"     #'(lambda () (interactive) 
+                 (let* ((current-prefix-arg '(t))) 
+                   (call-interactively 'general-describe-keybindings)))
     "hv"     #'helpful-variable
     "hm"     #'describe-mode
     "hh"     #'consult-history
