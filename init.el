@@ -31,6 +31,15 @@
 (add-to-list 'load-path (expand-file-name "lisp" +emacs/repo-directory))
 
 ;;; -----------------------------------------------------------
+;;; DONE Setup folders
+;;; -----------------------------------------------------------
+
+(make-directory (concat +emacs/org-root-dir "/roam") t)
+(make-directory (concat +emacs/org-root-dir "/journal") t)
+(make-directory (concat +emacs/org-root-dir "/deft") t)
+(make-directory (concat (file-name-directory user-init-file) "/bin") t)
+
+;;; -----------------------------------------------------------
 ;;; DONE Setup packages
 ;;; -----------------------------------------------------------
 

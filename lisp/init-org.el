@@ -8,11 +8,6 @@
 ;; it's recommended to symlink your remote file here
 ;; ln -s ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/org-root .
 
-(make-directory (concat +emacs/org-root-dir "/roam") t)
-(make-directory (concat +emacs/org-root-dir "/journal") t)
-(make-directory (concat +emacs/org-root-dir "/deft") t)
-(make-directory (concat (file-name-directory user-init-file) "/bin") t)
-
 (use-package org
   :custom
   ;; general
@@ -145,7 +140,6 @@
   (setq org-download-link-format-function
         #'org-download-link-format-function-default))
 
-;; https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar
 (use-package plantuml-mode
   :ensure t
   :after org
