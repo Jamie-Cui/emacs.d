@@ -409,5 +409,7 @@
          )
         )
 
+;; debug
+(setopt gdb-show-main t)
 
 (provide 'init-misc)
