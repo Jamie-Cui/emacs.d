@@ -516,12 +516,18 @@ in the search."
 ;; -----------------------------------------------------------
 ;; DONE other useful tools
 ;;
+;; docker
 ;; dashboard
 ;; magit
 ;; eat
 ;; helpful
 ;; popwin
 ;; -----------------------------------------------------------
+
+(use-package docker
+  :ensure t
+  :custom
+  (docker-show-messages nil))
 
 (use-package dashboard
   :ensure t
