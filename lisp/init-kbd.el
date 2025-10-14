@@ -107,8 +107,7 @@
     "Bn"     #'bookmark-set
     "Bd"     #'bookmark-delete
     ;; docker-related key bindings
-    "d" '(:ignore t :which-key "docker")
-    "dd"     #'docker
+    "d"     #'docker
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ob"     #'ebib ; edit bib
