@@ -456,8 +456,9 @@ in the search."
   :custom 
   (persp-suppress-no-prefix-key-warning t)
   (persp-sort 'created)
-  (persp-modestring-dividers '("[" "]" "] ["))
-  (persp-show-modestring 'nil)
+  (persp-modestring-dividers '("(Proj:" ")" ""))
+  (persp-show-modestring t)
+  (persp-modestring-short t)
   :init
   (persp-mode)
   :config

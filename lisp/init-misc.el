@@ -395,14 +395,11 @@
                      (format " (Sel: %d)" (abs (- (point) (mark)))) ""))
          'mode-line-format-right-align
          'mode-line-misc-info
-         " "
-         '(:propertize
-           ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
-            mode-line-window-dedicated)
-           display (min-width (6.0)))
-         ;; '(:eval (format "%c%s" 
-         ;;                 (coding-system-mnemonic buffer-file-coding-system) 
-         ;;                 (coding-system-eol-type-mnemonic buffer-file-coding-system)))
+         ;; " "
+         ;; '(:propertize
+         ;;   ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
+         ;;    mode-line-window-dedicated)
+         ;;   display (min-width (6.0)))
          " "
          'mode-name
          " (+"
