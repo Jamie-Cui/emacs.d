@@ -395,7 +395,13 @@
                      (format " (Sel: %d)" (abs (- (point) (mark)))) ""))
          'mode-line-format-right-align
          'mode-line-misc-info
-         ;; " "
+         " "
+         '(:eval
+           (if (tramp-tramp-file-p buffer-file-name)
+               (format "(%s:%s)" 
+                       (tramp-file-name-method (tramp-dissect-file-name buffer-file-name))
+                       (persp-current-name))
+             (format "(%s)" (persp-current-name))))
          ;; '(:propertize
          ;;   ("" mode-line-mule-info mode-line-client mode-line-modified mode-line-remote
          ;;    mode-line-window-dedicated)
