@@ -337,11 +337,11 @@
   (vertico-count 17)
   )
 
-(use-package vertico-posframe
-  :ensure t
-  :after vertico
-  :config
-  (vertico-posframe-mode 1))
+;; (use-package vertico-posframe
+;;   :ensure t
+;;   :after vertico
+;;   :config
+;;   (vertico-posframe-mode 1))
 
 (use-package marginalia
   :ensure t
@@ -528,7 +528,8 @@ in the search."
 (use-package docker
   :ensure t
   :custom
-  (docker-show-messages nil))
+  (docker-show-messages nil)
+  (docker-container-shell-file-name "/bin/bash"))
 
 (use-package dashboard
   :ensure t
