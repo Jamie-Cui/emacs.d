@@ -150,26 +150,26 @@
   (apheleia-global-mode +1)
   ;; HACK use elgot-format
   ;; https://github.com/radian-software/apheleia/issues/153#issuecomment-1446651497
-  (cl-defun apheleia-indent-eglot-managed-buffer
-      (&key buffer scratch callback &allow-other-keys)
-    (with-current-buffer scratch
-      (setq-local eglot--cached-server
-                  (with-current-buffer buffer
-                    (eglot-current-server)))
-      (let ((buffer-file-name (buffer-local-value 'buffer-file-name buffer)))
-        (eglot-format-buffer))
-      (funcall callback)))
+  ;; (cl-defun apheleia-indent-eglot-managed-buffer
+  ;;     (&key buffer scratch callback &allow-other-keys)
+  ;;   (with-current-buffer scratch
+  ;;     (setq-local eglot--cached-server
+  ;;                 (with-current-buffer buffer
+  ;;                   (eglot-current-server)))
+  ;;     (let ((buffer-file-name (buffer-local-value 'buffer-file-name buffer)))
+  ;;       (eglot-format-buffer))
+  ;;     (funcall callback)))
 
   ;; declare new formatters for eglot
-  (add-to-list 'apheleia-formatters
-               '(eglot-managed . apheleia-indent-eglot-managed-buffer))
+  ;; (add-to-list 'apheleia-formatters
+  ;;              '(eglot-managed . apheleia-indent-eglot-managed-buffer))
 
   ;; HACK add all eglot-ensured modes 
   ;; This determines what formatter to use in buffers without a
   ;; setting for apheleia-formatter. The keys are major mode
-  (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
-  (add-to-list 'apheleia-mode-alist '(rust-ts-mode-hook . eglot-managed))
-  (add-to-list 'apheleia-mode-alist '(cmake-ts-mode . cmake-format))
+  ;; (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
+  ;; (add-to-list 'apheleia-mode-alist '(rust-ts-mode-hook . eglot-managed))
+  ;; (add-to-list 'apheleia-mode-alist '(cmake-ts-mode . cmake-format))
   )
 
 ;;; -----------------------------------------------------------
