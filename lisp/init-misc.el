@@ -368,7 +368,7 @@
 (setopt evil-mode-line-format '(before . mode-line-front-space))
 
 ;; turn on column-number on modeline
-;; (column-number-mode 1)
+(column-number-mode 1)
 ;; (setopt mode-line-position-column-line-format '("%l:%c"))
 
 ;; remove trailing dashes
