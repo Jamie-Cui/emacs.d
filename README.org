@@ -1,0 +1,93 @@
+#+startup: showall
+
+* Emacs.d
+
+#+begin_src
+ ********                                      
+/**/////                                       
+/**       **********   ******    *****   ******
+/******* //**//**//** //////**  **///** **//// 
+/**////   /** /** /**  ******* /**  // //***** 
+/**       /** /** /** **////** /**   ** /////**
+/******** *** /** /**//********//*****  ****** 
+//////// ///  //  //  ////////  /////  ////// 
+#+end_src
+
+** What this config does?
+1. Use melpa only.
+2. Use emacs version 30.1.
+3. Use Maple Mono NF CN: [[https://github.com/subframe7536/maple-font][repo]], [[https://github.com/subframe7536/maple-font/releases/download/v7.4/MapleMono-NF-CN-unhinted.zip][download]].
+4. Use Plantuml for uml drawing: [[https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar][download]].
+5. Use emacs build-in tree-sitter.
+
+* Getting started
+
+** Prerequisite
+- gcc toolchain (gcc, g++, cmake, makefile, autotools, ...): compile environment
+- libgccjit: for emacs's native compilation feature
+- libsqlite3: for org-roam database
+- libtree-sitter (tested with version 0.25.8, [[https://github.com/tree-sitter/tree-sitter][repo]]): for tree-sitter, 
+- texlive: for latex
+
+** Dwonload and Compile Emacs
+
+#+begin_src bash
+# download
+wget -c https://github.com/emacs-mirror/emacs/archive/refs/tags/emacs-30.1.tar.gz
+# or the following dev branch with tty-child-frame feature
+wget -c https://github.com/emacs-mirror/emacs/archive/refs/heads/scratch/tty-child-frames.zip
+
+# unzip and enter emacs folder
+autoconf
+# (alt) configure terminal emacs
+./configure --with-native-compilation --with-tree-sitter --with-gnutls --without-x-toolkit --without-xpm --without-gif --without-tiff --with-sqlite3
+# (alt) configure gui emacs
+./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-pgtk
+# compile
+sudo make install
+#+end_src
+
+Have tree-sitter problem? see: [[https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button][link]]. Or download tree-sitter pre-built binaries [[https://github.com/emacs-tree-sitter/tree-sitter-langs][here]]. 
+
+** Setup ~$HOME/.emacs.d/init.el~
+#+begin_src elisp
+(defvar +emacs/repo-directory "~/Desktop/emacs.d")
+(load (concat +emacs/repo-directory "/init.el"))
+#+end_src
+
+** C/C++ Dev Tools
+
+- clangd, clang-format, clang-tidy
+#+begin_src bash 
+# ubuntu
+sudo apt install clangd, clang-format, clang-tidy
+# macos
+brew install clangd, clang-format, clang-tidy
+#+end_src
+
+- cpplint
+#+begin_src bash
+pip3 install cpplint
+#+end_src
+
+- cmake-format
+#+begin_src bash
+pip3 install cmake-format
+#+end_src
+
+- ctags, see: https://github.com/universal-ctags/ctags
+#+begin_src bash
+git clone https://github.com/universal-ctags/ctags.git
+cd ctags
+./autogen.sh
+./configure --prefix=$HOME/.local
+make
+make install
+#+end_src
+
+** Others
+
+#+begin_src bash
+alias et='tmux attach -t emacs-session || tmux new -s emacs-session "emacs -nw"'
+#+end_src
+

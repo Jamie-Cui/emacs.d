@@ -1,0 +1,7 @@
+# -*- Mode: LaTeX-mode -*-
+# name: itemize
+# key: item
+# --
+\begin{itemize}
+  \item $1
+\end{itemize}

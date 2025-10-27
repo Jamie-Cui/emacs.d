@@ -1,0 +1,8 @@
+# -*- mode: org-mode -*-
+# name: bash
+# key: bash
+# --
+
+#+begin_src bash :results verbatim :dir ~
+$0
+#+end_src

@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: plantuml 
+# key: pla
+# type: command
+# --
+
+(insert (format "#+begin_src plantuml :file img/%d.png\n%s\n%s\n%s" 
+  (truncate (float-time (current-time)))
+  "skinparam defaultFontName Maple Mono NF CN"
+  "title: "
+  "#+end_src"
+))
+
+(search-backward "title:")
+(end-of-line)

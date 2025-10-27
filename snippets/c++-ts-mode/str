@@ -1,0 +1,6 @@
+# -*- mode: c++-ts-mode -*-
+# name: std::string
+# key: str
+# --
+
+std::string $1

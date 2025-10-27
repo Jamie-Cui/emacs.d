@@ -1,0 +1,8 @@
+# -*- Mode: LaTeX-mode -*-
+# name: figure
+# key: fig
+# --
+\begin{figure}
+  \includegraphics[]{$1}
+  \caption{}
+\end{figure}

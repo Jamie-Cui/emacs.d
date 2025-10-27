@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: org file header (with extra latex export support)
+# key: head
+# --
+
+#+title: $0
+#+author: Jamie Cui
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_HEADER: \usepackage{setspace}
+#+LATEX_HEADER: \onehalfspacing
+#+LATEX_HEADER: \setlength\parindent{0pt}

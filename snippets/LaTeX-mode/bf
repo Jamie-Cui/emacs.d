@@ -1,0 +1,5 @@
+# -*- mode: LaTeX-mode -*-
+# name: bf 
+# key: bf
+# --
+\textbf{$1}
