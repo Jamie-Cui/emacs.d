@@ -114,8 +114,12 @@
     "o" '(:ignore t :which-key "open")
     "ob"     #'ebib ; edit bib
     "oc" '(:which-key "compile")
-    "oc"     #'(lambda () (interactive) 
-                 (let* ((compile-command "")) (call-interactively 'compile)))
+    "oc" #'(lambda () (interactive)
+             (let* ((compile-command 
+                     (if (use-region-p)
+                         (buffer-substring-no-properties (region-beginning) (region-end))
+                       "")))
+               (call-interactively 'compile)))
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
     "oe"     #'elfeed
