@@ -34,6 +34,7 @@
   (setq evil-overriding-maps nil)
   (setq evil-want-keybinding nil)
   (setq evil-auto-indent nil)
+  (setq evil-want-C-h-delete t)
   (setq evil-want-Y-yank-to-eol t) ; this need to be set before evil
   (setq evil-want-C-g-bindings t) ; this need to be set before evil
   ;; whether to use emacs bindings in insert-mode

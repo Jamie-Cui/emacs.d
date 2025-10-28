@@ -56,12 +56,11 @@
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
-   "C-h"     #'(lambda () (interactive) 
-                 (persp-prev) (+persp/show-name-in-echo))
-   "C-l"     #'(lambda () (interactive) 
-                 (persp-next) (+persp/show-name-in-echo))
-   "C-M-h"   #'+persp/move-buffer-prev
-   "C-M-l"   #'+persp/move-buffer-next)
+   "C-M-h"     #'(lambda () (interactive) 
+                   (persp-prev) (+persp/show-name-in-echo))
+   "C-M-l"     #'(lambda () (interactive) 
+                   (persp-next) (+persp/show-name-in-echo))
+   )
   ;; ** Global Keybindings
   (+my-leader-def
     :states '(normal visual motion)
@@ -86,6 +85,8 @@
     "a RET"  #'embark-dwim
     "ay"     #'embark-org-copy-link-target
     "aY"     #'embark-org-copy-link-description
+    ;; fast navigating!
+    "e"      #'evil-avy-goto-char-2
     ;; window-related key bindings
     "w" '(:ignore t :which-key "window")
     "wh"     #'evil-window-left
