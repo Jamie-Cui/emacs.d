@@ -34,6 +34,7 @@
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
+   "<backspace>" 'ignore ; disable
    "M-i"     #'completion-at-point
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
    "M-y"     #'yas-expand

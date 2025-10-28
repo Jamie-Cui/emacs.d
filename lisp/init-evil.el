@@ -3,7 +3,9 @@
 ;;; Code:
 
 (use-package expand-region
-  :ensure t)
+  :ensure t
+  :custom
+  (expand-region-smart-cursor t))
 
 (use-package undo-tree
   :ensure t
@@ -97,9 +99,11 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
 ;;; evil-collection
 (use-package evil-collection
   :ensure t
+  :after (:and evil evil-mc)
   :preface
   (setq evil-want-keybinding nil)
-  :after (:and evil evil-mc)
+  :custom
+  (evil-collection-setup-minibuffer t)
   :config
   ;; make sure the follwing key bindings always work
   (evil-collection-init)
@@ -167,6 +171,12 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   :after evil
   :config
   (global-evil-surround-mode 1))
+
+(use-package evil-escape
+  :ensure t
+  :config
+  (setq-default evil-escape-key-sequence "jk")
+  (evil-escape-mode 1))
 
 (when (not (display-graphic-p))
   (use-package evil-terminal-cursor-changer
