@@ -44,8 +44,10 @@
    "M-v"     #'evil-paste-after ; paste like mac
    "M-e"     #'er/expand-region ; expand region selection, in case you dont like evil
    "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
-   "M-j"     #'move-text-down
-   "M-k"     #'move-text-up
+   "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
+   "M-J"     #'move-text-down
+   "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
+   "M-K"     #'move-text-up
    "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
    "M-n"     #'narrow-to-region
    "M-w"     #'widen
