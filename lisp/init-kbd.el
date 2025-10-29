@@ -34,7 +34,6 @@
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
-   "<backspace>" 'ignore ; disable
    "M-i"     #'completion-at-point
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
    "M-y"     #'yas-expand
@@ -52,14 +51,16 @@
    "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
    "M-n"     #'narrow-to-region
    "M-w"     #'widen
+   "C-a"     #'move-beginning-of-line
+   "C-e"     #'move-end-of-line
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
-   "C-M-h"     #'(lambda () (interactive) 
-                   (persp-prev) (+persp/show-name-in-echo))
-   "C-M-l"     #'(lambda () (interactive) 
-                   (persp-next) (+persp/show-name-in-echo))
+   "C-M-h"   #'(lambda () (interactive) 
+                 (persp-prev) (+persp/show-name-in-echo))
+   "C-M-l"   #'(lambda () (interactive) 
+                 (persp-next) (+persp/show-name-in-echo))
    )
   ;; ** Global Keybindings
   (+my-leader-def
@@ -139,8 +140,8 @@
     "pb"     #'consult-project-buffer 
     "pc"     #'projectile-compile-project 
     "pC"     #'projectile-configure-project 
-    "pd"     #'projectile-remove-known-project
-    "pD"     #'projectile-run-gdb
+    "px"     #'projectile-remove-known-project
+    "pd"     #'projectile-run-gdb
     "pf"     #'+vertico/project-search
     "pi"     #'projectile-invalidate-cache
     "po"     #'ff-find-related-file
