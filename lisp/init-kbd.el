@@ -175,7 +175,6 @@
                    (call-interactively 'general-describe-keybindings)))
     "hv"     #'helpful-variable
     "hm"     #'describe-mode
-    "hh"     #'consult-history
     ;; quit emacs
     "q" '(:ignore t :which-key "quit")
     "qq"     #'save-buffers-kill-terminal
@@ -201,13 +200,15 @@
     "cj"     #'consult-eglot-symbols
     "ct"     #'citre-create-tags-file
     "cT"     #'citre-update-this-tags-file
-    ;; search
+    ;; find
     "s" '(:ignore t :which-key "search")
-    "si"     #'consult-imenu ;; search for item
-    "sI"     #'consult-citre ;; search for citre items
-    "sf"     #'consult-locate ;; search for file (system wide)
-    "sl"     #'consult-focus-lines ;; search for lines
-    "sL"     #'consult-keep-lines ;; search for lines
+    "si"     #'consult-imenu ; search for item
+    "sI"     #'consult-citre ; search for citre items
+    "sf"     #'consult-fd ; search for file (in this directory)
+    "sF"     #'consult-locate ; search for file (system wide)
+    "sl"     #'consult-focus-lines ; search for lines
+    "sL"     #'consult-keep-lines ; search for lines
+    "sh"     #'consult-history ; search for history
     )
 
   ;; deft mode map

@@ -338,11 +338,11 @@
   (vertico-count 17)
   )
 
-;; (use-package vertico-posframe
-;;   :ensure t
-;;   :after vertico
-;;   :config
-;;   (vertico-posframe-mode 1))
+(use-package vertico-posframe
+  :ensure t
+  :after vertico
+  :config
+  (vertico-posframe-mode 1))
 
 (use-package marginalia
   :ensure t
