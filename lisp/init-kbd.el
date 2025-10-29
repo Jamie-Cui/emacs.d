@@ -52,6 +52,8 @@
    "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
    "M-n"     #'narrow-to-region
    "M-w"     #'widen
+   "C-a"     #'move-beginning-of-line
+   "C-e"     #'move-end-of-line
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
