@@ -141,8 +141,8 @@
     "pb"     #'consult-project-buffer 
     "pc"     #'projectile-compile-project 
     "pC"     #'projectile-configure-project 
-    "pd"     #'projectile-remove-known-project
-    "pD"     #'projectile-run-gdb
+    "px"     #'projectile-remove-known-project
+    "pd"     #'projectile-run-gdb
     "pf"     #'+vertico/project-search
     "pi"     #'projectile-invalidate-cache
     "po"     #'ff-find-related-file
