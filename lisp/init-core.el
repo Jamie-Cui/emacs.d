@@ -108,8 +108,8 @@
   :custom
   (cnfonts-personal-fontnames 
    '(
-     ("Maple Mono NF CN") ;; English
-     ("Maple Mono NF CN") ;; Chinese
+     ("Maple Mono NL NF CN", "Maple Mono NF CN") ;; English
+     ("Maple Mono NL NF CN", "Maple Mono NF CN") ;; Chinese
      nil  ;; Ext-B
      nil ;; Symbol
      nil ;; Others

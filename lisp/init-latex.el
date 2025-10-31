@@ -5,9 +5,6 @@
 (require 'init-org)
 (require 'reftex)
 
-(use-package auctex
-  :ensure t)
-
 (use-package ebib
   :ensure t
   :custom
