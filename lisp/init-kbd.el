@@ -201,14 +201,14 @@
     "ct"     #'citre-create-tags-file
     "cT"     #'citre-update-this-tags-file
     ;; find
-    "s" '(:ignore t :which-key "search")
-    "si"     #'consult-imenu ; search for item
-    "sI"     #'consult-citre ; search for citre items
-    "sf"     #'consult-fd ; search for file (in this directory)
-    "sF"     #'consult-locate ; search for file (system wide)
-    "sl"     #'consult-focus-lines ; search for lines
-    "sL"     #'consult-keep-lines ; search for lines
-    "sh"     #'consult-history ; search for history
+    "f" '(:ignore t :which-key "find")
+    "fi"     #'consult-imenu ; find item
+    "fI"     #'consult-citre ; find citre items
+    "ff"     #'consult-find ; find file (in this directory)
+    "fF"     #'consult-locate ; find file (system wide)
+    "fl"     #'consult-focus-lines ; find lines
+    "fL"     #'consult-keep-lines ; find lines
+    "fh"     #'consult-history ; find history
     )
 
   ;; deft mode map
