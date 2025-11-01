@@ -34,7 +34,6 @@
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
-   "<backspace>" 'ignore ; disable
    "M-i"     #'completion-at-point
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
    "M-y"     #'yas-expand
@@ -58,10 +57,10 @@
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
-   "C-M-h"     #'(lambda () (interactive) 
-                   (persp-prev) (+persp/show-name-in-echo))
-   "C-M-l"     #'(lambda () (interactive) 
-                   (persp-next) (+persp/show-name-in-echo))
+   "C-M-h"   #'(lambda () (interactive) 
+                 (persp-prev) (+persp/show-name-in-echo))
+   "C-M-l"   #'(lambda () (interactive) 
+                 (persp-next) (+persp/show-name-in-echo))
    )
   ;; ** Global Keybindings
   (+my-leader-def
@@ -176,7 +175,6 @@
                    (call-interactively 'general-describe-keybindings)))
     "hv"     #'helpful-variable
     "hm"     #'describe-mode
-    "hh"     #'consult-history
     ;; quit emacs
     "q" '(:ignore t :which-key "quit")
     "qq"     #'save-buffers-kill-terminal
@@ -202,13 +200,15 @@
     "cj"     #'consult-eglot-symbols
     "ct"     #'citre-create-tags-file
     "cT"     #'citre-update-this-tags-file
-    ;; search
-    "s" '(:ignore t :which-key "search")
-    "si"     #'consult-imenu ;; search for item
-    "sI"     #'consult-citre ;; search for citre items
-    "sf"     #'consult-locate ;; search for file (system wide)
-    "sl"     #'consult-focus-lines ;; search for lines
-    "sL"     #'consult-keep-lines ;; search for lines
+    ;; find
+    "f" '(:ignore t :which-key "find")
+    "fi"     #'consult-imenu ; find item
+    "fI"     #'consult-citre ; find citre items
+    "ff"     #'consult-find ; find file (in this directory)
+    "fF"     #'consult-locate ; find file (system wide)
+    "fl"     #'consult-focus-lines ; find lines
+    "fL"     #'consult-keep-lines ; find lines
+    "fh"     #'consult-history ; find history
     )
 
   ;; deft mode map
