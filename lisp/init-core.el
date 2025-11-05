@@ -644,4 +644,7 @@ in the search."
   :config
   (popwin-mode 1))
 
+(use-package wgrep
+  :ensure t)
+
 (provide 'init-core)
