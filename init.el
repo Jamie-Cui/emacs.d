@@ -229,22 +229,3 @@
   :init (setq markdown-command "multimarkdown")
   :bind (:map markdown-mode-map
               ("C-c C-e" . markdown-do)))
-
-;; ------------------------------------------------------------------
-;;; DONE elfeed
-;; ------------------------------------------------------------------
-
-(use-package elfeed
-  :ensure t
-  :custom
-  (elfeed-feeds '(
-                  ("https://eprint.iacr.org/rss/rss.xml" crypto)
-                  ("https://planet.emacslife.com/atom.xml" emacs)
-                  ("https://emacs-china.org/latest.rss" emacs)
-                  ))
-  :config
-  ;; HACK from https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
-  (define-advice elfeed-search--header (:around (oldfun &rest args))
-    (if elfeed-db
-        (apply oldfun args)
-      "No database loaded yet")))
