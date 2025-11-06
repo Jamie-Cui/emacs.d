@@ -167,11 +167,11 @@
 (setopt compilation-ask-about-save t)
 (setopt compilation-scroll-output 'first-error)
 ;; NOTE always use current window for compilation
-(add-to-list 'display-buffer-alist
-             '("\\*compilation\\*"
-               (display-buffer-reuse-window display-buffer-same-window)
-               (reusable-frames . visible)
-               (inhibit-switch-frames . nil)))
+;; (add-to-list 'display-buffer-alist
+;;              '("\\*compilation\\*"
+;;                (display-buffer-reuse-window display-buffer-same-window)
+;;                (reusable-frames . visible)
+;;                (inhibit-switch-frames . nil)))
 
 ;;; proced, show processes
 (setopt proced-auto-update-flag t)

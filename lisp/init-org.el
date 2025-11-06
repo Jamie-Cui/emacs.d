@@ -51,10 +51,13 @@
      )
    )
   ;; org src, org babel
-  (org-src-preserve-indentation t)
+  (org-src-fontify-natively t)
+  (org-src-strip t)
+  (org-src-preserve-indentation nil) ;; HACK
   (org-src-tab-acts-natively t)
   (org-src-window-setup 'other-window)
   (org-confirm-babel-evaluate nil) ; don't ask, just do it
+  (org-edit-src-content-indentation 0)
   ;; org startup
   (org-startup-indented t)
   (org-startup-folded 'nofold)
@@ -139,6 +142,9 @@
         org-download-abbreviate-filename-function #'file-relative-name)
   (setq org-download-link-format-function
         #'org-download-link-format-function-default))
+
+(use-package ob-http
+  :ensure t)
 
 (use-package plantuml-mode
   :ensure t
