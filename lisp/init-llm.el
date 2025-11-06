@@ -2,14 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-;; (use-package shell-maker
-;;   :ensure t)
-
-;; (use-package acp
-;;   :vc (:url "https://github.com/xenodium/acp.el"))
-
-;; (use-package agent-shell
-;;   :vc (:url "https://github.com/xenodium/agent-shell"))
+(use-package agent-shell
+  :ensure t)
 
 (use-package gptel
   :ensure t
@@ -19,9 +13,9 @@
   (gptel-org-branching-context t)
   (gptel-log-level 'info)
   ;; re-bind key
-  :bind (:map gptel-mode-map
-              ("C-c C-c" . #'gptel-send)
-              ("C-c RET" . nil))
+  ;; :bind (:map gptel-mode-map
+  ;;             ("C-c C-c" . #'gptel-send)
+  ;;             ("C-c RET" . nil))
   :config
   ;; register remote backend
   (defvar +gptel/remote-backend

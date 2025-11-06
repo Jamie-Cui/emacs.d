@@ -57,10 +57,11 @@
    "C-d"     #'evil-scroll-down
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
-   "C-M-h"   #'(lambda () (interactive) 
-                 (persp-prev) (+persp/show-name-in-echo))
-   "C-M-l"   #'(lambda () (interactive) 
-                 (persp-next) (+persp/show-name-in-echo))
+   "C-M-j"   #'(lambda () (interactive) (+persp/show-name-in-echo))
+   "C-M-k"   #'(lambda () (interactive) (+persp/show-name-in-echo))
+   "C-M-g"   #'(lambda () (interactive) (+persp/show-name-in-echo))
+   "C-M-h"   #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
+   "C-M-l"   #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
    )
   ;; ** Global Keybindings
   (+my-leader-def
@@ -183,6 +184,7 @@
     "t" '(:ignore t :which-key "toggle")
     "th"     #'hs-hide-level
     "tH"     #'hexl-mode
+    "ti"     #'agent-shell-toggle
     "tg"     #'magit-blame-addition
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen
