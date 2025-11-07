@@ -11,6 +11,7 @@
 ;; dired
 ;; dired-subtree
 ;; diredfl
+;; dired-sidebar
 ;; -----------------------------------------------------------
 
 ;; dired hide .. and .
@@ -49,6 +50,14 @@
   :ensure t
   :config
   (diredfl-global-mode))
+
+(use-package dired-sidebar
+  :ensure t
+  :init
+  (add-hook 'dired-sidebar-mode-hook
+            (lambda ()
+              (unless (file-remote-p default-directory)
+                (auto-revert-mode)))))
 
 ;; -----------------------------------------------------------
 ;; DONE Editing & editor

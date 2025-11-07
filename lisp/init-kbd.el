@@ -129,6 +129,7 @@
     "oe"     #'elfeed
     "og"     #'magit-status-quick
     "ot"     #'+eshell/new
+    "op"     #'dired-sidebar-toggle-sidebar
     "oT" '(:which-key "eat/new")
     "oT"     #'(lambda () (interactive) 
                  (let ((current-prefix-arg '(t)))
