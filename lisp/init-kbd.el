@@ -87,8 +87,6 @@
     "a RET"  #'embark-dwim
     "ay"     #'embark-org-copy-link-target
     "aY"     #'embark-org-copy-link-description
-    ;; fast navigating!
-    "e"      #'evil-avy-goto-char-2
     ;; window-related key bindings
     "w" '(:ignore t :which-key "window")
     "wh"     #'evil-window-left
@@ -198,7 +196,7 @@
     "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
-    "cr"     #'eglot-rename
+    "cr"     #'eglot-rename 
     "cf"     #'eglot-format-buffer
     "cj"     #'consult-eglot-symbols
     "ct"     #'citre-create-tags-file
@@ -206,6 +204,7 @@
     ;; find
     "f" '(:ignore t :which-key "find")
     "fi"     #'consult-imenu ; find item
+    "fc"     #'evil-avy-goto-char-timer ; find char
     "fI"     #'consult-citre ; find citre items
     "ff"     #'consult-find ; find file (in this directory)
     "fF"     #'consult-locate ; find file (system wide)

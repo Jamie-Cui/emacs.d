@@ -57,7 +57,9 @@
   (add-hook 'dired-sidebar-mode-hook
             (lambda ()
               (unless (file-remote-p default-directory)
-                (auto-revert-mode)))))
+                (auto-revert-mode))))
+  :custom
+  (dired-sidebar-theme 'ascii))
 
 ;; -----------------------------------------------------------
 ;; DONE Editing & editor
