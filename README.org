@@ -23,6 +23,12 @@
 
 * Getting started
 
+Ubuntu:
+
+#+begin_src bash :results verbatim :dir ~
+curl -sSL https://gist.githubusercontent.com/Jamie-Cui/e0c613bad06e17f34be591efb7615896/raw/00e86159e15191698f038d2be4367358f46fa66c/install-emacs-and-deps.sh | bash
+#+end_src
+
 ** Prerequisite
 - gcc toolchain (gcc, g++, cmake, makefile, autotools, ...): compile environment
 - libgccjit: for emacs's native compilation feature

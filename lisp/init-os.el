@@ -8,7 +8,7 @@
 
 (when (eq system-type 'darwin)
   (setq mac-command-modifier 'meta)
-  (add-to-list 'default-frame-alist '(undecorated . t))
+  ;; (add-to-list 'default-frame-alist '(undecorated . t))
   ;; Fix, macos dired permission
   (setq insert-directory-program "gls" dired-use-ls-dired t)
 
@@ -101,7 +101,7 @@
 ;;; --------------------------------------
 
 (when (eq system-type 'gnu/linux)
-  (add-to-list 'default-frame-alist '(undecorated . t))
+  ;; (add-to-list 'default-frame-alist '(undecorated . t))
   ;; NOTE if you are using magic keyboard
   (setq x-super-keysym 'meta))
 
