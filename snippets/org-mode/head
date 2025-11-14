@@ -2,7 +2,6 @@
 # name: org file header (with extra latex export support)
 # key: head
 # --
-
 #+title: $0
 #+author: Jamie Cui
 #+LATEX_CLASS: article

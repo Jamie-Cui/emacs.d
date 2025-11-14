@@ -2,7 +2,6 @@
 # name: singleton class
 # key: sing
 # --
-
 class $1 {
 public:
     ~$1 () = default;

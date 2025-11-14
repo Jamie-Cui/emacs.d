@@ -2,7 +2,6 @@
 # name: http
 # key: http
 # --
-
 #+begin_src http :pretty :dir ~
 $0
 #+end_src

@@ -2,7 +2,6 @@
 # name: table
 # key: tab
 # --
-
 #+NAME: tab:$0
 #+CAPTION:
 #+ATTR_LATEX: :booktabs t :float multicolumn
