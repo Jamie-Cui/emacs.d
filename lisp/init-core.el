@@ -70,9 +70,9 @@
 ;; cnfonts
 ;; smartparens
 ;; which-key
-;; expand-region
 ;; inhibit-mouse
 ;; yasnippet
+;; yasnippet-snippets
 ;; embark
 ;; embark-consult
 ;; iedit
@@ -151,29 +151,26 @@
   (which-key-setup-side-window-bottom)
   (which-key-mode 1))
 
-(use-package expand-region
-  :ensure t)
-
-(use-package inhibit-mouse
-  :ensure t
-  :custom
-  ;; Disable highlighting of clickable text such as URLs and hyperlinks when
-  ;; hovered by the mouse pointer.
-  (inhibit-mouse-adjust-mouse-highlight t)
-  ;; Disables the use of tooltips (show-help-function) during mouse events.
-  (inhibit-mouse-adjust-show-help-function t)
-  :config
-  (defun +inhibit-mouse/toggle-mode ()
-    "Toggle inhibit-mouse-mode."
-    (interactive)
-    (if inhibit-mouse-mode
-        (progn
-          (inhibit-mouse-mode -1)
-          (message "inhibit-mouse-mode disabled"))
-      (progn
-        (inhibit-mouse-mode 1)
-        (message "inhibit-mouse-mode enabled"))))
-  )
+;; (use-package inhibit-mouse
+;;   :ensure t
+;;   :custom
+;;   ;; Disable highlighting of clickable text such as URLs and hyperlinks when
+;;   ;; hovered by the mouse pointer.
+;;   (inhibit-mouse-adjust-mouse-highlight t)
+;;   ;; Disables the use of tooltips (show-help-function) during mouse events.
+;;   (inhibit-mouse-adjust-show-help-function t)
+;;   :config
+;;   (defun +inhibit-mouse/toggle-mode ()
+;;     "Toggle inhibit-mouse-mode."
+;;     (interactive)
+;;     (if inhibit-mouse-mode
+;;         (progn
+;;           (inhibit-mouse-mode -1)
+;;           (message "inhibit-mouse-mode disabled"))
+;;       (progn
+;;         (inhibit-mouse-mode 1)
+;;         (message "inhibit-mouse-mode enabled"))))
+;;   )
 
 (use-package yasnippet
   :ensure t
@@ -185,6 +182,9 @@
   ;; reload all snippets
   (yas-reload-all)
   )
+
+(use-package yasnippet-snippets
+  :ensure t)
 
 (use-package embark
   :ensure t

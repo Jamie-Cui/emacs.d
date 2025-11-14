@@ -34,23 +34,24 @@
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
-   "M-i"     #'completion-at-point
-   "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
+   "M-RET"   #'completion-at-point
    "M-y"     #'yas-expand
    "M-/"     #'evilnc-comment-or-uncomment-lines
+   "M-w"     #'evil-avy-goto-char-timer
+   "M-n"     #'narrow-to-region
+   "M-N"     #'widen ; un-narrow
+   "M-q"     #'prog-fill-reindent-defun ; default for emacs
+   ;; mac-like binding
    "M-f"     #'consult-line ; search like mac
    "M-a"     #'mark-whole-buffer ; select like mac
    "M-s"     #'save-buffer ; save like mac
+   "M-c"     #'evil-yank ; copy like mac
    "M-v"     #'evil-paste-after ; paste like mac
-   "M-e"     #'er/expand-region ; expand region selection, in case you dont like evil
+   "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
    "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
    "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
-   "M-J"     #'move-text-down
    "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
-   "M-K"     #'move-text-up
    "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
-   "M-n"     #'narrow-to-region
-   "M-w"     #'widen
    "C-a"     #'move-beginning-of-line
    "C-e"     #'move-end-of-line
    "C-u"     #'evil-scroll-up
@@ -189,7 +190,7 @@
     "tF"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
     "tn"     #'display-line-numbers-mode
-    "tm"     #'+inhibit-mouse/toggle-mode
+    ;; "tm"     #'+inhibit-mouse/toggle-mode
     "tM"     #'+org-imgtog/toggle
     "ta"     #'+treesit-auto/toggle
     ;; code (lsp)
@@ -204,7 +205,6 @@
     ;; find
     "f" '(:ignore t :which-key "find")
     "fi"     #'consult-imenu ; find item
-    "fc"     #'evil-avy-goto-char-timer ; find char
     "fI"     #'consult-citre ; find citre items
     "ff"     #'consult-find ; find file (in this directory)
     "fF"     #'consult-locate ; find file (system wide)
