@@ -5,6 +5,15 @@
 (require 'init-org)
 (require 'reftex)
 
+;; -----------------------------------------------------------
+;; DONE bib
+;;
+;; ebib
+;; pdf-tools
+;; citar
+;; citar-embark
+;; -----------------------------------------------------------
+
 (use-package ebib
   :ensure t
   :custom
@@ -62,49 +71,6 @@
   (setq TeX-PDF-mode t) 
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode))
 
-(use-package bibtex
-  :ensure t
-  :config
-  ;; Configure uniquification (appends a/b/c for duplicates)
-  (setopt bibtex-autokey-name-case-convert-function #'upcase)
-  (setopt bibtex-autokey-names 4)
-  (setopt bibtex-autokey-additional-names "+")
-  (setopt bibtex-autokey-name-stretch 0)
-  (setopt bibtex-autokey-name-length 1)
-  (setopt bibtex-autokey-year-length 4)
-  (setopt bibtex-autokey-titlewords 0)
-  (setopt bibtex-autokey-titlewords-stretch 0)
-  (setopt bibtex-autokey-name-year-separator "")
-
-  ;; HACK override this function from built-in
-  ;; maybe report upstream?
-  (defun bibtex-autokey-abbrev (string len)
-    "Return an abbreviation of STRING with at least LEN characters.
-If LEN is positive the abbreviation is terminated only after a consonant
-or at the word end.  If LEN is negative the abbreviation is strictly
-enforced using abs (LEN) characters.  If LEN is not a number, STRING
-is returned unchanged."
-    (cond ((or (not (numberp len))
-               (<= (length string) (abs len)))
-           string)
-          ((equal len 0)
-           "")
-          ((equal len 1)
-           (substring string 0 1))
-          ((< len 0)
-           (substring string 0 (abs len)))
-          (t (let* ((case-fold-search t)
-                    (abort-char (string-match "[^aeiou]" string (1- len))))
-               (message "%s" abort-char)
-               (if abort-char
-                   (substring string 0 (1+ abort-char))
-                 string)))))
-
-  ;; default bib file
-  (add-to-list 'bibtex-files 
-               (concat +emacs/org-root-dir "/all-ref.bib"))
-  )
-
 (use-package citar
   :ensure t
   :config
@@ -128,9 +94,6 @@ is returned unchanged."
   :config
   (citar-embark-mode))
 
-(use-package engrave-faces
-  :ensure t)
-
 (defun +latex/isolate-sentence ()
   "Replace '. ' with '.\n%\n' in the selected region, similar to Vim's :'<,'>s/\. /.\n%\n/g."
   (interactive)
@@ -143,5 +106,44 @@ is returned unchanged."
             (replace-match ".\n%\n" nil t))))
     (message "No region selected!"))
   (message "Replacement done!"))
+
+;; Configure uniquification (appends a/b/c for duplicates)
+(setopt bibtex-autokey-name-case-convert-function #'upcase)
+(setopt bibtex-autokey-names 4)
+(setopt bibtex-autokey-additional-names "+")
+(setopt bibtex-autokey-name-stretch 0)
+(setopt bibtex-autokey-name-length 1)
+(setopt bibtex-autokey-year-length 4)
+(setopt bibtex-autokey-titlewords 0)
+(setopt bibtex-autokey-titlewords-stretch 0)
+(setopt bibtex-autokey-name-year-separator "")
+
+;; HACK override this function from built-in
+;; maybe report upstream?
+(defun bibtex-autokey-abbrev (string len)
+  "Return an abbreviation of STRING with at least LEN characters.
+If LEN is positive the abbreviation is terminated only after a consonant
+or at the word end.  If LEN is negative the abbreviation is strictly
+enforced using abs (LEN) characters.  If LEN is not a number, STRING
+is returned unchanged."
+  (cond ((or (not (numberp len))
+             (<= (length string) (abs len)))
+         string)
+        ((equal len 0)
+         "")
+        ((equal len 1)
+         (substring string 0 1))
+        ((< len 0)
+         (substring string 0 (abs len)))
+        (t (let* ((case-fold-search t)
+                  (abort-char (string-match "[^aeiou]" string (1- len))))
+             (message "%s" abort-char)
+             (if abort-char
+                 (substring string 0 (1+ abort-char))
+               string)))))
+
+;; default bib file
+(add-to-list 'bibtex-files 
+             (concat +emacs/org-root-dir "/all-ref.bib"))
 
 (provide 'init-latex)

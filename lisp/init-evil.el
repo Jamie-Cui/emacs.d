@@ -2,6 +2,23 @@
 ;;; Commentary:
 ;;; Code:
 
+;; -----------------------------------------------------------
+;; DONE evil
+;;
+;; expand-region
+;; undo-tree
+;; move-text
+;; evil
+;; evil-collection
+;; evil-args
+;; evil-nerd-commenter
+;; evil-mc
+;; evil-multiedit
+;; evil-surround
+;; evil-escape
+;; evil-terminal-cursor-changer (for terminal)
+;; -----------------------------------------------------------
+
 (use-package expand-region
   :ensure t
   :custom
@@ -97,7 +114,6 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   (advice-add #'evil-join :around #'+evil-join-a)
   )
 
-;;; evil-collection
 (use-package evil-collection
   :ensure t
   :after (:and evil evil-mc)
@@ -111,17 +127,6 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   ;; HACK re-bind keys
   (evil-collection-define-key '(normal visual) 'evil-mc-key-map (kbd "gz") evil-mc-cursors-map)
   )
-
-;; HACK https://www.reddit.com/r/emacs/comments/45w9mv/comment/d3ud03t/
-(defun normal-escape-pre-command-handler ()
-  (interactive)
-  (pcase this-command
-    (_ (when (and (string= "C-g" (key-description (this-command-keys)))
-                  (bound-and-true-p evil-mode)
-                  (or (evil-insert-state-p)
-                      (evil-emacs-state-p)))
-         (evil-force-normal-state)))))
-(add-hook 'pre-command-hook 'normal-escape-pre-command-handler)
 
 (use-package evil-args
   :ensure t
@@ -178,6 +183,17 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   :config
   (setq-default evil-escape-key-sequence "jk")
   (evil-escape-mode 1))
+
+;; HACK https://www.reddit.com/r/emacs/comments/45w9mv/comment/d3ud03t/
+(defun normal-escape-pre-command-handler ()
+  (interactive)
+  (pcase this-command
+    (_ (when (and (string= "C-g" (key-description (this-command-keys)))
+                  (bound-and-true-p evil-mode)
+                  (or (evil-insert-state-p)
+                      (evil-emacs-state-p)))
+         (evil-force-normal-state)))))
+(add-hook 'pre-command-hook 'normal-escape-pre-command-handler)
 
 (when (not (display-graphic-p))
   (use-package evil-terminal-cursor-changer

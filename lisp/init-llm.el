@@ -2,6 +2,14 @@
 ;;; Commentary:
 ;;; Code:
 
+;; -----------------------------------------------------------
+;; DONE llm
+;;
+;; agent-shell
+;; gptel
+;; gptel-magit
+;; -----------------------------------------------------------
+
 (use-package agent-shell
   :ensure t)
 
