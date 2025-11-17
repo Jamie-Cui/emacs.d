@@ -152,7 +152,6 @@
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "n@"      #'citar-insert-citation ;; insert bib
-    "nb"      #'citar-open 
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "ne"      #'org-export-dispatch
@@ -207,6 +206,7 @@
                    (call-interactively 'compile)))
     ;; find
     "f" '(:ignore t :which-key "find")
+    "fb"     #'citar-open  ; find bib entry
     "fi"     #'consult-imenu ; find item
     "fI"     #'consult-citre ; find citre items
     "ff"     #'consult-find ; find file (in this directory)

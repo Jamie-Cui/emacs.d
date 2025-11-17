@@ -17,19 +17,23 @@
 (use-package ebib
   :ensure t
   :custom
-  (ebib-layout 'full)
-  (ebib-index-window-size 10)
+  (ebib-layout 'index-only)
+  (ebib-popup-entry-window t)
+  (ebib-window-vertical-split nil)
+  ;; (ebib-index-window-size 100)
   :config
   (add-to-list 'ebib-preload-bib-files
                (concat +emacs/org-root-dir "/all-ref.bib"))
-  (setq +ebib/index-window-scale 0.5)
-  (advice-add 'ebib 
-              :around 
-              #'(lambda (fun &rest args)
-                  (let* ((ebib-index-window-size 
-                          (round (* (frame-height)
-                                    +ebib/index-window-scale))))
-                    (apply fun args)))))
+  ;; (add-hook 'ebib-index-mode-hook #'toggle-truncate-lines)
+  ;; (setq +ebib/index-window-scale 0.5)
+  ;; (advice-add 'ebib 
+  ;;             :around 
+  ;;             #'(lambda (fun &rest args)
+  ;;                 (let* ((ebib-index-window-size 
+  ;;                         (round (* (frame-height)
+  ;;                                   +ebib/index-window-scale))))
+  ;;                   (apply fun args))))
+  )
 
 (use-package pdf-tools
   :ensure t
