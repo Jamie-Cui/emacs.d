@@ -124,7 +124,7 @@
     "op"     #'dired-sidebar-toggle-sidebar
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
-    "ot"     #'+eshell/new
+    "ot"     #'eshell
     "oT"     '(:which-key "eat/new")
     "oT"     #'(lambda () (interactive) 
                  (let ((current-prefix-arg '(t)))
