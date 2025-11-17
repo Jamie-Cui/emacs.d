@@ -5,7 +5,7 @@
 # --
 (insert (format "#+begin_src plantuml :file img/%d.png\n%s\n%s\n%s" 
   (truncate (float-time (current-time)))
-  "skinparam defaultFontName Maple Mono NF CN"
+  "skinparam defaultFontName Maple Mono NL NF CN"
   "title: "
   "#+end_src"
 ))

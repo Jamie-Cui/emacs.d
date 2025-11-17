@@ -93,7 +93,7 @@
 
 (use-package citar-embark
   :ensure t
-  :after citar embark
+  :after (citar embark)
   :no-require
   :config
   (citar-embark-mode))
