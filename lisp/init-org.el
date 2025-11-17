@@ -194,7 +194,7 @@
   ;; org startup
   (org-startup-indented t)
   (org-startup-folded 'nofold)
-  (org-startup-with-inline-images nil)
+  (org-startup-with-inline-images t)
   (org-startup-with-latex-preview nil)
   :config
   (add-to-list 'org-export-backends 'beamer)
