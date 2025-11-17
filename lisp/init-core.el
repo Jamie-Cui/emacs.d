@@ -637,19 +637,18 @@ in the search."
      ("*xref*" :position bottom)
      (help-mode :position bottom :stick t :dedicated t)
      (helpful-mode :position bottom :stick t :dedicated t)
+     ("*eshell*" :position bottom :stick t :dedicated t)
+     (eat-mode :position bottom :stick t :dedicated t)
      (Man-mode :position bottom :stick t :dedicated t)
      ("*Flycheck errors*" :position bottom :stick t :dedicated t)
      ("*Messages*" :position bottom :stick t :dedicated t)
      ("*LLM response*" :position bottom :stick t :dedicated t)
      ("*scratch*" :position bottom :stick t :dedicated t)
-     ;; ((lambda (b) ; predicate for gptel buffer
-     ;;    ;; NOTE: buffer check is required (#450)
-     ;;    (and-let* ((buf (get-buffer (or (car-safe b) b))))
-     ;;      (buffer-local-value 'gptel-mode buf)))
-     ;;  :position bottom :stick t :tail t :dedicated t)
-     ;;
-     ;; FIXME claude-code uses full frame, temp
-     ;; (claude-code--buffer-p :position right :stick t)
+     ((lambda (b) ; predicate for gptel buffer
+        ;; NOTE: buffer check is required (#450)
+        (and-let* ((buf (get-buffer (or (car-safe b) b))))
+          (buffer-local-value 'gptel-mode buf)))
+      :position bottom :stick t :tail t :dedicated t)
      )
    )
   :config
