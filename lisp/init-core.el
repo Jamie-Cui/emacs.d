@@ -192,7 +192,14 @@
   (("C-;" . embark-act))
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
+  :custom
+  (embark-help-key "?")
+  (embark-prompter 'embark-completing-read-prompter)
   :config
+  (setq embark-indicators
+        '(embark-minimal-indicator  ; default is embark-mixed-indicator
+          embark-highlight-indicator
+          embark-isearch-highlight-indicator))
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
@@ -347,6 +354,9 @@
   (vertico-cycle t)
   (vertico-preselect 'first) 
   (vertico-count 17)
+  ;; HACK for embark
+  (add-to-list 'vertico-multiform-categories '(embark-keybinding grid))
+  (vertico-multiform-mode)
   )
 
 (use-package vertico-posframe

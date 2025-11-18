@@ -14,26 +14,19 @@
 ;; citar-embark
 ;; -----------------------------------------------------------
 
+;; default bib file
+(add-to-list 'bibtex-files 
+             (concat +emacs/org-root-dir "/all-ref.bib"))
+
 (use-package ebib
   :ensure t
   :custom
   (ebib-layout 'index-only)
-  (ebib-popup-entry-window t)
+  (ebib-popup-entry-window nil)
   (ebib-window-vertical-split nil)
-  ;; (ebib-index-window-size 100)
   :config
-  (add-to-list 'ebib-preload-bib-files
-               (concat +emacs/org-root-dir "/all-ref.bib"))
-  ;; (add-hook 'ebib-index-mode-hook #'toggle-truncate-lines)
-  ;; (setq +ebib/index-window-scale 0.5)
-  ;; (advice-add 'ebib 
-  ;;             :around 
-  ;;             #'(lambda (fun &rest args)
-  ;;                 (let* ((ebib-index-window-size 
-  ;;                         (round (* (frame-height)
-  ;;                                   +ebib/index-window-scale))))
-  ;;                   (apply fun args))))
-  )
+  (add-to-list 'ebib-preload-bib-files 
+               (concat +emacs/org-root-dir "/all-ref.bib")))
 
 (use-package pdf-tools
   :ensure t
@@ -77,7 +70,12 @@
 
 (use-package citar
   :ensure t
+  ;; :custom
+  ;; (org-cite-insert-processor 'citar)
+  ;; (org-cite-follow-processor 'citar)
+  ;; (org-cite-activate-processor 'citar)
   :config
+  (setq citar-at-point-function 'embark-act)
   (add-to-list 'citar-bibliography 
                (concat +emacs/org-root-dir "/all-ref.bib"))
   (add-to-list 'citar-library-paths 
@@ -98,6 +96,7 @@
   :config
   (citar-embark-mode))
 
+;; utility function
 (defun +latex/isolate-sentence ()
   "Replace '. ' with '.\n%\n' in the selected region, similar to Vim's :'<,'>s/\. /.\n%\n/g."
   (interactive)
@@ -146,8 +145,5 @@ is returned unchanged."
                  (substring string 0 (1+ abort-char))
                string)))))
 
-;; default bib file
-(add-to-list 'bibtex-files 
-             (concat +emacs/org-root-dir "/all-ref.bib"))
 
 (provide 'init-latex)

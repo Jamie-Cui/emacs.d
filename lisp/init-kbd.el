@@ -86,6 +86,7 @@
     ;; action-related key bindings
     "a" '(:ignore t :which-key "actions")
     "a RET"  #'embark-dwim
+    "aa"     #'embark-act
     "ay"     #'embark-org-copy-link-target
     "aY"     #'embark-org-copy-link-description
     ;; window-related key bindings
