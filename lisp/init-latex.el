@@ -21,7 +21,7 @@
 (use-package ebib
   :ensure t
   :custom
-  (ebib-layout 'index-only)
+  (ebib-layout 'full)
   (ebib-popup-entry-window nil)
   (ebib-window-vertical-split nil)
   :config
