@@ -144,7 +144,7 @@
 (use-package org
   :custom
   ;; general
-  (org-return-follows-link t)
+  (org-return-follows-link nil)
   (org-link-elisp-confirm-function nil)
   (org-image-actual-width nil)
   (org-cycle-hide-drawer-startup t)

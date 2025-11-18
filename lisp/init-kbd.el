@@ -205,7 +205,6 @@
                    (call-interactively 'compile)))
     ;; find
     "f" '(:ignore t :which-key "find")
-    "fb"     #'citar-open  ; find bib entry
     "fi"     #'consult-imenu ; find item
     "fI"     #'consult-citre ; find citre items
     "ff"     #'consult-find ; find file (in this directory)
