@@ -4,9 +4,9 @@
 ;;; REVIEW configure constants
 ;;; ------------------------
 
-(setopt +emacs/repo-directory (expand-file-name "~/emacs.d"))
-(setopt +emacs/org-root-dir (expand-file-name "~/org-root"))
-(setopt +emacs/proxy "127.0.0.1:10808")
+;; (setopt +emacs/repo-directory (expand-file-name "~/emacs.d"))
+;; (setopt +emacs/org-root-dir (expand-file-name "~/org-root"))
+;; (setopt +emacs/proxy "127.0.0.1:10808")
 
 ;;; ----------------------------
 ;;; REVIEW package urls
