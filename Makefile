@@ -7,7 +7,7 @@ help:
 	@echo "Available targets:"
 	@echo "  clean          - Clean all .elc files"
 	@echo "  elpa           - Create elpa.tar.gz archive"
-	@echo "  standalone     - Create standalone .emacs.d.tar.gz"
+	@echo "  standalone     - Create standalone emacs.d-standalone.tar.gz"
 	@echo "  run-debug      - Run Emacs with debug init"
 	@echo "  init           - Initialize Emacs configuration"
 	@echo "  help           - Show this help message"
@@ -28,7 +28,7 @@ elpa:
 
 # Create standalone .emacs.d.tar.gz
 standalone:
-	@echo "Creating standalone .emacs.d.tar.gz..."
+	@echo "Creating standalone emacs.d-standalone.tar.gz..."
 	@SCRIPT_DIR="$$(cd -- "$$(dirname -- "$${BASH_SOURCE[0]}")" &> /dev/null && pwd -P)"; \
 	TEMP_DIR=$$(mktemp -d); \
 	echo "Script directory: $$SCRIPT_DIR"; \
@@ -38,8 +38,8 @@ standalone:
 	rm -rf $$TEMP_DIR/.emacs.d/*.tar.gz; \
 	cd $$HOME/.emacs.d && find . -name "*.elc" -type f -delete; \
 	cp -r elpa $$TEMP_DIR/.emacs.d; \
-	cd $$TEMP_DIR && tar czf .emacs.d.tar.gz .emacs.d; \
-	mv $$TEMP_DIR/.emacs.d.tar.gz $$SCRIPT_DIR; \
+	cd $$TEMP_DIR && tar czf emacs.d-standalone.tar.gz .emacs.d; \
+	mv $$TEMP_DIR/emacs.d-standalone.tar.gz $$SCRIPT_DIR; \
 	rm -rf $$TEMP_DIR
 
 # Run Emacs with debug init
