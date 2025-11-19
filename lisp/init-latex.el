@@ -15,8 +15,8 @@
 ;; -----------------------------------------------------------
 
 ;; default bib file
-(add-to-list 'bibtex-files 
-             (concat +emacs/org-root-dir "/all-ref.bib"))
+;; (add-to-list 'bibtex-files 
+;;              (concat +emacs/org-root-dir "/all-ref.bib"))
 
 (use-package ebib
   :ensure t
