@@ -263,7 +263,6 @@
   :after evil
   :config
   (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode)
-  ;; see: 
   ;; HACK: Only display the flycheck popup if we're in normal mode (for evil
   ;;   users) or if no selection or completion is active. This popup can
   ;;   interfere with the active evil mode, clear active regions, and other
@@ -316,9 +315,7 @@
   :if window-system ;; do not load eldoc-box on termial emacs
   :config
   (setq eldoc-echo-area-use-multiline-p nil)
-  (add-hook 'eldoc-mode-hook #'eldoc-box-hover-mode)
-  (add-to-list 'eglot-ignored-server-capabilites :hoverProvider)
-  )
+  (add-hook 'eldoc-mode-hook #'eldoc-box-hover-at-point-mode))
 
 ;; -----------------------------------------------------------
 ;; DONE Completion, search

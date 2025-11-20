@@ -23,7 +23,11 @@
   :custom
   (ebib-layout 'full)
   (ebib-popup-entry-window nil)
+  (ebib-width 0.5)
+  (ebib-index-window-size 30)
   (ebib-window-vertical-split nil)
+  (ebib-uniquify-keys t)
+  (ebib-autogenerate-keys t)
   :config
   (add-to-list 'ebib-preload-bib-files 
                (concat +emacs/org-root-dir "/all-ref.bib")))

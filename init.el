@@ -211,6 +211,10 @@
   (modify-syntax-entry ?/ "-"))
 (add-hook 'cmake-ts-mode-hook #'+cmake-ts-mode/fix-syntax-table)
 
+(use-package eldoc-cmake
+  :ensure t
+  :hook (cmake-ts-mode . eldoc-cmake-enable))
+
 ;; ------------------------------------------------------------------
 ;;; DONE bazel mode
 ;; ------------------------------------------------------------------
