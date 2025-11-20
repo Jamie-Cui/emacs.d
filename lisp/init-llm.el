@@ -20,18 +20,25 @@
   (gptel-default-mode 'org-mode)
   (gptel-org-branching-context t)
   (gptel-log-level 'info)
+  (gptel-proxy +emacs/proxy)
   ;; re-bind key
   :bind (:map gptel-mode-map
               ("C-c C-c" . #'gptel-send)
               ("C-c RET" . #'gptel-send))
   :config
-  ;; register remote backend
-  (defvar +gptel/remote-backend
-    (gptel-make-deepseek "bailian.aliyun"
+
+  ;; register gemini backend
+  (gptel-make-gemini "Gemini"
+    :key (auth-source-pick-first-password :host "gemini")
+    :stream t)
+
+  ;; register aliyun backend
+  (defvar +gptel/aliyun
+    (gptel-make-deepseek "Aliyun"
       :host "dashscope.aliyuncs.com/compatible-mode/v1"
       :endpoint "/chat/completions"
       :stream t
-      :key (auth-source-pick-first-password :host "bailian.console.aliyun.com")
+      :key (auth-source-pick-first-password :host "aliyun")
       :models '(qwen-plus deepseek-r1 qwen3-coder-plus)))
 
   ;; register local backend
@@ -47,7 +54,7 @@
       :models '(qwen2.5-coder:latest)))
 
   ;; set default values
-  (setopt gptel-backend +gptel/remote-backend)
+  (setopt gptel-backend +gptel/aliyun)
   (setopt gptel-model 'qwen3-coder-plus)
 
   ;; set context
