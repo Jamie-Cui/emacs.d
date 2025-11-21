@@ -380,8 +380,7 @@
 
   ;; use corfu in eshell
   (add-hook 'eshell-mode-hook (lambda ()
-                                (setq-local corfu-auto nil)))
-  )
+                                (setq-local corfu-auto nil))))
 
 (when (not (display-graphic-p))
   (use-package corfu-terminal
@@ -624,6 +623,11 @@ in the search."
   ;; For `eat-eshell-visual-command-mode'.
   (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
 
+  (defun +eat/new ()
+    (interactive) 
+    (let ((current-prefix-arg (1+ (cl-position (persp-current-name) (persp-names) :test 'equal))))
+      (call-interactively 'eat)))
+
   (general-define-key
    :states 'normal
    :keymaps 'eat-mode-map
@@ -644,9 +648,8 @@ in the search."
      ("*xref*" :position bottom)
      (help-mode :position bottom :stick t :dedicated t)
      (helpful-mode :position bottom :stick t :dedicated t)
-     ("*eshell*" :position bottom :stick t :dedicated t)
+     ("^\\*eshell\\*.*" :regexp t :position bottom :stick t :dedicated t)
      (eat-mode :position bottom :stick t :dedicated t)
-     (Man-mode :position bottom :stick t :dedicated t)
      ("*Flycheck errors*" :position bottom :stick t :dedicated t)
      ("*Messages*" :position bottom :stick t :dedicated t)
      ("*LLM response*" :position bottom :stick t :dedicated t)

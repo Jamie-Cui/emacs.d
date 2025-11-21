@@ -52,10 +52,10 @@
    "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
    "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
    "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
-   "C-a"     #'move-beginning-of-line
-   "C-e"     #'move-end-of-line
-   "C-u"     #'evil-scroll-up
-   "C-d"     #'evil-scroll-down
+   "C-a"     #'move-beginning-of-line ; emacs
+   "C-e"     #'move-end-of-line ; emacs
+   "C-u"     #'evil-scroll-up ; vim
+   "C-o"     #'evil-jump-backward ; vim
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
    "C-M-j"   #'(lambda () (interactive) (+persp/show-name-in-echo))
@@ -125,11 +125,8 @@
     "op"     #'dired-sidebar-toggle-sidebar
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
-    "ot"     #'eshell
-    "oT"     '(:which-key "eat/new")
-    "oT"     #'(lambda () (interactive) 
-                 (let ((current-prefix-arg '(t)))
-                   (call-interactively 'eat)))
+    "ot"     #'+eshell/new
+    "oT"     #'+eat/new
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
     ;; project-related key bindings
