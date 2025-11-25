@@ -427,4 +427,10 @@
 ;; debug
 (setopt gdb-show-main t)
 
+;; compile
+(defun +compile ()
+  (interactive)
+  (let* ((compile-command (if (use-region-p) (buffer-substring-no-properties (region-beginning) (region-end)) "")))
+    (call-interactively 'compile)))
+
 (provide 'init-misc)

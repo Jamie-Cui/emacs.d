@@ -48,21 +48,16 @@
    "M-c"     #'evil-yank ; copy like mac
    "M-v"     #'evil-paste-after ; paste like mac
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
-   "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
+   "M-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
+   "M-l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
    "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
    "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
-   "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
    "C-a"     #'move-beginning-of-line ; emacs
    "C-e"     #'move-end-of-line ; emacs
    "C-u"     #'evil-scroll-up ; vim
    "C-o"     #'evil-jump-backward ; vim
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
-   "C-M-j"   #'(lambda () (interactive) (+persp/show-name-in-echo))
-   "C-M-k"   #'(lambda () (interactive) (+persp/show-name-in-echo))
-   "C-M-g"   #'(lambda () (interactive) (+persp/show-name-in-echo))
-   "C-M-h"   #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
-   "C-M-l"   #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
    )
   ;; ** Global Keybindings
   (+my-leader-def
@@ -193,13 +188,7 @@
     "cj"     #'consult-eglot-symbols
     "ct"     #'citre-create-tags-file
     "cT"     #'citre-update-this-tags-file
-    "cc"     '(:which-key "compile")
-    "cc"     #'(lambda () (interactive)
-                 (let* ((compile-command 
-                         (if (use-region-p)
-                             (buffer-substring-no-properties (region-beginning) (region-end))
-                           "")))
-                   (call-interactively 'compile)))
+    "cc"     #'+compile
     ;; find
     "f" '(:ignore t :which-key "find")
     "fi"     #'consult-imenu ; find item
