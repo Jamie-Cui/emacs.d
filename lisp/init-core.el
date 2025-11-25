@@ -75,6 +75,7 @@
 ;; yasnippet-snippets
 ;; embark
 ;; embark-consult
+;; wgrep
 ;; iedit
 ;; ansi-color
 ;; sudo-edit
@@ -209,6 +210,9 @@
   :ensure t ; only need to install it, embark loads it after consult if found
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package wgrep
+  :ensure t)
 
 (use-package iedit
   :ensure t
@@ -541,6 +545,7 @@ in the search."
 ;; eat
 ;; helpful
 ;; popwin
+;; eaf
 ;; -----------------------------------------------------------
 
 (use-package docker
@@ -664,7 +669,5 @@ in the search."
   :config
   (popwin-mode 1))
 
-(use-package wgrep
-  :ensure t)
 
 (provide 'init-core)

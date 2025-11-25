@@ -49,7 +49,7 @@ autoconf
 # (alt) configure terminal emacs
 ./configure --with-native-compilation --with-tree-sitter --with-gnutls --without-x-toolkit --without-xpm --without-gif --without-tiff --with-sqlite3
 # (alt) configure gui emacs
-./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-pgtk
+./configure --with-native-compilation --with-tree-sitter --with-sqlite3
 # compile
 sudo make install
 #+end_src

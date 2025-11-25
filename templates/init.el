@@ -57,6 +57,21 @@
 
 (load-theme 'zenburn t)
 
+;; ------------------------------------------------------------------
+;;; DONE EAF
+;; ------------------------------------------------------------------
+
+;; (use-package eaf
+;;   :load-path "~/opt/eaf"
+;;   :custom
+;;   (eaf-browser-continue-where-left-off t)
+;;   (eaf-browser-enable-adblocker t)
+;;   (browse-url-browser-function 'eaf-open-browser)
+;;   :config
+;;   (require 'eaf-browser)
+;;   (defalias 'browse-web #'eaf-open-browser)
+;;   (eaf-bind-key nil "M-q" eaf-browser-keybinding)) ;; unbind, see more in the Wiki
+
 ;;; ----------------------------
 ;;; others
 ;;; ----------------------------
