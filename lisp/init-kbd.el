@@ -48,8 +48,8 @@
    "M-c"     #'evil-yank ; copy like mac
    "M-v"     #'evil-paste-after ; paste like mac
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
-   "M-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
-   "M-l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
+   "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
+   "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
    "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
    "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
    "C-a"     #'move-beginning-of-line ; emacs
@@ -109,6 +109,14 @@
     "Bd"     #'bookmark-delete
     ;; docker-related key bindings
     "d"     #'docker
+    "1" '(:ignore t :which-key "switch pespective")
+    "11"     '(:ignore t :which-key "+persp/show-name-in-echo")
+    "11"     #'(lambda () (interactive) (+persp/show-name-in-echo))
+    "1r"     #'persp-rename
+    "1h"     '(:ignore t :which-key "persp-prev")
+    "1h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
+    "1l"     '(:ignore t :which-key "persp-next")
+    "1l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ob"     #'ebib ; edit bib
