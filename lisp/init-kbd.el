@@ -117,6 +117,10 @@
     "1h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
     "1l"     '(:ignore t :which-key "persp-next")
     "1l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
+    "1d"     '(:which-key "persp/kill-current-workspace")
+    "1d"     #'(lambda () (interactive) 
+                 (persp-kill (persp-current-name))
+                 (+persp/show-name-in-echo))
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ob"     #'citar-open ; open/find bib
