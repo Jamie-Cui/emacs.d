@@ -97,15 +97,6 @@
      "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\"")))
 
 ;;; --------------------------------------
-;;; GNU/Linux
-;;; --------------------------------------
-
-(when (eq system-type 'gnu/linux)
-  ;; (add-to-list 'default-frame-alist '(undecorated . t))
-  ;; NOTE if you are using magic keyboard
-  (setq x-super-keysym 'meta))
-
-;;; --------------------------------------
 ;;; Utilities work for all systems
 ;;; --------------------------------------
 
