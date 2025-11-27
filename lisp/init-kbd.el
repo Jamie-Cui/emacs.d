@@ -119,10 +119,8 @@
     "1l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
-    "ob"     #'ebib ; edit bib
-    "oB"     '(:which-key "Open all-ref.bib")
-    "oB"     #'(lambda () (interactive) 
-                 (find-file (concat +emacs/org-root-dir "/all-ref.bib")))
+    "ob"     #'citar-open ; open/find bib
+    "oB"     #'ebib ; edit bib
     "oe"     #'elfeed
     "og"     #'magit-status-quick
     "op"     #'dired-sidebar-toggle-sidebar
