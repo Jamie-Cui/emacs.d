@@ -52,6 +52,8 @@
    "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
    "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
    "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
+   "C-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
+   "C-l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
    "C-a"     #'move-beginning-of-line ; emacs
    "C-e"     #'move-end-of-line ; emacs
    "C-u"     #'evil-scroll-up ; vim
