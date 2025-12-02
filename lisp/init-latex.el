@@ -86,6 +86,7 @@
                (concat +emacs/org-root-dir "/pdf"))
   (add-to-list 'citar-notes-paths 
                (concat +emacs/org-root-dir "/roam"))
+  (setf (alist-get 'note citar-templates) "${=key=}")
   ;; NOTE this var is used by org-export
   (add-to-list 'org-cite-global-bibliography 
                (concat +emacs/org-root-dir "/all-ref.bib"))
