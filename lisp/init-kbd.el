@@ -38,8 +38,8 @@
    "M-y"     #'yas-expand
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-w"     #'evil-avy-goto-char-timer
-   "M-n"     #'narrow-to-region
-   "M-N"     #'widen ; un-narrow
+   ;; "M-n"     #'narrow-to-region
+   ;; "M-N"     #'widen ; un-narrow
    "M-q"     #'prog-fill-reindent-defun ; default for emacs
    ;; mac-like binding
    "M-f"     #'consult-line ; search like mac
@@ -47,11 +47,11 @@
    "M-s"     #'save-buffer ; save like mac
    "M-c"     #'evil-yank ; copy like mac
    "M-v"     #'evil-paste-after ; paste like mac
-   "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
-   "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
-   "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
-   "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
-   "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
+   ;; "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
+   ;; "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
+   ;; "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
+   ;; "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
+   ;; "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
    "C-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
    "C-l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
    "C-a"     #'move-beginning-of-line ; emacs
