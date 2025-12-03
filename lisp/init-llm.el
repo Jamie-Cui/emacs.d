@@ -10,12 +10,12 @@
 ;; gptel-magit
 ;; -----------------------------------------------------------
 
-(use-package gptel-agent
-  :vc (:url "https://github.com/karthink/gptel-agent.git")
-  :ensure t
-  :config 
-  (require 'gptel-agent-tools)
-  (add-to-list 'gptel-agents-dirs (concat +emacs/repo-directory "/agents")))
+;; (use-package gptel-agent
+;;   :vc (:url "https://github.com/karthink/gptel-agent.git")
+;;   :ensure t
+;;   :config 
+;;   (require 'gptel-agent-tools)
+;;   (add-to-list 'gptel-agents-dirs (concat +emacs/repo-directory "/agents")))
 
 (use-package agent-shell
   :ensure t)
