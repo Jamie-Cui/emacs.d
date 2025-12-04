@@ -435,4 +435,11 @@
   (let* ((compile-command (if (use-region-p) (buffer-substring-no-properties (region-beginning) (region-end)) "")))
     (call-interactively 'compile)))
 
+;; copy buffer file name
+(defun +copy-buffer-file-name ()
+  "Copy the current buffer file name to clipboard."
+  (interactive)
+  (kill-new (buffer-file-name))
+  (message "Copied: %s" (buffer-file-name)))
+
 (provide 'init-misc)

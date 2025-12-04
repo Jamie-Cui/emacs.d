@@ -103,6 +103,7 @@
     "b" '(:ignore t :which-key "buffer")
     "bn"     #'evil-buffer-new
     "bd"     #'kill-current-buffer
+    "by"     #'+copy-buffer-file-name
     "br"     '(:which-key "revert-buffer")
     "br"     #'(lambda () (interactive) (revert-buffer t t))
     "B" '(:ignore t :which-key "bookmark")
