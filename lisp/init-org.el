@@ -169,6 +169,7 @@
   ;; org export
   (org-export-dispatch-use-expert-ui t)
   (org-export-with-toc nil)
+  (org-cite-export-processors '((latex biblatex) (beamer natbib)) (t plain))
   (org-latex-compiler "xelatex")
   (org-latex t)
   (org-latex-src-block-backend 'engraved)
