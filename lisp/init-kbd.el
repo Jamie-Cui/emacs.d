@@ -129,6 +129,7 @@
     "ob"     #'citar-open ; open/find bib
     "oB"     #'ebib ; edit bib
     "oe"     #'elfeed
+    "of"     #'find-file
     "og"     #'magit-status-quick
     "op"     #'dired-sidebar-toggle-sidebar
     "od"     #'dired-jump
