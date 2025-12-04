@@ -45,9 +45,6 @@
 ;; But turn on auto-save, so we have a fallback in case of crashes or lost data.
 ;; Use `recover-file' or `recover-session' to recover them.
 (setopt auto-save-default t
-        ;; Don't auto-disable auto-save after deleting big chunks. This defeats
-        ;; the purpose of a failsafe. This adds the risk of losing the data we
-        ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
         auto-save-include-big-deletions t
         ;; Keep it out of `doom-emacs-dir' or the local directory.
         auto-save-list-file-prefix (concat user-emacs-directory "autosave/")
@@ -61,10 +58,11 @@
 ;; disable electric-indent-mode, forever
 ;; (electric-indent-mode -1)
 ;; (add-hook 'after-change-major-mode-hook (lambda() (electric-indent-mode -1)))
-(use-package aggressive-indent
-  :ensure t
-  :config
-  (global-aggressive-indent-mode 1))
+;; (use-package aggressive-indent
+;;   :ensure t
+;;   :config
+;;   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+;;   (add-hook 'css-mode-hook #'aggressive-indent-mode))
 
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
