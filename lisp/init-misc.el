@@ -59,8 +59,12 @@
               (list ".*" auto-save-list-file-prefix t)))
 
 ;; disable electric-indent-mode, forever
-(electric-indent-mode -1)
-(add-hook 'after-change-major-mode-hook (lambda() (electric-indent-mode -1)))
+;; (electric-indent-mode -1)
+;; (add-hook 'after-change-major-mode-hook (lambda() (electric-indent-mode -1)))
+(use-package aggressive-indent
+  :ensure t
+  :config
+  (global-aggressive-indent-mode 1))
 
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
