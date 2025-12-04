@@ -58,11 +58,6 @@
 ;; disable electric-indent-mode, forever
 ;; (electric-indent-mode -1)
 ;; (add-hook 'after-change-major-mode-hook (lambda() (electric-indent-mode -1)))
-;; (use-package aggressive-indent
-;;   :ensure t
-;;   :config
-;;   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-;;   (add-hook 'css-mode-hook #'aggressive-indent-mode))
 
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -148,14 +143,12 @@
 (setq-default vc-handled-backends '(Git))
 
 ;; enable hideshow in all programming modes
-(use-package hideshow
-  :config
-  (add-hook 'prog-mode-hook #'hs-minor-mode))
+(require 'hideshow)
+(add-hook 'prog-mode-hook #'hs-minor-mode)
 
 ;; Persist history over Emacs restarts.
-(use-package savehist
-  :init
-  (savehist-mode))
+(require 'savehist)
+(savehist-mode 1)
 
 ;; commit mode
 (setopt comint-scroll-to-bottom-on-output t)
@@ -324,15 +317,11 @@
   (eshell-printn (format "[git] http_proxy  : %s" (+eshell/format-shell-command "git config --global --get http.proxy")))
   (eshell-printn (format "[git] https_proxy : %s" (+eshell/format-shell-command "git config --global --get https.proxy"))))
 
-;; HACK redefine eshell/clear function
-(use-package esh-mode
-  :config
-  ;; HACK redefine eshell/clear function
-  (defun eshell/clear (&optional scrollback)
-    (interactive)
-    (let ((inhibit-read-only t))
-      (erase-buffer))))
-
+;; HACK redefine eshell/clear function using advice
+(defadvice eshell/clear (around clear-buffer activate)
+  "Clear the eshell buffer by erasing its contents."
+  (let ((inhibit-read-only t))
+    (erase-buffer)))
 
 ;; ------------------------------------------------------------------
 ;; TTY Configuration
