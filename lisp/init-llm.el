@@ -113,9 +113,9 @@
 ;; export ANTHROPIC_BASE_URL=https://dashscope.aliyuncs.com/api/v2/apps/claude-code-proxy
 ;; export ANTHROPIC_AUTH_TOKEN=sk-***************************
 ;; 
-;; HACK Why not melpa? coz it requires vterm and I prefer eat.
+;; NOTE Why not melpa? coz it requires vterm and I prefer eat.
 ;;
-;; TODO how to use cluade-code in emacs with local model?
+;; NOTE How to use cluade-code in emacs with local model?
 ;; see: https://github.com/musistudio/claude-code-router/tree/main
 ;;
 ;; (use-package claude-code

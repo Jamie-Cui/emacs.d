@@ -46,7 +46,7 @@
 ;; Enable package
 (require 'package)
 
-;; HACK disable check of signature
+;; disable check of signature
 (setq package-check-signature nil)
 
 ;; initialize packages
@@ -191,7 +191,7 @@
   (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-ts-mode))
   (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
 
-  ;; HACK toggle mode automatically
+  ;; NOTE toggle mode automatically
   (defun +treesit-auto/toggle ()
     "Toggle global-treesit-auto-mode."
     (interactive)
@@ -204,7 +204,7 @@
   )
 
 ;; ------------------------------------------------------------------
-;; HACK fix cmake-ts-mode syntax table
+;; NOTE fix cmake-ts-mode syntax table
 ;; ------------------------------------------------------------------
 
 (defun +cmake-ts-mode/fix-syntax-table ()

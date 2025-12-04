@@ -87,12 +87,11 @@
   (global-hl-todo-mode 1)
   (setq hl-todo-highlight-punctuation ":"
         hl-todo-keyword-faces
-        '(("TODO" warning bold) ;; require action
-          ("DEPRECATED" warning bold) ;; require action
-          ("REVIEW" warning bold) ;; require action (review)
-          ("HACK" font-lock-keyword-face bold) ;; require notice
+        '(("TODO" warning bold) ;; I should schedule to do this
+          ("REVIEW" warning bold) ;; I've write something uncertain, double check this
+          ("HACK" warning bold) ;; This is a temp/ugly fix, and should have other solutions, fix it if possible
+          ("DEPRECATED" font-lock-keyword-face bold) ;; require notice
           ("NOTE" font-lock-keyword-face bold) ;; require notice
-          ("TEMP" font-lock-keyword-face bold) ;; require notice
           ("DONE" success bold)
           ("FIXME" error bold) ;; require immediate action
           ("BUG" error bold) ;; require immediate action
@@ -619,6 +618,9 @@ in the search."
 (use-package magit-todos
   :ensure t
   :after magit
+  :custom
+  (magit-todos-ignored-keywords ("NOTE" "DEPRECATED" "DONE"))
+  (magit-todos-keyword-suffix "\\(?:[([][^])]+[])]\\)?:") ; default
   :config (magit-todos-mode 1))
 
 (use-package eat
