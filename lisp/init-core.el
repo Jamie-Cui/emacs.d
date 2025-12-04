@@ -542,6 +542,7 @@ in the search."
 ;; docker
 ;; dashboard
 ;; magit
+;; magit-todos
 ;; eat
 ;; helpful
 ;; popwin
@@ -614,6 +615,11 @@ in the search."
   (general-define-key
    :keymaps 'smerge-mode-map
    "C-c C-c"     #'smerge-keep-current))
+
+(use-package magit-todos
+  :ensure t
+  :after magit
+  :config (magit-todos-mode 1))
 
 (use-package eat
   :ensure t
