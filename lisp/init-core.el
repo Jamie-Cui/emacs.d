@@ -90,8 +90,8 @@
         '(("TODO" warning bold) ;; I should schedule to do this
           ("REVIEW" warning bold) ;; I've write something uncertain, double check this
           ("HACK" warning bold) ;; This is a temp/ugly fix, and should have other solutions, fix it if possible
-          ("DEPRECATED" font-lock-keyword-face bold) ;; require notice
-          ("NOTE" font-lock-keyword-face bold) ;; require notice
+          ("DEPRECATED" warning bold) ;; require notice
+          ("NOTE" success bold) ;; require notice
           ("DONE" success bold)
           ("FIXME" error bold) ;; require immediate action
           ("BUG" error bold) ;; require immediate action
@@ -266,8 +266,9 @@
   :after evil
   :config
   (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode)
-  ;; HACK: Only display the flycheck popup if we're in normal mode (for evil
+  ;; NOTE Only display the flycheck popup if we're in normal mode (for evil
   ;;   users) or if no selection or completion is active. This popup can
+
   ;;   interfere with the active evil mode, clear active regions, and other
   ;;   funny business (see #7242).
   (defadvice! +syntax--disable-flycheck-popup-tip-maybe-a (&rest _)
@@ -619,8 +620,8 @@ in the search."
   :ensure t
   :after magit
   :custom
-  (magit-todos-ignored-keywords ("NOTE" "DEPRECATED" "DONE"))
-  (magit-todos-keyword-suffix "\\(?:[([][^])]+[])]\\)?:") ; default
+  (magit-todos-ignored-keywords '("NOTE" "DEPRECATED" "DONE"))
+  (magit-todos-keyword-suffix (rx (optional (or "(" "[") (1+ (not (any ")" "]"))) (or ")" "]")))) ; default
   :config (magit-todos-mode 1))
 
 (use-package eat

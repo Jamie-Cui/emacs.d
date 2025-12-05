@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+;; Supress warnings about file
+(setopt warning-suppress-log-types '((files)))
+
 ;; Set Lexical Binding Globally
 (setq lexical-binding t)
 (setq byte-compile-warnings '(not lexical))

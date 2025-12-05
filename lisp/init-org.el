@@ -17,10 +17,10 @@
 ;;; editing
 (setopt org-return-follows-link nil)
 (setopt org-link-elisp-confirm-function nil)
-(setopt org-use-fast-todo-selection t)
+(setopt org-use-fast-todo-selection 'auto)
 
 ;;; ui
-(setopt org-log-done t) ; when DONE, log the time
+(setopt org-log-done 'time) ; when DONE, log the time
 (setopt org-image-actual-width nil)
 (setopt org-cycle-hide-drawer-startup t)
 (setopt org-cycle-hide-block-startup t)
