@@ -429,4 +429,6 @@
   (kill-new (buffer-file-name))
   (message "Copied: %s" (buffer-file-name)))
 
+(setopt duplicate-line-final-position 1) ; move point to the first newline
+
 (provide 'init-misc)
