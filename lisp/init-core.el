@@ -623,75 +623,7 @@ in the search."
   (magit-todos-ignored-keywords '("NOTE" "DEPRECATED" "DONE"))
   (magit-todos-keyword-suffix (rx (optional (or "(" "[") (1+ (not (any ")" "]"))) (or ")" "]")))) ; default
   :config
-  (magit-todos-mode 1)
-
-  ;; HACK Override this function
-  (cl-defun magit-todos--insert-items (magit-status-buffer items &key branch-p)
-    (declare (indent defun))
-    ;; NOTE: This could be factored out into some kind of `magit-insert-section-async' macro if necessary.
-    ;; MAYBE: Use `magit-insert-section-body'.
-    (when (not (buffer-live-p magit-status-buffer))
-      (message "`magit-todos--insert-items-callback': Callback called for deleted buffer"))
-    (let* ((items (magit-todos--sort items))
-           (num-items (length items))
-           (magit-section-show-child-count t)
-           ;; HACK: "For internal use only."  But this makes collapsing the new section work!
-           (magit-insert-section--parent magit-root-section)
-           (inhibit-read-only t))
-      (when (buffer-live-p magit-status-buffer)
-        ;; Don't try to select a killed status buffer
-        (with-current-buffer magit-status-buffer
-          (unless branch-p
-            ;; Don't do any of this for the branch-diff scanner.
-            (when magit-todos-updating
-              (when (or (null magit-todos-update)      ; Manual updates
-                        (integerp magit-todos-update)) ; Caching
-                (setq magit-todos-item-cache items)
-                (setq magit-todos-last-update-time (current-time)))
-              ;; HACK: I don't like setting this special var, but it works.  See other comment where
-              ;; it's set t.
-              (setq magit-todos-updating nil)))
-          (save-excursion
-            ;; Insert items
-            (goto-char (point-min))
-            ;; Go to insertion position
-            (goto-char (or (cl-loop for section in magit-todos-insert-after
-                                    for pos = (magit-todos--section-end section)
-                                    when pos return pos)
-                           (magit-todos--section-end 'bottom)))
-            ;; Insert section
-            (newline)
-            (let* ((group-fns (pcase magit-todos-auto-group-items
-                                ('never nil)
-                                ('always magit-todos-group-by)
-                                ((pred integerp) (when (> num-items magit-todos-auto-group-items)
-                                                   magit-todos-group-by))
-                                (_ (error "Invalid value for magit-todos-auto-group-items"))))
-                   (magit-todos-show-filenames (not (member 'magit-todos-item-filename group-fns)))
-                   (reminder (if magit-todos-update
-                                 ""      ; Automatic updates: no reminder
-                               ;; Manual updates: remind user
-                               " (update manually)")))
-              (if (not items)
-                  (unless magit-todos-update
-                    ;; Manual updates: Insert section to remind user
-                    (let ((magit-insert-section--parent magit-root-section))
-                      (magit-insert-section (todos)
-                        (magit-insert-heading (concat (propertize magit-todos-section-heading
-                                                                  'face 'magit-section-heading
-                                                                  'font-lock-face 'magit-section-heading)
-                                                      " (0)" reminder "\n")))))
-                (let ((section (magit-todos--insert-groups :type 'todos
-                                 :heading (format "%s (%s)%s"
-                                                  (propertize magit-todos-section-heading
-                                                              'face 'magit-section-heading
-                                                              'font-lock-face 'magit-section-heading)
-                                                  num-items reminder)
-                                 :group-fns group-fns
-                                 :items items
-                                 :depth 0)))
-                  (magit-todos--set-visibility :section section :num-items num-items)))))))))
-  )
+  (magit-todos-mode 1))
 
 (use-package eat
   :ensure t

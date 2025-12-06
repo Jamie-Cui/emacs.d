@@ -105,7 +105,6 @@
     "bn"     #'evil-buffer-new
     "bd"     #'kill-current-buffer
     "by"     #'+copy-buffer-file-name
-    "br"     '(:which-key "revert-buffer")
     "br"     #'(lambda () (interactive) (revert-buffer t t))
     "B" '(:ignore t :which-key "bookmark")
     "BB"     #'consult-bookmark
@@ -113,18 +112,6 @@
     "Bd"     #'bookmark-delete
     ;; docker-related key bindings
     "d"     #'docker
-    "1" '(:ignore t :which-key "switch pespective")
-    "11"     '(:ignore t :which-key "+persp/show-name-in-echo")
-    "11"     #'(lambda () (interactive) (+persp/show-name-in-echo))
-    "1r"     #'persp-rename
-    "1h"     '(:ignore t :which-key "persp-prev")
-    "1h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
-    "1l"     '(:ignore t :which-key "persp-next")
-    "1l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
-    "1d"     '(:which-key "persp/kill-current-workspace")
-    "1d"     #'(lambda () (interactive) 
-                 (persp-kill (persp-current-name))
-                 (+persp/show-name-in-echo))
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ob"     #'citar-open ; open/find bib
@@ -141,20 +128,19 @@
     "om"     #'popwin:messages ; popup
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
-    "pa"     #'projectile-add-known-project
-    "pb"     #'consult-project-buffer 
-    "pc"     #'projectile-compile-project 
-    "pC"     #'projectile-configure-project 
-    "px"     #'projectile-remove-known-project
-    "pd"     #'projectile-run-gdb
-    "pf"     #'+vertico/project-search
-    "pi"     #'projectile-invalidate-cache
-    "po"     #'ff-find-related-file
     "pp"     #'projectile-switch-project
-    "pq"     '(:which-key "persp/kill-current-workspace")
     "pq"     #'(lambda () (interactive) 
                  (persp-kill (persp-current-name))
                  (+persp/show-name-in-echo))
+    "pa"     #'projectile-add-known-project
+    "px"     #'projectile-remove-known-project
+    "pg"     #'projectile-cleanup-known-projects
+    "pi"     #'projectile-invalidate-cache
+    "pc"     #'projectile-compile-project 
+    "pC"     #'projectile-configure-project 
+    "pD"     #'projectile-run-gdb
+    "pf"     #'+vertico/project-search
+    "po"     #'ff-find-related-file
     "pr"     #'projectile-run-project 
     "pt"     #'projectile-test-project 
     ;; note functions
@@ -173,10 +159,6 @@
     "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
     "hk"     #'helpful-key
-    "hK"     '(:which-key "general-describe-keybindings")
-    "hK"     #'(lambda () (interactive) 
-                 (let* ((current-prefix-arg '(t))) 
-                   (call-interactively 'general-describe-keybindings)))
     "hv"     #'helpful-variable
     "hm"     #'describe-mode
     ;; quit emacs
