@@ -654,6 +654,7 @@ in the search."
 
 (use-package popwin
   :ensure t
+  :after gptel
   :custom 
   (popwin:popup-window-height 0.5)
   (popwin:popup-window-width 0.5)
