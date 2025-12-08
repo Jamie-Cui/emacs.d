@@ -215,6 +215,7 @@
   ;;   "t" #'org-todo ;; C-c C-t
   ;;   "q" #'org-set-tags-command ;; C-c C-q
   ;;   "," #'org-priority ;; C-c ,
-  ;;   ))
+  ;;   )
+  )
 
-  (provide 'init-kbd)
+(provide 'init-kbd)
