@@ -142,6 +142,7 @@
 ;; org-appear
 ;; xenops
 ;; engrave-faces
+;; consult-notes
 ;; -----------------------------------------------------------
 
 (use-package org-journal
@@ -219,14 +220,10 @@
 
 (use-package org-roam
   :ensure t
+  :custom
+  (org-roam-directory (concat +emacs/org-root-dir "/roam"))
   :config
-  (setq org-roam-directory (concat +emacs/org-root-dir "/roam"))
-  ;; If you're using a vertical completion framework, you might want
-  ;; a more informative completion interface
-  (setq org-roam-node-display-template
-        (concat "${title:*} "
-                (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
+  (org-roam-db-autosync-mode +1)
   ;; If using org-roam-protocol
   (require 'org-roam-protocol)
 
@@ -269,6 +266,5 @@
 
 (use-package engrave-faces
   :ensure t)
-
 
 (provide 'init-org)
