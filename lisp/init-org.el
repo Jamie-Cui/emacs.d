@@ -228,7 +228,14 @@
                 (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-mode)
   ;; If using org-roam-protocol
-  (require 'org-roam-protocol))
+  (require 'org-roam-protocol)
+
+  ;; NOTE Make org-roam case insensitve
+  ;; from: https://emacs.stackexchange.com/a/77296
+  (defun case-insensitive-org-roam-node-read (orig-fn &rest args)
+    (let ((completion-ignore-case t))
+      (apply orig-fn args)))
+  (advice-add 'org-roam-node-read :around #'case-insensitive-org-roam-node-read))
 
 (use-package org-appear
   :ensure t
