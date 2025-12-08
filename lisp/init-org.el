@@ -32,6 +32,12 @@
 (setopt org-startup-with-inline-images t)
 (setopt org-startup-with-latex-preview nil)
 
+(custom-set-faces
+ ;; nil as the second argument applies to all frames (existing and future)
+ '(org-tag ((t (:foreground "DeepSkyBlue" :weight normal :height 1.0))))
+ ;; You can also change other attributes like :background
+ )
+
 (setq org-preview-latex-process-alist
       '((dvisvgm
 		 :programs ("xelatex" "dvisvgm")
@@ -45,16 +51,10 @@
 		 ("dvisvgm %f -e -n -b min -c %S -o %O"))))
 
 ;; todo keywords
-(setopt org-todo-keyword-faces '(
-                                 ("[-]" . +org-todo-active)
+(setopt org-use-fast-todo-selection 'expert)
+(setopt org-todo-keyword-faces '(("[-]" . +org-todo-active)
                                  ("[?]" . +org-todo-onhold))
-        org-todo-keywords '((sequence
-                             "[ ](t)"
-                             "[-](s)" 
-                             "[?](w)"  
-                             "|"
-                             "[X](d)"))
-        )
+        org-todo-keywords '((sequence "[ ](t)" "[-](s)" "[?](w)" "|" "[X](d)")))
 
 ;;; org-src
 (setopt org-src-fontify-natively t)
@@ -145,14 +145,14 @@
 ;; consult-notes
 ;; -----------------------------------------------------------
 
-(use-package org-journal
-  :ensure t
-  :custom
-  (org-journal-dir (concat +emacs/org-root-dir "/journal"))
-  (org-journal-find-file-fn 'find-file)
-  (org-journal-file-type 'monthly)
-  (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\"")
-  )
+;; (use-package org-journal
+;;   :ensure t
+;;   :custom
+;;   (org-journal-dir (concat +emacs/org-root-dir "/journal"))
+;;   (org-journal-find-file-fn 'find-file)
+;;   (org-journal-file-type 'monthly)
+;;   (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\"")
+;;   )
 
 (use-package org-download
   :ensure t
@@ -223,6 +223,11 @@
   :custom
   (org-roam-directory (concat +emacs/org-root-dir "/roam"))
   :config
+  ;; If you're using a vertical completion framework, you might want
+  ;; a more informative completion interface
+  (setq org-roam-node-display-template
+        (concat "${title:100} " (propertize "${tags:10}" 'face 'org-tag)))
+  (require 'org-roam-db)
   (org-roam-db-autosync-mode +1)
   ;; If using org-roam-protocol
   (require 'org-roam-protocol)

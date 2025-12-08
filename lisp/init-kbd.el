@@ -148,13 +148,13 @@
     "n@"      #'citar-insert-citation ;; insert bib
     "ny"      #'org-store-link
     "np"      #'org-insert-link
-    "ne"      #'org-export-dispatch
     "nd"      #'deft
-    "nj"      #'org-journal-new-entry
+    ;; "nj"      #'org-journal-new-entry
     "nr" '(:ignore t :which-key "org-roam")
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
     "nrs"     #'org-roam-db-sync
+    "nrq"     #'org-roam-tag-add
     ;; help functions
     "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
@@ -207,15 +207,14 @@
     "d" #'deft-delete-file
     "g" #'deft-refresh)
 
-  ;; org mode map
-  (+my-local-leader-def
-    :keymaps 'org-mode-map
-    :states '(normal visual motion)
-    "e" #'org-export-dispatch
-    "j" #'org-present-next
-    "k" #'org-present-prev
-    "q" #'org-present-quit
-    "t" #'org-todo
-    "p" #'org-priority))
+  ;; REVIEW org mode map (no need for this, delete in the future)
+  ;; (+my-local-leader-def
+  ;;   :keymaps 'org-mode-map
+  ;;   :states '(normal visual motion)
+  ;;   "e" #'org-export-dispatch ;; C-c C-e
+  ;;   "t" #'org-todo ;; C-c C-t
+  ;;   "q" #'org-set-tags-command ;; C-c C-q
+  ;;   "," #'org-priority ;; C-c ,
+  ;;   ))
 
-(provide 'init-kbd)
+  (provide 'init-kbd)
