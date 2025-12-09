@@ -465,13 +465,14 @@ in the search."
 ;; -----------------------------------------------------------
 ;; DONE Workspaces
 ;;
-;; persp-projectile
+;; persp-projectile (site-lisp)
 ;; perspective
 ;; projectile
 ;; -----------------------------------------------------------
 
 (use-package persp-projectile
-  :ensure t)
+  :after (perspective projectile)
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
 
 (use-package perspective
   :ensure t
@@ -490,6 +491,8 @@ in the search."
   :ensure t
   :custom (projectile-project-name-function 
            '+projectile-project-name--lower-case)
+  ;; DO NOT add project automatically
+  (projectile-track-known-projects-automatically nil) 
   (projectile-indexing-method 'hybrid)
   (projectile-enable-caching t)
   (projectile-per-project-compilation-buffer t)
