@@ -21,6 +21,7 @@
 (use-package ebib
   :ensure t
   :custom
+  (ebib-keywords-save-on-exit 'always)
   (ebib-layout 'full)
   (ebib-popup-entry-window nil)
   (ebib-width 0.5)
