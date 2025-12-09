@@ -75,6 +75,9 @@
 
 (use-package citar
   :ensure t
+  :hook
+  (LaTeX-mode . citar-capf-setup)
+  (org-mode . citar-capf-setup)
   ;; :custom
   ;; (org-cite-insert-processor 'citar)
   ;; (org-cite-follow-processor 'citar)
@@ -91,9 +94,14 @@
   ;; NOTE this var is used by org-export
   (add-to-list 'org-cite-global-bibliography 
                (concat +emacs/org-root-dir "/all-ref.bib"))
-  :hook
-  (LaTeX-mode . citar-capf-setup)
-  (org-mode . citar-capf-setup))
+
+  ;; Make citar-open-entry show item in ebib
+  ;; NOTE only global bib works, we do not support project-wise bib
+  (defun citar-open-entry-in-ebib (citekey)
+    "Open entry for CITEKEY in ebib."
+    ;; Adapted from 'bibtex-completion-show-entry'.
+    (ebib (concat +emacs/org-root-dir "/all-ref.bib") citekey))
+  (setopt citar-open-entry-function #'citar-open-entry-in-ebib))
 
 (use-package citar-embark
   :ensure t
