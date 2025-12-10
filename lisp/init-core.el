@@ -355,7 +355,6 @@
   (vertico-cycle t)
   (vertico-preselect 'first) 
   (vertico-count 17)
-  ;; HACK for embark
   (add-to-list 'vertico-multiform-categories '(embark-keybinding grid))
   (vertico-multiform-mode)
   )

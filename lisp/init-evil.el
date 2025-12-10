@@ -124,7 +124,7 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   :config
   ;; make sure the follwing key bindings always work
   (evil-collection-init)
-  ;; HACK re-bind keys
+  ;; NOTE re-bind keys
   (evil-collection-define-key '(normal visual) 'evil-mc-key-map (kbd "gz") evil-mc-cursors-map)
   )
 

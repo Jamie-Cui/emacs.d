@@ -391,7 +391,7 @@ editorconfig or dtrt-indent installed."
   (setq-local standard-indent width)
   (when (boundp 'evil-shift-width)
     (setq evil-shift-width width))
-  ;; REVIEW: Only use `editorconfig' once we drop 29.x support.
+  ;; NOTE Only use `editorconfig' once we drop 29.x support.
   (cond ((let ((load-path (get 'load-path 'initial-value)))
            ;; A built-in `editorconfig' package was added in Emacs 30.x, but
            ;; with a different API. Since it's built in, prefer it over the
@@ -472,16 +472,15 @@ PT defaults to the current position."
 ;; NOTE Since I'm using evil, i want an additional space when inserting
 ;;;###autoload
 (defun +evil/smart-insert ()
-  (let ((char (char-after (point))))
-    (when (and char
-               (not (eq char ?\s))
-               (not (eq char ?\n))
-               (not (eq char ?\t))
-               (>= char 32)
-               (<= char 126))
-      (when (not (evil-forward-char 1 nil t)) ;; try forward 1 char
-        (call-interactively 'evil-append)
-        (insert " ") ;; if foward char failed, insert a space
-        ))))
+  (let ((c (char-after (point))))
+    ;; not c is not a proper char
+    (when (not (and c (not (eq c ?\s)) (not (eq c ?\n)) (not (eq c ?\t)) (>= c 32) (<= c 126)))
+      (call-interactively 'evil-backward-word-end) ) ;; jump to previous word end
+
+    (call-interactively 'evil-append) ;; evil-append ("a")
+    (insert " ") ;; if foward char failed, insert a space
+    (insert " ") ;; if foward char failed, insert a space
+    (evil-normal-state)
+    ))
 
 (provide 'init-utils)
