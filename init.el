@@ -236,3 +236,16 @@
   :bind (:map markdown-mode-map
               ("C-c C-e" . markdown-do)))
 
+
+;; ------------------------------------------------------------------
+;;; DONE (optional) elfeed
+;; ------------------------------------------------------------------
+
+(use-package elfeed
+  :ensure t
+  :config
+  (setq elfeed-feeds
+        '("http://nullprogram.com/feed/"
+          "https://planet.emacslife.com/atom.xml"
+          "https://stallman.org/rss/rss.xml"))
+  )
