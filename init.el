@@ -243,9 +243,18 @@
 
 (use-package elfeed
   :ensure t
+  :custom
+  (elfeed-feeds '(
+                  ("http://nullprogram.com/feed/")
+                  ("https://planet.emacslife.com/atom.xml")
+                  ("https://stallman.org/rss/rss.xml")
+                  ("https://eprint.iacr.org/rss/rss.xml")
+                  ("https://emacs-china.org/latest.rss")
+                  ))
   :config
-  (setq elfeed-feeds
-        '("http://nullprogram.com/feed/"
-          "https://planet.emacslife.com/atom.xml"
-          "https://stallman.org/rss/rss.xml"))
-  )
+  ;; HACK from https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
+  (define-advice elfeed-search--header (:around (oldfun &rest args))
+    (if elfeed-db
+        (apply oldfun args)
+      "No database loaded yet")))
+
