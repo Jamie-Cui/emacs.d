@@ -469,5 +469,19 @@ PT defaults to the current position."
                     (and (/= 0 (logand (ash 1 19) s))
                          (nth 4 (syntax-ppss (- pt 2))))))))))))
 
+;; NOTE Since I'm using evil, i want an additional space when inserting
+;;;###autoload
+(defun +evil/smart-insert ()
+  (let ((char (char-after (point))))
+    (when (and char
+               (not (eq char ?\s))
+               (not (eq char ?\n))
+               (not (eq char ?\t))
+               (>= char 32)
+               (<= char 126))
+      (when (not (evil-forward-char 1 nil t)) ;; try forward 1 char
+        (call-interactively 'evil-append)
+        (insert " ") ;; if foward char failed, insert a space
+        ))))
 
 (provide 'init-utils)

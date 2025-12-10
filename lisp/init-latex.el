@@ -101,7 +101,11 @@
     "Open entry for CITEKEY in ebib."
     ;; Adapted from 'bibtex-completion-show-entry'.
     (ebib (concat +emacs/org-root-dir "/all-ref.bib") citekey))
-  (setopt citar-open-entry-function #'citar-open-entry-in-ebib))
+  (setopt citar-open-entry-function #'citar-open-entry-in-ebib)
+  (advice-add 'citar-insert-citation :around
+              (lambda (orig-fun &rest args)
+                (+evil/smart-insert)
+                (apply orig-fun args))))
 
 (use-package citar-embark
   :ensure t

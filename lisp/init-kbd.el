@@ -38,6 +38,7 @@
    "M-y"     #'yas-expand
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-w"     #'evil-avy-goto-char-timer
+   "M-i"     #'consult-imenu
    ;; "M-n"     #'narrow-to-region
    ;; "M-N"     #'widen ; un-narrow
    "M-q"     #'prog-fill-reindent-defun ; default for emacs

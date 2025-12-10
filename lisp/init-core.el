@@ -662,6 +662,7 @@ in the search."
   (popwin:popup-window-height 0.3)
   (popwin:popup-window-width 0.3)
   (popwin:adjust-other-windows t)
+  (popwin:reuse-window t)
   (popwin:special-display-config
    '(
      ("*xref*" :position bottom)

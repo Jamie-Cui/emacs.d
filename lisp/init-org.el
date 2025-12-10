@@ -220,6 +220,7 @@
 
 (use-package org-roam
   :ensure t
+  :after evil
   :custom
   (org-roam-directory (concat +emacs/org-root-dir "/roam"))
   :config
@@ -234,10 +235,11 @@
 
   ;; NOTE Make org-roam case insensitve
   ;; from: https://emacs.stackexchange.com/a/77296
-  (defun case-insensitive-org-roam-node-read (orig-fn &rest args)
+  (defun +org-roam/case-insensitive-org-roam-node-read (orig-fn &rest args)
     (let ((completion-ignore-case t))
       (apply orig-fn args)))
-  (advice-add 'org-roam-node-read :around #'case-insensitive-org-roam-node-read))
+  (advice-add 'org-roam-node-read :around #'+org-roam/case-insensitive-org-roam-node-read)
+  (advice-add 'org-roam-node-insert :before #'+evil/smart-insert))
 
 (use-package org-appear
   :ensure t
