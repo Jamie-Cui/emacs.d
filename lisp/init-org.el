@@ -32,12 +32,6 @@
 (setopt org-startup-with-inline-images t)
 (setopt org-startup-with-latex-preview nil)
 
-(custom-set-faces
- ;; nil as the second argument applies to all frames (existing and future)
- '(org-tag ((t (:foreground "DeepSkyBlue" :weight normal :height 1.0))))
- ;; You can also change other attributes like :background
- )
-
 (setq org-preview-latex-process-alist
       '((dvisvgm
 		 :programs ("xelatex" "dvisvgm")
@@ -227,7 +221,10 @@
   ;; If you're using a vertical completion framework, you might want
   ;; a more informative completion interface
   (setq org-roam-node-display-template
-        (concat "${title:100} " (propertize "${tags:10}" 'face 'org-tag)))
+        (format "${title:50}%s"
+                (propertize "${tags:10}" 'face 'org-tag)
+                ;; (propertize "${hash:10}" 'face 'org-tag)
+                ))
   (require 'org-roam-db)
   (org-roam-db-autosync-mode +1)
   ;; If using org-roam-protocol

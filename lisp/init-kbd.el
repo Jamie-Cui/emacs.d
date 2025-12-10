@@ -156,6 +156,7 @@
     "nri"     #'org-roam-node-insert
     "nrs"     #'org-roam-db-sync
     "nrq"     #'org-roam-tag-add
+    "nrc"     #'org-roam-db-clear-all
     ;; help functions
     "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
