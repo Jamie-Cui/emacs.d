@@ -391,7 +391,7 @@ editorconfig or dtrt-indent installed."
   (setq-local standard-indent width)
   (when (boundp 'evil-shift-width)
     (setq evil-shift-width width))
-  ;; REVIEW: Only use `editorconfig' once we drop 29.x support.
+  ;; NOTE Only use `editorconfig' once we drop 29.x support.
   (cond ((let ((load-path (get 'load-path 'initial-value)))
            ;; A built-in `editorconfig' package was added in Emacs 30.x, but
            ;; with a different API. Since it's built in, prefer it over the

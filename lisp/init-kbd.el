@@ -208,7 +208,7 @@
     "d" #'deft-delete-file
     "g" #'deft-refresh)
 
-  ;; REVIEW org mode map (no need for this, delete in the future)
+  ;; NOTE org mode map (no need for this, delete in the future)
   ;; (+my-local-leader-def
   ;;   :keymaps 'org-mode-map
   ;;   :states '(normal visual motion)

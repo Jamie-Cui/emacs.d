@@ -206,7 +206,7 @@
 		        "\\|^:PROPERTIES:\n\\(.+\n\\)+:END:\n"
 		        "\\)"))
   (setq deft-default-extension "org")
-  ;; HACK enable auto refresh
+  ;; NOTE enable auto refresh
   ;; see: https://github.com/jrblevin/deft/pull/62/files
   (defvar deft-auto-refresh-descriptor nil)
   (defun deft-auto-refresh (event)
@@ -264,7 +264,7 @@
 ;;          :language (nth 0 org-babel-info)
 ;;          :org-babel-info org-babel-info)))
 
-;;   ;; HACK error from xenops with org>9.7
+;;   ;; NOTE error from xenops with org>9.7
 ;;   ;; https://github.com/syl20bnr/spacemacs/issues/16577
 ;;   ;; https://github.com/dandavison/xenops/pull/74/files
 ;;   ;; https://github.com/dandavison/xenops/issues/73

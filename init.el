@@ -148,7 +148,7 @@
   (apheleia-remote-algorithm 'local)
   :config
   (apheleia-global-mode +1)
-  ;; HACK use elgot-format
+  ;; NOTE use elgot-format
   ;; https://github.com/radian-software/apheleia/issues/153#issuecomment-1446651497
   ;; (cl-defun apheleia-indent-eglot-managed-buffer
   ;;     (&key buffer scratch callback &allow-other-keys)
@@ -164,7 +164,7 @@
   ;; (add-to-list 'apheleia-formatters
   ;;              '(eglot-managed . apheleia-indent-eglot-managed-buffer))
 
-  ;; HACK add all eglot-ensured modes 
+  ;; NOTE add all eglot-ensured modes 
   ;; This determines what formatter to use in buffers without a
   ;; setting for apheleia-formatter. The keys are major mode
   ;; (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
@@ -252,7 +252,8 @@
                   ("https://emacs-china.org/latest.rss")
                   ))
   :config
-  ;; HACK from https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
+  ;; NOTE this is a hack from
+  ;; https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
   (define-advice elfeed-search--header (:around (oldfun &rest args))
     (if elfeed-db
         (apply oldfun args)

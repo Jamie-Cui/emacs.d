@@ -48,7 +48,7 @@
 (require 'perspective)
 (require 'projectile)
 
-;; TODO: this may be incompatible helm which let's you find stuff in new frame
+;; NOTE this may be incompatible helm which let's you find stuff in new frame
 (defmacro projectile-persp-bridge (func-name)
   "Create advice to create a perspective before invoking function FUNC-NAME.
 The advice provides bridge between perspective and projectile
