@@ -549,6 +549,7 @@ in the search."
 ;; helpful
 ;; popwin
 ;; eaf
+;; direnv
 ;; -----------------------------------------------------------
 
 (use-package docker
@@ -683,5 +684,8 @@ in the search."
   :config
   (popwin-mode 1))
 
+(use-package direnv
+  :ensure t
+  :hook (after-init . envrc-global-mode))
 
 (provide 'init-core)

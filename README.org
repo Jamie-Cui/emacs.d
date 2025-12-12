@@ -34,6 +34,7 @@ curl -sSL https://gist.githubusercontent.com/Jamie-Cui/e0c613bad06e17f34be591efb
 - libsqlite3: for org-roam database
 - libtree-sitter (tested with version 0.25.8, [[https://github.com/tree-sitter/tree-sitter][repo]]): for tree-sitter, 
 - texlive: for latex
+- direnv: for separating project envs (~sudo dnf install direnv~)
 
 ** Download and Compile Emacs
 
