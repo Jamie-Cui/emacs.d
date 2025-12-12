@@ -142,6 +142,7 @@
     "pi"     #'projectile-invalidate-cache
     "pc"     #'projectile-compile-project 
     "pC"     #'projectile-configure-project 
+    "pd"     #'projectile-remove-known-project
     "pD"     #'projectile-run-gdb
     "pf"     #'+vertico/project-search
     "po"     #'ff-find-related-file
