@@ -35,20 +35,23 @@
   (general-define-key
    :keymaps 'override
    "M-RET"   #'completion-at-point
-   "M-y"     #'yas-expand
-   "M-/"     #'evilnc-comment-or-uncomment-lines
-   "M-w"     #'evil-avy-goto-char-timer
+   "C-M-<return>" #'completion-at-point ; alternative
+   ;; less-frequent commands
+   "M-y"     #'yas-expand 
+   "M-n"     #'narrow-to-region
+   "M-w"     #'widen
+   ;; more-frequent commands
+   "M-e"     #'evil-avy-goto-char-2
    "M-i"     #'consult-imenu
-   ;; "M-n"     #'narrow-to-region
-   ;; "M-N"     #'widen ; un-narrow
-   "M-q"     #'prog-fill-reindent-defun ; default for emacs
+   "M-m"     #'evil-multiedit-match-symbol-and-next  ; match
+   "M-d"     #'duplicate-dwim ; yank
+   "M-/"     #'evilnc-comment-or-uncomment-lines
    ;; mac-like binding
    "M-f"     #'consult-line ; search like mac
    "M-a"     #'mark-whole-buffer ; select like mac
    "M-s"     #'save-buffer ; save like mac
    "M-c"     #'evil-yank ; copy like mac
    "M-v"     #'evil-paste-after ; paste like mac
-   "M-r"     #'duplicate-dwim 
    ;; "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
    ;; "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
    ;; "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
