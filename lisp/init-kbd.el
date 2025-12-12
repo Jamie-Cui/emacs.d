@@ -121,7 +121,7 @@
     "ob"     #'citar-open ; open/find bib
     "oB"     #'ebib ; edit bib
     "oe"     #'elfeed
-    "of"     #'find-file
+    "oE"     #'ielm ; elisp repl
     "og"     #'magit-status-quick
     "op"     #'dired-sidebar-toggle-sidebar
     "od"     #'dired-jump
@@ -196,7 +196,7 @@
     "f" '(:ignore t :which-key "find")
     "fi"     #'consult-imenu ; find item
     "fI"     #'consult-citre ; find citre items
-    "ff"     #'consult-find ; find file (in this directory)
+    "ff"     #'consult-fd ; find file (in this directory)
     "fF"     #'consult-locate ; find file (system wide)
     "fl"     #'consult-focus-lines ; find lines
     "fL"     #'consult-keep-lines ; find lines
