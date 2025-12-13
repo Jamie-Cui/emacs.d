@@ -52,7 +52,7 @@
    "M-s"     #'save-buffer ; save like mac
    "M-c"     #'evil-yank ; copy like mac
    "M-v"     #'evil-paste-after ; paste like mac
-   ;; "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
+   "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
    ;; "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
    ;; "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
    ;; "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
