@@ -643,8 +643,13 @@ in the search."
 
   (defun +eat/new ()
     (interactive) 
-    (let ((current-prefix-arg (1+ (cl-position (persp-current-name) (persp-names) :test 'equal))))
+    (let ((current-prefix-arg ""))
       (call-interactively 'eat)))
+
+  ;; (defun +eat/projectile-new ()
+  ;;   (interactive) 
+  ;;   (let ((current-prefix-arg (1+ (cl-position (persp-current-name) (persp-names) :test 'equal))))
+  ;;     (call-interactively 'eat)))
 
   (general-define-key
    :states 'normal
@@ -668,8 +673,8 @@ in the search."
      ("*xref*" :position bottom)
      (help-mode :position bottom :stick t :dedicated t)
      (helpful-mode :position bottom :stick t :dedicated t)
-     ("^\\*eshell\\*.*" :regexp t :position bottom :stick t :dedicated t)
-     (eat-mode :position bottom :stick t :dedicated t)
+     ;; ("^\\*eshell\\*.*" :regexp t :position bottom :stick t :dedicated t)
+     ;; (eat-mode :position bottom :stick t :dedicated t)
      ("*Flycheck errors*" :position bottom :stick t :dedicated t)
      ("*Messages*" :position bottom :stick t :dedicated t)
      ("*LLM response*" :position bottom :stick t :dedicated t)

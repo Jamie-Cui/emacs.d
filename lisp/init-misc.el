@@ -265,11 +265,16 @@
                  (propertize (current-time-string)
                              'face 'font-lock-keyword-face)))
 
-;; HACK always get a new eshell
+;; always get a new eshell
 (defun +eshell/new ()
   (interactive)
-  (let ((current-prefix-arg (1+ (cl-position (persp-current-name) (persp-names) :test 'equal))))
+  (let ((current-prefix-arg ""))
     (call-interactively 'eshell)))
+
+;; (defun +eshell/project-new ()
+;;   (interactive)
+;;   (let ((current-prefix-arg (1+ (cl-position (persp-current-name) (persp-names) :test 'equal))))
+;;     (call-interactively 'eshell)))
 
 (defun +eshell/set-proxy (proxy)
   "Set proxy environment variables and git proxy configuration."
