@@ -191,10 +191,19 @@
   :bind
   (("C-;" . embark-act))
   :init
+  ;; Replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
+  ;; 
+  ;; Show the Embark target at point via Eldoc. You may adjust the
+  ;; Eldoc strategy, if you want to see the documentation from
+  ;; multiple providers. Beware that using this can be a little
+  ;; jarring since the message shown in the minibuffer can be more
+  ;; than one line, causing the modeline to move up and down:
+  (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
   :custom
   (embark-help-key "?")
-  (embark-prompter 'embark-completing-read-prompter)
+  ;; (embark-prompter 'embark-completing-read-prompter)
   :config
   (setq embark-indicators
         '(embark-minimal-indicator  ; default is embark-mixed-indicator
@@ -619,14 +628,14 @@ in the search."
    :keymaps 'smerge-mode-map
    "C-c C-c"     #'smerge-keep-current))
 
-(use-package magit-todos
-  :ensure t
-  :after magit
-  :custom
-  (magit-todos-ignored-keywords '("NOTE" "DEPRECATED" "DONE"))
-  (magit-todos-keyword-suffix (rx (optional (or "(" "[") (1+ (not (any ")" "]"))) (or ")" "]")))) ; default
-  :config
-  (magit-todos-mode 1))
+;; (use-package magit-todos
+;;   :ensure t
+;;   :after magit
+;;   :custom
+;;   (magit-todos-ignored-keywords '("NOTE" "DEPRECATED" "DONE"))
+;;   (magit-todos-keyword-suffix (rx (optional (or "(" "[") (1+ (not (any ")" "]"))) (or ")" "]")))) ; default
+;;   :config
+;;   (magit-todos-mode 1))
 
 (use-package eat
   :ensure t

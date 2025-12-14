@@ -41,28 +41,36 @@
    "M-n"     #'narrow-to-region
    "M-w"     #'widen
    ;; more-frequent commands
-   "M-e"     #'evil-avy-goto-char-2
+   "M-l"     #'evil-avy-goto-char-2 ; locate
    "M-i"     #'consult-imenu
-   "M-m"     #'evil-multiedit-match-symbol-and-next  ; match
-   "M-d"     #'duplicate-dwim ; yank
-   "M-/"     #'evilnc-comment-or-uncomment-lines
+   "M-d"     #'evil-multiedit-match-symbol-and-next  ; match
    ;; mac-like binding
    "M-f"     #'consult-line ; search like mac
    "M-a"     #'mark-whole-buffer ; select like mac
    "M-s"     #'save-buffer ; save like mac
    "M-c"     #'evil-yank ; copy like mac
+   "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-v"     #'evil-paste-after ; paste like mac
+   ;; disabled
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
-   ;; "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
-   ;; "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
-   ;; "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
-   ;; "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
+   "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
+   "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
+   "M-k"     #'move-text-up
+   "M-j"     #'move-text-down
    "C-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
    "C-l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
-   "C-a"     #'move-beginning-of-line ; emacs
-   "C-e"     #'move-end-of-line ; emacs
-   "C-u"     #'evil-scroll-up ; vim
-   "C-o"     #'evil-jump-backward ; vim
+   ;; emacs binding
+   ;; NOTE those bindings are set to global since most of time, mac and terminal adopts those bindings
+   "C-a"     #'evil-first-non-blank ; like "^" in vim 
+   "C-e"     #'evil-end-of-line ; like "$" in vim
+   ;; NOTE the following kbds are avaliable when in insert mode
+   ;; "C-f"     #'forward-char ; native 
+   ;; "C-b"     #'backward-char ; native
+   ;; "C-w"     #'evil-delete-backward-word ; native
+   ;; vim binding
+   "C-u"     #'evil-scroll-up
+   "C-d"     #'evil-scroll-down
+   "C-o"     #'evil-jump-backward
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
    )
@@ -78,13 +86,6 @@
     "/"      #'+vertico/project-search
     "TAB"    #'evil-switch-to-windows-last-buffer
     "SPC"    #'projectile-find-file
-    ;; llm-related key bindings
-    "i" '(:ignore t :which-key "intelligence")
-    "ir"     #'gptel-rewrite
-    "is"     #'gptel-send
-    "iq"     #'gptel-abort
-    "ia"     #'gptel-add
-    "ii"     #'gptel-menu
     ;; action-related key bindings
     "a" '(:ignore t :which-key "actions")
     "a RET"  #'embark-dwim
@@ -191,7 +192,7 @@
     "cj"     #'consult-eglot-symbols
     "ct"     #'citre-create-tags-file
     "cT"     #'citre-update-this-tags-file
-    "cc"     #'+compile
+    "cc"     #'compile
     ;; find
     "f" '(:ignore t :which-key "find")
     "fi"     #'consult-imenu ; find item
