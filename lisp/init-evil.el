@@ -195,17 +195,16 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
          (evil-force-normal-state)))))
 (add-hook 'pre-command-hook 'normal-escape-pre-command-handler)
 
-(when (not (display-graphic-p))
-  (use-package evil-terminal-cursor-changer
-    :ensure t
-    :after evil
-    :config
-    (evil-terminal-cursor-changer-activate) ; or (etcc-on)
-    (setq evil-motion-state-cursor 'box)  ; █
-    (setq evil-visual-state-cursor 'box)  ; █
-    (setq evil-normal-state-cursor 'box)  ; █
-    (setq evil-insert-state-cursor 'bar)  ; ⎸
-    (setq evil-emacs-state-cursor  'hbar) ; _
-    ))
+(use-package evil-terminal-cursor-changer
+  :ensure t
+  :after evil
+  :config
+  (evil-terminal-cursor-changer-activate) ; or (etcc-on)
+  (setq evil-motion-state-cursor 'box)  ; █
+  (setq evil-visual-state-cursor 'box)  ; █
+  (setq evil-normal-state-cursor 'box)  ; █
+  (setq evil-insert-state-cursor 'bar)  ; ⎸
+  (setq evil-emacs-state-cursor  'hbar) ; _
+  )
 
 (provide 'init-evil)

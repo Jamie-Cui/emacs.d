@@ -394,10 +394,11 @@
   (add-hook 'eshell-mode-hook (lambda ()
                                 (setq-local corfu-auto nil))))
 
-(when (not (display-graphic-p))
-  (use-package corfu-terminal
-    :ensure t
-    :config
+(use-package corfu-terminal
+  :ensure t
+  :defer t
+  :config
+  (when (version< emacs-version "31")
     (corfu-terminal-mode +1)))
 
 (use-package orderless
