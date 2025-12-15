@@ -1,3 +1,7 @@
+## emacs tar gz
+elpa.tar.gz
+emacs.d-standalone.tar.gz
+
 ## emacs
 .projectile-cache.eld
 .DS_Store
