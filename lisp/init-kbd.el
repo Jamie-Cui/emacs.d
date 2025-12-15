@@ -41,7 +41,7 @@
    "M-n"     #'narrow-to-region
    "M-w"     #'widen
    ;; more-frequent commands
-   "M-l"     #'evil-avy-goto-char-2 ; locate
+   "M-e"     #'evil-avy-goto-char-2 ; locate
    "M-i"     #'consult-imenu
    "M-d"     #'evil-multiedit-match-symbol-and-next  ; match
    ;; mac-like binding
@@ -129,6 +129,7 @@
     "oD"     #'+os-explorer/dwim
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
+    "oi"     #'agent-shell-toggle
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
     ;; project-related key bindings
@@ -176,7 +177,6 @@
     "t" '(:ignore t :which-key "toggle")
     "th"     #'hs-hide-level
     "tH"     #'hexl-mode
-    "ti"     #'agent-shell-toggle
     "tg"     #'magit-blame-addition
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen
