@@ -8,7 +8,7 @@
   (when (version< emacs-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
 
-(defcustom +emacs/repo-directory (expand-file-name "~/emacs.d")
+(defcustom +emacs/repo-directory (expand-file-name "~/.emacs.d")
   "Path to emacs.d folder"
   :type 'string
   :group 'convenience)
