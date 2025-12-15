@@ -46,9 +46,9 @@
 
 ;; todo keywords
 (setopt org-use-fast-todo-selection 'expert)
-(setopt org-todo-keyword-faces '(("[-]" . +org-todo-active)
-                                 ("[?]" . +org-todo-onhold))
-        org-todo-keywords '((sequence "[ ](t)" "[-](s)" "[?](w)" "|" "[X](d)")))
+;; (setopt org-todo-keyword-faces '(("[-]" . +org-todo-active)
+;;                                  ("[?]" . +org-todo-onhold))
+(setopt org-todo-keywords '((sequence "[ ](t)" "TODO(T)" "[-](s)" "[?](w)" "|" "[X](d)" "DONE(D)")))
 
 ;;; org-src
 (setopt org-src-fontify-natively t)

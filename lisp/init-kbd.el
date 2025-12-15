@@ -156,7 +156,7 @@
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "nd"      #'deft
-    ;; "nj"      #'org-journal-new-entry
+    "nt"      #'org-todo
     "nr" '(:ignore t :which-key "org-roam")
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
