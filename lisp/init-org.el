@@ -58,7 +58,7 @@
 ;;; org-export
 (setopt org-export-dispatch-use-expert-ui t)
 (setopt org-export-with-toc nil)
-(setopt org-cite-export-processors '((latex biblatex) (beamer natbib) (t plain)))
+(setopt org-cite-export-processors '((latex biblatex) (beamer natbib) (t basic)))
 (add-to-list 'org-export-backends 'beamer) ;; support beamer
 
 ;;; org-latex
@@ -139,14 +139,13 @@
 ;; consult-notes
 ;; -----------------------------------------------------------
 
-;; (use-package org-journal
-;;   :ensure t
-;;   :custom
-;;   (org-journal-dir (concat +emacs/org-root-dir "/journal"))
-;;   (org-journal-find-file-fn 'find-file)
-;;   (org-journal-file-type 'monthly)
-;;   (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\"")
-;;   )
+(use-package org-journal
+  :ensure t
+  :custom
+  (org-journal-dir (concat +emacs/org-root-dir "/journal"))
+  (org-journal-find-file-fn 'find-file)
+  (org-journal-file-type 'monthly)
+  (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\""))
 
 (use-package org-download
   :ensure t

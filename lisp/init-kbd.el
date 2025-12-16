@@ -157,6 +157,7 @@
     "np"      #'org-insert-link
     "nd"      #'deft
     "nt"      #'org-todo
+    "nj"      #'org-journal-new-entry
     "nr" '(:ignore t :which-key "org-roam")
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
