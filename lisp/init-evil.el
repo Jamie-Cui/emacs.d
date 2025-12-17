@@ -198,6 +198,7 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
 (use-package evil-terminal-cursor-changer
   :ensure t
   :after evil
+  :if (not window-system) ;; do not load on gui
   :config
   (evil-terminal-cursor-changer-activate) ; or (etcc-on)
   (setq evil-motion-state-cursor 'box)  ; █

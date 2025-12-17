@@ -199,8 +199,8 @@
   ;; multiple providers. Beware that using this can be a little
   ;; jarring since the message shown in the minibuffer can be more
   ;; than one line, causing the modeline to move up and down:
-  (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
   :custom
   (embark-help-key "?")
   ;; (embark-prompter 'embark-completing-read-prompter)
@@ -327,7 +327,7 @@
   :after eglot
   :if window-system ;; do not load eldoc-box on termial emacs
   :config
-  (setq eldoc-echo-area-use-multiline-p nil)
+  ;; (setq eldoc-echo-area-use-multiline-p nil)
   (add-hook 'eldoc-mode-hook #'eldoc-box-hover-at-point-mode))
 
 ;; -----------------------------------------------------------
