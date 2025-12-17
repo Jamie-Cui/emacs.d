@@ -100,7 +100,7 @@
     "wl"     #'evil-window-right
     "ww"     #'other-window
     "wx"     #'evil-window-exchange
-    "wd"     #'evil-window-delete
+    "wd"     #'delete-window
     "ws"     #'evil-window-split
     "wv"     #'evil-window-vsplit
     "wm"     #'delete-other-windows
