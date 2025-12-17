@@ -70,6 +70,7 @@
    ;; vim binding
    "C-u"     #'evil-scroll-up
    "C-d"     #'evil-scroll-down
+   "C-i"     #'evil-jump-forward ; FIXME C-i is tab in tui
    "C-o"     #'evil-jump-backward
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
