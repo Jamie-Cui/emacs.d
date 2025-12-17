@@ -5,6 +5,7 @@
 ;; -----------------------------------------------------------
 ;; DONE llm
 ;;
+;; eca
 ;; agent-shell
 ;; gptel
 ;; gptel-magit
@@ -16,6 +17,9 @@
 ;;   :config 
 ;;   (require 'gptel-agent-tools)
 ;;   (add-to-list 'gptel-agents-dirs (concat +emacs/repo-directory "/agents")))
+
+;; (use-package eca
+;;   :ensure t)
 
 (use-package agent-shell
   :ensure t)
