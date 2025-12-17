@@ -4,7 +4,8 @@
 ;;; DONE Emacs native configurations
 ;;; -----------------------------------------------------------
 
-(let ((minver "29.1"))
+;; Require Emacs 30.1 for better performance and features
+(let ((minver "30.1"))
   (when (version< emacs-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
 
@@ -43,20 +44,29 @@
 ;;; DONE Setup packages
 ;;; -----------------------------------------------------------
 
+;; Emacs 30+: Use package-quickstart for faster startup
+(setopt package-quickstart t)
+
 ;; Enable package
 (require 'package)
 
 ;; disable check of signature
 (setq package-check-signature nil)
 
-;; initialize packages
-(package-initialize)
+;; Use parallel package initialization for better performance
+(setq package-native-compile t)
 
-;; make sure package-refresh-contents will only run once
-(when (not package-archive-contents)
-  (package-refresh-contents))
+;; DEPRECATED Initialize packages (deferred for faster startup)
+;; (package-initialize t)
 
-(require 'cl-macs)
+;; Use package-quickstart-refresh for efficient package loading
+(when (not (file-exists-p (expand-file-name "package-quickstart.el" package-user-dir)))
+  (package-refresh-contents)
+  (package-quickstart-refresh))
+
+;; Use cl-lib for better performance
+
+(require 'cl-lib)
 
 (defun +package/ensure-install-and-use (packages-alist)
   "Make sure the given package is installed."
@@ -77,40 +87,60 @@
     (exec-path-from-shell-initialize)))
 
 ;;; -----------------------------------------------------------
-;;; DONE Configure Core
+;;; DONE Configure Core - Deferred Loading for Faster Startup
 ;;; -----------------------------------------------------------
 
-(require 'init-utils) 
+;; Emacs 30+: Use with-eval-after-load for deferred loading
+(require 'init-utils)
+
+;; Load essential modules immediately, defer non-essential ones
 (require 'init-kbd) 
 (require 'init-evil) 
-(require 'init-core)
-(require 'init-misc)
-(require 'init-org)
-(require 'init-os)
-(require 'init-llm)
 
-;; only load latex when using graphic
+;; Defer non-essential modules for faster startup
+(with-eval-after-load 'evil
+  (require 'init-core)
+  (require 'init-misc)
+  (require 'init-os))
+
+;; Defer LLM and org modules
+(with-eval-after-load 'init-core
+  (require 'init-llm))
+
+(with-eval-after-load 'init-llm
+  (require 'init-org))
+
+;; only load latex when using graphic (deferred)
 (when (display-graphic-p)
-  (require 'init-latex))
+  (with-eval-after-load 'init-org
+    (require 'init-latex)))
 
 ;;; -----------------------------------------------------------
-;;; DONE modes and themes
+;;; DONE modes and themes - Deferred Loading
 ;;; -----------------------------------------------------------
 
-;; modes and thems that does not require additional config
-(+package/ensure-install-and-use 
- '(
-   ;; modes
-   protobuf-mode
-   meson-mode
-   ;; themes
-   zenburn-theme
-   gruvbox-theme
-   ;; practice typing
-   speed-type 
-   ;; show key frequency
-   keyfreq
-   ))
+;; Emacs 30+: Defer package loading to improve startup time
+;; Use use-package with :defer keyword for better startup performance
+(use-package protobuf-mode
+  :defer t)
+
+(use-package meson-mode
+  :defer t)
+
+(use-package zenburn-theme
+  :ensure t)
+
+(use-package gruvbox-theme
+  :ensure t)
+
+(use-package speed-type
+  :defer t)
+
+(use-package keyfreq
+  :defer t
+  :config
+  (keyfreq-mode 1)
+  (keyfreq-autosave-mode 1))
 
 ;;; -----------------------------------------------------------
 ;;; DONE flycheck-google-cpplint
@@ -139,15 +169,15 @@
   )
 
 ;;; -----------------------------------------------------------
-;;; DONE apheleia
+;;; DONE apheleia - Deferred Loading
 ;;; -----------------------------------------------------------
 
 (use-package apheleia
   :ensure t
+  :defer t
   :custom
   (apheleia-remote-algorithm 'local)
-  :config
-  (apheleia-global-mode +1)
+  :hook (after-init . (lambda () (apheleia-global-mode +1)))
   ;; NOTE use elgot-format
   ;; https://github.com/radian-software/apheleia/issues/153#issuecomment-1446651497
   ;; (cl-defun apheleia-indent-eglot-managed-buffer
@@ -173,25 +203,31 @@
   )
 
 ;;; -----------------------------------------------------------
-;;; DONE tree-sitter 
+;;; DONE tree-sitter - Optimized for Emacs 30+
 ;;; -----------------------------------------------------------
 
+;; Emacs 30+: Enable native compilation and use treesit-auto for better performance
 (use-package treesit-auto
   :ensure t
+  :defer t
   :custom
   (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (rassq-delete-all 'c++-mode auto-mode-alist)
-  (rassq-delete-all 'c-mode auto-mode-alist)
-  (rassq-delete-all 'c-or-c++-mode auto-mode-alist)
-  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.hpp\\'" . c++-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.cc\\'" . c++-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-ts-mode))
-  (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
+  :hook (after-init . (lambda () 
+                        (treesit-auto-add-to-auto-mode-alist 'all)
+                        ;; Configure tree-sitter modes
+                        (rassq-delete-all 'c++-mode auto-mode-alist)
+                        (rassq-delete-all 'c-mode auto-mode-alist)
+                        (rassq-delete-all 'c-or-c++-mode auto-mode-alist)
+                        (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-ts-mode))
+                        (add-to-list 'auto-mode-alist '("\\.hpp\\'" . c++-ts-mode))
+                        (add-to-list 'auto-mode-alist '("\\.cc\\'" . c++-ts-mode))
+                        (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-ts-mode))
+                        (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
+                        ;; Auto-enable global-treesit-auto-mode
+                        (global-treesit-auto-mode 1)))
 
   ;; NOTE toggle mode automatically
+  :config
   (defun +treesit-auto/toggle ()
     "Toggle global-treesit-auto-mode."
     (interactive)

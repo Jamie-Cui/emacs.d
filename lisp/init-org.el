@@ -9,6 +9,7 @@
 ;; ln -s ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/org-root .
 
 (require 'org)
+(require 'init-utils)
 
 ;; -----------------------------------------------------------
 ;; DONE org: the built-in package
