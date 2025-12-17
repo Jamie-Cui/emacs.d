@@ -57,7 +57,16 @@
   ;; whether to use emacs bindings in insert-mode
   (setq evil-disable-insert-state-bindings nil)
   :config
-  (setopt evil-want-C-i-jump nil) ; HACK for tty org-mode, make TAB works!
+  ;; HACK
+  (setopt evil-want-C-i-jump t) ; HACK for tty org-mode, make TAB works!
+  (define-key input-decode-map [(control ?i)] [control-i])
+  (general-define-key
+   :keymaps 'evil-motion-state-map
+   "C-i" nil) 
+  (general-define-key
+   :keymaps 'evil-motion-state-map
+   [control-i] 'evil-jump-forward) 
+
   (defalias #'forward-evil-word #'forward-evil-symbol)
   ;; make evil-search-word look for symbol rather than word boundaries
   (setq-default evil-symbol-word-search t)

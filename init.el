@@ -174,7 +174,6 @@
 
 (use-package apheleia
   :ensure t
-  :defer t
   :custom
   (apheleia-remote-algorithm 'local)
   :hook (after-init . (lambda () (apheleia-global-mode +1)))
@@ -209,7 +208,6 @@
 ;; Emacs 30+: Enable native compilation and use treesit-auto for better performance
 (use-package treesit-auto
   :ensure t
-  :defer t
   :custom
   (treesit-auto-install 'prompt)
   :hook (after-init . (lambda () 
