@@ -242,30 +242,31 @@
   :config
   (add-hook 'org-mode-hook 'org-appear-mode))
 
-;; (use-package xenops
-;;   :ensure t
-;;   :if window-system ;; do not load xenops on termial emacs
-;;   :config
-;;   (setopt xenops-math-image-scale-factor 0.4)
-;;   (add-hook 'org-mode-hook #'xenops-mode)
-;;   (defun fn/xenops-src-parse-at-point ()
-;;     (-if-let* 
-;;         ((element (xenops-parse-element-at-point 'src))
-;;          (org-babel-info
-;;           (xenops-src-do-in-org-mode
-;;            (org-babel-get-src-block-info 'light (org-element-context)))))
-;;         (xenops-util-plist-update
-;;          element
-;;          :type 'src
-;;          :language (nth 0 org-babel-info)
-;;          :org-babel-info org-babel-info)))
+(use-package xenops
+  :ensure t
+  :if window-system ;; do not load xenops on termial emacs
+  :config
+  (setopt xenops-math-image-scale-factor 0.4)
+  (setq xenops-math-latex-process-alist org-preview-latex-process-alist)
+  (add-hook 'org-mode-hook #'xenops-mode)
+  (defun fn/xenops-src-parse-at-point ()
+    (-if-let* 
+        ((element (xenops-parse-element-at-point 'src))
+         (org-babel-info
+          (xenops-src-do-in-org-mode
+           (org-babel-get-src-block-info 'light (org-element-context)))))
+        (xenops-util-plist-update
+         element
+         :type 'src
+         :language (nth 0 org-babel-info)
+         :org-babel-info org-babel-info)))
 
-;;   ;; NOTE error from xenops with org>9.7
-;;   ;; https://github.com/syl20bnr/spacemacs/issues/16577
-;;   ;; https://github.com/dandavison/xenops/pull/74/files
-;;   ;; https://github.com/dandavison/xenops/issues/73
-;;   (advice-add 'xenops-src-parse-at-point
-;;               :override 'fn/xenops-src-parse-at-point))
+  ;; NOTE error from xenops with org>9.7
+  ;; https://github.com/syl20bnr/spacemacs/issues/16577
+  ;; https://github.com/dandavison/xenops/pull/74/files
+  ;; https://github.com/dandavison/xenops/issues/73
+  (advice-add 'xenops-src-parse-at-point
+              :override 'fn/xenops-src-parse-at-point))
 
 (use-package engrave-faces
   :ensure t)
