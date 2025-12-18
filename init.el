@@ -217,7 +217,6 @@
                         ;; Auto-enable global-treesit-auto-mode
                         (global-treesit-auto-mode 1)))
   :config
-
   ;; NOTE toggle mode automatically
   (defun +treesit-auto/toggle ()
     "Toggle global-treesit-auto-mode."

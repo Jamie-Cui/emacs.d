@@ -26,7 +26,6 @@
 (setopt org-cycle-hide-drawer-startup t)
 (setopt org-cycle-hide-block-startup t)
 (setopt org-cycle-open-archived-trees nil)
-(setopt org-preview-latex-default-process 'dvisvgm)
 
 (setopt org-startup-indented t)
 (setopt org-startup-folded 'nofold)
@@ -34,7 +33,7 @@
 (setopt org-startup-with-latex-preview nil)
 
 (setq org-preview-latex-process-alist
-      '((dvisvgm
+      '((xdvisvgm
 		 :programs ("xelatex" "dvisvgm")
 		 :description "xdv > svg"
 		 :image-input-type "xdv"
@@ -43,7 +42,21 @@
 		 :latex-compiler ;; Default `xelatex' as the process previewing LaTeX fragments
 		 ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
 		 :image-converter ;; Set `dvisvgm' with --exact option
-		 ("dvisvgm %f -e -n -b min -c %S -o %O"))))
+		 ("dvisvgm %f -e -n -b min -c %S -o %O"))
+        (ximagemagick
+         :programs ("xelatex" "convert")
+         :description "pdf > png"
+         :image-input-type "pdf"
+         :image-output-type "png"
+         :image-size-adjust (1.0 . 1.0)
+         :latex-compiler 
+         ("xelatex -interaction nonstopmode -output-directory %o %f")
+         :image-converter 
+         ("magick convert -density %D -trim -antialias %f -quality 300 %O"))
+        ))
+
+;; latex to dvisvgm
+(setq org-preview-latex-default-process 'ximagemagick)
 
 ;; todo keywords
 (setopt org-use-fast-todo-selection 'expert)
@@ -247,9 +260,11 @@
   :ensure t
   :if window-system ;; do not load xenops on termial emacs
   :config
-  (setopt xenops-math-image-scale-factor 0.4)
+  (setq xenops-reveal-on-entry t)
+  (setopt xenops-math-image-scale-factor 1)
   (setq xenops-math-latex-process-alist org-preview-latex-process-alist)
   (add-hook 'org-mode-hook #'xenops-mode)
+  (setq xenops-math-latex-process 'ximagemagick)
   (defun fn/xenops-src-parse-at-point ()
     (-if-let* 
         ((element (xenops-parse-element-at-point 'src))

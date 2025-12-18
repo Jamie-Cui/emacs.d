@@ -165,6 +165,12 @@
     "nrs"     #'org-roam-db-sync
     "nrq"     #'org-roam-tag-add
     "nrc"     #'org-roam-db-clear-all
+    "nx" '(:ignore t :which-key "xenops")
+    "nx RET"  #'xenops-dwim
+    "nxe"     #'xenops-reveal-at-point
+    "nxy"     #'xenops-copy-at-point
+    "nxr"     #'xenops-regenerate-at-point
+    "nxR"     #'xenops-regenerate
     ;; help functions
     "h" '(:ignore t :which-key "help")
     "hf"     #'helpful-callable
