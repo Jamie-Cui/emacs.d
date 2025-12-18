@@ -60,9 +60,9 @@
 ;; (package-initialize t)
 
 ;; Use package-quickstart-refresh for efficient package loading
-(when (not (file-exists-p (expand-file-name "package-quickstart.el" package-user-dir)))
-  (package-refresh-contents)
-  (package-quickstart-refresh))
+;; (when (not (file-exists-p (expand-file-name "package-quickstart.el" package-user-dir)))
+;;   (package-refresh-contents)
+;;   (package-quickstart-refresh))
 
 ;; Use cl-lib for better performance
 
@@ -98,34 +98,27 @@
 (require 'init-evil) 
 
 ;; Defer non-essential modules for faster startup
-(with-eval-after-load 'evil
-  (require 'init-core)
-  (require 'init-misc)
-  (require 'init-os))
+(require 'init-core)
+(require 'init-misc)
+(require 'init-os)
 
 ;; Defer LLM and org modules
-(with-eval-after-load 'init-core
-  (require 'init-llm))
-
-(with-eval-after-load 'init-llm
-  (require 'init-org))
+(require 'init-llm)
+(require 'init-org)
 
 ;; only load latex when using graphic (deferred)
 (when (display-graphic-p)
-  (with-eval-after-load 'init-org
-    (require 'init-latex)))
+  (require 'init-latex))
 
 ;;; -----------------------------------------------------------
 ;;; DONE modes and themes - Deferred Loading
 ;;; -----------------------------------------------------------
 
-;; Emacs 30+: Defer package loading to improve startup time
-;; Use use-package with :defer keyword for better startup performance
 (use-package protobuf-mode
-  :defer t)
+  :ensure t)
 
 (use-package meson-mode
-  :defer t)
+  :ensure t)
 
 (use-package zenburn-theme
   :ensure t)
@@ -134,10 +127,10 @@
   :ensure t)
 
 (use-package speed-type
-  :defer t)
+  :ensure t)
 
 (use-package keyfreq
-  :defer t
+  :ensure t
   :config
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))

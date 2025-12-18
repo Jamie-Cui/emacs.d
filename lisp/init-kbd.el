@@ -177,8 +177,8 @@
     "qr"     #'restart-emacs
     ;; toggles
     "t" '(:ignore t :which-key "toggle")
-    "th"     #'hs-hide-level
-    "tH"     #'hexl-mode
+    ;; "th"     #'hs-hide-level
+    ;; "tH"     #'hexl-mode
     "tg"     #'magit-blame-addition
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen

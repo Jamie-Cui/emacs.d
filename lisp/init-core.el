@@ -317,7 +317,10 @@
   ;; (add-hook 'c++-ts-mode-hook 'eglot-ensure)
   ;; (add-hook 'rust-ts-mode-hook 'eglot-ensure)
   ;; (add-hook 'go-ts-mode-hook 'eglot-ensure)
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  (setq eglot-ignored-server-capabilities '(
+                                            :inlayHintProvider
+                                            :documentHighlightProvider
+                                            :semanticTokensProvider))
   (setq eglot-confirm-server-initiated-edits nil)
   (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
   )
@@ -563,6 +566,7 @@ in the search."
 ;; popwin
 ;; eaf
 ;; envrc
+;; treesit-fold
 ;; -----------------------------------------------------------
 
 (use-package docker
@@ -703,7 +707,11 @@ in the search."
   (popwin-mode 1))
 
 (use-package envrc
+  :ensure t)
+
+(use-package treesit-fold
   :ensure t
-  :hook (after-init . envrc-global-mode))
+  :config
+  (global-treesit-fold-mode 1))
 
 (provide 'init-core)
