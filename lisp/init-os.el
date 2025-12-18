@@ -19,10 +19,7 @@
     (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
           scroll-margin 0)        ; important: scroll-margin>0 not yet supported
     :config
-    (ultra-scroll-mode 1))
-
-  (require 'inhibit-mouse)
-  (inhibit-mouse-mode 1))
+    (ultra-scroll-mode 1)))
 
 ;;; --------------------------------------
 ;;; Windows-NT

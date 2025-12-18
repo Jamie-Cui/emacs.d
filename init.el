@@ -215,7 +215,8 @@
                         (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-ts-mode))
                         (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
                         ;; Auto-enable global-treesit-auto-mode
-                        (global-treesit-auto-mode 1)))
+                        ;; (global-treesit-auto-mode 1)
+                        ))
   :config
   ;; NOTE toggle mode automatically
   (defun +treesit-auto/toggle ()

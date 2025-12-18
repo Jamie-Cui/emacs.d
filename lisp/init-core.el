@@ -70,7 +70,6 @@
 ;; cnfonts
 ;; smartparens
 ;; which-key
-;; inhibit-mouse
 ;; yasnippet
 ;; yasnippet-snippets
 ;; embark
@@ -150,27 +149,6 @@
   :config
   (which-key-setup-side-window-bottom)
   (which-key-mode 1))
-
-;; (use-package inhibit-mouse
-;;   :ensure t
-;;   :custom
-;;   ;; Disable highlighting of clickable text such as URLs and hyperlinks when
-;;   ;; hovered by the mouse pointer.
-;;   (inhibit-mouse-adjust-mouse-highlight t)
-;;   ;; Disables the use of tooltips (show-help-function) during mouse events.
-;;   (inhibit-mouse-adjust-show-help-function t)
-;;   :config
-;;   (defun +inhibit-mouse/toggle-mode ()
-;;     "Toggle inhibit-mouse-mode."
-;;     (interactive)
-;;     (if inhibit-mouse-mode
-;;         (progn
-;;           (inhibit-mouse-mode -1)
-;;           (message "inhibit-mouse-mode disabled"))
-;;       (progn
-;;         (inhibit-mouse-mode 1)
-;;         (message "inhibit-mouse-mode enabled"))))
-;;   )
 
 (use-package yasnippet
   :ensure t
