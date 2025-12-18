@@ -709,9 +709,9 @@ in the search."
 (use-package envrc
   :ensure t)
 
-(use-package treesit-fold
-  :ensure t
-  :config
-  (global-treesit-fold-mode 1))
+;; (use-package treesit-fold
+;;   :ensure t
+;;   :config
+;;   (global-treesit-fold-mode 1))
 
 (provide 'init-core)
