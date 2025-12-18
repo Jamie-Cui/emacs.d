@@ -24,6 +24,14 @@
   (general-create-definer +my-local-leader-def
     :prefix my-local-leader)
 
+  ;; HACK separate TAB and C-i in GUI emacs
+  (setopt evil-want-C-i-jump t) 
+  (define-key input-decode-map [(control ?i)] [control-i])
+  (general-define-key
+   :keymaps 'evil-motion-state-map
+   "C-i" nil
+   [control-i] 'evil-jump-forward)
+
   ;; tweak evil default key bindings
   (general-define-key 
    :keymaps 'override
