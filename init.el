@@ -216,9 +216,9 @@
                         (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
                         ;; Auto-enable global-treesit-auto-mode
                         (global-treesit-auto-mode 1)))
+  :config
 
   ;; NOTE toggle mode automatically
-  :config
   (defun +treesit-auto/toggle ()
     "Toggle global-treesit-auto-mode."
     (interactive)
@@ -227,8 +227,7 @@
           (global-treesit-auto-mode -1)
           (message "global-treesit-auto-mode disabled"))
       (global-treesit-auto-mode 1)
-      (message "global-treesit-auto-mode enabled")))
-  )
+      (message "global-treesit-auto-mode enabled"))))
 
 ;; ------------------------------------------------------------------
 ;; NOTE fix cmake-ts-mode syntax table
@@ -271,6 +270,7 @@
 (use-package elfeed
   :ensure t
   :custom
+  (elfeed-search-filter "") ; startup with no filter
   (elfeed-feeds '(
                   ("http://nullprogram.com/feed/")
                   ("https://planet.emacslife.com/atom.xml")
@@ -285,4 +285,3 @@
     (if elfeed-db
         (apply oldfun args)
       "No database loaded yet")))
-

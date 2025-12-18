@@ -439,4 +439,7 @@
 
 (setopt duplicate-line-final-position 1) ; move point to the first newline
 
+;; treesit font level set to 2
+(setopt treesit-font-lock-level 2)
+
 (provide 'init-misc)
