@@ -5,21 +5,22 @@
 ;; -----------------------------------------------------------
 ;; DONE llm
 ;;
-;; eca
 ;; agent-shell
 ;; gptel
 ;; gptel-magit
 ;; -----------------------------------------------------------
 
-;; (use-package gptel-agent
-;;   :vc (:url "https://github.com/karthink/gptel-agent.git")
-;;   :ensure t
-;;   :config 
-;;   (require 'gptel-agent-tools)
-;;   (add-to-list 'gptel-agents-dirs (concat +emacs/repo-directory "/agents")))
-
-;; (use-package eca
-;;   :ensure t)
+(use-package gptel-agent
+  :ensure t
+  :after gptel
+  :config 
+  (require 'gptel-agent-tools)
+  (add-to-list 'gptel-agent-dirs (concat +emacs/repo-directory "/agents"))
+  (gptel-agent-update)
+  ;; this package automatically add presets to gptel
+  ;; @gptel-agent
+  ;; @gptel-plan
+  )
 
 (use-package agent-shell
   :ensure t)
@@ -50,7 +51,7 @@
       :endpoint "/chat/completions"
       :stream t
       :key (auth-source-pick-first-password :host "aliyun")
-      :models '(qwen-plus deepseek-r1 qwen3-coder-plus)))
+      :models '(qwen3-max qwen-plus deepseek-r1 qwen3-coder-plus)))
 
   ;; register local backend
   ;; NOTE to make ollama work through LAN, on its server

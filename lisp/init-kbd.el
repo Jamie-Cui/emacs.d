@@ -94,6 +94,13 @@
     "ay"     #'embark-org-copy-link-target
     "aY"     #'embark-org-copy-link-description
     ;; window-related key bindings
+    "g" '(:ignore t :which-key "gptel")
+    "g RET"  #'gptel-send
+    "ga"     #'gptel-add
+    "gr"     #'gptel-rewrite
+    "gq"     #'gptel-context-remove-all
+    "gc"     #'gptel-abort
+    ;; window-related key bindings
     "w" '(:ignore t :which-key "window")
     "wh"     #'evil-window-left
     "wj"     #'evil-window-down
