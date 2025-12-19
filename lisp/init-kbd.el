@@ -48,6 +48,8 @@
    "M-y"     #'yas-expand 
    "M-n"     #'narrow-to-region
    "M-w"     #'widen
+   "M-p"     #'compile ; just like vscode
+   "M-d"     #'evil-multiedit-match-symbol-and-next ; default
    ;; more-frequent commands
    "M-e"     #'evil-avy-goto-char-2 ; locate
    "M-i"     #'consult-imenu
@@ -56,7 +58,7 @@
    "M-f"     #'consult-line ; search like mac
    "M-a"     #'mark-whole-buffer ; select like mac
    "M-s"     #'save-buffer ; save like mac
-   "M-c"     #'evil-yank ; copy like mac
+   "M-c"     #'evil-yank ; REVIEW copy like mac
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-v"     #'evil-paste-after ; paste like mac
    ;; disabled
