@@ -48,7 +48,7 @@
    "M-y"     #'yas-expand 
    "M-n"     #'narrow-to-region
    "M-w"     #'widen
-   "M-p"     #'compile ; just like vscode
+   "M-p"     #'+compile-with-no-preset ; just like vscode
    "M-d"     #'evil-multiedit-match-symbol-and-next ; default
    ;; more-frequent commands
    "M-e"     #'evil-avy-goto-char-2 ; locate

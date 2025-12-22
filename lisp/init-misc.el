@@ -424,7 +424,7 @@
 (setopt gdb-show-main t)
 
 ;; compile
-(defun +compile ()
+(defun +compile-with-no-preset ()
   (interactive)
   (let* ((compile-command (if (use-region-p) (buffer-substring-no-properties (region-beginning) (region-end)) "")))
     (call-interactively 'compile)))
