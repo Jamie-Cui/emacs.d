@@ -270,13 +270,14 @@
 (use-package elfeed
   :ensure t
   :custom
-  (elfeed-search-filter "") ; startup with no filter
+  ;; (elfeed-search-filter "") ; startup with no filter
   (elfeed-feeds '(
-                  ("http://nullprogram.com/feed/")
+                  ;; ("https://stallman.org/rss/rss.xml")
                   ("https://planet.emacslife.com/atom.xml")
-                  ("https://stallman.org/rss/rss.xml")
                   ("https://eprint.iacr.org/rss/rss.xml")
                   ("https://emacs-china.org/latest.rss")
+                  ("https://linuxsecurity.com/linuxsecurity_hybrid.xml")
+                  ("https://www.bitdegree.org/crypto/news/rss")
                   ))
   :config
   ;; NOTE this is a hack from
