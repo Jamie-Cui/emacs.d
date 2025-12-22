@@ -68,7 +68,14 @@
     (let ((w32file (subst-char-in-string ?/ ?\\ (expand-file-name file))))
       (if (file-directory-p w32file)
           (w32-shell-execute "explore" w32file "/e,/select,")
-        (w32-shell-execute "open" "explorer" (concat "/e,/select," w32file))))))
+        (w32-shell-execute "open" "explorer" (concat "/e,/select," w32file)))))
+
+  (defun +eshell/fix-crlf (output)
+    "Remove CRLF from Eshell output."
+    (replace-regexp-in-string "\r\n" "\n" output))
+
+  (add-to-list 'eshell-preoutput-filter-functions '+eshell/fix-crlf)
+  )
 
 ;;; --------------------------------------
 ;;; Windows-WSL

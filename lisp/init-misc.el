@@ -106,7 +106,6 @@
 (tool-bar-mode 0)
 (customize-set-variable 'scroll-bar-mode nil)
 (customize-set-variable 'horizontal-scroll-bar-mode nil)
-(setq ring-bell-function 'ignore)
 
 ;; word wrap
 (global-visual-line-mode 1)
