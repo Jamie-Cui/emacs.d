@@ -271,20 +271,34 @@
   :ensure t
   :custom
   (elfeed-db-directory (concat user-emacs-directory "elfeed/db/"))
-  (elfeed-enclosure-default-dir (concat user-emacs-directory "elfeed/"))
+  (elfeed-enclosure-default-dir (concat user-emacs-directory "elfeed/enclosure/"))
   ;; (elfeed-search-filter "") ; startup with no filter
   (elfeed-feeds '(
+                  ;; see: https://plink.anyfeeder.com/
                   ;; ("https://stallman.org/rss/rss.xml")
                   ("https://planet.emacslife.com/atom.xml")
                   ("https://eprint.iacr.org/rss/rss.xml")
                   ("https://emacs-china.org/latest.rss")
                   ("https://linuxsecurity.com/linuxsecurity_hybrid.xml")
                   ("https://www.bitdegree.org/crypto/news/rss")
+                  ("https://plink.anyfeeder.com/weixin/almosthuman2014")
                   ))
   :config
+;;;###autoload
+  (defun +rss-elfeed-wrap-h ()
+    "Enhances an elfeed entry's readability by wrapping it to a width of
+`fill-column'."
+    (let ((inhibit-read-only t)
+          (inhibit-modification-hooks t))
+      (setq-local truncate-lines nil)
+      (setq-local shr-use-fonts nil)
+      (setq-local shr-width 85)
+      (set-buffer-modified-p nil)))
+  (add-hook 'elfeed-show-mode-hook #'+rss-elfeed-wrap-h)
   ;; NOTE this is a hack from
   ;; https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
   (define-advice elfeed-search--header (:around (oldfun &rest args))
     (if elfeed-db
         (apply oldfun args)
-      "No database loaded yet")))
+      "No database loaded yet"))
+  )
