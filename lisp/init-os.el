@@ -70,12 +70,11 @@
           (w32-shell-execute "explore" w32file "/e,/select,")
         (w32-shell-execute "open" "explorer" (concat "/e,/select," w32file)))))
 
+  (require 'eshell)
   (defun +eshell/fix-crlf (output)
     "Remove CRLF from Eshell output."
     (replace-regexp-in-string "\r\n" "\n" output))
-
-  (add-to-list 'eshell-preoutput-filter-functions '+eshell/fix-crlf)
-  )
+  (add-to-list 'eshell-preoutput-filter-functions '+eshell/fix-crlf))
 
 ;;; --------------------------------------
 ;;; Windows-WSL
