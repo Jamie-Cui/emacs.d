@@ -272,7 +272,7 @@
   :custom
   (elfeed-db-directory (concat user-emacs-directory "elfeed/db/"))
   (elfeed-enclosure-default-dir (concat user-emacs-directory "elfeed/enclosure/"))
-  ;; (elfeed-search-filter "") ; startup with no filter
+  (elfeed-search-filter "") ; startup with no filter
   (elfeed-feeds '(
                   ;; see: https://plink.anyfeeder.com/
                   ;; ("https://stallman.org/rss/rss.xml")
@@ -282,6 +282,9 @@
                   ("https://linuxsecurity.com/linuxsecurity_hybrid.xml")
                   ("https://www.bitdegree.org/crypto/news/rss")
                   ("https://plink.anyfeeder.com/weixin/almosthuman2014")
+                  ("https://plink.anyfeeder.com/weixin/AI_era")
+                  ("https://plink.anyfeeder.com/weixin/gh_10a6b96351a9")
+                  ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance")
                   ))
   :config
 ;;;###autoload
