@@ -270,6 +270,8 @@
 (use-package elfeed
   :ensure t
   :custom
+  (elfeed-db-directory (concat user-emacs-directory "elfeed/db/"))
+  (elfeed-enclosure-default-dir (concat user-emacs-directory "elfeed/"))
   ;; (elfeed-search-filter "") ; startup with no filter
   (elfeed-feeds '(
                   ;; ("https://stallman.org/rss/rss.xml")
