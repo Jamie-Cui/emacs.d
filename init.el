@@ -286,22 +286,10 @@
                   ("https://plink.anyfeeder.com/weixin/gh_10a6b96351a9")
                   ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance")
                   ))
+  :config)
+
+(use-package elfeed-goodies
+  :ensure t
+  :after elfeed
   :config
-;;;###autoload
-  (defun +rss-elfeed-wrap-h ()
-    "Enhances an elfeed entry's readability by wrapping it to a width of
-`fill-column'."
-    (let ((inhibit-read-only t)
-          (inhibit-modification-hooks t))
-      (setq-local truncate-lines nil)
-      (setq-local shr-use-fonts nil)
-      (setq-local shr-width 85)
-      (set-buffer-modified-p nil)))
-  (add-hook 'elfeed-show-mode-hook #'+rss-elfeed-wrap-h)
-  ;; NOTE this is a hack from
-  ;; https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
-  (define-advice elfeed-search--header (:around (oldfun &rest args))
-    (if elfeed-db
-        (apply oldfun args)
-      "No database loaded yet"))
-  )
+  (elfeed-goodies/setup))
