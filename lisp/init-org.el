@@ -76,6 +76,9 @@
 (add-to-list 'org-export-backends 'beamer) ;; support beamer
 
 ;;; org-latex
+;; NOTE default latex:
+;; - font: Computer Modern Unicode (CMU)
+;; - font size: 10
 (setopt org-latex-compiler "xelatex")
 (setopt org-latex t)
 (setopt org-latex-src-block-backend 'engraved)
@@ -260,6 +263,7 @@
   :ensure t
   :if window-system ;; do not load xenops on termial emacs
   :config
+  (setq xenops-font-family "Maple Mono NL NF CN")
   (setq xenops-reveal-on-entry t)
   (setopt xenops-math-image-scale-factor 1)
   (setq xenops-math-latex-process-alist org-preview-latex-process-alist)

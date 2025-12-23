@@ -63,8 +63,8 @@
    "M-v"     #'evil-paste-after ; paste like mac
    ;; disabled
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
-   "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
-   "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
+   ;; "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
+   ;; "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
    "M-k"     #'move-text-up
    "M-j"     #'move-text-down
    "C-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
@@ -177,6 +177,7 @@
     "nt"      #'org-todo
     "nj"      #'org-journal-new-entry
     "nr" '(:ignore t :which-key "org-roam")
+    "nra"     #'org-roam-alias-add
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
     "nrs"     #'org-roam-db-sync
