@@ -64,7 +64,7 @@
 
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-(add-to-list 'default-frame-alist '(internal-border-width . 5))
+;; (add-to-list 'default-frame-alist '(internal-border-width . 5))
 
 ;; scrolling
 (setq hscroll-margin 2
