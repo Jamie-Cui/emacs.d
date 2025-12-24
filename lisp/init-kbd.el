@@ -33,11 +33,12 @@
    [control-i] 'evil-jump-forward)
 
   ;; tweak evil default key bindings
-  (general-define-key 
-   :keymaps 'override
-   :states 'motion
-   "gD"      #'citre-jump
-   "gR"      #'citre-jump-to-reference)
+  ;; (general-define-key 
+  ;;  :keymaps 'override
+  ;;  :states 'motion
+  ;;  "gD"      #'citre-jump
+  ;;  "gR"      #'citre-jump-to-reference
+  ;;  )
 
   ;; ** keybindings that should not be overriden
   (general-define-key
@@ -103,7 +104,7 @@
     "aa"     #'embark-act
     "ay"     #'embark-org-copy-link-target
     "aY"     #'embark-org-copy-link-description
-    ;; window-related key bindings
+    ;; gptel-related key bindings
     "g" '(:ignore t :which-key "gptel")
     "g RET"  #'gptel-send
     "ga"     #'gptel-add
@@ -201,24 +202,21 @@
     "qr"     #'restart-emacs
     ;; toggles
     "t" '(:ignore t :which-key "toggle")
-    ;; "th"     #'hs-hide-level
-    ;; "tH"     #'hexl-mode
     "tg"     #'magit-blame-addition
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
     "tn"     #'display-line-numbers-mode
     "ta"     #'+treesit-auto/toggle
-    ;; code (lsp)
+    ;; code (lsp/tags)
     "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
     "cr"     #'eglot-rename 
     "cf"     #'eglot-format-buffer
     "cj"     #'consult-eglot-symbols
-    "ct"     #'citre-create-tags-file
-    "cT"     #'citre-update-this-tags-file
-    "cc"     #'compile
+    "ci"     #'consult-citre
+    "ct"     #'citre-update-this-tags-file
     ;; find
     "f" '(:ignore t :which-key "find")
     "fi"     #'consult-imenu ; find item

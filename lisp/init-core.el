@@ -222,6 +222,8 @@
 ;; flycheck
 ;; flycheck-eglot
 ;; eglot
+;; consult-eglot
+;; consult-eglot-embark
 ;; eldoc-box
 ;; 
 ;; NOTE You need to install indexing tools for citre:
@@ -245,6 +247,7 @@
   (citre-default-create-tags-file-location 'global-cache)
   (citre-edit-ctags-options-manually nil)
   (citre-auto-enable-citre-mode-modes '(prog-mode))
+  (citre-enable-imenu-integration nil)
   :config
   (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
 
@@ -287,6 +290,12 @@
 
 (use-package consult-eglot
   :ensure t)
+
+(use-package consult-eglot-embark
+  :ensure t
+  :after embark
+  :config
+  (consult-eglot-embark-mode))
 
 (use-package eglot
   :ensure t
