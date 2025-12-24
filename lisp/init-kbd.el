@@ -126,7 +126,8 @@
     "wr"     #'redraw-display
     ;; buffer-related key bindings
     "b" '(:ignore t :which-key "buffer")
-    "bn"     #'evil-buffer-new
+    "ba"     #'evil-buffer-new
+    "bn"     #'evil-buffer-new ; alias
     "bd"     #'kill-current-buffer
     "by"     #'+copy-buffer-file-name
     "br"     #'(lambda () (interactive) (revert-buffer t t))
@@ -214,13 +215,10 @@
     "ca"     #'eglot-code-actions
     "cr"     #'eglot-rename 
     "cf"     #'eglot-format-buffer
-    "cj"     #'consult-eglot-symbols
-    "ci"     #'consult-citre
     "ct"     #'citre-update-this-tags-file
     ;; find
     "f" '(:ignore t :which-key "find")
-    "fi"     #'consult-imenu ; find item
-    "fI"     #'consult-citre ; find citre items
+    "fi"     #'consult-citre ; find citre items
     "ff"     #'consult-fd ; find file (in this directory)
     "fF"     #'consult-locate ; find file (system wide)
     "fl"     #'consult-focus-lines ; find lines
@@ -233,7 +231,7 @@
     :keymaps 'deft-mode-map
     :states '(normal visual motion)
     "A" #'deft-archive-file
-    "n" #'deft-new-file
+    "a" #'deft-new-file
     "f" #'deft-filter
     "d" #'deft-delete-file
     "g" #'deft-refresh)
