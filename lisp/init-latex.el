@@ -78,7 +78,8 @@
   :hook
   (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup)
-  ;; :custom
+  :custom
+  (citar-select-multiple nil)
   ;; (org-cite-insert-processor 'citar)
   ;; (org-cite-follow-processor 'citar)
   ;; (org-cite-activate-processor 'citar)

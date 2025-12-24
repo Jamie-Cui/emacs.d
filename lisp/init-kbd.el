@@ -24,7 +24,10 @@
   (general-create-definer +my-local-leader-def
     :prefix my-local-leader)
 
-  ;; HACK separate TAB and C-i in GUI emacs
+  ;; HACK Separate TAB and C-i in GUI emacs
+  ;; FIXME the following code breaks citar-insert-citation when 
+  ;; citar-select-multiple is enabled
+  ;; 
   (setopt evil-want-C-i-jump t) 
   (define-key input-decode-map [(control ?i)] [control-i])
   (general-define-key
