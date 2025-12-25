@@ -23,7 +23,9 @@
   )
 
 (use-package agent-shell
-  :ensure t)
+  :ensure t
+  :custom
+  (agent-shell-show-welcome-message nil))
 
 (use-package gptel
   :ensure t
