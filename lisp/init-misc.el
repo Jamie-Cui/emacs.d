@@ -385,13 +385,15 @@
          "%e" 
          'mode-line-front-space
          '(:eval (format-mode-line 
-                  (propertized-buffer-identification 
-                   (or (when-let* ((buffer-file-truename buffer-file-truename)
-                                   (project (cdr-safe (project-current)))
-                                   (project-parent (file-name-directory (directory-file-name (expand-file-name project)))))
-                         (concat (file-relative-name (file-name-directory buffer-file-truename) project-parent)
-                                 (file-name-nondirectory buffer-file-truename)))
-                       "%b"))))
+                  (propertized-buffer-identification "%b")))
+         ;; '(:eval (format-mode-line 
+         ;;          (propertized-buffer-identification 
+         ;;           (or (when-let* ((buffer-file-truename buffer-file-truename)
+         ;;                           (project (cdr-safe (project-current)))
+         ;;                           (project-parent (file-name-directory (directory-file-name (expand-file-name project)))))
+         ;;                 (concat (file-relative-name (file-name-directory buffer-file-truename) project-parent)
+         ;;                         (file-name-nondirectory buffer-file-truename)))
+         ;;               "%b"))))
          "   "
          'mode-line-position
          "   "
