@@ -4,9 +4,9 @@
 
 (require 'init-utils)
 
-(setq tramp-verbose 6)
+;; (setq tramp-verbose 6)
 ;; Optional: display debug info in a separate buffer
-(setq tramp-debug-buffer t)
+;; (setq tramp-debug-buffer t)
 
 ;; Supress warnings about file
 (setopt warning-suppress-log-types '((files)))
