@@ -252,9 +252,7 @@
                      'front-sticky   '(font-lock-face read-only)
                      'rear-nonsticky '(font-lock-face read-only))
                     ;; input line
-                    (propertize "\nλ" 'font-lock-face 'font-lock-warning-face
-                                'rear-nonsticky '(font-lock-face))
-                    " "
+                    " $ "
                     ))))
 
 (setopt eshell-banner-message
