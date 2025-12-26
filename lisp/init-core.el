@@ -232,24 +232,24 @@
 ;;    eglot: built-in with modern emacs, uses external lsp servers
 ;; -----------------------------------------------------------
 
-(use-package consult-citre
-  :after consult
-  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
+;; (use-package consult-citre
+;;   :after consult
+;;   :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
 
-(use-package citre
-  :ensure t
-  :after (eglot projectile)
-  :init
-  ;; This is needed in `:init' block for lazy load to work.
-  (require 'citre-config)
-  :custom
-  (citre-project-root-function #'projectile-project-root)
-  (citre-default-create-tags-file-location 'global-cache)
-  (citre-edit-ctags-options-manually nil)
-  (citre-auto-enable-citre-mode-modes '(prog-mode))
-  (citre-enable-imenu-integration nil)
-  :config
-  (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
+;; (use-package citre
+;;   :ensure t
+;;   :after (eglot projectile)
+;;   :init
+;;   ;; This is needed in `:init' block for lazy load to work.
+;;   (require 'citre-config)
+;;   :custom
+;;   (citre-project-root-function #'projectile-project-root)
+;;   (citre-default-create-tags-file-location 'global-cache)
+;;   (citre-edit-ctags-options-manually nil)
+;;   (citre-auto-enable-citre-mode-modes '(prog-mode))
+;;   (citre-enable-imenu-integration nil)
+;;   :config
+;;   (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
 
 (use-package flycheck-popup-tip
   :ensure t
@@ -489,16 +489,42 @@ in the search."
 (use-package projectile
   :ensure t
   :custom 
-  ;; DO NOT add project automatically
-  (projectile-track-known-projects-automatically nil) 
   (projectile-indexing-method 'hybrid)
-  (projectile-enable-caching t)
+  ;; DO NOT add / remove project automatically
+  (projectile-track-known-projects-automatically nil) 
+  ;; enable cache persistently
+  (projectile-enable-caching 'persistent)
+  ;; each project has a separate compilation buffer
   (projectile-per-project-compilation-buffer t)
+  ;; remote cache is avaliable for 5 min
+  (projectile-file-exists-remote-cache-expire (* 5 60))
+  ;; only git as project identifier
+  (projectile-project-root-files-bottom-up '(".git"))
+  ;; auto update cache when files are opened or deleted
+  (projectile-auto-update-cache t)
+  ;; I prefer citre, do not use built-in tag systm
+  (projectile-tags-backend nil)
   :config
   ;; see: https://github.com/syl20bnr/spacemacs/issues/11381#issuecomment-481239700
   ;; (defadvice projectile-project-root (around ignore-remote first activate)
   ;;   (unless (file-remote-p default-directory) ad-do-it))
-  (projectile-global-mode +1)
+  (projectile-mode +1)
+
+  ;; see: https://metaredux.com/posts/2025/02/03/projectile-introduces-significant-caching-improvements.html
+  ;; initialize the projects cache if needed
+  (unless projectile-projects-cache
+    (setq projectile-projects-cache
+          (or (projectile-unserialize projectile-cache-file)
+              (make-hash-table :test 'equal))))
+  (unless projectile-projects-cache-time
+    (setq projectile-projects-cache-time
+          (make-hash-table :test 'equal)))
+  ;; load the known projects
+  (projectile-load-known-projects)
+  ;; update the list of known projects
+  (projectile--cleanup-known-projects)
+  (when projectile-auto-discover
+    (projectile-discover-projects-in-search-path))
   )
 
 (defun +persp/format-name-as-in-echo (name)
@@ -691,10 +717,5 @@ in the search."
 
 (use-package envrc
   :ensure t)
-
-;; (use-package treesit-fold
-;;   :ensure t
-;;   :config
-;;   (global-treesit-fold-mode 1))
 
 (provide 'init-core)

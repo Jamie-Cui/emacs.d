@@ -200,6 +200,10 @@
     "hk"     #'helpful-key
     "hv"     #'helpful-variable
     "hm"     #'describe-mode
+    "hp" '(:ignore t :which-key "profiler")
+    "hps"    #'profiler-start
+    "hpk"    #'profiler-stop
+    "hpr"    #'profiler-report
     ;; quit emacs
     "q" '(:ignore t :which-key "quit")
     "qq"     #'save-buffers-kill-terminal

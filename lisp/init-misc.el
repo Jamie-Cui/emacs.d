@@ -4,6 +4,10 @@
 
 (require 'init-utils)
 
+(setq tramp-verbose 6)
+;; Optional: display debug info in a separate buffer
+(setq tramp-debug-buffer t)
+
 ;; Supress warnings about file
 (setopt warning-suppress-log-types '((files)))
 
@@ -59,6 +63,14 @@
                     ;; Prefix tramp autosaves to prevent conflicts with local ones
                     (concat auto-save-list-file-prefix "tramp-\\2") t)
               (list ".*" auto-save-list-file-prefix t)))
+
+(setopt enable-remote-dir-locals nil)
+(setopt tramp-use-file-attributes nil)
+(setopt remote-file-name-inhibit-cache nil) 
+(setopt remote-file-name-inhibit-auto-save t)
+(setopt remote-file-name-inhibit-auto-save-visited t)
+
+(setq vc-ignore-dir-regexp (format "%s\\|%s" vc-ignore-dir-regexp tramp-file-name-regexp))
 
 ;; disable electric-indent-mode, forever
 (electric-indent-mode -1)
@@ -146,6 +158,7 @@
 ;; NOTE I dont use svn and hg
 (setq-default vc-handled-backends '(Git))
 
+
 ;; enable hideshow in all programming modes
 (require 'hideshow)
 (add-hook 'prog-mode-hook #'hs-minor-mode)
@@ -187,9 +200,6 @@
 ;; Remote Configuration
 ;; ------------------------------------------------------------------
 
-;; allow to use .dir_locals on remote files
-(setopt enable-remote-dir-locals t)
-
 ;; compress warning at start-up
 ;; (setopt warning-minimum-level :emergency)
 
@@ -223,6 +233,50 @@
 
 ;; allow asyn in tramp
 (setopt tramp-async-enabled t)
+
+;;
+;;; Memoization
+
+;; PERF: Calls over TRAMP are expensive, so reduce the number of calls by more
+;;   aggressively caching some common data. Inspired by
+;;   https://coredumped.dev/2025/06/18/making-tramp-go-brrrr.
+(defun +tramp--memoize (key cache fn &rest args)
+  "Memoize a value if the key is a remote path."
+  (if (and key (file-remote-p key))
+      (if-let* ((current (assoc key (symbol-value cache))))
+          (cdr current)
+        (let ((current (apply fn args)))
+          (set cache (cons (cons key current) (symbol-value cache)))
+          current))
+    (apply fn args)))
+
+;;;###package magit
+(defvar +tramp--magit-toplevel-cache nil)
+(defadvice! +tramp--memoized-magit-toplevel-a (orig &optional directory)
+  :around #'magit-toplevel
+  (+tramp--memoize (or directory default-directory)
+                   '+tramp--magit-toplevel-cache orig directory))
+
+;;;###package project
+(defvar +tramp--project-current-cache nil)
+(defadvice! +tramp--memoized-project-current (fn &optional prompt directory)
+  :around #'project-current
+  (+tramp--memoize (or directory
+                       project-current-directory-override
+                       default-directory)
+                   '+tramp--project-current-cache fn prompt directory))
+
+;;;###package vc-git
+(defvar +tramp--vc-git-root-cache nil)
+(defadvice! +tramp--memoized-vc-git-root-a (fn file)
+  :around #'vc-git-root
+  (let ((value
+         (+tramp--memoize (file-name-directory file)
+                          '+tramp--vc-git-root-cache fn file)))
+    ;; sometimes vc-git-root returns nil even when there is a root there
+    (unless (cdar +tramp--vc-git-root-cache)
+      (setq +tramp--vc-git-root-cache (cdr +tramp--vc-git-root-cache)))
+    value))
 
 ;; ------------------------------------------------------------------
 ;; Eshell Configuration
@@ -404,14 +458,14 @@
          'mode-line-format-right-align
          'mode-line-misc-info
          " "
-         '(:eval
-           (propertize
-            (if (tramp-tramp-file-p buffer-file-name)
-                (format "[%s:%s]" 
-                        (tramp-file-name-method (tramp-dissect-file-name buffer-file-name))
-                        (persp-current-name))
-              (format "[%s]" (persp-current-name)))
-            'face 'font-lock-keyword-face))
+         ;; '(:eval
+         ;;   (propertize
+         ;;    (if (tramp-tramp-file-p buffer-file-name)
+         ;;        (format "[%s:%s]" 
+         ;;                (tramp-file-name-method (tramp-dissect-file-name buffer-file-name))
+         ;;                (persp-current-name))
+         ;;      (format "[%s]" (persp-current-name)))
+         ;;    'face 'font-lock-keyword-face))
          " "
          'mode-name
          " (+"
