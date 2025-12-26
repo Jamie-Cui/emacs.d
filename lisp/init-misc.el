@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'init-utils)
+
 ;; Supress warnings about file
 (setopt warning-suppress-log-types '((files)))
 
@@ -47,7 +49,7 @@
 
 ;; But turn on auto-save, so we have a fallback in case of crashes or lost data.
 ;; Use `recover-file' or `recover-session' to recover them.
-(setopt auto-save-default t
+(setopt auto-save-default nil ;; HACK DO NOT auto-save
         auto-save-include-big-deletions t
         ;; Keep it out of `doom-emacs-dir' or the local directory.
         auto-save-list-file-prefix (concat user-emacs-directory "autosave/")

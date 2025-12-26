@@ -488,22 +488,18 @@ in the search."
 
 (use-package projectile
   :ensure t
-  :custom (projectile-project-name-function 
-           '+projectile-project-name--lower-case)
+  :custom 
   ;; DO NOT add project automatically
   (projectile-track-known-projects-automatically nil) 
   (projectile-indexing-method 'hybrid)
   (projectile-enable-caching t)
   (projectile-per-project-compilation-buffer t)
-  (projectile-switch-project-action 'projectile-find-file)
   :config
-  (defun +projectile-project-name--lower-case (project-root)
-    (downcase (file-name-nondirectory 
-               (directory-file-name project-root))))
   ;; see: https://github.com/syl20bnr/spacemacs/issues/11381#issuecomment-481239700
-  (defadvice projectile-project-root (around ignore-remote first activate)
-    (unless (file-remote-p default-directory) ad-do-it))
-  (projectile-global-mode +1))
+  ;; (defadvice projectile-project-root (around ignore-remote first activate)
+  ;;   (unless (file-remote-p default-directory) ad-do-it))
+  (projectile-global-mode +1)
+  )
 
 (defun +persp/format-name-as-in-echo (name)
   "Format the perspective name given by NAME for display in the echo area."
