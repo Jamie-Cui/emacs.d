@@ -236,20 +236,25 @@
 ;;   :after consult
 ;;   :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
 
-;; (use-package citre
-;;   :ensure t
-;;   :after (eglot projectile)
-;;   :init
-;;   ;; This is needed in `:init' block for lazy load to work.
-;;   (require 'citre-config)
-;;   :custom
-;;   (citre-project-root-function #'projectile-project-root)
-;;   (citre-default-create-tags-file-location 'global-cache)
-;;   (citre-edit-ctags-options-manually nil)
-;;   (citre-auto-enable-citre-mode-modes '(prog-mode))
-;;   (citre-enable-imenu-integration nil)
-;;   :config
-;;   (add-hook 'find-file-hook #'citre-auto-enable-citre-mode))
+(use-package citre
+  :ensure t
+  :after (eglot projectile)
+  :init
+  ;; This is needed in `:init' block for lazy load to work.
+  ;; (require 'citre-config)
+  :custom
+  ;; (citre-project-root-function #'projectile-project-root)
+  (citre-default-create-tags-file-location 'global-cache)
+  (citre-edit-ctags-options-manually nil)
+  (citre-auto-enable-citre-mode-modes '(prog-mode))
+  (citre-enable-imenu-integration nil)
+  :config
+  ;; HACK only enable citre-auto-enable-citre-mode when not on tramp
+  (add-hook 'find-file-hook 
+            (lambda ()
+              (unless (file-remote-p default-directory)
+                (citre-auto-enable-citre-mode))))
+  )
 
 (use-package flycheck-popup-tip
   :ensure t
