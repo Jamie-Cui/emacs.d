@@ -131,7 +131,8 @@
     "Bn"     #'bookmark-set
     "Bd"     #'bookmark-delete
     ;; docker-related key bindings
-    "d"      #'docker
+    ;; I do not use that very often
+    "D"      #'docker
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ob"     #'citar-open ; open/find bib
