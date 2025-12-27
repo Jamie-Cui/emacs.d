@@ -36,18 +36,10 @@
    "C-i" nil
    [control-i] 'evil-jump-forward)
 
-  ;; tweak evil default key bindings
-  ;; (general-define-key 
-  ;;  :keymaps 'override
-  ;;  :states 'motion
-  ;;  "gD"      #'citre-jump
-  ;;  "gR"      #'citre-jump-to-reference
-  ;;  )
-
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
-   "M-RET"   #'completion-at-point
+   "M-RET"   #'completion-at-point ;; FIXME org-mode should not use that
    "C-M-<return>" #'completion-at-point ; alternative
    ;; less-frequent commands
    "M-y"     #'yas-expand 
@@ -68,8 +60,6 @@
    "M-v"     #'evil-paste-after ; paste like mac
    ;; disabled
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
-   ;; "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
-   ;; "M-l"     #'(lambda () (interactive) (message "M-l is disabled!"))
    "M-k"     #'move-text-up
    "M-j"     #'move-text-down
    "C-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
@@ -90,6 +80,7 @@
    "C-="     #'cnfonts-increase-fontsize
    "C--"     #'cnfonts-decrease-fontsize
    )
+
   ;; ** Global Keybindings
   (+my-leader-def
     :states '(normal visual motion)
@@ -140,7 +131,7 @@
     "Bn"     #'bookmark-set
     "Bd"     #'bookmark-delete
     ;; docker-related key bindings
-    "d"     #'docker
+    "d"      #'docker
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "ob"     #'citar-open ; open/find bib
@@ -232,26 +223,6 @@
     "fL"     #'consult-keep-lines ; find lines
     "fh"     #'consult-history ; find history
     )
-
-  ;; deft mode map
-  (+my-local-leader-def
-    :keymaps 'deft-mode-map
-    :states '(normal visual motion)
-    "A" #'deft-archive-file
-    "a" #'deft-new-file
-    "f" #'deft-filter
-    "d" #'deft-delete-file
-    "g" #'deft-refresh)
-
-  ;; NOTE org mode map (no need for this, delete in the future)
-  ;; (+my-local-leader-def
-  ;;   :keymaps 'org-mode-map
-  ;;   :states '(normal visual motion)
-  ;;   "e" #'org-export-dispatch ;; C-c C-e
-  ;;   "t" #'org-todo ;; C-c C-t
-  ;;   "q" #'org-set-tags-command ;; C-c C-q
-  ;;   "," #'org-priority ;; C-c ,
-  ;;   )
   )
 
 (provide 'init-kbd)
