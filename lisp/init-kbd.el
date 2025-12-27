@@ -223,5 +223,6 @@
     "fL"     #'consult-keep-lines ; find lines
     "fh"     #'consult-history ; find history
     )
+  )
 
-  (provide 'init-kbd)
+(provide 'init-kbd)
