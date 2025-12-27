@@ -327,147 +327,6 @@
   (add-hook 'eldoc-mode-hook #'eldoc-box-hover-at-point-mode))
 
 ;; -----------------------------------------------------------
-;; DONE Completion, search
-;; 
-;; consult
-;; vertico
-;; vertico-posframe
-;; marginalia
-;; corfu
-;; corfu-terminal
-;; orderless
-;; -----------------------------------------------------------
-
-(use-package consult
-  :ensure t
-  :custom
-  (consult-preview-max-count 17)
-  (consult-customize
-   consult-ripgrep consult-git-grep consult-grep consult-man
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
-   :preview-key '(:debounce 1 any))
-  :config 
-  (setq xref-show-xrefs-function       #'consult-xref
-        xref-show-definitions-function #'consult-xref))
-
-(use-package vertico
-  :ensure t
-  :init
-  (vertico-mode)
-  :custom
-  (vertico-cycle t)
-  (vertico-preselect 'first) 
-  (vertico-count 17)
-  (add-to-list 'vertico-multiform-categories '(embark-keybinding grid))
-  (vertico-multiform-mode)
-  )
-
-(use-package vertico-posframe
-  :ensure t
-  :after vertico
-  :config
-  (vertico-posframe-mode 1))
-
-(use-package marginalia
-  :ensure t
-  :init
-  (marginalia-mode))
-
-(use-package corfu
-  :ensure t
-  :custom
-  (corfu-auto nil)
-  (corfu-cycle t)
-  (corfu-preview-current 'nil) ; do not insert unless i select it
-  (corfu-preselect 'nil) ; do not preselect anything
-  (corfu-quit-no-match 'separator) ;; or t
-  :config
-  (global-corfu-mode)
-
-  ;; use corfu in eshell
-  (add-hook 'eshell-mode-hook (lambda ()
-                                (setq-local corfu-auto nil))))
-
-(use-package corfu-terminal
-  :ensure t
-  :defer t
-  :config
-  (when (version< emacs-version "31")
-    (corfu-terminal-mode +1)))
-
-(use-package orderless
-  :ensure t
-  :init
-  (setq completion-styles '(orderless)
-        completion-category-defaults nil
-        completion-category-overrides
-        '((file (styles . (partial-completion))))))
-
-;;;###autoload
-(cl-defun +vertico-file-search 
-    (&key query in all-files (recursive t) prompt args)
-  "Conduct a file search using ripgrep.
-
-:query STRING
-  Determines the initial input to search for.
-:in PATH
-  Sets what directory to base the search out of. Defaults to the current project's root.
-:recursive BOOL
-  Whether or not to search files recursively from the base directory.
-:args LIST
-  Arguments to be appended to `consult-ripgrep-args'."
-  (declare (indent defun))
-  (unless (executable-find "rg")
-    (user-error "Couldn't find ripgrep in your PATH"))
-  (require 'consult)
-  (setq deactivate-mark t)
-  (let* ((project-root (or (projectile-project-root) default-directory))
-         (directory (or in project-root))
-         (consult-ripgrep-args
-          (concat "rg "
-                  (if all-files "-uu ")
-                  (unless recursive "--maxdepth 1 ")
-                  "--null --line-buffered --color=never --max-columns=1000 "
-                  "--smart-case --no-heading "
-                  "--with-filename --line-number --search-zip "
-                  "--hidden -g !.git -g !.svn -g !.hg "
-                  (mapconcat #'identity args " ")))
-         (prompt (if (stringp prompt) (string-trim prompt) "Search"))
-         (query query)
-         (consult-async-split-style consult-async-split-style)
-         (consult-async-split-styles-alist consult-async-split-styles-alist))
-    ;; Change the split style if the initial query contains the separator.
-    (when query
-      (cl-destructuring-bind (&key type separator initial _function)
-          (alist-get consult-async-split-style consult-async-split-styles-alist)
-        (pcase type
-          (`separator
-           (replace-regexp-in-string (regexp-quote (char-to-string separator))
-                                     (concat "\\" (char-to-string separator))
-                                     query t t))
-          (`perl
-           (when (string-match-p initial query)
-             (setf (alist-get 'perlalt consult-async-split-styles-alist)
-                   `(:initial ,(or (cl-loop for char in (list "%" "@" "!" "&" "/" ";")
-                                            unless (string-match-p char query)
-                                            return char)
-                                   "%")
-                              :type perl)
-                   consult-async-split-style 'perlalt))))))
-    (consult--grep prompt #'consult--ripgrep-make-builder directory query)))
-
-;;;###autoload
-(defun +vertico/project-search 
-    (&optional arg initial-query directory)
-  "Performs a live project search from the project root using ripgrep.
-If ARG (universal argument), include all files, even hidden or compressed ones,
-in the search."
-  (interactive "P")
-  (+vertico-file-search :query initial-query :in directory :all-files arg))
-
-;; -----------------------------------------------------------
 ;; DONE Workspaces
 ;;
 ;; persp-projectile (site-lisp)
@@ -517,20 +376,23 @@ in the search."
   (projectile-mode +1)
 
   ;; see: https://metaredux.com/posts/2025/02/03/projectile-introduces-significant-caching-improvements.html
-  ;; initialize the projects cache if needed
-  (unless projectile-projects-cache
-    (setq projectile-projects-cache
-          (or (projectile-unserialize projectile-cache-file)
-              (make-hash-table :test 'equal))))
-  (unless projectile-projects-cache-time
-    (setq projectile-projects-cache-time
-          (make-hash-table :test 'equal)))
-  ;; load the known projects
-  (projectile-load-known-projects)
-  ;; update the list of known projects
-  (projectile--cleanup-known-projects)
-  (when projectile-auto-discover
-    (projectile-discover-projects-in-search-path))
+  ;; Defer cache loading to after-init for faster startup
+  (add-hook 'after-init-hook
+            (lambda ()
+              ;; initialize the projects cache if needed
+              (unless projectile-projects-cache
+                (setq projectile-projects-cache
+                      (or (projectile-unserialize projectile-cache-file)
+                          (make-hash-table :test 'equal))))
+              (unless projectile-projects-cache-time
+                (setq projectile-projects-cache-time
+                      (make-hash-table :test 'equal)))
+              ;; load the known projects
+              (projectile-load-known-projects)
+              ;; update the list of known projects
+              (projectile--cleanup-known-projects)
+              (when projectile-auto-discover
+                (projectile-discover-projects-in-search-path))))
   )
 
 (defun +persp/format-name-as-in-echo (name)

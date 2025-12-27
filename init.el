@@ -1,6 +1,34 @@
 ;; -*- lexical-binding: t; -*-
 
 ;;; -----------------------------------------------------------
+;;; DONE Startup Performance Optimizations
+;;; -----------------------------------------------------------
+
+;; Increase GC threshold during startup for faster initialization
+;; Default is 800KB, which causes too many GC pauses during startup
+(setq gc-cons-threshold most-positive-fixnum)
+(setq gc-cons-percentage 0.6)
+
+;; Unset file name handler during init for faster I/O
+;; This is restored after startup (see emacs-startup-hook below)
+(defvar default-file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+
+;; Increase read-process-output-max for faster LSP/external processes
+;; Default is 4KB on macOS, which is too small for LSP responses
+(setq read-process-output-max (* 1024 1024))  ; 1MB
+
+;; Function to reset performance settings to normal values after startup
+(defun +emacs/reset-performance-settings ()
+  "Reset garbage collection and file handler settings after startup."
+  (setq gc-cons-threshold (* 16 1024 1024))  ; 16MB normal value
+  (setq gc-cons-percentage 0.1)
+  (setq file-name-handler-alist default-file-name-handler-alist))
+
+;; Add hook to reset settings after Emacs startup
+(add-hook 'emacs-startup-hook #'+emacs/reset-performance-settings)
+
+;;; -----------------------------------------------------------
 ;;; DONE Emacs native configurations
 ;;; -----------------------------------------------------------
 
@@ -35,11 +63,17 @@
 ;;; DONE Setup folders
 ;;; -----------------------------------------------------------
 
-(make-directory (concat +emacs/org-root-dir "/roam") t)
-(make-directory (concat +emacs/org-root-dir "/journal") t)
-(make-directory (concat +emacs/org-root-dir "/deft") t)
-(when user-init-file
-  (make-directory (concat (file-name-directory user-init-file) "/bin") t))
+;; Defer directory creation to after startup for faster init
+(defun +emacs/create-directories ()
+  "Create necessary directories for Emacs configuration."
+  (make-directory (concat +emacs/org-root-dir "/roam") t)
+  (make-directory (concat +emacs/org-root-dir "/journal") t)
+  (make-directory (concat +emacs/org-root-dir "/deft") t)
+  (when (and user-init-file (stringp user-init-file))
+    (make-directory (concat (file-name-directory user-init-file) "/bin") t)))
+
+;; Create directories after Emacs startup completes
+(add-hook 'emacs-startup-hook #'+emacs/create-directories)
 
 ;;; -----------------------------------------------------------
 ;;; DONE Setup packages
@@ -113,22 +147,28 @@
     (require 'init-latex)))
 
 (use-package protobuf-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package meson-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package zenburn-theme
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package gruvbox-theme
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package speed-type
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package keyfreq
   :ensure t
+  :defer t
   :config
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))
