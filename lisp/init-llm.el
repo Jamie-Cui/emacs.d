@@ -8,7 +8,15 @@
 ;; agent-shell
 ;; gptel
 ;; gptel-magit
+;; agent-review
 ;; -----------------------------------------------------------
+
+(use-package agent-review
+  :after agent-shell
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
+  :config
+  (setq agent-shell-preferred-agent-config
+        (agent-shell-anthropic-make-claude-code-config)))
 
 (use-package gptel-agent
   :ensure t
@@ -69,7 +77,7 @@
 
   ;; set default values
   (setopt gptel-backend +gptel/aliyun)
-  (setopt gptel-model 'qwen3-coder-plus)
+  (setopt gptel-model 'qwen3-max)
 
   ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")

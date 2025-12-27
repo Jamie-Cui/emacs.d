@@ -232,10 +232,6 @@
 ;;    eglot: built-in with modern emacs, uses external lsp servers
 ;; -----------------------------------------------------------
 
-;; (use-package consult-citre
-;;   :after consult
-;;   :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
-
 (use-package citre
   :ensure t
   :after (eglot projectile)
@@ -437,7 +433,6 @@
 ;; docker
 ;; dashboard
 ;; magit
-;; magit-todos
 ;; eat
 ;; helpful
 ;; popwin
@@ -513,15 +508,6 @@
    :keymaps 'smerge-mode-map
    "C-c C-c"     #'smerge-keep-current))
 
-;; (use-package magit-todos
-;;   :ensure t
-;;   :after magit
-;;   :custom
-;;   (magit-todos-ignored-keywords '("NOTE" "DEPRECATED" "DONE"))
-;;   (magit-todos-keyword-suffix (rx (optional (or "(" "[") (1+ (not (any ")" "]"))) (or ")" "]")))) ; default
-;;   :config
-;;   (magit-todos-mode 1))
-
 (use-package eat
   :ensure t
   :custom
@@ -539,11 +525,6 @@
     (interactive) 
     (let ((current-prefix-arg ""))
       (call-interactively 'eat)))
-
-  ;; (defun +eat/projectile-new ()
-  ;;   (interactive) 
-  ;;   (let ((current-prefix-arg (1+ (cl-position (persp-current-name) (persp-names) :test 'equal))))
-  ;;     (call-interactively 'eat)))
 
   (general-define-key
    :states 'normal

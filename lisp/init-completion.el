@@ -1,21 +1,21 @@
 ;;; init-completion.el --- completion framework configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;
-;; 配置现代化的补全框架,包括:
-;; - Vertico: 垂直补全 UI
-;; - Corfu: 文本内补全
-;; - Consult: 增强的搜索和导航
-;; - Orderless: 模糊匹配
-;; - Marginalia: 补全候选项注释
+;; Configure modern completion framework, including:
+;; - Vertico: Vertical completion UI
+;; - Corfu: In-text completion
+;; - Consult: Enhanced search and navigation
+;; - Orderless: Fuzzy matching
+;; - Marginalia: Completion candidate annotations
 ;;
 ;; Dependencies:
-;; - ripgrep (rg): 用于 consult-ripgrep
+;; - ripgrep (rg): For consult-ripgrep
 ;;
 
 ;;; Code:
 
 ;; -----------------------------------------------------------
-;; Vertico - 垂直补全 UI
+;; Vertico - Vertical completion UI
 ;; -----------------------------------------------------------
 
 (use-package vertico
@@ -37,7 +37,7 @@
   (vertico-posframe-mode 1))
 
 ;; -----------------------------------------------------------
-;; Corfu - 文本内补全
+;; Corfu - In-text completion
 ;; -----------------------------------------------------------
 
 (use-package corfu
@@ -45,12 +45,12 @@
   :custom
   (corfu-auto nil)
   (corfu-cycle t)
-  (corfu-preview-current 'nil) ; 不预选插入
-  (corfu-preselect 'nil)       ; 不预先选择
+  (corfu-preview-current 'nil) ; Don't preview insert
+  (corfu-preselect 'nil)       ; Don't preselect
   (corfu-quit-no-match 'separator)
   :config
   (global-corfu-mode)
-  ;; 在 eshell 中使用 corfu
+  ;; Use corfu in eshell
   (add-hook 'eshell-mode-hook
             (lambda () (setq-local corfu-auto nil))))
 
@@ -62,7 +62,7 @@
     (corfu-terminal-mode +1)))
 
 ;; -----------------------------------------------------------
-;; Orderless - 模糊匹配
+;; Orderless - Fuzzy matching
 ;; -----------------------------------------------------------
 
 (use-package orderless
@@ -74,7 +74,7 @@
         '((file (styles . (partial-completion))))))
 
 ;; -----------------------------------------------------------
-;; Marginalia - 补全候选项注释
+;; Marginalia - Completion candidate annotations
 ;; -----------------------------------------------------------
 
 (use-package marginalia
@@ -83,7 +83,7 @@
   (marginalia-mode))
 
 ;; -----------------------------------------------------------
-;; Consult - 增强的搜索和导航
+;; Consult - Enhanced search and navigation
 ;; -----------------------------------------------------------
 
 (use-package consult
