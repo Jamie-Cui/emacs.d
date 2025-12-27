@@ -2,6 +2,8 @@
 elpa.tar.gz
 emacs.d-standalone.tar.gz
 
+.agent-shell
+
 ## emacs
 .projectile-cache.eld
 .DS_Store

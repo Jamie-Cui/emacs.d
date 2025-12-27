@@ -1,5 +1,6 @@
-;;; Init-kbd.el --- evil support -*- lexical-binding: t -*-
+;;; init-kbd.el --- keybindings configuration -*- lexical-binding: t -*-
 ;;; Commentary:
+;;; Keybindings setup using general.el with leader key system
 ;;; Code:
 
 (require 'init-evil)
@@ -152,7 +153,6 @@
     "oD"     #'+os-explorer/dwim
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
-    "oi"     #'agent-shell-toggle
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
     ;; project-related key bindings

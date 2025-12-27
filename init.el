@@ -38,7 +38,8 @@
 (make-directory (concat +emacs/org-root-dir "/roam") t)
 (make-directory (concat +emacs/org-root-dir "/journal") t)
 (make-directory (concat +emacs/org-root-dir "/deft") t)
-(make-directory (concat (file-name-directory user-init-file) "/bin") t)
+(when user-init-file
+  (make-directory (concat (file-name-directory user-init-file) "/bin") t))
 
 ;;; -----------------------------------------------------------
 ;;; DONE Setup packages
@@ -68,51 +69,48 @@
 
 (require 'cl-lib)
 
-(defun +package/ensure-install-and-use (packages-alist)
-  "Make sure the given package is installed."
-  (dolist (p packages-alist)
-    (unless (package-installed-p p)
-      (package-install p)
-      (use-package p)
-      )))
 
 ;; -----------------------------------------------------------
 ;; DONE Setup environment
 ;; -----------------------------------------------------------
 
-(when (not (eq system-type 'windows-nt))
+(unless (eq system-type 'windows-nt)
   (use-package exec-path-from-shell
     :ensure t
     :config
     (exec-path-from-shell-initialize)))
 
 ;;; -----------------------------------------------------------
-;;; DONE Configure Core - Deferred Loading for Faster Startup
+;;; DONE Development Tools & Modes
 ;;; -----------------------------------------------------------
 
-;; Emacs 30+: Use with-eval-after-load for deferred loading
+;; -----------------------------------------------------------
+;; DONE Load modules
+;; -----------------------------------------------------------
+
+;; Core utilities (must be loaded first)
 (require 'init-utils)
 
-;; Load essential modules immediately, defer non-essential ones
-(require 'init-kbd) 
-(require 'init-evil) 
+;; Essential modules (immediate load)
+(require 'init-evil)
+(require 'init-kbd)
+(require 'init-completion)
 
-;; Defer non-essential modules for faster startup
-(require 'init-core)
-(require 'init-misc)
-(require 'init-os)
+;; Core functionality (deferred load)
+(with-eval-after-load 'init-utils
+  (require 'init-core)
+  (require 'init-misc)
+  (require 'init-os))
 
-;; Defer LLM and org modules
-(require 'init-llm)
-(require 'init-org)
+;; Advanced features (deferred load)
+(with-eval-after-load 'init-core
+  (require 'init-llm)
+  (require 'init-org))
 
-;; only load latex when using graphic (deferred)
+;; LaTeX support (GUI only)
 (when (display-graphic-p)
-  (require 'init-latex))
-
-;;; -----------------------------------------------------------
-;;; DONE modes and themes - Deferred Loading
-;;; -----------------------------------------------------------
+  (with-eval-after-load 'init-org
+    (require 'init-latex)))
 
 (use-package protobuf-mode
   :ensure t)

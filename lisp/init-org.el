@@ -105,10 +105,9 @@
    ))
 
 ;; HACK from doom-emacs
-(defadvice! +org-fix-newline-and-indent-in-src-blocks-a 
+(defun +org-fix-newline-and-indent-in-src-blocks-a 
   (&optional indent _arg _interactive)
   "Mimic `newline-and-indent' in src blocks w/ lang-appropriate indentation."
-  :after #'org-return
   (when (and indent
              org-src-tab-acts-natively
              (org-in-src-block-p t))
@@ -116,17 +115,18 @@
       (org-babel-do-in-edit-buffer
        (call-interactively #'indent-for-tab-command)))))
 
+(advice-add #'org-return :after #'+org-fix-newline-and-indent-in-src-blocks-a)
+
 ;; HACK Fix #6061. Seems `org-babel-do-in-edit-buffer' has the side effect of
 ;;   deleting side windows. Should be reported upstream! This advice
 ;;   suppresses this behavior wherever it is known to be used.
-(defadvice! +org-fix-window-excursions-a (fn &rest args)
+(defun +org-fix-window-excursions-a (fn &rest args)
   "Suppress changes to the window config anywhere
     `org-babel-do-in-edit-buffer' is used."
-  :around #'evil-org-open-below
-  :around #'evil-org-open-above
-  :around #'org-indent-region
-  :around #'org-indent-line
   (save-window-excursion (apply fn args)))
+
+(dolist (target '(evil-org-open-below evil-org-open-above org-indent-region org-indent-line))
+  (advice-add target :around #'+org-fix-window-excursions-a))
 
 ;; HACK Face specs fed directly to `org-todo-keyword-faces' don't respect
 ;;      underlying faces like the `org-todo' face does, so we define our own

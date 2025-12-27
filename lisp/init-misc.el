@@ -252,24 +252,25 @@
 
 ;;;###package magit
 (defvar +tramp--magit-toplevel-cache nil)
-(defadvice! +tramp--memoized-magit-toplevel-a (orig &optional directory)
-  :around #'magit-toplevel
+(defun +tramp--memoized-magit-toplevel-a (orig &optional directory)
   (+tramp--memoize (or directory default-directory)
                    '+tramp--magit-toplevel-cache orig directory))
 
+(advice-add #'magit-toplevel :around #'+tramp--memoized-magit-toplevel-a)
+
 ;;;###package project
 (defvar +tramp--project-current-cache nil)
-(defadvice! +tramp--memoized-project-current (fn &optional prompt directory)
-  :around #'project-current
+(defun +tramp--memoized-project-current (fn &optional prompt directory)
   (+tramp--memoize (or directory
                        project-current-directory-override
                        default-directory)
                    '+tramp--project-current-cache fn prompt directory))
 
+(advice-add #'project-current :around #'+tramp--memoized-project-current)
+
 ;;;###package vc-git
 (defvar +tramp--vc-git-root-cache nil)
-(defadvice! +tramp--memoized-vc-git-root-a (fn file)
-  :around #'vc-git-root
+(defun +tramp--memoized-vc-git-root-a (fn file)
   (let ((value
          (+tramp--memoize (file-name-directory file)
                           '+tramp--vc-git-root-cache fn file)))
@@ -277,6 +278,8 @@
     (unless (cdar +tramp--vc-git-root-cache)
       (setq +tramp--vc-git-root-cache (cdr +tramp--vc-git-root-cache)))
     value))
+
+(advice-add #'vc-git-root :around #'+tramp--memoized-vc-git-root-a)
 
 ;; ------------------------------------------------------------------
 ;; Eshell Configuration

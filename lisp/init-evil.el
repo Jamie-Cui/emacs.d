@@ -1,5 +1,6 @@
-;;; init-evil.el --- evil support -*- lexical-binding: t -*-
+;;; init-evil.el --- evil mode configuration -*- lexical-binding: t -*-
 ;;; Commentary:
+;;; Vim emulation setup using evil mode with related extensions
 ;;; Code:
 
 ;; -----------------------------------------------------------

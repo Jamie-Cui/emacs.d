@@ -266,13 +266,14 @@
 
   ;;   interfere with the active evil mode, clear active regions, and other
   ;;   funny business (see #7242).
-  (defadvice! +syntax--disable-flycheck-popup-tip-maybe-a (&rest _)
-    :before-while #'flycheck-popup-tip-show-popup
+  (defun +syntax--disable-flycheck-popup-tip-maybe-a (&rest _)
     (if (and (bound-and-true-p evil-local-mode)
              (not (evil-emacs-state-p)))
         (evil-normal-state-p)
       (and (not (region-active-p))
-           (not (ignore-errors (>= corfu--index 0)))))))
+           (not (ignore-errors (>= corfu--index 0))))))
+
+  (advice-add #'flycheck-popup-tip-show-popup :before-while #'+syntax--disable-flycheck-popup-tip-maybe-a))
 
 (use-package flycheck
   :ensure t

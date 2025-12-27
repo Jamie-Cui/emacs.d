@@ -1,58 +1,38 @@
-;;; init-utils.el --- function utils -*- lexical-binding: t -*-
+;;; init-utils.el --- utility functions and macros -*- lexical-binding: t -*-
 ;;; Commentary:
+;;; Core utility functions and macros used across configuration
 ;;; Code:
 
-;; HACK from doom emacs
-(defmacro defadvice! (symbol arglist &optional docstring &rest body)
-  "Define an advice called SYMBOL and add it to PLACES.
+(defvar-local +syntax-ppss-memo-last-point nil)
+(defvar-local +syntax-ppss-memo-last-result nil)
 
-ARGLIST is as in `defun'. WHERE is a keyword as passed to `advice-add', and
-PLACE is the function to which to add the advice, like in `advice-add'.
-DOCSTRING and BODY are as in `defun'.
-
-\(fn SYMBOL ARGLIST &optional DOCSTRING &rest [WHERE PLACES...] BODY\)"
-  (declare (doc-string 3) (indent defun))
-  (unless (stringp docstring) (push docstring body) (setq docstring nil))
-  (let (where-alist)
-    (while (keywordp (car body))
-      (push `(cons ,(pop body) (ensure-list ,(pop body)))
-            where-alist))
-    `(progn
-       (defun ,symbol ,arglist ,docstring ,@body)
-       (dolist (targets (list ,@(nreverse where-alist)))
-         (dolist (target (cdr targets))
-           (advice-add target (car targets) #',symbol))))))
-
-(defvar-local doom--sppss-memo-last-point nil)
-(defvar-local doom--sppss-memo-last-result nil)
-
-(defun doom--sppss-memo-reset-h (&rest _ignored)
+(defun +syntax-ppss-memo-reset-h (&rest _ignored)
   "Reset memoization as a safety precaution.
 
 IGNORED is a dummy argument used to eat up arguments passed from
 the hook where this is executed."
-  (setq doom--sppss-memo-last-point nil
-        doom--sppss-memo-last-result nil))
+  (setq +syntax-ppss-memo-last-point nil
+        +syntax-ppss-memo-last-result nil))
 
 ;;;###autoload
-(defun doom-syntax-ppss (&optional p)
+(defun +syntax-ppss (&optional p)
   "Memoize the last result of `syntax-ppss'.
 
 P is the point at which we run `syntax-ppss'"
   (let ((p (or p (point)))
-        (mem-p doom--sppss-memo-last-point))
+        (mem-p +syntax-ppss-memo-last-point))
     (if (and (eq p (nth 0 mem-p))
              (eq (point-min) (nth 1 mem-p))
              (eq (point-max) (nth 2 mem-p)))
-        doom--sppss-memo-last-result
+        +syntax-ppss-memo-last-result
       ;; Add hook to reset memoization if necessary
-      (unless doom--sppss-memo-last-point
-        (add-hook 'before-change-functions #'doom--sppss-memo-reset-h t t))
-      (setq doom--sppss-memo-last-point (list p (point-min) (point-max))
-            doom--sppss-memo-last-result (syntax-ppss p)))))
+      (unless +syntax-ppss-memo-last-point
+        (add-hook 'before-change-functions #'+syntax-ppss-memo-reset-h t t))
+      (setq +syntax-ppss-memo-last-point (list p (point-min) (point-max))
+            +syntax-ppss-memo-last-result (syntax-ppss p)))))
 
 ;;;###autoload
-(defun doom-surrounded-p (pair &optional inline balanced)
+(defun +surrounded-by-pairs-p (pair &optional inline balanced)
   "Returns t if point is surrounded by a brace delimiter: {[(
 
 If INLINE is non-nil, only returns t if braces are on the same line, and
@@ -77,15 +57,15 @@ lines, above and below, with only whitespace in between."
                             (= (- pt nbeg) (- nend pt))))))))))))
 
 ;;;###autoload
-(defun doom-point-in-comment-p (&optional pt)
+(defun +point-in-comment-p (&optional pt)
   "Return non-nil if point is in a comment.
 PT defaults to the current position."
   (let ((pt (or pt (point))))
     (ignore-errors
       (save-excursion
         ;; We cannot be in a comment if we are inside a string
-        (unless (nth 3 (doom-syntax-ppss pt))
-          (or (nth 4 (doom-syntax-ppss pt))
+        (unless (nth 3 (+syntax-ppss pt))
+          (or (nth 4 (+syntax-ppss pt))
               ;; this also test opening and closing comment delimiters... we
               ;; need to chack that it is not newline, which is in "comment
               ;; ender" class in elisp-mode, but we just want it to be treated
@@ -108,7 +88,7 @@ PT defaults to the current position."
                          (nth 4 (syntax-ppss (- pt 2))))))))))))
 
 ;;;###autoload
-(defun doom-point-in-string-p (&optional pt)
+(defun +point-in-string-p (&optional pt)
   "Return non-nil if point is inside string.
 
 This function actually returns the 3rd element of `syntax-ppss'
@@ -119,16 +99,16 @@ fences.
 If optional argument PT is present test this instead of point."
   (ignore-errors
     (save-excursion
-      (nth 3 (doom-syntax-ppss pt)))))
+      (nth 3 (+syntax-ppss pt)))))
 
 ;;;###autoload
-(defun doom-point-in-string-or-comment-p (&optional pos)
+(defun +point-in-string-or-comment-p (&optional pos)
   "Return non-nil if POS is in a string or comment."
-  (or (doom-point-in-string-p pos)
-      (doom-point-in-comment-p pos)))
+  (or (+point-in-string-p pos)
+      (+point-in-comment-p pos)))
 
 ;;;###autoload
-(defun doom-region-active-p ()
+(defun +region-active-p ()
   "Return non-nil if selection is active.
 Detects evil visual mode as well."
   (declare (side-effect-free t))
@@ -137,7 +117,7 @@ Detects evil visual mode as well."
            (evil-visual-state-p))))
 
 ;;;###autoload
-(defun doom-region-beginning ()
+(defun +region-beginning ()
   "Return beginning position of selection.
 Uses `evil-visual-beginning' if available."
   (declare (side-effect-free t))
@@ -148,7 +128,7 @@ Uses `evil-visual-beginning' if available."
       (region-beginning)))
 
 ;;;###autoload
-(defun doom-region-end ()
+(defun +region-end ()
   "Return end position of selection.
 Uses `evil-visual-end' if available."
   (declare (side-effect-free t))
@@ -159,20 +139,20 @@ Uses `evil-visual-end' if available."
       (region-end)))
 
 ;;;###autoload
-(defun doom-region (&optional as-list)
+(defun +region-bounds (&optional as-list)
   "Return the bounds of the current seelction.
 
 If AS-LIST is non-nil, returns (BEG END). Otherwise returns a cons cell (BEG .
 END)."
-  (let* ((active (doom-region-active-p))
-         (beg (if active (doom-region-beginning)))
-         (end (if active (doom-region-end))))
+  (let* ((active (+region-active-p))
+         (beg (if active (+region-beginning)))
+         (end (if active (+region-end))))
     (if as-list
         (list beg end)
       (cons beg end))))
 
 ;;;###autoload
-(defun doom-thing-at-point-or-region (&optional thing prompt)
+(defun +thing-at-point-or-region (&optional thing prompt)
   "Grab the current selection, THING at point, or xref identifier at point.
 
 Returns THING if it is a string. Otherwise, if nothing is found at point and
@@ -184,10 +164,10 @@ in some cases."
   (declare (side-effect-free t))
   (cond ((stringp thing)
          thing)
-        ((doom-region-active-p)
+        ((+region-active-p)
          (buffer-substring-no-properties
-          (doom-region-beginning)
-          (doom-region-end)))
+          (+region-beginning)
+          (+region-end)))
         (thing
          (thing-at-point thing t))
         ((require 'xref nil t)
@@ -207,7 +187,7 @@ in some cases."
 ;;
 ;;; Commands
 
-(defun doom--bol-bot-eot-eol (&optional pos)
+(defun +bol-bot-eot-eol (&optional pos)
   (save-mark-and-excursion
     (when pos
       (goto-char pos))
@@ -230,7 +210,7 @@ in some cases."
                             (when (re-search-forward comment-start-skip eol t)
                               (or (match-end 1) (match-beginning 0))))
                         (goto-char eol)
-                        (while (and (doom-point-in-comment-p)
+                        (while (and (+point-in-comment-p)
                                     (> (point) bol))
                           (backward-char))
                         (skip-chars-backward " " bol)
@@ -242,49 +222,49 @@ in some cases."
                     eol)))
       (list bol bot eot eol))))
 
-(defvar doom--last-backward-pt nil)
+(defvar +last-backward-pt nil)
 ;;;###autoload
-(defun doom/backward-to-bol-or-indent (&optional point)
+(defun +backward-to-bol-or-indent (&optional point)
   "Jump between the indentation column (first non-whitespace character) and the
 beginning of the line. The opposite of
-`doom/forward-to-last-non-comment-or-eol'."
+`+forward-to-last-non-comment-or-eol'."
   (interactive "^d")
   (let ((pt (or point (point))))
     (cl-destructuring-bind (bol bot _eot _eol)
-        (doom--bol-bot-eot-eol pt)
+        (+bol-bot-eot-eol pt)
       (cond ((> pt bot)
              (goto-char bot))
             ((= pt bol)
-             (or (and doom--last-backward-pt
-                      (= (line-number-at-pos doom--last-backward-pt)
+             (or (and +last-backward-pt
+                      (= (line-number-at-pos +last-backward-pt)
                          (line-number-at-pos pt)))
-                 (setq doom--last-backward-pt nil))
-             (goto-char (or doom--last-backward-pt bot))
-             (setq doom--last-backward-pt nil))
+                 (setq +last-backward-pt nil))
+             (goto-char (or +last-backward-pt bot))
+             (setq +last-backward-pt nil))
             ((<= pt bot)
-             (setq doom--last-backward-pt pt)
+             (setq +last-backward-pt pt)
              (goto-char bol))))))
 
-(defvar doom--last-forward-pt nil)
+(defvar +last-forward-pt nil)
 ;;;###autoload
-(defun doom/forward-to-last-non-comment-or-eol (&optional point)
+(defun +forward-to-last-non-comment-or-eol (&optional point)
   "Jumps between the last non-blank, non-comment character in the line and the
-true end of the line. The opposite of `doom/backward-to-bol-or-indent'."
+true end of the line. The opposite of `+backward-to-bol-or-indent'."
   (interactive "^d")
   (let ((pt (or point (point))))
     (cl-destructuring-bind (_bol _bot eot eol)
-        (doom--bol-bot-eot-eol pt)
+        (+bol-bot-eot-eol pt)
       (cond ((< pt eot)
              (goto-char eot))
             ((= pt eol)
-             (goto-char (or doom--last-forward-pt eot))
-             (setq doom--last-forward-pt nil))
+             (goto-char (or +last-forward-pt eot))
+             (setq +last-forward-pt nil))
             ((>= pt eot)
-             (setq doom--last-backward-pt pt)
+             (setq +last-backward-pt pt)
              (goto-char eol))))))
 
 ;;;###autoload
-(defun doom/backward-kill-to-bol-and-indent ()
+(defun +backward-kill-to-bol-and-indent ()
   "Kill line to the first non-blank character. If invoked again afterwards, kill
 line to beginning of line. Same as `evil-delete-back-to-indentation'."
   (interactive)
@@ -298,14 +278,14 @@ line to beginning of line. Same as `evil-delete-back-to-indentation'."
       (indent-according-to-mode))))
 
 ;;;###autoload
-(defun doom/delete-backward-word (arg)
+(defun +delete-backward-word (arg)
   "Like `backward-kill-word', but doesn't affect the kill-ring."
   (interactive "p")
   (let ((kill-ring nil) (kill-ring-yank-pointer nil))
     (ignore-errors (backward-kill-word arg))))
 
 ;;;###autoload
-(defun doom/dumb-indent ()
+(defun +dumb-indent ()
   "Inserts a tab character (or spaces x tab-width)."
   (interactive)
   (if indent-tabs-mode
@@ -315,7 +295,7 @@ line to beginning of line. Same as `evil-delete-back-to-indentation'."
       (insert (make-string spaces ? )))))
 
 ;;;###autoload
-(defun doom/dumb-dedent ()
+(defun +dumb-dedent ()
   "Dedents the current line."
   (interactive)
   (if indent-tabs-mode
@@ -331,7 +311,7 @@ line to beginning of line. Same as `evil-delete-back-to-indentation'."
                 (- tab-width movement)))))))))
 
 ;;;###autoload
-(defun doom/retab (arg &optional beg end)
+(defun +retab (arg &optional beg end)
   "Converts tabs-to-spaces or spaces-to-tabs within BEG and END (defaults to
 buffer start and end, to make indentation consistent. Which it does depends on
 the value of `indent-tab-mode'.
@@ -348,7 +328,7 @@ opposite indentation style."
       (untabify beg end))))
 
 ;;;###autoload
-(defun doom/delete-trailing-newlines ()
+(defun +delete-trailing-newlines ()
   "Trim trailing newlines.
 
 Respects `require-final-newline'."
@@ -358,19 +338,19 @@ Respects `require-final-newline'."
     (delete-blank-lines)))
 
 ;;;###autoload
-(defun doom/dos2unix ()
+(defun +dos2unix ()
   "Convert the current buffer to a Unix file encoding."
   (interactive)
   (set-buffer-file-coding-system 'undecided-unix nil))
 
 ;;;###autoload
-(defun doom/unix2dos ()
+(defun +unix2dos ()
   "Convert the current buffer to a DOS file encoding."
   (interactive)
   (set-buffer-file-coding-system 'undecided-dos nil))
 
 ;;;###autoload
-(defun doom/toggle-indent-style ()
+(defun +toggle-indent-style ()
   "Switch between tabs and spaces indentation style in the current buffer."
   (interactive)
   (setq indent-tabs-mode (not indent-tabs-mode))
@@ -378,7 +358,7 @@ Respects `require-final-newline'."
 
 (defvar editorconfig-lisp-use-default-indent)
 ;;;###autoload
-(defun doom/set-indent-width (width)
+(defun +set-indent-width (width)
   "Change the indentation size to WIDTH of the current buffer.
 
 The effectiveness of this command is significantly improved if you have
@@ -406,7 +386,7 @@ editorconfig or dtrt-indent installed."
         ((require 'dtrt-indent nil t)
          (when-let (vars (nth 2 (assq major-mode dtrt-indent-hook-mapping-list)))
            (dolist (var (ensure-list vars))
-             (doom-log "Updated %s = %d" var width)
+             (message "Updated %s = %d" var width)
              (set var width)))))
   (message "Changed buffer's indent-size to %d" width))
 
@@ -415,59 +395,29 @@ editorconfig or dtrt-indent installed."
 ;;; Hooks
 
 ;;;###autoload
-(defun doom-enable-delete-trailing-whitespace-h ()
+(defun +enable-delete-trailing-whitespace-h ()
   "Enables the automatic deletion of trailing whitespaces upon file save.
 
 i.e. enables `ws-butler-mode' in the current buffer."
   (ws-butler-mode +1))
 
 ;;;###autoload
-(defun doom-disable-delete-trailing-whitespace-h ()
+(defun +disable-delete-trailing-whitespace-h ()
   "Disables the automatic deletion of trailing whitespaces upon file save.
 
 i.e. disables `ws-butler-mode' in the current buffer."
   (ws-butler-mode -1))
 
 ;;;###autoload
-(defun doom-enable-show-trailing-whitespace-h ()
+(defun +enable-show-trailing-whitespace-h ()
   "Enable `show-trailing-whitespace' in the current buffer."
   (setq-local show-trailing-whitespace t))
 
 ;;;###autoload
-(defun doom-disable-show-trailing-whitespace-h ()
+(defun +disable-show-trailing-whitespace-h ()
   "Disable `show-trailing-whitespace' in the current buffer."
   (setq-local show-trailing-whitespace nil))
 
-;;;###autoload
-(defun +point-in-comment-p (&optional pt)
-  "Return non-nil if point is in a comment.
-PT defaults to the current position."
-  (let ((pt (or pt (point))))
-    (ignore-errors
-      (save-excursion
-        ;; We cannot be in a comment if we are inside a string
-        (unless (nth 3 (doom-syntax-ppss pt))
-          (or (nth 4 (doom-syntax-ppss pt))
-              ;; this also test opening and closing comment delimiters... we
-              ;; need to chack that it is not newline, which is in "comment
-              ;; ender" class in elisp-mode, but we just want it to be treated
-              ;; as whitespace
-              (and (< pt (point-max))
-                   (memq (char-syntax (char-after pt)) '(?< ?>))
-                   (not (eq (char-after pt) ?\n)))
-              ;; we also need to test the special syntax flag for comment
-              ;; starters and enders, because `syntax-ppss' does not yet know if
-              ;; we are inside a comment or not (e.g. / can be a division or
-              ;; comment starter...).
-              (when-let ((s (car (syntax-after pt))))
-                (or (and (/= 0 (logand (ash 1 16) s))
-                         (nth 4 (syntax-ppss (+ pt 2))))
-                    (and (/= 0 (logand (ash 1 17) s))
-                         (nth 4 (syntax-ppss (+ pt 1))))
-                    (and (/= 0 (logand (ash 1 18) s))
-                         (nth 4 (syntax-ppss (- pt 1))))
-                    (and (/= 0 (logand (ash 1 19) s))
-                         (nth 4 (syntax-ppss (- pt 2))))))))))))
 
 ;; NOTE Since I'm using evil, i want an additional space when inserting
 ;;;###autoload
