@@ -285,6 +285,7 @@
                   ("https://plink.anyfeeder.com/weixin/AI_era")
                   ("https://plink.anyfeeder.com/weixin/gh_10a6b96351a9")
                   ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance")
+                  ("https://fedoramagazine.org/feed/")
                   ))
   :config)
 
