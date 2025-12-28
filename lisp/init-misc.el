@@ -303,8 +303,7 @@
             (concat (propertize
                      ;; the above line
                      (format "%s [%s]"
-                             (propertize (concat (user-login-name) "@" (system-name)) 
-                                         'font-lock-face 'font-lock-comment-face) 
+                             (propertize (user-login-name) 'font-lock-face 'font-lock-comment-face) 
                              (propertize cwd 'font-lock-face 'font-lock-constant-face)
                              )
                      'read-only t
