@@ -33,8 +33,14 @@
 (use-package vertico-posframe
   :ensure t
   :after vertico
+  :custom
+  (vertico-posframe-border-width 5)
+  ;; make posframe transparent
+  (vertico-posframe-parameters '((alpha . 0.9))) 
   :config
-  (vertico-posframe-mode 1))
+  (custom-set-faces '(vertico-posframe-border ((t (:inherit default :background "red")))))
+  (vertico-posframe-mode 1)
+  )
 
 ;; -----------------------------------------------------------
 ;; Corfu - In-text completion
