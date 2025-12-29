@@ -564,7 +564,11 @@
   :config
   (popwin-mode 1))
 
+;; install dir: https://direnv.net/
+;; brew install direnv
+;; sudo dnf install direnv
 (use-package envrc
-  :ensure t)
+  :ensure t
+  :hook (after-init . envrc-global-mode))
 
 (provide 'init-core)
