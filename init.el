@@ -312,18 +312,28 @@
   (elfeed-enclosure-default-dir (concat user-emacs-directory "elfeed/enclosure/"))
   (elfeed-search-filter "") ; startup with no filter
   (elfeed-feeds '(
-                  ;; see: https://plink.anyfeeder.com/
-                  ;; ("https://stallman.org/rss/rss.xml")
+                  ;; Emacs life
                   ("https://planet.emacslife.com/atom.xml")
-                  ("https://eprint.iacr.org/rss/rss.xml")
+                  ;; Emacs China
                   ("https://emacs-china.org/latest.rss")
+                  ;; iacr
+                  ("https://eprint.iacr.org/rss/rss.xml")
+                  ;; Linux Security
                   ("https://linuxsecurity.com/linuxsecurity_hybrid.xml")
+                  ;; Bitcoin, Ethereum & Cryptocurrency News
                   ("https://www.bitdegree.org/crypto/news/rss")
+                  ;; 机器之心
                   ("https://plink.anyfeeder.com/weixin/almosthuman2014")
+                  ;; 新智元
                   ("https://plink.anyfeeder.com/weixin/AI_era")
+                  ;; 架构师之路
                   ("https://plink.anyfeeder.com/weixin/gh_10a6b96351a9")
-                  ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance")
+                  ;; 棱镜
+                  ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance") 
+                  ;; Fedora Magazine
                   ("https://fedoramagazine.org/feed/")
+                  ;; Hack News
+                  ("https://hnrss.org/newest")
                   ))
   :config)
 
