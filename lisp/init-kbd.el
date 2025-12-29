@@ -202,7 +202,7 @@
     "qr"     #'restart-emacs
     ;; toggles
     "t" '(:ignore t :which-key "toggle")
-    "tg"     #'magit-blame-addition
+    "tb"     #'magit-blame-addition
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen
     "tt"     #'toggle-truncate-lines
