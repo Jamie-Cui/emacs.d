@@ -106,7 +106,7 @@
 
 ;; HACK from doom-emacs
 (defun +org-fix-newline-and-indent-in-src-blocks-a 
-  (&optional indent _arg _interactive)
+    (&optional indent _arg _interactive)
   "Mimic `newline-and-indent' in src blocks w/ lang-appropriate indentation."
   (when (and indent
              org-src-tab-acts-natively
@@ -264,8 +264,8 @@
   :if window-system ;; do not load xenops on termial emacs
   :config
   (setq xenops-font-family "Maple Mono NL NF CN")
-  (setq xenops-reveal-on-entry t)
-  (setopt xenops-math-image-scale-factor 1)
+  (setq xenops-reveal-on-entry nil)
+  (setopt xenops-math-image-scale-factor 1.2)
   (setq xenops-math-latex-process-alist org-preview-latex-process-alist)
   (add-hook 'org-mode-hook #'xenops-mode)
   (setq xenops-math-latex-process 'ximagemagick)
