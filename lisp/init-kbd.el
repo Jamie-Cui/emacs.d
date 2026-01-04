@@ -151,8 +151,7 @@
     "p" '(:ignore t :which-key "project")
     "pp"     #'projectile-switch-project
     "pq"     #'(lambda () (interactive) 
-                 (persp-kill (persp-current-name))
-                 (+persp/show-name-in-echo))
+                 (persp-kill (persp-current-name)))
     "pa"     #'projectile-add-known-project
     "px"     #'projectile-remove-known-project
     "pg"     #'projectile-cleanup-known-projects
