@@ -146,6 +146,16 @@
   (with-eval-after-load 'init-org
     (require 'init-latex)))
 
+(use-package nael
+  :ensure t
+  :defer t
+  :custom
+  (nael-prepare-lsp nil)
+  (nael-prepare-eglot t)
+  :config
+  (add-hook 'nael-mode-hook #'abbrev-mode)
+  (add-hook 'nael-mode-hook #'eglot-ensure))
+
 (use-package protobuf-mode
   :ensure t
   :defer t)
@@ -342,3 +352,4 @@
   :after elfeed
   :config
   (elfeed-goodies/setup))
+
