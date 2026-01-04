@@ -506,7 +506,15 @@
   (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   (general-define-key
    :keymaps 'smerge-mode-map
-   "C-c C-c"     #'smerge-keep-current))
+   "C-c C-c"     #'smerge-keep-current)
+
+  ;; Install magit-auto-commit
+  (transient-append-suffix 'magit-commit #'magit-commit-create
+    '("a" "Auto (but fixed) commit" (lambda (&optional args)
+                                      (interactive (list (magit-commit-arguments)))
+                                      (let ((message "chore: stale - work still in progress"))
+                                        (magit-commit-create (append args `("--message" ,message "--edit")))))))
+  )
 
 (use-package eat
   :ensure t
