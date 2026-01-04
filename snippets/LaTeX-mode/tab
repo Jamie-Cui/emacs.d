@@ -4,14 +4,17 @@
 # --
 
 \begin{table}[htbp]
-	\centering
+\centering
+\setlength{\tabcolsep}{1em} % for the horizontal padding
+{\renewcommand{\arraystretch}{1}% for the vertical padding
 	\begin{tabular}{ccc}
     \toprule
 		$0 & 0 & 0 \\\\
     \midrule
-		1 & 1 & 1 \\\\
+		1  & 1 & 1 \\\\
     \bottomrule
 	\end{tabular}
 	\caption{${1:caption}}
 	\label{${2:"waiting for reftex-label call..."$(unless yas/modified-p (reftex-label nil 'dont-insert))}}
+}
 \end{table}
