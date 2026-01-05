@@ -25,7 +25,9 @@
 (use-package agent-shell
   :ensure t
   :custom
-  (agent-shell-show-welcome-message nil))
+  (agent-shell-show-welcome-message nil)
+  (agent-shell-header-style 'text)
+  (agent-shell-show-config-icons nil))
 
 (use-package gptel
   :ensure t
