@@ -137,7 +137,12 @@
                   "--null --line-buffered --color=never --max-columns=1000 "
                   "--smart-case --no-heading "
                   "--with-filename --line-number --search-zip "
-                  "--hidden -g !.git -g !.svn -g !.hg "
+                  "--hidden "
+                  "-g !.git "
+                  "-g !.svn "
+                  "-g !.hg "
+                  "-g !.agent-shell "
+                  "-g !.projectile-cache.eld "
                   (mapconcat #'identity args " ")))
          (prompt (if (stringp prompt) (string-trim prompt) "Search"))
          (query query)
@@ -164,8 +169,7 @@
     (consult--grep prompt #'consult--ripgrep-make-builder directory query)))
 
 ;;;###autoload
-(defun +vertico/project-search
-    (&optional arg initial-query directory)
+(defun +vertico/project-search (&optional arg initial-query directory)
   "Performs a live project search from the project root using ripgrep.
 If ARG (universal argument), include all files, even hidden or compressed ones,
 in the search."
