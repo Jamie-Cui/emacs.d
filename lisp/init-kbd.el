@@ -170,7 +170,7 @@
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "nd"      #'deft
-    "nt"      #'org-todo
+    "nt"      #'org-todo-list
     "nj"      #'org-journal-new-entry
     "nr" '(:ignore t :which-key "org-roam")
     "nra"     #'org-roam-alias-add
@@ -187,7 +187,9 @@
     "nxR"     #'xenops-regenerate
     ;; help functions
     "h" '(:ignore t :which-key "help")
+    "h RET"  #'helpful-at-point
     "hf"     #'helpful-callable
+    "hF"     #'helpful-function
     "hk"     #'helpful-key
     "hv"     #'helpful-variable
     "hm"     #'describe-mode

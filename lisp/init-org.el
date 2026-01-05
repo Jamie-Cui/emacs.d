@@ -20,6 +20,13 @@
 (setopt org-link-elisp-confirm-function nil)
 (setopt org-use-fast-todo-selection 'auto)
 
+;;; agenda
+
+;; FIXME make org file find org-journal files (maybe not needed?)
+(setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
+
+(evil-set-initial-state 'org-agenda-mode 'normal)
+
 ;;; ui
 (setopt org-log-done 'time) ; when DONE, log the time
 (setopt org-image-actual-width nil)
@@ -162,7 +169,10 @@
   (org-journal-dir (concat +emacs/org-root-dir "/journal"))
   (org-journal-find-file-fn 'find-file)
   (org-journal-file-type 'monthly)
-  (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\""))
+  (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\"")
+  (org-journal-enable-agenda-integration t)
+  :config
+  (add-to-list 'org-agenda-files org-journal-dir))
 
 (use-package org-download
   :ensure t

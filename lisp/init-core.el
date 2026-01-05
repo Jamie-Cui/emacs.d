@@ -553,6 +553,7 @@
   (popwin:reuse-window t)
   (popwin:special-display-config
    '(
+     ("*Org Agenda*" :position bottom)
      ("*xref*" :position bottom)
      (help-mode :position bottom :stick t :dedicated t)
      (helpful-mode :position bottom :stick t :dedicated t)
