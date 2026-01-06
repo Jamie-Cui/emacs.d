@@ -48,7 +48,7 @@
    "M-p"     #'+compile-with-no-preset ; just like vscode
    "M-d"     #'evil-multiedit-match-symbol-and-next ; default
    ;; more-frequent commands
-   "M-e"     #'evil-avy-goto-char-2 ; locate
+   "M-e"     #'evil-avy-goto-char-timer
    "M-i"     #'consult-imenu
    "M-d"     #'evil-multiedit-match-symbol-and-next  ; match
    ;; mac-like binding
