@@ -224,7 +224,15 @@
     "fl"     #'consult-focus-lines ; find lines
     "fL"     #'consult-keep-lines ; find lines
     "fh"     #'consult-history ; find history
-    )
-  )
+    "fp"     #'(lambda () ; find private emacs config
+                 (interactive) (projectile-switch-project-by-name +emacs/repo-directory))
+    "fP"     #'(lambda () ; find private emacs config in .emacs.d
+                 (interactive) 
+                 (when (not (projectile-project-p user-emacs-directory))
+                   (dired-create-empty-file (concat user-emacs-directory projectile-dirconfig-file))
+                   (push (file-name-as-directory (abbreviate-file-name user-emacs-directory))
+                         projectile-known-projects))
+                 (projectile-switch-project-by-name user-emacs-directory))
+    ))
 
 (provide 'init-kbd)

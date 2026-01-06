@@ -57,21 +57,30 @@
       :key (auth-source-pick-first-password :host "aliyun")
       :models '(qwen3-max qwen-plus deepseek-r1 qwen3-coder-plus)))
 
+  ;; register zhipu backend
+  (defvar +gptel/zhipu
+    (gptel-make-deepseek "Zhipu"
+      :host "open.bigmodel.cn/api/coding/paas/v4"
+      :endpoint "/chat/completions"
+      :stream t
+      :key (auth-source-pick-first-password :host "zhipu")
+      :models '(glm-4.7)))
+
   ;; register local backend
   ;; NOTE to make ollama work through LAN, on its server
   ;; see: https://github.com/ollama/ollama/blob/main/docs/faq.md
-  (defvar +gptel/local-backend
-    (gptel-make-openai "OpenWebUI"
-      :host "localhost:8080"
-      :protocol "http"
-      :endpoint "/api/chat/completions"
-      :stream t
-      :key "sk-02bdf77754894f87b8988711c7d15b67"
-      :models '(qwen2.5-coder:latest)))
+  ;; (defvar +gptel/local-backend
+  ;;   (gptel-make-openai "OpenWebUI"
+  ;;     :host "localhost:8080"
+  ;;     :protocol "http"
+  ;;     :endpoint "/api/chat/completions"
+  ;;     :stream t
+  ;;     :key "sk-02bdf77754894f87b8988711c7d15b67"
+  ;;     :models '(qwen2.5-coder:latest)))
 
   ;; set default values
-  (setopt gptel-backend +gptel/aliyun)
-  (setopt gptel-model 'qwen3-max)
+  (setopt gptel-backend +gptel/zhipu)
+  (setopt gptel-model 'glm-4.7)
 
   ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")

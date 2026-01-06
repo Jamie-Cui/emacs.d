@@ -332,6 +332,10 @@
                   ("https://linuxsecurity.com/linuxsecurity_hybrid.xml")
                   ;; Bitcoin, Ethereum & Cryptocurrency News
                   ("https://www.bitdegree.org/crypto/news/rss")
+                  ;; Fedora Magazine
+                  ("https://fedoramagazine.org/feed/")
+                  ;; Hack News
+                  ;; ("https://hnrss.org/newest")
                   ;; 机器之心
                   ("https://plink.anyfeeder.com/weixin/almosthuman2014")
                   ;; 新智元
@@ -340,10 +344,8 @@
                   ("https://plink.anyfeeder.com/weixin/gh_10a6b96351a9")
                   ;; 棱镜
                   ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance") 
-                  ;; Fedora Magazine
-                  ("https://fedoramagazine.org/feed/")
-                  ;; Hack News
-                  ("https://hnrss.org/newest")
+                  ;; 求是网
+                  ("https://plink.anyfeeder.com/qstheory")
                   ))
   :config)
 
