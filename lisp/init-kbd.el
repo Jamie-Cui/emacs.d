@@ -67,7 +67,7 @@
    ;; emacs binding
    ;; NOTE those bindings are set to global since most of time, mac and terminal adopts those bindings
    "C-a"     #'evil-first-non-blank ; like "^" in vim 
-   "C-e"     #'evil-end-of-line ; like "$" in vim
+   "C-e"     #'end-of-line ; like "$" in vim, DO NOT use evil-end-of-line
    ;; NOTE the following kbds are avaliable when in insert mode
    ;; "C-f"     #'forward-char ; native 
    ;; "C-b"     #'backward-char ; native
@@ -233,8 +233,7 @@
                  (interactive) 
                  (when (not (projectile-project-p user-emacs-directory))
                    (dired-create-empty-file (concat user-emacs-directory projectile-dirconfig-file))
-                   (push (file-name-as-directory (abbreviate-file-name user-emacs-directory))
-                         projectile-known-projects))
+                   (projectile-add-known-project user-emacs-directory))
                  (projectile-switch-project-by-name user-emacs-directory))
     ))
 
