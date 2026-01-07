@@ -126,10 +126,6 @@
     "bd"     #'kill-current-buffer
     "by"     #'+copy-buffer-file-name
     "br"     #'(lambda () (interactive) (revert-buffer t t))
-    "B" '(:ignore t :which-key "bookmark")
-    "BB"     #'consult-bookmark
-    "Bn"     #'bookmark-set
-    "Bd"     #'bookmark-delete
     ;; docker-related key bindings
     ;; I do not use that very often
     "D"      #'docker
@@ -218,11 +214,13 @@
     "ct"     #'citre-update-this-tags-file
     ;; find
     "f" '(:ignore t :which-key "find")
-    "fi"     #'consult-citre ; find citre items
+    "fr"     #'consult-recent-file ; find recent file (globally)
+    "fb"     #'consult-buffer
+    "fB"     #'consult-bookmark ; find recent file (globally)
     "ff"     #'consult-fd ; find file (in this directory)
     "fF"     #'consult-locate ; find file (system wide)
-    "fl"     #'consult-focus-lines ; find lines
-    "fL"     #'consult-keep-lines ; find lines
+    "fm"     #'consult-man
+    "fM"     #'consult-woman
     "fh"     #'consult-history ; find history
     "fp"     #'(lambda () ; find private emacs config
                  (interactive) (projectile-switch-project-by-name +emacs/repo-directory))

@@ -354,4 +354,3 @@
   :after elfeed
   :config
   (elfeed-goodies/setup))
-

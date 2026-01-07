@@ -547,8 +547,8 @@
   :ensure t
   :after gptel
   :custom 
-  (popwin:popup-window-height 0.5)
-  (popwin:popup-window-width 0.5)
+  (popwin:popup-window-height 0.3)
+  (popwin:popup-window-width 0.3)
   (popwin:adjust-other-windows t)
   (popwin:reuse-window t)
   (popwin:special-display-config
