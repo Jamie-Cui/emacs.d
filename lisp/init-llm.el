@@ -79,8 +79,8 @@
   ;;     :models '(qwen2.5-coder:latest)))
 
   ;; set default values
-  (setopt gptel-backend +gptel/zhipu)
-  (setopt gptel-model 'glm-4.7)
+  (setopt gptel-backend +gptel/aliyun)
+  (setopt gptel-model 'qwen3-max)
 
   ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")

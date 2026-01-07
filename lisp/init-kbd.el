@@ -167,8 +167,6 @@
     "np"      #'org-insert-link
     "nd"      #'deft
     "nt"      #'org-todo-list
-    "nTs"     #'org-timer-set-timer
-    "nTx"     #'org-timer-stop
     "nj"      #'org-journal-new-entry
     "nr" '(:ignore t :which-key "org-roam")
     "nra"     #'org-roam-alias-add
@@ -207,6 +205,11 @@
     "tt"     #'toggle-truncate-lines
     "tn"     #'display-line-numbers-mode
     "ta"     #'+treesit-auto/toggle
+    ;; timer
+    "T" '(:ignore t :which-key "timer")
+    "Ta"     #'org-timer-set-timer ; add timer
+    "T RET"  #'org-timer-pause-or-continue ; pause or continue
+    "Td"     #'org-timer-stop ; delete timer
     ;; code (lsp/tags)
     "c" '(:ignore t :which-key "code")
     "cx"     #'list-flycheck-errors
