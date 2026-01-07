@@ -167,6 +167,8 @@
     "np"      #'org-insert-link
     "nd"      #'deft
     "nt"      #'org-todo-list
+    "nTs"     #'org-timer-set-timer
+    "nTx"     #'org-timer-stop
     "nj"      #'org-journal-new-entry
     "nr" '(:ignore t :which-key "org-roam")
     "nra"     #'org-roam-alias-add

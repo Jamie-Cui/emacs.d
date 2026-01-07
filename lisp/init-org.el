@@ -27,6 +27,10 @@
 
 (evil-set-initial-state 'org-agenda-mode 'normal)
 
+;;; timer
+(setopt org-timer-default-timer "20") ; 20 mins
+(setopt org-clock-sound t) ; use default sound
+
 ;;; ui
 (setopt org-log-done 'time) ; when DONE, log the time
 (setopt org-image-actual-width nil)
