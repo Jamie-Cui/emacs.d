@@ -284,6 +284,24 @@
 ;; Eshell Configuration
 ;; ------------------------------------------------------------------
 
+(defun +shell/zsh ()
+  "Call /bin/zsh in shell mode"
+  (interactive)
+  (let ((explicit-shell-file-name "/bin/zsh") )
+    (shell)))
+
+(defun +shell/bash ()
+  "Call /bin/bash in shell mode"
+  (interactive)
+  (let ((explicit-shell-file-name "/bin/bash") )
+    (shell)))
+
+(defun +shell/sh ()
+  "Call /bin/sh in shell mode"
+  (interactive)
+  (let ((explicit-shell-file-name "/bin/sh") )
+    (shell)))
+
 (setopt eshell-scroll-show-maximum-output nil
         eshell-highlight-prompt nil
         eshell-destroy-buffer-when-process-dies t)
