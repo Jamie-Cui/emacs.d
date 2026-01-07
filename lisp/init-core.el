@@ -141,7 +141,7 @@
   :ensure t
   :custom
   (which-key-max-display-columns nil)
-  (which-key-min-display-lines 6)
+  (which-key-min-display-lines 3)
   (which-key-side-window-slot -10)
   (which-key-add-column-padding 1)
   (which-key-sort-order 'which-key-key-order-alpha)
