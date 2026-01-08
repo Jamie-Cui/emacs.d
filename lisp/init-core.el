@@ -480,6 +480,7 @@
   :ensure t
   :after evil-collection
   :config
+  (setq magit-show-long-lines-warning nil)
   (setq magit-tramp-pipe-stty-settings 'pty)
   (setq magit-commit-show-diff nil)
   (setq magit-branch-direct-configure nil)
