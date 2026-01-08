@@ -578,6 +578,8 @@
 ;; sudo dnf install direnv
 (use-package envrc
   :ensure t
+  :custom
+  (envrc-remote t)
   :hook (after-init . envrc-global-mode))
 
 (provide 'init-core)
