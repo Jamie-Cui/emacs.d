@@ -107,6 +107,8 @@
         )
 
 ;;; org-babel
+(setopt org-confirm-babel-evaluate nil) ; do not confirm, just run
+
 (org-babel-do-load-languages
  'org-babel-load-languages
  ;; this line activates plantuml
