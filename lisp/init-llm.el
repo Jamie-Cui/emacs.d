@@ -40,7 +40,7 @@
   ;; re-bind key
   :bind (:map gptel-mode-map
               ("C-c C-c" . #'gptel-send)
-              ("C-c RET" . #'gptel-send))
+              ("C-c RET" . #'gptel-menu))
   :config
 
   ;; register gemini backend
@@ -79,8 +79,8 @@
   ;;     :models '(qwen2.5-coder:latest)))
 
   ;; set default values
-  (setopt gptel-backend +gptel/aliyun)
-  (setopt gptel-model 'qwen3-max)
+  (setopt gptel-backend +gptel/zhipu)
+  (setopt gptel-model 'glm-4.7)
 
   ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")

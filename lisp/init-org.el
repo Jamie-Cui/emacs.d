@@ -85,6 +85,7 @@
 (setopt org-export-dispatch-use-expert-ui t)
 (setopt org-export-with-toc nil)
 (setopt org-cite-export-processors '((latex biblatex) (beamer natbib) (t basic)))
+
 (add-to-list 'org-export-backends 'beamer) ;; support beamer
 
 ;;; org-latex
