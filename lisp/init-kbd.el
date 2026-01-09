@@ -143,6 +143,7 @@
     "oT"     #'+eat/new
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
+    "oa"     #'agent-shell ; (agent-shell project is projectile, not persp)
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pp"     #'projectile-switch-project

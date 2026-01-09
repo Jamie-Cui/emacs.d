@@ -81,6 +81,7 @@
 (setopt org-src-preserve-indentation nil) 
 
 ;;; org-export
+(setopt org-latex-tables-booktabs t)
 (setopt org-export-dispatch-use-expert-ui t)
 (setopt org-export-with-toc nil)
 (setopt org-cite-export-processors '((latex biblatex) (beamer natbib) (t basic)))

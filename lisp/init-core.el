@@ -555,9 +555,10 @@
   (popwin:special-display-config
    '(
      ("*Org Agenda*" :position bottom :stick t :dedicated t)
-     ("*xref*" :position bottom)
+     ("*xref*" :position bottom :position bottom :stick t :dedicated t)
      (help-mode :position bottom :stick t :dedicated t)
      (helpful-mode :position bottom :stick t :dedicated t)
+     (agent-shell-mode :position bottom :stick t :dedicated t)
      ;; ("^\\*eshell\\*.*" :regexp t :position bottom :stick t :dedicated t)
      ;; (eat-mode :position bottom :stick t :dedicated t)
      ("*Flycheck errors*" :position bottom :stick t :dedicated t)
