@@ -275,7 +275,7 @@
 
 (use-package xenops
   :ensure t
-  :if window-system ;; do not load xenops on termial emacs
+  :if (and window-system (not (eq system-type 'windows-nt))) ;; do not load xenops on termial emacs or windows nt
   :config
   (setq xenops-font-family "Maple Mono NL NF CN")
   (setq xenops-reveal-on-entry nil)
