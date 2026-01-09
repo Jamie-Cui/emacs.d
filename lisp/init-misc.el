@@ -516,4 +516,11 @@
 ;; treesit font level set to 2
 (setopt treesit-font-lock-level 2)
 
+;; occur mode
+(general-define-key
+ :keymaps 'occur-mode-map
+ "C-c C-p"   #'occur-edit-mode ;; make it behaves the same as wgrep-mode map
+ "C-c C-c"   #'occur-mode ;; make it behaves the same as wgrep-mode map
+ )
+
 (provide 'init-misc)
