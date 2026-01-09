@@ -551,7 +551,7 @@
   (popwin:popup-window-height 0.3)
   (popwin:popup-window-width 0.3)
   (popwin:adjust-other-windows t)
-  (popwin:reuse-window t)
+  (popwin:reuse-window 'current)
   (popwin:special-display-config
    '(
      ("*Org Agenda*" :position bottom :stick t :dedicated t)
