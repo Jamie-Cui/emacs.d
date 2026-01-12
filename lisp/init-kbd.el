@@ -49,9 +49,9 @@
    "M-P"     #'+compile-with-comint ; just like vscode
    "M-d"     #'evil-multiedit-match-symbol-and-next ; default
    ;; more-frequent commands
-   "M-e"     #'evil-avy-goto-char-timer
+   "M-j"     #'evil-avy-goto-char-timer ; jump
    "M-i"     #'consult-imenu
-   "M-d"     #'evil-multiedit-match-symbol-and-next  ; match
+   "M-m"     #'evil-multiedit-match-symbol-and-next  ; match
    ;; mac-like binding
    "M-f"     #'consult-line ; search like mac
    "M-a"     #'mark-whole-buffer ; select like mac
@@ -60,11 +60,12 @@
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-v"     #'evil-paste-after ; paste like mac
    ;; disabled
+   "M-e"     #'(lambda () (interactive) (message "M-e is disabled!"))
+   "M-d"     #'(lambda () (interactive) (message "M-d is disabled!"))
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
    "M-q"     #'(lambda () (interactive) (message "M-q is disabled!")) ; reserved for kill app
    "M-Q"     #'(lambda () (interactive) (message "M-Q is disabled!")) ; reserved for lock screen
    "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
-   "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
    "C-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
    "C-l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
    ;; emacs binding
