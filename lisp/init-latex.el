@@ -6,8 +6,9 @@
 (require 'reftex)
 
 ;; -----------------------------------------------------------
-;; DONE bib
-;;
+;; DONE latex
+;; 
+;; auctex
 ;; ebib
 ;; pdf-tools
 ;; citar
@@ -17,6 +18,9 @@
 ;; default bib file
 ;; (add-to-list 'bibtex-files 
 ;;              (concat +emacs/org-root-dir "/all-ref.bib"))
+
+(use-package auctex
+  :ensure t)
 
 (use-package ebib
   :ensure t

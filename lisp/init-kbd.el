@@ -61,8 +61,10 @@
    "M-v"     #'evil-paste-after ; paste like mac
    ;; disabled
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
-   "M-k"     #'move-text-up
-   "M-j"     #'move-text-down
+   "M-q"     #'(lambda () (interactive) (message "M-q is disabled!")) ; reserved for kill app
+   "M-Q"     #'(lambda () (interactive) (message "M-Q is disabled!")) ; reserved for lock screen
+   "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
+   "M-j"     #'(lambda () (interactive) (message "M-j is disabled!"))
    "C-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
    "C-l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
    ;; emacs binding
