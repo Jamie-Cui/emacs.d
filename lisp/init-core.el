@@ -556,6 +556,8 @@
    '(
      ("*Org Agenda*" :position bottom :stick t :dedicated t)
      ("*xref*" :position bottom :position bottom :stick t :dedicated t)
+     ;; (compilation-mode :position bottom :position bottom :stick t :dedicated t)
+     ;; (comint-mode :position bottom :position bottom :stick t :dedicated t)
      (help-mode :position bottom :stick t :dedicated t)
      (helpful-mode :position bottom :stick t :dedicated t)
      (agent-shell-mode :position bottom :stick t :dedicated t)

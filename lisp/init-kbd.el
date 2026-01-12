@@ -46,6 +46,7 @@
    "M-n"     #'narrow-to-region
    "M-w"     #'widen
    "M-p"     #'+compile-with-no-preset ; just like vscode
+   "M-P"     #'+compile-with-comint ; just like vscode
    "M-d"     #'evil-multiedit-match-symbol-and-next ; default
    ;; more-frequent commands
    "M-e"     #'evil-avy-goto-char-timer

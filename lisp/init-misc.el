@@ -504,6 +504,12 @@
   (let* ((compile-command (if (use-region-p) (buffer-substring-no-properties (region-beginning) (region-end)) "")))
     (call-interactively 'compile)))
 
+(defun +compile-with-comint ()
+  (interactive)
+  (let* ((compile-command (if (use-region-p) (buffer-substring-no-properties (region-beginning) (region-end)) ""))
+         (current-prefix-arg '(4)))
+    (call-interactively 'compile)))  
+
 ;; copy buffer file name
 (defun +copy-buffer-file-name ()
   "Copy the current buffer file name to clipboard."
