@@ -168,5 +168,13 @@ is returned unchanged."
                  (substring string 0 (1+ abort-char))
                string)))))
 
+;; NOTE if you are drawing svg through inkscpae
+;; 
+;; first, use the following in dir-local if you want to svg in latex
+;; ((LaTeX-mode . ((TeX-command-extra-options . "-shell-escape"))))
+;; 
+;; then, in you latex file, explicitly uses svg package, and let inkscape controls the font
+;; \usepackage{svg}
+;; \svgsetup{inkscapelatex=false}
 
 (provide 'init-latex)
