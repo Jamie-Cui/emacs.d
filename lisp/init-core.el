@@ -279,8 +279,7 @@
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   ;; flycheck has performace issues, make it less automate
   (flycheck-check-syntax-automatically '(save mode-enable idle-change))
-  (flycheck-idle-change-delay 4)
-  )
+  (flycheck-idle-change-delay 4))
 
 (use-package flycheck-eglot
   :ensure t

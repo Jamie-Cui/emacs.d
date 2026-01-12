@@ -36,9 +36,9 @@
   :custom
   (vertico-posframe-border-width 5)
   ;; make posframe transparent
-  (vertico-posframe-parameters '((alpha . 0.9))) 
+  ;; (vertico-posframe-parameters '((alpha . 0.9))) 
   :config
-  (custom-set-faces '(vertico-posframe-border ((t (:inherit default :background "red")))))
+  ;; (custom-set-faces '(vertico-posframe-border ((t (:inherit default :background "red")))))
   (vertico-posframe-mode 1)
   )
 
