@@ -44,7 +44,7 @@ wget -c https://github.com/emacs-mirror/emacs/archive/refs/tags/emacs-30.1.tar.g
 wget -c https://github.com/emacs-mirror/emacs/archive/refs/heads/scratch/tty-child-frames.zip
 
 # unzip and enter emacs folder
-autoconf
+./autogen.sh
 # (alt) configure terminal emacs
 ./configure --with-native-compilation --with-tree-sitter --with-gnutls --without-x-toolkit --without-xpm --without-gif --without-tiff --with-sqlite3
 # (alt) configure gui emacs
