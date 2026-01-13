@@ -243,6 +243,7 @@
   (citre-default-create-tags-file-location 'global-cache)
   (citre-edit-ctags-options-manually nil)
   (citre-auto-enable-citre-mode-modes '(prog-mode))
+  ;; citre makes imenu messy, i dont like it
   (citre-enable-imenu-integration nil)
   :config
   ;; HACK only enable citre-auto-enable-citre-mode when not on tramp

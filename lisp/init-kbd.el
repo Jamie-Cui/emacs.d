@@ -34,7 +34,10 @@
   (general-define-key
    :keymaps 'evil-motion-state-map
    "C-i" nil
-   [control-i] 'evil-jump-forward)
+   [control-i] 'evil-jump-forward
+   "gD" #'citre-jump
+   "gR" #'citre-jump-to-reference
+   )
 
   ;; ** keybindings that should not be overriden
   (general-define-key
@@ -222,6 +225,11 @@
     "cr"     #'eglot-rename 
     "cf"     #'eglot-format-buffer
     "ct"     #'citre-update-this-tags-file
+    "x" '(:ignore t :which-key "flycheck")
+    "xb"     #'flycheck-buffer
+    "xl"     #'list-flycheck-errors
+    "xn"     #'flycheck-next-error
+    "xp"     #'flycheck-previous-error
     ;; find
     "f" '(:ignore t :which-key "find")
     "fr"     #'consult-recent-file ; find recent file (globally)
