@@ -529,4 +529,8 @@
  "C-c C-c"   #'occur-mode ;; make it behaves the same as wgrep-mode map
  )
 
+;; enable narrow-to-region function without asking
+;; see: https://www.gnu.org/software/emacs/manual/html_node/elisp/Disabling-Commands.html
+(put 'narrow-to-region 'disabled nil)
+
 (provide 'init-misc)
