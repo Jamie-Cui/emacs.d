@@ -4,7 +4,7 @@
 
 ;; defining your own
 ;; macos: ~/Library/Mobile Documents/com~apple~CloudDocs/org-root
-;; linux: ~/org-root
+;; linux: ~/opt/org-root
 ;; it's recommended to symlink your remote file here
 ;; ln -s ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/org-root .
 

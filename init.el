@@ -42,7 +42,7 @@
   :type 'string
   :group 'convenience)
 
-(defcustom +emacs/org-root-dir (expand-file-name "~/org-root")
+(defcustom +emacs/org-root-dir (expand-file-name "~/opt/org-root")
   "Path to org-root folder"
   :type 'string
   :group 'convenience)

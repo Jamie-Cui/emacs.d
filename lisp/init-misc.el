@@ -173,6 +173,7 @@
 (setopt comint-buffer-maximum-size 2048)
 
 ;; compilation mode
+(setopt compilation-max-output-line-length nil) ; no max output, do not wrap
 (setopt compilation-always-kill t)
 (setopt ansi-color-for-compilation-mode t)
 (setopt compilation-ask-about-save t)

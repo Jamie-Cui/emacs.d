@@ -82,7 +82,7 @@ emacs --eval "(load-file \"/path/to/init.el\")"
 
 ### Special Directories
 - Configuration root: `+emacs/repo-directory` (customizable)
-- Org files: `+emacs/org-root-dir` (default: `~/org-root`)
+- Org files: `+emacs/org-root-dir` (default: `~/opt/org-root`)
 - Package user directory: Standard `package-user-dir`
 
 ### Performance Optimizations

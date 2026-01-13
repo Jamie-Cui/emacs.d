@@ -5,7 +5,7 @@
 ;;; ------------------------
 
 ;; (setopt +emacs/repo-directory (expand-file-name "~/emacs.d"))
-;; (setopt +emacs/org-root-dir (expand-file-name "~/org-root"))
+;; (setopt +emacs/org-root-dir (expand-file-name "~/opt/org-root"))
 ;; (setopt +emacs/proxy "127.0.0.1:10808")
 
 ;; NOTE if you are using magic keyboard
