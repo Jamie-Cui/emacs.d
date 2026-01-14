@@ -93,6 +93,7 @@
     :keymaps 'override ; prevent from being override
     ;; most-frequency keys
     "RET"    #'gptel ;; popup
+    "'"      #'agent-shell-anthropic-start-claude-code ;; popup
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer
@@ -105,13 +106,6 @@
     "aa"     #'embark-act
     "ay"     #'embark-org-copy-link-target
     "aY"     #'embark-org-copy-link-description
-    ;; gptel-related key bindings
-    "g" '(:ignore t :which-key "gptel")
-    "g RET"  #'gptel-send
-    "ga"     #'gptel-add
-    "gr"     #'gptel-rewrite
-    "gq"     #'gptel-context-remove-all
-    "gc"     #'gptel-abort
     ;; window-related key bindings
     "w" '(:ignore t :which-key "window")
     "wh"     #'evil-window-left
@@ -149,7 +143,6 @@
     "oT"     #'+eat/new
     "ox"     #'scratch-buffer ; popup
     "om"     #'popwin:messages ; popup
-    "oa"     #'agent-shell ; (agent-shell project is projectile, not persp)
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pp"     #'projectile-switch-project
@@ -219,12 +212,14 @@
     "Td"     #'org-timer-stop ; delete timer
     ;; code (lsp/tags)
     "c" '(:ignore t :which-key "code")
+    "c RET"  #'eglot
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
     "cr"     #'eglot-rename 
     "cf"     #'eglot-format-buffer
     "ct"     #'citre-update-this-tags-file
     "cj"     #'consult-eglot-symbols
+    "cq"     #'eglot-shutdown
     "x" '(:ignore t :which-key "flycheck")
     "xb"     #'flycheck-buffer
     "xl"     #'list-flycheck-errors
