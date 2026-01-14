@@ -246,9 +246,9 @@
   ;; citre makes imenu messy, i dont like it
   (citre-enable-imenu-integration nil)
   :config
-  ;; gd will also triger citre-jump
-  (add-to-list 'evil-goto-definition-functions
-               (lambda (symbol &rest _) (citre-jump)))
+  ;; gd will also triger citre-jump (with last priority, so its append)
+  (setq evil-goto-definition-functions (append evil-goto-definition-functions 
+                                               '((lambda (symbol &rest _) (citre-jump)))))
   ;; HACK only enable citre-auto-enable-citre-mode when not on tramp
   (add-hook 'find-file-hook 
             (lambda ()
@@ -300,7 +300,7 @@
   :ensure t
   :after embark
   :config
-  (consult-eglot-embark-mode))
+  (consult-eglot-embark-mode 1))
 
 (use-package eglot
   :ensure t
