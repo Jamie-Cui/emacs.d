@@ -142,8 +142,8 @@
 (setq indent-line-function 'insert-tab)
 (setq tab-always-indent t) ;  TAB just indents the current line
 
-;; dont allow use minibuffer inside minibuffer
-(setq enable-recursive-minibuffers nil)
+;; allow use minibuffer inside minibuffer
+(setq enable-recursive-minibuffers t)
 
 ;; use short answers
 (setq use-short-answers t)

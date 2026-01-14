@@ -41,6 +41,14 @@
    "C-c C-c"   #'occur-mode ;; make it behaves the same as wgrep-mode map
    )
 
+  ;; minibuffer mode
+  (general-define-key
+   :keymaps 'minibuffer-mode-map
+   :states '(insert normal visual motion) ;; all modes
+   "C-n"       #'next-history-element ;; make it behaves the same as wgrep-mode map
+   "C-p"       #'previous-history-element ;; make it behaves the same as wgrep-mode map
+   )
+
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
