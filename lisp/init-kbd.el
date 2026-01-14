@@ -29,7 +29,10 @@
   (general-define-key
    :keymaps 'evil-motion-state-map
    "C-i" nil
-   [control-i] 'evil-jump-forward)
+   [control-i] 'evil-jump-forward
+   "[["      #'flycheck-previous-error
+   "]]"      #'flycheck-next-error
+   )
 
   ;; occur mode
   (general-define-key
@@ -220,11 +223,6 @@
     "ct"     #'citre-update-this-tags-file
     "cj"     #'consult-eglot-symbols
     "cq"     #'eglot-shutdown
-    "x" '(:ignore t :which-key "flycheck")
-    "xb"     #'flycheck-buffer
-    "xl"     #'list-flycheck-errors
-    "xn"     #'flycheck-next-error
-    "xp"     #'flycheck-previous-error
     ;; find
     "f" '(:ignore t :which-key "find")
     "fr"     #'consult-recent-file ; find recent file (globally)
