@@ -25,8 +25,6 @@
 ;; FIXME make org file find org-journal files (maybe not needed?)
 (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
 
-(evil-set-initial-state 'org-agenda-mode 'normal)
-
 ;;; timer
 (setopt org-timer-default-timer "20") ; 20 mins
 (setopt org-clock-sound t) ; use default sound

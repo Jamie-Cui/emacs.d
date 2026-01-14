@@ -17,34 +17,26 @@
   :after (evil evil-mc which-key)
   :config
   (defconst my-leader "SPC")
-  (defconst my-local-leader "SPC m")
 
   (general-create-definer +my-leader-def
     :prefix my-leader)
 
-  (general-create-definer +my-local-leader-def
-    :prefix my-local-leader)
-
   ;; HACK Separate TAB and C-i in GUI emacs
   ;; FIXME the following code breaks citar-insert-citation when 
   ;; citar-select-multiple is enabled
-  ;; 
   (setopt evil-want-C-i-jump t) 
   (define-key input-decode-map [(control ?i)] [control-i])
   (general-define-key
    :keymaps 'evil-motion-state-map
    "C-i" nil
-   [control-i] 'evil-jump-forward
-   "gD" #'citre-jump
-   "gR" #'citre-jump-to-reference
-   )
+   [control-i] 'evil-jump-forward)
 
-   ;; occur mode
-(general-define-key
- :keymaps 'occur-mode-map
- "C-c C-p"   #'occur-edit-mode ;; make it behaves the same as wgrep-mode map
- "C-c C-c"   #'occur-mode ;; make it behaves the same as wgrep-mode map
- )
+  ;; occur mode
+  (general-define-key
+   :keymaps 'occur-mode-map
+   "C-c C-p"   #'occur-edit-mode ;; make it behaves the same as wgrep-mode map
+   "C-c C-c"   #'occur-mode ;; make it behaves the same as wgrep-mode map
+   )
 
   ;; ** keybindings that should not be overriden
   (general-define-key
@@ -232,6 +224,7 @@
     "cr"     #'eglot-rename 
     "cf"     #'eglot-format-buffer
     "ct"     #'citre-update-this-tags-file
+    "cj"     #'consult-eglot-symbols
     "x" '(:ignore t :which-key "flycheck")
     "xb"     #'flycheck-buffer
     "xl"     #'list-flycheck-errors

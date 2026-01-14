@@ -246,6 +246,9 @@
   ;; citre makes imenu messy, i dont like it
   (citre-enable-imenu-integration nil)
   :config
+  ;; gd will also triger citre-jump
+  (add-to-list 'evil-goto-definition-functions
+               (lambda (symbol &rest _) (citre-jump)))
   ;; HACK only enable citre-auto-enable-citre-mode when not on tramp
   (add-hook 'find-file-hook 
             (lambda ()
@@ -311,6 +314,7 @@
                                             :semanticTokensProvider)) ;; WHY?
   (setq eglot-confirm-server-initiated-edits nil)
   (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
+  ;; install harper: cargo install harper-ls --locked
   (add-to-list 'eglot-server-programs
                '(text-mode . ("harper-ls" "--stdio"))) ;; add harper-ls
 
