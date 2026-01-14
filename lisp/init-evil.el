@@ -64,8 +64,9 @@
   (evil-set-undo-system 'undo-tree)
   (evil-mode 1)
   (add-hook 'message-mode-hook 'evil-mode)
+  ;; make sure org-agenda start with normal mode
+  (evil-set-initial-state 'org-agenda-mode 'normal)
   ;; HACK: Fix joining commented lines with J (evil-join).
-
   (defun +evil-join-a (fn beg end)
     "Join the selected lines.
 

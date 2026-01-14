@@ -306,12 +306,39 @@
   ;; (add-hook 'c++-ts-mode-hook 'eglot-ensure)
   ;; (add-hook 'rust-ts-mode-hook 'eglot-ensure)
   ;; (add-hook 'go-ts-mode-hook 'eglot-ensure)
-  (setq eglot-ignored-server-capabilities '(
-                                            :inlayHintProvider
-                                            :documentHighlightProvider
-                                            :semanticTokensProvider))
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider
+                                            :documentHighlightProvider ;; WHY?
+                                            :semanticTokensProvider)) ;; WHY?
   (setq eglot-confirm-server-initiated-edits nil)
   (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
+  (add-to-list 'eglot-server-programs
+               '(text-mode . ("harper-ls" "--stdio"))) ;; add harper-ls
+
+  ;; default setup for harper-ls
+  ;; see: https://writewithharper.com/docs/integrations/emacs
+  (setq-default eglot-workspace-configuration
+                '(:harper-ls (:userDictPath ""
+                                            :workspaceDictPath ""
+                                            :fileDictPath ""
+                                            :linters (:SpellCheck t
+                                                                  :SpelledNumbers :json-false
+                                                                  :AnA t
+                                                                  :SentenceCapitalization t
+                                                                  :UnclosedQuotes t
+                                                                  :WrongQuotes :json-false
+                                                                  :LongSentences t
+                                                                  :RepeatedWords t
+                                                                  :Spaces :json-false ;; no space!
+                                                                  :Matcher t
+                                                                  :CorrectNumberSuffix t)
+                                            :codeActions (:ForceStable :json-false)
+                                            :markdown (:IgnoreLinkTitle :json-false)
+                                            :diagnosticSeverity "hint"
+                                            :isolateEnglish :json-false
+                                            :dialect "American"
+                                            :maxFileLength 120000
+                                            :ignoredLintsPath ""
+                                            :excludePatterns [])))
   )
 
 (use-package eldoc-box
@@ -510,11 +537,13 @@
    "C-c C-c"     #'smerge-keep-current)
 
   ;; Install magit-auto-commit
-  (transient-append-suffix 'magit-commit #'magit-commit-create
-    '("a" "Auto (but fixed) commit" (lambda (&optional args)
-                                      (interactive (list (magit-commit-arguments)))
-                                      (let ((message "chore: stale - work still in progress"))
-                                        (magit-commit-create (append args `("--message" ,message "--edit")))))))
+  (with-eval-after-load 'transient
+    (transient-append-suffix 'magit-commit #'magit-commit-create
+      '("a" "Auto (but fixed) commit" (lambda (&optional args)
+                                        (interactive (list (magit-commit-arguments)))
+                                        (let ((message "chore: stale - work still in progress"))
+                                          (magit-commit-create (append args `("--message" ,message "--edit")))))))
+    )
   )
 
 (use-package eat

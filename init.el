@@ -79,6 +79,9 @@
 ;;; DONE Setup packages
 ;;; -----------------------------------------------------------
 
+;; Load cl-lib first (required by package-quickstart)
+(require 'cl-lib)
+
 ;; Emacs 30+: Use package-quickstart for faster startup
 (setopt package-quickstart t)
 
@@ -91,17 +94,17 @@
 ;; Use parallel package initialization for better performance
 (setq package-native-compile t)
 
-;; DEPRECATED Initialize packages (deferred for faster startup)
-;; (package-initialize t)
+(setq package-install-upgrade-built-in t)
+
+;; Initialize packages only if not already initialized
+;; (package-quickstart may have already initialized packages)
+(unless package--initialized
+  (package-initialize))
 
 ;; Use package-quickstart-refresh for efficient package loading
 ;; (when (not (file-exists-p (expand-file-name "package-quickstart.el" package-user-dir)))
 ;;   (package-refresh-contents)
 ;;   (package-quickstart-refresh))
-
-;; Use cl-lib for better performance
-
-(require 'cl-lib)
 
 
 ;; -----------------------------------------------------------

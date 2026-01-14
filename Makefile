@@ -1,6 +1,6 @@
 # Makefile for Emacs configuration management
 
-.PHONY: clean elpa standalone run-debug init help
+.PHONY: clean elpa standalone debug run init download help
 
 # Default target
 help:
@@ -8,8 +8,10 @@ help:
 	@echo "  clean          - Clean all .elc files"
 	@echo "  elpa           - Create elpa.tar.gz archive"
 	@echo "  standalone     - Create standalone emacs.d-standalone.tar.gz"
-	@echo "  run-debug      - Run Emacs with debug init"
+	@echo "  debug          - Run Emacs with debug init"
+	@echo "  run            - Run Emacs"
 	@echo "  init           - Initialize Emacs configuration"
+	@echo "  download       - Download/update all ELPA packages"
 	@echo "  help           - Show this help message"
 
 # Clean all .elc files and tar.gz archives
@@ -18,6 +20,8 @@ clean:
 	@cd $$HOME/.emacs.d && find . -name "*.elc" -type f -delete
 	@echo "Cleaning all .tar.gz files in current directory..."
 	@rm -f *.tar.gz
+	@echo "Cleaning all .eln files in current directory..."
+	@cd $$HOME/.emacs.d && find . -name "*.eln" -type f -delete
 
 # Create elpa.tar.gz archive
 elpa:
@@ -43,10 +47,21 @@ standalone:
 	rm -rf $$TEMP_DIR
 
 # Run Emacs with debug init
-run-debug:
+debug:
 	@echo "Running Emacs with debug init..."
-	@SRC_DIR="$$( cd "$$( dirname "$${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"; \
-	emacs -q --load $$SRC_DIR/init.el --debug-init
+	emacs --debug-init
+
+# Run Emacs with debug init
+run:
+	@echo "Running Emacs..."
+	emacs
+
+# Download/update all ELPA packages
+download:
+	@echo "Refreshing package contents and installing all packages..."
+	@emacs --batch --load $$HOME/.emacs.d/init.el \
+		--funcall package-refresh-contents \
+		--eval "(package-install-all)"
 
 # Initialize Emacs configuration
 init:

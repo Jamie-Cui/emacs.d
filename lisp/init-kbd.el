@@ -39,6 +39,13 @@
    "gR" #'citre-jump-to-reference
    )
 
+   ;; occur mode
+(general-define-key
+ :keymaps 'occur-mode-map
+ "C-c C-p"   #'occur-edit-mode ;; make it behaves the same as wgrep-mode map
+ "C-c C-c"   #'occur-mode ;; make it behaves the same as wgrep-mode map
+ )
+
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
