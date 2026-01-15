@@ -113,12 +113,6 @@
 ;; DONE Setup environment and compilation
 ;; -----------------------------------------------------------
 
-(use-package auto-compile
-  :ensure t
-  :config
-  (auto-compile-on-load-mode +1)
-  (auto-compile-on-save-mode +1))
-
 (unless (eq system-type 'windows-nt)
   (use-package exec-path-from-shell
     :ensure t

@@ -17,30 +17,21 @@
 
 ;; https://blog.tecosaur.com/tmio/2021-04-26-Welcome.html#inline-display-remote
 ;; on 2022-09-04 this only works for tramp remote links and not for http / https
+;; NOTE but, org-remoteimg make this option works
 (setopt org-display-remote-inline-images 'download)
 
-;; we look to doom emacs for an example how to get remote images also working
-;; for normal http / https links
-;; 1. image data handler
-(defun org-http-image-data-fn (protocol link _description)
-  "Interpret LINK as an URL to an image file."
-  (when (and (image-type-from-file-name link)
-             (not (eq org-display-remote-inline-images 'skip)))
-    (if-let (buf (url-retrieve-synchronously (concat protocol ":" link)))
-        (with-current-buffer buf
-          (goto-char (point-min))
-          (re-search-forward "\r?\n\r?\n" nil t)
-          (buffer-substring-no-properties (point) (point-max)))
-      (message "Download of image \"%s\" failed" link)
-      nil)))
+(use-package org-remoteimg
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
+  ;; Note: org-remoteimg doesn't define a minor mode, it just sets up
+  ;; HTTP/HTTPS image fetching via advice and link parameters when loaded
+  )
 
-;; 2. add this as link parameter for http and https
-(org-link-set-parameters "http"  :image-data-fun #'org-http-image-data-fn)
-(org-link-set-parameters "https" :image-data-fun #'org-http-image-data-fn)
-
-;; 3. pull in org-yt which will advise ~org-display-inline-images~ how to do the extra handling
-(use-package org-yt
-  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
+(use-package org-imgtog
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
+  :hook (org-mode . org-imgtog-mode)
+  :config
+  (setq org-imgtog-preview-delay 0.5) ;; wait 0.5 seconds before toggling
+  (setq org-imgtog-preview-delay-only-remote t)) ;; only delay for remote images
 
 ;;; editing
 (setopt org-return-follows-link nil)

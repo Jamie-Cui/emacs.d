@@ -1,4 +1,4 @@
-#+startup: showall
+#+startup: showall nofold
 
 * Emacs.d
 

@@ -111,7 +111,8 @@
 (setq resize-mini-windows 'grow-only
       tooltip-resize-echo-area t)
 
-;; do not show me native-comp warning and erros
+;; Silently report native-comp warnings/errors (we handle them in init.el)
+;; This prevents spurious warnings when native compilation is disabled
 (setopt native-comp-async-report-warnings-errors 'silent)
 
 ;; disable certain things
