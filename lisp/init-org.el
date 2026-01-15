@@ -15,6 +15,33 @@
 ;; DONE org: the built-in package
 ;; -----------------------------------------------------------
 
+;; https://blog.tecosaur.com/tmio/2021-04-26-Welcome.html#inline-display-remote
+;; on 2022-09-04 this only works for tramp remote links and not for http / https
+(setopt org-display-remote-inline-images 'download)
+
+;; we look to doom emacs for an example how to get remote images also working
+;; for normal http / https links
+;; 1. image data handler
+(defun org-http-image-data-fn (protocol link _description)
+  "Interpret LINK as an URL to an image file."
+  (when (and (image-type-from-file-name link)
+             (not (eq org-display-remote-inline-images 'skip)))
+    (if-let (buf (url-retrieve-synchronously (concat protocol ":" link)))
+        (with-current-buffer buf
+          (goto-char (point-min))
+          (re-search-forward "\r?\n\r?\n" nil t)
+          (buffer-substring-no-properties (point) (point-max)))
+      (message "Download of image \"%s\" failed" link)
+      nil)))
+
+;; 2. add this as link parameter for http and https
+(org-link-set-parameters "http"  :image-data-fun #'org-http-image-data-fn)
+(org-link-set-parameters "https" :image-data-fun #'org-http-image-data-fn)
+
+;; 3. pull in org-yt which will advise ~org-display-inline-images~ how to do the extra handling
+(use-package org-yt
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/")))
+
 ;;; editing
 (setopt org-return-follows-link nil)
 (setopt org-link-elisp-confirm-function nil)

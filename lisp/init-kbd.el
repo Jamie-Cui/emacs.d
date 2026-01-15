@@ -216,6 +216,7 @@
     "tt"     #'toggle-truncate-lines
     "tn"     #'display-line-numbers-mode
     "ta"     #'+treesit-auto/toggle
+    "tm"     #'org-toggle-inline-images
     ;; timer
     "T" '(:ignore t :which-key "timer")
     "Ta"     #'org-timer-set-timer ; add timer
