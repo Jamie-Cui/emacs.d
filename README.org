@@ -1,4 +1,4 @@
-#+startup: showall nofold
+#+startup: showall nohideblocks
 
 * Emacs.d
 
