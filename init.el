@@ -4,6 +4,8 @@
 ;;; DONE Startup Performance Optimizations
 ;;; -----------------------------------------------------------
 
+(setq load-prefer-newer t)
+
 ;; Increase GC threshold during startup for faster initialization
 ;; Default is 800KB, which causes too many GC pauses during startup
 (setq gc-cons-threshold most-positive-fixnum)
@@ -108,8 +110,14 @@
 
 
 ;; -----------------------------------------------------------
-;; DONE Setup environment
+;; DONE Setup environment and compilation
 ;; -----------------------------------------------------------
+
+(use-package auto-compile
+  :ensure t
+  :config
+  (auto-compile-on-load-mode +1)
+  (auto-compile-on-save-mode +1))
 
 (unless (eq system-type 'windows-nt)
   (use-package exec-path-from-shell
