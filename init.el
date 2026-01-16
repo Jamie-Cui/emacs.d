@@ -335,6 +335,8 @@
                   ("https://eprint.iacr.org/rss/rss.xml")
                   ;; Linux Security
                   ("https://linuxsecurity.com/linuxsecurity_hybrid.xml")
+                  ;; LWN
+                  ("http://lwn.net/headlines/rss")
                   ;; Feisty Duck's Security and Cryptography newsletter
                   ("https://www.feistyduck.com/newsletter/feed")
                   ;; Fedora Magazine
@@ -351,15 +353,13 @@
                   ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance") 
                   ;; 求是网
                   ("https://plink.anyfeeder.com/qstheory")
-                  ))
-  :config)
+                  )))
 
 (use-package elfeed-goodies
   :ensure t
   :after elfeed
   :config
   (elfeed-goodies/setup))
-
 
 ;; ------------------------------------------------------------------
 ;; HACK minor fixes?
