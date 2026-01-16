@@ -335,12 +335,12 @@
                   ("https://eprint.iacr.org/rss/rss.xml")
                   ;; Linux Security
                   ("https://linuxsecurity.com/linuxsecurity_hybrid.xml")
-                  ;; Bitcoin, Ethereum & Cryptocurrency News
-                  ("https://www.bitdegree.org/crypto/news/rss")
+                  ;; Feisty Duck's Security and Cryptography newsletter
+                  ("https://www.feistyduck.com/newsletter/feed")
                   ;; Fedora Magazine
                   ("https://fedoramagazine.org/feed/")
-                  ;; Hack News
-                  ;; ("https://hnrss.org/newest")
+                  ;; Hack News front page
+                  ("https://hnrss.org/frontpage")
                   ;; 机器之心
                   ("https://plink.anyfeeder.com/weixin/almosthuman2014")
                   ;; 新智元
