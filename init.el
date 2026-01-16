@@ -317,7 +317,7 @@
 
 
 ;; ------------------------------------------------------------------
-;;; DONE (optional) elfeed
+;; DONE (optional) elfeed
 ;; ------------------------------------------------------------------
 
 (use-package elfeed
@@ -359,3 +359,12 @@
   :after elfeed
   :config
   (elfeed-goodies/setup))
+
+
+;; ------------------------------------------------------------------
+;; HACK minor fixes?
+;; ------------------------------------------------------------------
+
+;; trun off and turn on auto-compression-mode
+(auto-compression-mode nil)
+(auto-compression-mode 1)

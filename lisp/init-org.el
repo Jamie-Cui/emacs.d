@@ -9,6 +9,7 @@
 ;; ln -s ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/org-root .
 
 (require 'org)
+(require 'org-agenda)
 (require 'init-utils)
 
 ;; -----------------------------------------------------------
@@ -35,6 +36,7 @@
 (setopt org-use-fast-todo-selection 'auto)
 
 ;;; agenda
+(setopt org-agenda-window-setup 'current-window)
 
 ;; FIXME make org file find org-journal files (maybe not needed?)
 (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
