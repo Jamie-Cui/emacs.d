@@ -15,15 +15,11 @@
 ;; DONE org: the built-in package
 ;; -----------------------------------------------------------
 
-;; https://blog.tecosaur.com/tmio/2021-04-26-Welcome.html#inline-display-remote
-;; on 2022-09-04 this only works for tramp remote links and not for http / https
-;; NOTE but, org-remoteimg make this option works
-(setopt org-display-remote-inline-images 'download)
-
 (use-package org-remoteimg
   :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
-  ;; Note: org-remoteimg doesn't define a minor mode, it just sets up
-  ;; HTTP/HTTPS image fetching via advice and link parameters when loaded
+  :config
+  (setq url-cache-directory (concat user-emacs-directory "url/")) ; cache store location
+  (setq org-display-remote-inline-images 'cache) ; enable caching
   )
 
 (use-package org-imgtog
