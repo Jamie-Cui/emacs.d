@@ -34,21 +34,6 @@
    "]]"      #'flycheck-next-error
    )
 
-  ;; occur mode
-  (general-define-key
-   :keymaps 'occur-mode-map
-   "C-c C-p"   #'occur-edit-mode ;; make it behaves the same as wgrep-mode map
-   "C-c C-c"   #'occur-mode ;; make it behaves the same as wgrep-mode map
-   )
-
-  ;; minibuffer mode
-  (general-define-key
-   :keymaps 'minibuffer-mode-map
-   :states '(insert normal visual motion) ;; all modes
-   "C-n"       #'next-history-element ;; make it behaves the same as wgrep-mode map
-   "C-p"       #'previous-history-element ;; make it behaves the same as wgrep-mode map
-   )
-
   ;; ** keybindings that should not be overriden
   (general-define-key
    :keymaps 'override
@@ -250,6 +235,50 @@
                    (dired-create-empty-file (concat user-emacs-directory projectile-dirconfig-file))
                    (projectile-add-known-project user-emacs-directory))
                  (projectile-switch-project-by-name user-emacs-directory))
-    ))
+    )
+
+  ;; occur mode
+  (general-define-key
+   :keymaps 'occur-mode-map
+   "C-c C-p"   #'occur-edit-mode ;; make it behaves the same as wgrep-mode map
+   "C-c C-c"   #'occur-mode ;; make it behaves the same as wgrep-mode map
+   )
+
+  ;; minibuffer mode
+  (general-define-key
+   :keymaps 'minibuffer-mode-map
+   :states '(insert normal visual motion) ;; all modes
+   "C-n"       #'next-history-element ;; make it behaves the same as wgrep-mode map
+   "C-p"       #'previous-history-element ;; make it behaves the same as wgrep-mode map
+   )
+
+  ;; org-agenda
+  (general-define-key
+   :keymaps 'org-agenda-mode-map
+   :states 'normal ;; all modes
+   "q"       #'org-agenda-quit ;; make it behaves the same as wgrep-mode map
+   )
+
+  ;; dired-mode
+  (general-define-key
+   :states 'normal
+   :keymaps 'dired-mode-map
+   "h"   #'dired-up-directory
+   "l"   #'dired-find-file
+   "T"   #'dired-create-empty-file
+   "TAB" #'dired-subtree-toggle
+   )
+
+  ;; smerge-mode
+  (general-define-key
+   :keymaps 'smerge-mode-map
+   "C-c C-c"     #'smerge-keep-current)
+
+  ;; eat-mode
+  (general-define-key
+   :states 'normal
+   :keymaps 'eat-mode-map
+   "p"   #'eat-yank)
+  )
 
 (provide 'init-kbd)

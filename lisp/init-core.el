@@ -28,23 +28,13 @@
    (purecopy "-ahl -v --group-directories-first"))
   (dired-kill-when-opening-new-dired-buffer t)
   (dired-omit-extensions nil)
-  (dired-dwim-target t)
-  :config
-  (general-define-key
-   :states 'normal
-   :keymaps 'dired-mode-map
-   "h"   #'dired-up-directory
-   "l"   #'dired-find-file
-   "T"   #'dired-create-empty-file))
+  (dired-dwim-target t))
 
 (use-package dired-subtree
   :ensure t
   :after dired
   :config
-  (general-define-key
-   :states 'normal
-   :keymaps 'dired-mode-map
-   "TAB" #'dired-subtree-toggle))
+  )
 
 (use-package diredfl
   :ensure t
@@ -536,9 +526,6 @@
           magit-insert-staged-changes
           magit-insert-stashes))
   (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
-  (general-define-key
-   :keymaps 'smerge-mode-map
-   "C-c C-c"     #'smerge-keep-current)
 
   ;; Install magit-auto-commit
   (with-eval-after-load 'transient
@@ -587,7 +574,7 @@
   (popwin:reuse-window 'current)
   (popwin:special-display-config
    '(
-     ("*Org Agenda*" :position bottom :stick t :dedicated t)
+     ;; ("*Org Agenda*" :position bottom :stick t :dedicated t)
      ("*xref*" :position bottom :position bottom :stick t :dedicated t)
      ;; (compilation-mode :position bottom :position bottom :stick t :dedicated t)
      ;; (comint-mode :position bottom :position bottom :stick t :dedicated t)
