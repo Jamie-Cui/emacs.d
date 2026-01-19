@@ -30,6 +30,9 @@
   (setq org-imgtog-preview-delay 0.5) ;; wait 0.5 seconds before toggling
   (setq org-imgtog-preview-delay-only-remote t)) ;; only delay for remote images
 
+;;; list
+(setopt org-list-allow-alphabetical t)
+
 ;;; editing
 (setopt org-return-follows-link nil)
 (setopt org-link-elisp-confirm-function nil)
