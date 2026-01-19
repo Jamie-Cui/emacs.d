@@ -14,7 +14,7 @@
 
 (use-package general
   :ensure t
-  :after (evil evil-mc which-key)
+  :after (evil evil-mc which-key evil-collection)
   :config
   (defconst my-leader "SPC")
 
@@ -257,16 +257,6 @@
    :keymaps 'org-agenda-mode-map
    :states 'normal ;; all modes
    "q"       #'org-agenda-quit ;; make it behaves the same as wgrep-mode map
-   )
-
-  ;; dired-mode
-  (general-define-key
-   :states 'normal
-   :keymaps 'dired-mode-map
-   "h"   #'dired-up-directory
-   "l"   #'dired-find-file
-   "T"   #'dired-create-empty-file
-   "TAB" #'dired-subtree-toggle
    )
 
   ;; smerge-mode

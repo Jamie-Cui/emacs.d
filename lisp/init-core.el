@@ -28,7 +28,17 @@
    (purecopy "-ahl -v --group-directories-first"))
   (dired-kill-when-opening-new-dired-buffer t)
   (dired-omit-extensions nil)
-  (dired-dwim-target t))
+  (dired-dwim-target t)
+  :config
+  (general-define-key
+   :states '(insert normal visual motion) ;; all modes
+   :keymaps 'dired-mode-map
+   "h"   #'dired-up-directory
+   "l"   #'dired-find-file
+   "T"   #'dired-create-empty-file
+   "TAB" #'dired-subtree-toggle
+   )
+  )
 
 (use-package dired-subtree
   :ensure t
@@ -499,7 +509,6 @@
 
 (use-package magit
   :ensure t
-  :after evil-collection
   :config
   (setq magit-show-long-lines-warning nil)
   (setq magit-tramp-pipe-stty-settings 'pty)
