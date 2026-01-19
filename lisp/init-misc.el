@@ -64,7 +64,7 @@
                     (concat auto-save-list-file-prefix "tramp-\\2") t)
               (list ".*" auto-save-list-file-prefix t)))
 
-(setopt enable-remote-dir-locals nil)
+(setopt enable-remote-dir-locals t)
 (setopt tramp-use-file-attributes nil)
 (setopt remote-file-name-inhibit-cache nil) 
 (setopt remote-file-name-inhibit-auto-save t)
