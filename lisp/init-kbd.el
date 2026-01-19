@@ -133,6 +133,7 @@
     "oE"     #'ielm ; elisp repl
     "og"     #'magit-status-quick
     "op"     #'dired-sidebar-toggle-sidebar
+    "oP"     #'proced
     "od"     #'dired-jump
     "oD"     #'+os-explorer/dwim
     "ot"     #'+eshell/new
