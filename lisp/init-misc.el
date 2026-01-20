@@ -8,6 +8,9 @@
 ;; Optional: display debug info in a separate buffer
 ;; (setq tramp-debug-buffer t)
 
+;; Delete trailing before save
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
 ;; Supress warnings about file
 (setopt warning-suppress-log-types '((files)))
 
