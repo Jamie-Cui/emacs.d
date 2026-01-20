@@ -29,7 +29,7 @@
 (setopt text-mode-ispell-word-completion nil)
 
 ;; stop makding ~ files!
-(setq make-backup-files nil) 
+(setq make-backup-files nil)
 
 ;; stop makding #...# files!
 (setq create-lockfiles nil)
@@ -69,7 +69,7 @@
 
 (setopt enable-remote-dir-locals t)
 (setopt tramp-use-file-attributes nil)
-(setopt remote-file-name-inhibit-cache nil) 
+(setopt remote-file-name-inhibit-cache nil)
 (setopt remote-file-name-inhibit-auto-save t)
 (setopt remote-file-name-inhibit-auto-save-visited t)
 
@@ -130,7 +130,7 @@
 
 ;; line numbers
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'org-mode-hook 'display-line-numbers-mode)
+
 (dolist (mode '(pdf-view-mode-hook
                 term-mode-hook
                 eshell-mode-hook
@@ -157,7 +157,7 @@
 
 ;; Remove RCS, CVS, SCCS, SRC, and Bzr, because it's a lot less work for vc to
 ;; check them all (especially in TRAMP buffers), and who uses any of these in
-;; 2021, amirite? 
+;; 2021, amirite?
 ;; NOTE I dont use svn and hg
 (setq-default vc-handled-backends '(Git))
 
@@ -319,13 +319,13 @@
         eshell-glob-case-insensitive t
         eshell-error-if-no-glob t)
 
-(setopt eshell-prompt-function 
+(setopt eshell-prompt-function
         (lambda nil
           (let* ((cwd (abbreviate-file-name (eshell/pwd))))
             (concat (propertize
                      ;; the above line
                      (format "%s [%s]"
-                             (propertize (user-login-name) 'font-lock-face 'font-lock-comment-face) 
+                             (propertize (user-login-name) 'font-lock-face 'font-lock-comment-face)
                              (propertize cwd 'font-lock-face 'font-lock-constant-face)
                              )
                      'read-only t
@@ -362,7 +362,7 @@
   (setenv "HTTP_PROXY" proxy)
   (setenv "HTTPS_PROXY" proxy)
   (setenv "FTP_PROXY" proxy)
-  
+
   ;; Set git proxy configuration
   (if proxy
       (progn (shell-command (format "git config --global http.proxy %s" proxy))
@@ -388,8 +388,8 @@
   (eshell/show-proxy))
 
 (defun +eshell/format-shell-command (command)
-  (let* ((str 
-          (replace-regexp-in-string "\n$" "" 
+  (let* ((str
+          (replace-regexp-in-string "\n$" ""
                                     (shell-command-to-string command))))
     (if (string-empty-p str) nil str)))
 
@@ -419,8 +419,8 @@
 
   ;; Use OSC52 protocol, which is used by alacritty by default
   (defun +tty/copy-to-system-clipboard (text &optional push)
-    (let ((encoded (base64-encode-string 
-                    (encode-coding-string text 'binary) 
+    (let ((encoded (base64-encode-string
+                    (encode-coding-string text 'binary)
                     t)))
       (send-string-to-terminal (format "\e]52;c;%s\a" encoded))))
 
@@ -445,7 +445,7 @@
              '("/\\([^/]+\\)\\.h\\(h\\|pp\\)?\\'" "\\1.c\\(c\\|pp\\)?\\'"))
 
 ;; ------------------------------------------------------------------
-;;; Modeline 
+;;; Modeline
 ;; ------------------------------------------------------------------
 
 ;; evil
@@ -462,12 +462,12 @@
 ;; mode-line format
 (setopt mode-line-format
         (list
-         "%e" 
+         "%e"
          'mode-line-front-space
-         '(:eval (format-mode-line 
+         '(:eval (format-mode-line
                   (propertized-buffer-identification "%b")))
-         ;; '(:eval (format-mode-line 
-         ;;          (propertized-buffer-identification 
+         ;; '(:eval (format-mode-line
+         ;;          (propertized-buffer-identification
          ;;           (or (when-let* ((buffer-file-truename buffer-file-truename)
          ;;                           (project (cdr-safe (project-current)))
          ;;                           (project-parent (file-name-directory (directory-file-name (expand-file-name project)))))
@@ -485,7 +485,7 @@
          ;; '(:eval
          ;;   (propertize
          ;;    (if (tramp-tramp-file-p buffer-file-name)
-         ;;        (format "[%s:%s]" 
+         ;;        (format "[%s:%s]"
          ;;                (tramp-file-name-method (tramp-dissect-file-name buffer-file-name))
          ;;                (persp-current-name))
          ;;      (format "[%s]" (persp-current-name)))
@@ -513,7 +513,7 @@
   (interactive)
   (let* ((compile-command (if (use-region-p) (buffer-substring-no-properties (region-beginning) (region-end)) ""))
          (current-prefix-arg '(4)))
-    (call-interactively 'compile)))  
+    (call-interactively 'compile)))
 
 ;; copy buffer file name
 (defun +copy-buffer-file-name ()
