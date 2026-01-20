@@ -22,9 +22,9 @@
     :prefix my-leader)
 
   ;; HACK Separate TAB and C-i in GUI emacs
-  ;; FIXME the following code breaks citar-insert-citation when 
+  ;; FIXME the following code breaks citar-insert-citation when
   ;; citar-select-multiple is enabled
-  (setopt evil-want-C-i-jump t) 
+  (setopt evil-want-C-i-jump t)
   (define-key input-decode-map [(control ?i)] [control-i])
   (general-define-key
    :keymaps 'evil-motion-state-map
@@ -40,7 +40,7 @@
    "M-RET"   #'completion-at-point ;; FIXME org-mode should not use that
    "C-M-<return>" #'completion-at-point ; alternative
    ;; less-frequent commands
-   "M-y"     #'yas-expand 
+   "M-y"     #'yas-expand
    "M-n"     #'narrow-to-region
    "M-w"     #'widen
    "M-p"     #'+compile-with-no-preset ; just like vscode
@@ -68,10 +68,10 @@
    "C-l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
    ;; emacs binding
    ;; NOTE those bindings are set to global since most of time, mac and terminal adopts those bindings
-   "C-a"     #'evil-first-non-blank ; like "^" in vim 
+   "C-a"     #'evil-first-non-blank ; like "^" in vim
    "C-e"     #'end-of-line ; like "$" in vim, DO NOT use evil-end-of-line
    ;; NOTE the following kbds are avaliable when in insert mode
-   ;; "C-f"     #'forward-char ; native 
+   ;; "C-f"     #'forward-char ; native
    ;; "C-b"     #'backward-char ; native
    ;; "C-w"     #'evil-delete-backward-word ; native
    ;; vim binding
@@ -143,20 +143,20 @@
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pp"     #'projectile-switch-project
-    "pq"     #'(lambda () (interactive) 
+    "pq"     #'(lambda () (interactive)
                  (persp-kill (persp-current-name)))
     "pa"     #'projectile-add-known-project
     "px"     #'projectile-remove-known-project
     "pg"     #'projectile-cleanup-known-projects
     "pi"     #'projectile-invalidate-cache
-    "pc"     #'projectile-compile-project 
-    "pC"     #'projectile-configure-project 
+    "pc"     #'projectile-compile-project
+    "pC"     #'projectile-configure-project
     "pd"     #'projectile-remove-known-project
     "pD"     #'projectile-run-gdb
     "pf"     #'+vertico/project-search
     "po"     #'ff-find-related-file
-    "pr"     #'projectile-run-project 
-    "pt"     #'projectile-test-project 
+    "pr"     #'projectile-run-project
+    "pt"     #'projectile-test-project
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "n@"      #'citar-insert-citation ;; insert bib
@@ -213,7 +213,7 @@
     "c RET"  #'eglot
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
-    "cr"     #'eglot-rename 
+    "cr"     #'eglot-rename
     "cf"     #'eglot-format-buffer
     "ct"     #'citre-update-this-tags-file
     "cj"     #'consult-eglot-symbols
@@ -231,7 +231,7 @@
     "fp"     #'(lambda () ; find private emacs config
                  (interactive) (projectile-switch-project-by-name +emacs/repo-directory))
     "fP"     #'(lambda () ; find private emacs config in .emacs.d
-                 (interactive) 
+                 (interactive)
                  (when (not (projectile-project-p user-emacs-directory))
                    (dired-create-empty-file (concat user-emacs-directory projectile-dirconfig-file))
                    (projectile-add-known-project user-emacs-directory))
