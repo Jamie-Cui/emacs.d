@@ -88,6 +88,7 @@
     :states '(normal visual motion)
     :keymaps 'override ; prevent from being override
     ;; most-frequency keys
+    "RET"    #'dashboard-open
     "G"      #'gptel  ;; G -> Gptel
     "A"      #'agent-shell-anthropic-start-claude-code ;; A -> Agent
     "."      #'find-file
@@ -124,6 +125,7 @@
     "br"     #'(lambda () (interactive) (revert-buffer t t))
     "j" '(:ignore t :which-key "jump (bookmark)")
     "j RET"  #'consult-bookmark
+    "jj"     #'consult-bookmark
     "ja"     #'bookmark-set
     "jx"     #'bookmark-delete
     ;; docker-related key bindings
