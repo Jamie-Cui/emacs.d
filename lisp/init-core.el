@@ -320,11 +320,12 @@
   ;; (add-hook 'c++-ts-mode-hook 'eglot-ensure)
   ;; (add-hook 'rust-ts-mode-hook 'eglot-ensure)
   ;; (add-hook 'go-ts-mode-hook 'eglot-ensure)
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider
+  (setq eglot-ignored-server-capabilities '(
+                                            ;; :inlayHintProvider
                                             :documentHighlightProvider ;; WHY?
                                             :semanticTokensProvider)) ;; WHY?
   (setq eglot-confirm-server-initiated-edits nil)
-  (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
+  ;; (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
   ;; install harper: cargo install harper-ls --locked
   (add-to-list 'eglot-server-programs
                '(text-mode . ("harper-ls" "--stdio"))) ;; add harper-ls
@@ -593,9 +594,9 @@
   :ensure t
   :after gptel
   :custom
-  (popwin:popup-window-height 0.3)
-  (popwin:popup-window-width 0.3)
-  (popwin:adjust-other-windows t)
+  (popwin:popup-window-height 20)
+  (popwin:popup-window-width 20)
+  (popwin:adjust-other-windows nil)
   (popwin:reuse-window 'current)
   (popwin:special-display-config
    '(

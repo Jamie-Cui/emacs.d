@@ -88,7 +88,7 @@
     :states '(normal visual motion)
     :keymaps 'override ; prevent from being override
     ;; most-frequency keys
-    "RET"    #'dashboard-open
+    ;; "RET"    #'dashboard-open
     "G"      #'gptel  ;; G -> Gptel
     "A"      #'agent-shell-anthropic-start-claude-code ;; A -> Agent
     "."      #'find-file
