@@ -35,7 +35,7 @@
 
 (use-package dired
   :custom
-  (dired-listing-switches 
+  (dired-listing-switches
    (purecopy "-ahl -v --group-directories-first"))
   (dired-kill-when-opening-new-dired-buffer t)
   (dired-omit-extensions nil)
@@ -127,7 +127,7 @@
 (use-package cnfonts
   :ensure t
   :custom
-  (cnfonts-personal-fontnames 
+  (cnfonts-personal-fontnames
    '(
      ("Maple Mono NL NF CN" "Maple Mono NF CN") ;; English
      ("Maple Mono NL NF CN" "Maple Mono NF CN") ;; Chinese
@@ -143,7 +143,7 @@
 
 (use-package smartparens
   :ensure t  ;; install the package
-  :hook (prog-mode text-mode markdown-mode org-mode) 
+  :hook (prog-mode text-mode markdown-mode org-mode)
   :config
   ;; load default config
   (require 'smartparens-config))
@@ -182,7 +182,7 @@
   :init
   ;; Replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
-  ;; 
+  ;;
   ;; Show the Embark target at point via Eldoc. You may adjust the
   ;; Eldoc strategy, if you want to see the documentation from
   ;; multiple providers. Beware that using this can be a little
@@ -236,7 +236,7 @@
 ;; consult-eglot
 ;; consult-eglot-embark
 ;; eldoc-box
-;; 
+;;
 ;; NOTE You need to install indexing tools for citre:
 ;;    universal ctags: https://github.com/universal-ctags/ctags
 ;;    gtags: https://github.com/universal-ctags/ctags
@@ -258,10 +258,10 @@
   (citre-enable-imenu-integration nil)
   :config
   ;; gd will also triger citre-jump (with last priority, so its append)
-  (setq evil-goto-definition-functions (append evil-goto-definition-functions 
+  (setq evil-goto-definition-functions (append evil-goto-definition-functions
                                                '((lambda (symbol &rest _) (citre-jump)))))
   ;; HACK only enable citre-auto-enable-citre-mode when not on tramp
-  (add-hook 'find-file-hook 
+  (add-hook 'find-file-hook
             (lambda ()
               (unless (file-remote-p default-directory)
                 (citre-auto-enable-citre-mode))))
@@ -378,7 +378,7 @@
 
 (use-package perspective
   :ensure t
-  :custom 
+  :custom
   (persp-suppress-no-prefix-key-warning t)
   (persp-sort 'created)
   (persp-modestring-dividers '("(Proj:" ")" ""))
@@ -391,10 +391,10 @@
 
 (use-package projectile
   :ensure t
-  :custom 
+  :custom
   (projectile-indexing-method 'hybrid)
   ;; DO NOT add / remove project automatically
-  (projectile-track-known-projects-automatically nil) 
+  (projectile-track-known-projects-automatically nil)
   ;; enable cache persistently
   (projectile-enable-caching 'persistent)
   ;; each project has a separate compilation buffer
@@ -436,13 +436,13 @@
 (defun +persp/format-name-as-in-echo (name)
   "Format the perspective name given by NAME for display in the echo area."
   (if (equal name (persp-current-name))
-      (setq name (format "[%s]" name)) 
+      (setq name (format "[%s]" name))
     (setq name (format " %s " name))))
 
 (defun +persp/show-name-in-echo ()
   "Show persp names in the echo area."
   (let ((message-log-max nil))
-    (message (mapconcat 'identity 
+    (message (mapconcat 'identity
                         (mapcar '+persp/format-name-as-in-echo
                                 (persp-names))))))
 
@@ -499,10 +499,15 @@
   (dashboard-set-heading-icons nil)
   (dashboard-startup-banner 4) ; 4 means using 4.txt
   (dashboard-set-file-icons nil)
-  (dashboard-items '((recents  . 5)
-                     (projects  . 5)
-                     (bookmarks . 5)))
+  (dashboard-items '(
+                     (agenda . 5)
+                     (recents  . 5)
+                     ;; (projects  . 5)
+                     (bookmarks . 5)
+                     ))
   (dashboard-projects-backend 'projectile)
+  (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
+  (dashboard-agenda-sort-strategy '(priority-up))
   :config
   (dashboard-setup-startup-hook)
 
@@ -571,7 +576,7 @@
   (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
 
   (defun +eat/new ()
-    (interactive) 
+    (interactive)
     (let ((current-prefix-arg ""))
       (call-interactively 'eat)))
 
@@ -587,7 +592,7 @@
 (use-package popwin
   :ensure t
   :after gptel
-  :custom 
+  :custom
   (popwin:popup-window-height 0.3)
   (popwin:popup-window-width 0.3)
   (popwin:adjust-other-windows t)

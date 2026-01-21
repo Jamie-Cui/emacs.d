@@ -88,8 +88,8 @@
     :states '(normal visual motion)
     :keymaps 'override ; prevent from being override
     ;; most-frequency keys
-    "RET"    #'gptel ;; popup
-    "'"      #'agent-shell-anthropic-start-claude-code ;; popup
+    "G"      #'gptel  ;; G -> Gptel
+    "A"      #'agent-shell-anthropic-start-claude-code ;; A -> Agent
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer
@@ -122,6 +122,10 @@
     "bd"     #'kill-current-buffer
     "by"     #'+copy-buffer-file-name
     "br"     #'(lambda () (interactive) (revert-buffer t t))
+    "j" '(:ignore t :which-key "jump (bookmark)")
+    "j RET"  #'consult-bookmark
+    "ja"     #'bookmark-set
+    "jx"     #'bookmark-delete
     ;; docker-related key bindings
     ;; I do not use that very often
     "D"      #'docker
@@ -164,13 +168,21 @@
     "np"      #'org-insert-link
     "nd"      #'deft
     "nt"      #'org-todo-list
+    "nm" '(:ignore t :which-key "modify")
+    "nmp"     #'org-priority
+    "nmP"     #'org-set-property
+    "nmt"     #'org-todo
+    "nT" '(:ignore t :which-key "timer")
+    "nTa"     #'org-timer-set-timer ; add timer
+    "nT RET"  #'org-timer-pause-or-continue ; pause or continue
+    "nTd"     #'org-timer-stop ; delete timer
     "nj"      #'org-journal-new-entry
     "nr" '(:ignore t :which-key "org-roam")
     "nra"     #'org-roam-alias-add
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
     "nrs"     #'org-roam-db-sync
-    "nrq"     #'org-roam-tag-add
+    "nrt"     #'org-roam-tag-add
     "nrc"     #'org-roam-db-clear-all
     "nx" '(:ignore t :which-key "xenops")
     "nx RET"  #'xenops-dwim
@@ -203,11 +215,6 @@
     "tn"     #'display-line-numbers-mode
     "ta"     #'+treesit-auto/toggle
     "tm"     #'org-toggle-inline-images
-    ;; timer
-    "T" '(:ignore t :which-key "timer")
-    "Ta"     #'org-timer-set-timer ; add timer
-    "T RET"  #'org-timer-pause-or-continue ; pause or continue
-    "Td"     #'org-timer-stop ; delete timer
     ;; code (lsp/tags)
     "c" '(:ignore t :which-key "code")
     "c RET"  #'eglot
