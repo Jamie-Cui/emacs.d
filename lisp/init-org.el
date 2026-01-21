@@ -193,6 +193,7 @@
   :custom
   (org-journal-dir (concat +emacs/org-root-dir "/journal"))
   (org-journal-find-file-fn 'find-file)
+  (org-journal-file-format "%Y%m%d.org")
   (org-journal-file-type 'monthly)
   (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\"")
   (org-journal-enable-agenda-integration t)
