@@ -3,19 +3,19 @@
 * Emacs.d
 
 #+begin_src
-░▒▓████████▓▒░▒▓██████████████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓███████▓▒░ 
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░        
-░▒▓██████▓▒░ ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓█▓▒░       ░▒▓██████▓▒░  
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░ 
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░ 
-░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓███████▓▒░  
+░▒▓████████▓▒░▒▓██████████████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓███████▓▒░
+░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░
+░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░
+░▒▓██████▓▒░ ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓█▓▒░       ░▒▓██████▓▒░
+░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░             ░▒▓█▓▒░
+░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░
+░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓███████▓▒░
 #+end_src
 
 ** What this config does?
 1. Use melpa only.
 2. Use emacs version 30.1.
-3. Use Maple Mono NF CN (NO Ligature!): [[https://github.com/subframe7536/maple-font][repo]], [[https://github.com/subframe7536/maple-font/releases/download/v7.8/MapleMonoNL-NF-CN-unhinted.zip][download]]. 
+3. Use Maple Mono NF CN (NO Ligature!): [[https://github.com/subframe7536/maple-font][repo]], [[https://github.com/subframe7536/maple-font/releases/download/v7.8/MapleMonoNL-NF-CN-unhinted.zip][download]].
 4. Use Plantuml for uml drawing: [[https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar][download]].
 5. Use emacs build-in tree-sitter.
 
@@ -31,7 +31,7 @@ curl -sSL https://gist.githubusercontent.com/Jamie-Cui/e0c613bad06e17f34be591efb
 - gcc toolchain (gcc, g++, cmake, makefile, autotools, ...): compile environment
 - libgccjit: for emacs's native compilation feature
 - libsqlite3: for org-roam database
-- libtree-sitter (tested with version 0.25.8, [[https://github.com/tree-sitter/tree-sitter][repo]]): for tree-sitter, 
+- libtree-sitter (tested with version 0.25.8, [[https://github.com/tree-sitter/tree-sitter][repo]]): for tree-sitter,
 - texlive: for latex
 - direnv: for separating project envs (~sudo dnf install direnv~)
 
@@ -53,7 +53,7 @@ wget -c https://github.com/emacs-mirror/emacs/archive/refs/heads/scratch/tty-chi
 sudo make install
 #+end_src
 
-Have tree-sitter problem? see: [[https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button][link]]. Or download tree-sitter pre-built binaries [[https://github.com/emacs-tree-sitter/tree-sitter-langs][here]]. 
+Have tree-sitter problem? see: [[https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button][link]]. Or download tree-sitter pre-built binaries [[https://github.com/emacs-tree-sitter/tree-sitter-langs][here]].
 
 ** Setup ~$HOME/.emacs.d/init.el~
 #+begin_src elisp
@@ -64,7 +64,7 @@ Have tree-sitter problem? see: [[https://www.reddit.com/r/emacs/comments/1e57kzy
 ** C/C++ Dev Tools
 
 - clangd, clang-format, clang-tidy
-#+begin_src bash 
+#+begin_src bash
 # ubuntu
 sudo apt install clangd, clang-format, clang-tidy
 # macos
@@ -97,3 +97,20 @@ make install
 alias et='tmux attach -t emacs-session || tmux new -s emacs-session "emacs -nw"'
 #+end_src
 
+** Sync between different machine?
+
+Try: https://syncthing.net/
+
+#+begin_src bash
+sudo dnf install -y syncthing # fedora
+brew install syncthing # macos
+#+end_src
+
+For ios, see: https://github.com/pixelspark/sushitrain?tab=readme-ov-file
+(WARNING: this app may not be avaliable in your country)
+
+Start sync daemon at user level:
+#+begin_src bash :results verbatim :dir ~
+systemctl --user start syncthing.service
+systemctl --user status syncthing.service
+#+end_src
