@@ -48,6 +48,7 @@
    "M-d"     #'evil-multiedit-match-symbol-and-next ; default
    ;; more-frequent commands
    "M-j"     #'evil-avy-goto-char-timer ; jump
+   "M-h"     #'consult-buffer ; history buffers
    "M-i"     #'consult-imenu
    "M-m"     #'evil-multiedit-match-symbol-and-next  ; match
    ;; mac-like binding
