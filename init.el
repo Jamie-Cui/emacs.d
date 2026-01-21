@@ -239,7 +239,7 @@
   ;; (add-to-list 'apheleia-formatters
   ;;              '(eglot-managed . apheleia-indent-eglot-managed-buffer))
 
-  ;; NOTE add all eglot-ensured modes 
+  ;; NOTE add all eglot-ensured modes
   ;; This determines what formatter to use in buffers without a
   ;; setting for apheleia-formatter. The keys are major mode
   ;; (add-to-list 'apheleia-mode-alist '(c++-ts-mode-hook . eglot-managed))
@@ -256,7 +256,7 @@
   :ensure t
   :custom
   (treesit-auto-install 'prompt)
-  :hook (after-init . (lambda () 
+  :hook (after-init . (lambda ()
                         (treesit-auto-add-to-auto-mode-alist 'all)
                         ;; Configure tree-sitter modes
                         (rassq-delete-all 'c++-mode auto-mode-alist)
@@ -315,7 +315,6 @@
   :bind (:map markdown-mode-map
               ("C-c C-e" . markdown-do)))
 
-
 ;; ------------------------------------------------------------------
 ;; DONE (optional) elfeed
 ;; ------------------------------------------------------------------
@@ -350,7 +349,7 @@
                   ;; 架构师之路
                   ("https://plink.anyfeeder.com/weixin/gh_10a6b96351a9")
                   ;; 棱镜
-                  ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance") 
+                  ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance")
                   ;; 求是网
                   ("https://plink.anyfeeder.com/qstheory")
                   )))
