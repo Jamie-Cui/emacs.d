@@ -47,8 +47,8 @@
    "M-P"     #'+compile-with-comint ; just like vscode
    "M-d"     #'evil-multiedit-match-symbol-and-next ; default
    ;; more-frequent commands
-   "M-j"     #'evil-avy-goto-char-timer ; jump
-   "M-h"     #'consult-buffer ; history buffers
+   "M-j"     #'consult-buffer ; jump to buffers quickly
+   "M-e"     #'evil-avy-goto-char-timer ; quick find edit (point)?
    "M-i"     #'consult-imenu
    "M-m"     #'evil-multiedit-match-symbol-and-next  ; match
    ;; mac-like binding
@@ -59,11 +59,11 @@
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-v"     #'evil-paste-after ; paste like mac
    ;; disabled
-   "M-e"     #'(lambda () (interactive) (message "M-e is disabled!"))
    "M-d"     #'(lambda () (interactive) (message "M-d is disabled!"))
    "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
    "M-q"     #'(lambda () (interactive) (message "M-q is disabled!")) ; reserved for kill app
    "M-Q"     #'(lambda () (interactive) (message "M-Q is disabled!")) ; reserved for lock screen
+   "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
    "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
    "C-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
    "C-l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
@@ -224,9 +224,11 @@
     "cx"     #'list-flycheck-errors
     "ca"     #'eglot-code-actions
     "cr"     #'eglot-rename
+    "ci"     #'eglot-inlay-hints-mode
     "cf"     #'eglot-format-buffer
     "ct"     #'citre-update-this-tags-file
     "cj"     #'consult-eglot-symbols
+    "cl"     #'eglot-list-connections
     "cq"     #'eglot-shutdown
     ;; find
     "f" '(:ignore t :which-key "find")
