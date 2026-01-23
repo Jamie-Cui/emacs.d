@@ -354,11 +354,11 @@
                   ("https://plink.anyfeeder.com/qstheory")
                   )))
 
-(use-package elfeed-goodies
-  :ensure t
-  :after elfeed
-  :config
-  (elfeed-goodies/setup))
+;; (use-package elfeed-goodies
+;;   :ensure t
+;;   :after elfeed
+;;   :config
+;;   (elfeed-goodies/setup))
 
 ;; ------------------------------------------------------------------
 ;; HACK minor fixes?
