@@ -114,3 +114,11 @@ Start sync daemon at user level:
 systemctl --user start syncthing.service
 systemctl --user status syncthing.service
 #+end_src
+
+** Upgrade cluade code and acp
+
+#+begin_src bash
+curl -fsSL https://claude.ai/install.sh | bash
+npm install -g @anthropic-ai/claude-code # deprecated
+npm install -g @zed-industries/claude-code-acp
+#+end_src
