@@ -39,7 +39,7 @@ curl -sSL https://gist.githubusercontent.com/Jamie-Cui/e0c613bad06e17f34be591efb
 # macos, if you have not done so, in ~/.zshrc
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/homebrew/lib/
 # why tree-sitter@0.25? see: https://github.com/jdtsmith/emacs-mac/issues/121
-brew install autoconf texinfo libgccjit gcc gnutls tree-sitter@0.25 pkg-config
+brew install autoconf texinfo libgccjit gcc gnutls tree-sitter@0.25 pkg-config coreutils
 #+end_src
 
 ** Download and Compile Emacs
