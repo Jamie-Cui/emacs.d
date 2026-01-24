@@ -91,7 +91,7 @@
     ;; most-frequency keys
     ;; "RET"    #'dashboard-open
     "G"      #'gptel  ;; G -> Gptel
-    "A"      #'agent-shell-anthropic-start-claude-code ;; A -> Agent
+    "A"      #'agent-shell ;; A -> Agent
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer

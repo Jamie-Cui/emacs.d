@@ -594,8 +594,6 @@
   :ensure t
   :after gptel
   :custom
-  (popwin:adjust-other-windows nil)
-  (popwin:reuse-window 'current)
   (popwin:special-display-config
    '(
      ;; ("*Org Agenda*" :position bottom :stick t :dedicated t)
