@@ -32,13 +32,14 @@ curl -sSL https://gist.githubusercontent.com/Jamie-Cui/e0c613bad06e17f34be591efb
 - libgccjit: for emacs's native compilation feature
 - libsqlite3: for org-roam database
 - libtree-sitter (tested with version 0.25.8, [[https://github.com/tree-sitter/tree-sitter][repo]]): for tree-sitter,
-- texlive: for latex
-- direnv: for separating project envs (~sudo dnf install direnv~)
+- (optional) texlive: for latex
+- (optional) direnv: for separating project envs (~sudo dnf install direnv~)
 
 #+begin_src bash
-# optional, if you have not done so, in ~/.zshrc
+# macos, if you have not done so, in ~/.zshrc
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/homebrew/lib/
-brew install autoconf texinfo libgccjit gcc gnutls tree-sitter pkg-config # macos
+# why tree-sitter@0.25? see: https://github.com/jdtsmith/emacs-mac/issues/121
+brew install autoconf texinfo libgccjit gcc gnutls tree-sitter@0.25 pkg-config
 #+end_src
 
 ** Download and Compile Emacs
