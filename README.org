@@ -35,6 +35,12 @@ curl -sSL https://gist.githubusercontent.com/Jamie-Cui/e0c613bad06e17f34be591efb
 - texlive: for latex
 - direnv: for separating project envs (~sudo dnf install direnv~)
 
+#+begin_src bash
+# optional, if you have not done so, in ~/.zshrc
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/homebrew/lib/
+brew install autoconf texinfo libgccjit gcc gnutls tree-sitter pkg-config # macos
+#+end_src
+
 ** Download and Compile Emacs
 
 #+begin_src bash
@@ -52,6 +58,8 @@ wget -c https://github.com/emacs-mirror/emacs/archive/refs/heads/scratch/tty-chi
 # compile
 sudo make install
 #+end_src
+
+MacOS: libgccjit failed to compile and run? see: https://github.com/d12frosted/homebrew-emacs-plus/issues/680#issuecomment-2103717530
 
 Have tree-sitter problem? see: [[https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button][link]]. Or download tree-sitter pre-built binaries [[https://github.com/emacs-tree-sitter/tree-sitter-langs][here]].
 
