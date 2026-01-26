@@ -166,6 +166,11 @@
     "pt"     #'projectile-test-project
     ;; note functions
     "n" '(:ignore t :which-key "note")
+    "n"      #'org-gtd-engage
+    "nc"      #'org-gtd-capture
+    "ni"      #'org-gtd-process-inbox
+    "nl"      #'org-gtd-show-all-next
+    "ns"      #'org-gtd-reflect-stuck-projects
     "n@"      #'citar-insert-citation ;; insert bib
     "ny"      #'org-store-link
     "np"      #'org-insert-link
