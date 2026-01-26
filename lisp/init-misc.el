@@ -553,6 +553,13 @@
 ;; debug
 (setopt gdb-show-main t)
 
+;; save all buffers
+
+(defun +save-all-buffers ()
+  (interactive)
+  (let* ((current-prefix-arg '(4)))
+    (call-interactively 'save-some-buffers)))
+
 ;; compile
 (defun +compile-with-no-preset ()
   (interactive)
