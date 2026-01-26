@@ -122,6 +122,8 @@
     "ba"     #'evil-buffer-new
     "bn"     #'evil-buffer-new ; alias
     "bd"     #'kill-current-buffer
+    "bs"     #'save-buffer
+    "bS"     #'+save-all-buffers
     "by"     #'+copy-buffer-file-name
     "br"     #'(lambda () (interactive) (revert-buffer t t))
     "j" '(:ignore t :which-key "jump (bookmark)")
@@ -166,6 +168,11 @@
     "pt"     #'projectile-test-project
     ;; note functions
     "n" '(:ignore t :which-key "note")
+    "ne"      #'org-gtd-engage
+    "nc"      #'org-gtd-capture
+    "ni"      #'org-gtd-process-inbox
+    "nl"      #'org-gtd-show-all-next
+    "ns"      #'org-gtd-reflect-stuck-projects
     "n@"      #'citar-insert-citation ;; insert bib
     "ny"      #'org-store-link
     "np"      #'org-insert-link

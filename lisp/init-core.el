@@ -596,8 +596,10 @@
   :custom
   (popwin:special-display-config
    '(
-     ;; ("*Org Agenda*" :position bottom :stick t :dedicated t)
      ("*xref*" :position bottom :position bottom :stick t :dedicated t)
+     ("*Org Agenda*" :position bottom :position bottom :stick t :dedicated t)
+     ("*Org Select*" :position bottom :position bottom :stick t :dedicated t)
+     ("*Multiple Choice Help*" :position bottom :position bottom :stick t :dedicated t)
      ;; (compilation-mode :position bottom :position bottom :stick t :dedicated t)
      ;; (comint-mode :position bottom :position bottom :stick t :dedicated t)
      (help-mode :position bottom :stick t :dedicated t)
