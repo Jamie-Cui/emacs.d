@@ -90,7 +90,12 @@
 (setopt org-use-fast-todo-selection 'expert)
 (setopt org-todo-keyword-faces '(("[-]" . +org-todo-active)
                                  ("[?]" . +org-todo-onhold)))
-(setopt org-todo-keywords '((sequence "[ ](t)" "TODO(T)" "[-](s)" "[?](w)" "NEXT(S)" "WAIT(W)" "|" "[X](d)" "DONE(D)")))
+(setopt org-todo-keywords '((sequence
+                             "[ ](t)" "TODO(T)"
+                             "[-](s)" "NEXT(S)"
+                             "[?](w)" "WAIT(W)"
+                             "|"
+                             "[X](d)" "DONE(D)")))
 
 ;;; org-src
 (setopt org-src-fontify-natively t)
@@ -335,10 +340,10 @@
   :custom
   (org-gtd-directory (concat +emacs/org-root-dir "/gtd"))
   ;; Map GTD semantic states to your keywords
-  (org-gtd-keyword-mapping '((todo . "[ ]")
-                             (next . "[-]")
-                             (wait . "[?]")
-                             (canceled . "[X]")))
+  (org-gtd-keyword-mapping '((todo . "TODO")
+                             (next . "NEXT")
+                             (wait . "WAIT")
+                             (canceled . "DONE")))
   :config
   ;; REQUIRED: Enable org-edna for project dependencies
   (org-edna-mode 1)
@@ -346,7 +351,7 @@
   (setq org-agenda-files (list org-gtd-directory))
   :bind
   (:map org-gtd-clarify-mode-map
-   ("C-c C-c" . org-gtd-organize)
+   ("C-c RET" . org-gtd-organize)
    :map org-agenda-mode-map
    ("C-c ." . org-gtd-agenda-transient)))
 
