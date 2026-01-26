@@ -27,7 +27,7 @@
 
 (use-package undo-tree
   :ensure t
-  :custom (undo-tree-history-directory-alist 
+  :custom (undo-tree-history-directory-alist
            `(("." . ,(concat user-emacs-directory "undo-tree-hist/"))))
   :config
   (setopt undo-tree-map nil)
@@ -136,11 +136,11 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   ;; bind evil-args text objects
   (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
   (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
-  
+
   ;; bind evil-forward/backward-args
   (define-key evil-normal-state-map "L" 'evil-forward-arg)
   (define-key evil-normal-state-map "H" 'evil-backward-arg)
-  
+
   ;; bind evil-jump-out-args
   (define-key evil-normal-state-map "K" 'evil-jump-out-args))
 
