@@ -6,6 +6,19 @@
 (defvar-local +syntax-ppss-memo-last-point nil)
 (defvar-local +syntax-ppss-memo-last-result nil)
 
+(defun +wc/non-ascii (&optional start end)
+  (interactive)
+  (let ((start (if mark-active (region-beginning) (point-min)))
+        (end (if mark-active (region-end) (point-max))))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region start end)
+        (goto-char start)
+        (message "lines: %3d non ascii words: %3d chars: %3d"
+           (count-lines start end)
+           (count-matches "[^[:ascii:]]")
+           (- end start))))))
+
 (defun +syntax-ppss-memo-reset-h (&rest _ignored)
   "Reset memoization as a safety precaution.
 
