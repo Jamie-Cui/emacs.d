@@ -4,6 +4,14 @@
 
 (require 'init-utils)
 
+;; smooth scrolling
+(pixel-scroll-mode +1)
+;; Optional configurations for fine-tuning
+(setq pixel-dead-time 0) ; Never revert to line-based scrolling behavior
+(setq pixel-resolution-fine-flag t) ; Scroll by actual pixels
+(setq mouse-wheel-scroll-amount '(1)) ; Distance to scroll per mouse wheel event
+(setq mouse-wheel-progressive-speed nil) ; Disable progressive speed if it feels too fast
+
 ;; (setq tramp-verbose 6)
 ;; Optional: display debug info in a separate buffer
 ;; (setq tramp-debug-buffer t)
