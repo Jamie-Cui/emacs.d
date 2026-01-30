@@ -23,12 +23,16 @@
   (setq org-display-remote-inline-images 'cache) ; enable caching
   )
 
-(use-package org-imgtog
-  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
-  :hook (org-mode . org-imgtog-mode)
-  :config
-  (setq org-imgtog-preview-delay 0.5) ;; wait 0.5 seconds before toggling
-  (setq org-imgtog-preview-delay-only-remote t)) ;; only delay for remote images
+(use-package toc-org
+  :ensure t)
+
+;; REVIEW no need for this package if we already have org-toggle-inline images
+;; (use-package org-imgtog
+;;   :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
+;;   :hook (org-mode . org-imgtog-mode)
+;;   :config
+;;   (setq org-imgtog-preview-delay 0.5) ;; wait 0.5 seconds before toggling
+;;   (setq org-imgtog-preview-delay-only-remote t)) ;; only delay for remote images
 
 ;;; list
 (setopt org-list-allow-alphabetical t)

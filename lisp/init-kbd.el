@@ -178,6 +178,7 @@
     "np"      #'org-insert-link
     "nd"      #'deft
     "nt"      #'org-todo-list
+    "nq"      #'org-set-tags
     "nm" '(:ignore t :which-key "modify")
     "nmp"     #'org-priority
     "nmP"     #'org-set-property
@@ -192,7 +193,7 @@
     "nrf"     #'org-roam-node-find
     "nri"     #'org-roam-node-insert
     "nrs"     #'org-roam-db-sync
-    "nrt"     #'org-roam-tag-add
+    "nrq"     #'org-roam-tag-add
     "nrc"     #'org-roam-db-clear-all
     "nx" '(:ignore t :which-key "xenops")
     "nx RET"  #'xenops-dwim
