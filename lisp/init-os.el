@@ -29,11 +29,14 @@
   (setq tramp-default-method "plink")
   (setq tramp-use-connection-share t)
   ;; (setq inhibit-eol-conversion t)
-  (prefer-coding-system 'utf-8)
+
   (setq buffer-file-coding-system 'utf-8-unix)
+  (setq locale-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   (set-language-environment "UTF-8")
+  (set-default-coding-systems 'utf-8)
 
   ;; WORKAROUND https://github.com/magit/magit/issues/2395
   (define-derived-mode magit-staging-mode magit-status-mode "Magit staging"
