@@ -4,14 +4,6 @@
 
 (require 'init-utils)
 
-;; smooth scrolling
-(pixel-scroll-mode +1)
-;; Optional configurations for fine-tuning
-(setq pixel-dead-time 0) ; Never revert to line-based scrolling behavior
-(setq pixel-resolution-fine-flag t) ; Scroll by actual pixels
-(setq mouse-wheel-scroll-amount '(1)) ; Distance to scroll per mouse wheel event
-(setq mouse-wheel-progressive-speed nil) ; Disable progressive speed if it feels too fast
-
 ;; (setq tramp-verbose 6)
 ;; Optional: display debug info in a separate buffer
 ;; (setq tramp-debug-buffer t)
@@ -90,15 +82,6 @@
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-;; scrolling
-(setq hscroll-margin 2
-      hscroll-step 1
-      scroll-conservatively 10000
-      scroll-margin 0
-      scroll-preserve-screen-position t
-      auto-window-vscroll nil
-      mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
-      mouse-wheel-scroll-amount-horizontal 2)
 
 ;; The blinking cursor is distracting, but also interferes with cursor settings
 ;; in some minor modes that try to change it buffer-locally (like treemacs) and
