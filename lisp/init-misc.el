@@ -90,16 +90,6 @@
 ;; maximize on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-;; scrolling
-(setq hscroll-margin 2
-      hscroll-step 1
-      scroll-conservatively 10000
-      scroll-margin 0
-      scroll-preserve-screen-position t
-      auto-window-vscroll nil
-      mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
-      mouse-wheel-scroll-amount-horizontal 2)
-
 ;; The blinking cursor is distracting, but also interferes with cursor settings
 ;; in some minor modes that try to change it buffer-locally (like treemacs) and
 ;; can cause freezing for folks (esp on macOS) with customized & color cursors.
