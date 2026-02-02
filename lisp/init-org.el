@@ -24,7 +24,9 @@
   )
 
 (use-package toc-org
-  :ensure t)
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook 'toc-org-mode))
 
 ;; REVIEW no need for this package if we already have org-toggle-inline images
 ;; (use-package org-imgtog
@@ -97,7 +99,8 @@
                              "NEXT(s)"
                              "WAIT(w)"
                              "|"
-                             "DONE(d)")))
+                             "DONE(d)"
+                             "KILL(k)")))
 
 ;;; org-src
 (setopt org-src-fontify-natively t)
@@ -109,8 +112,10 @@
 (setopt org-export-dispatch-use-expert-ui t)
 (setopt org-export-with-toc nil)
 (setopt org-cite-export-processors '((latex biblatex) (beamer natbib) (t basic)))
+(add-to-list 'org-file-apps '("\\.pdf\\'" . emacs))
 
-(add-to-list 'org-export-backends 'beamer) ;; support beamer
+(add-to-list 'org-export-backends 'beamer)
+(add-to-list 'org-export-backends 'markdown)
 
 ;;; org-latex
 ;; NOTE default latex:
@@ -281,9 +286,7 @@
   ;; a more informative completion interface
   (setq org-roam-node-display-template
         (format "${title:50}%s"
-                (propertize "${tags:10}" 'face 'org-tag)
-                ;; (propertize "${hash:10}" 'face 'org-tag)
-                ))
+                (propertize "${tags:10}" 'face 'org-tag)))
   (require 'org-roam-db)
   (org-roam-db-autosync-mode +1)
   ;; If using org-roam-protocol
@@ -311,7 +314,7 @@
   (setopt xenops-math-image-scale-factor 1.2)
   (setq xenops-math-latex-process-alist org-preview-latex-process-alist)
   (add-hook 'org-mode-hook #'xenops-mode)
-  (setq xenops-math-latex-process 'ximagemagick)
+  (setq xenops-math-latex-process 'xdvisvgm) ; HACK or, ximagemagick
   (defun fn/xenops-src-parse-at-point ()
     (-if-let*
         ((element (xenops-parse-element-at-point 'src))
@@ -346,7 +349,8 @@
   (org-gtd-keyword-mapping '((todo . "TODO")
                              (next . "NEXT")
                              (wait . "WAIT")
-                             (canceled . "DONE")))
+                             (done . "DONE")
+                             (canceled . "KILL")))
   :config
   ;; REQUIRED: Enable org-edna for project dependencies
   (org-edna-mode 1)

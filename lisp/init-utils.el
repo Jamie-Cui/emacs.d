@@ -15,9 +15,9 @@
         (narrow-to-region start end)
         (goto-char start)
         (message "lines: %3d non ascii words: %3d chars: %3d"
-           (count-lines start end)
-           (count-matches "[^[:ascii:]]")
-           (- end start))))))
+                 (count-lines start end)
+                 (count-matches "[^[:ascii:]]")
+                 (- end start))))))
 
 (defun +syntax-ppss-memo-reset-h (&rest _ignored)
   "Reset memoization as a safety precaution.
@@ -433,17 +433,17 @@ i.e. disables `ws-butler-mode' in the current buffer."
 
 
 ;; NOTE Since I'm using evil, i want an additional space when inserting
-;;;###autoload
+;;###autoload
 (defun +evil/smart-insert ()
-  (let ((c (char-after (point))))
-    ;; not c is not a proper char
-    (when (not (and c (not (eq c ?\s)) (not (eq c ?\n)) (not (eq c ?\t)) (>= c 32) (<= c 126)))
-      (call-interactively 'evil-backward-word-end) ) ;; jump to previous word end
-
-    (call-interactively 'evil-append) ;; evil-append ("a")
-    (insert " ") ;; if foward char failed, insert a space
-    (insert " ") ;; if foward char failed, insert a space
-    (evil-normal-state)
+  "Enter insert mode smartly: if current char is whitespace, append after word."
+  (interactive)
+  (let ((c (char-after (point)))
+        (eow (and (not (eobp)) (looking-at "\\b"))))
+    (message "current char: %c" c)
+    (when (not eow)
+      (message "moving to the end of word")
+      (call-interactively 'evil-forward-word-end))
+    (call-interactively 'evil-append) ;; append
     ))
 
 (provide 'init-utils)
