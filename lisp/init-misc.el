@@ -9,7 +9,7 @@
 ;; Optional configurations for fine-tuning
 (setq pixel-dead-time 0) ; Never revert to line-based scrolling behavior
 (setq pixel-resolution-fine-flag t) ; Scroll by actual pixels
-(setq mouse-wheel-scroll-amount '(1)) ; Distance to scroll per mouse wheel event
+(setq mouse-wheel-scroll-amount '(3)) ; Distance to scroll per mouse wheel event
 (setq mouse-wheel-progressive-speed nil) ; Disable progressive speed if it feels too fast
 
 ;; (setq tramp-verbose 6)
