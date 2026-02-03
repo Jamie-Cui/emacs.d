@@ -47,8 +47,8 @@
 ;;; agenda
 (setopt org-agenda-window-setup 'current-window)
 
-;; FIXME make org file find org-journal files (maybe not needed?)
-(setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
+;; make org file find org-journal files (maybe not needed?)
+;; (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
 
 ;;; timer
 (setopt org-timer-default-timer "20") ; 20 mins
