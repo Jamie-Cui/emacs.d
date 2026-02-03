@@ -169,13 +169,16 @@
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "na"      #'org-agenda-list
-    "ne"      #'org-gtd-engage
-    "nc"      #'org-gtd-capture
-    "ni"      #'org-gtd-process-inbox
     "nt"      #'org-todo-list
-    ;; "nl"      #'org-gtd-show-all-next
-    "ns"      #'org-gtd-reflect-stuck-projects
-    "n@"      #'citar-insert-citation ;; insert bib
+    "nc"      #'org-gtd-capture ; capture
+    "ni"      #'org-gtd-process-inbox ; process
+    "ne"      #'org-gtd-engage ; engage (do-things)
+    "nl" '(:ignore t :which-key "list")
+    "nln"     #'org-gtd-show-all-next ; list next
+    "nlw"     #'org-gtd-reflect-someday-maybe ; list wait
+    "nlc"     #'org-gtd-reflect-completed-items ; list complete
+    "nls"     #'org-gtd-reflect-stuck-projects ; list stuck
+    "n@"      #'citar-insert-citation
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "nd"      #'deft

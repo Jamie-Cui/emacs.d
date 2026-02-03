@@ -339,6 +339,7 @@
 
 (use-package org-gtd
   :ensure t
+  :after popwin
   :init
   ;; Suppress upgrade warnings (must be set before package loads)
   (setq org-gtd-update-ack "4.0.0")
@@ -352,6 +353,27 @@
                              (done . "DONE")
                              (canceled . "KILL")))
   :config
+
+  ;; Advise =org-gtd-clarify-setup-windows=
+  (defun +org-gtd/clarify--use-popwin (orig-fun buffer-or-name)
+    "Display BUFFER-OR-NAME using popwin instead of default window setup."
+    (let ((buffer (get-buffer buffer-or-name)))
+      ;; Show main clarify buffer via popwin
+      (popwin:popup-buffer buffer)
+      ;; Optionally show horizons if enabled (keep original behavior)
+      (when org-gtd-clarify-show-horizons
+        (org-gtd-clarify--display-horizons-window))))
+
+  (advice-add 'org-gtd-clarify-setup-windows :around #'+org-gtd/clarify--use-popwin)
+
+  ;; Prevent manual window restoration in org-gtd-clarify-stop
+  (defun +org-gtd/clarify--skip-window-restore (orig-fun &rest args)
+    "Skip restoring window config (handled by popwin)."
+    (let ((org-gtd-clarify--window-config nil)) ; Shadow the var
+      (apply orig-fun args)))
+
+  (advice-add 'org-gtd-clarify-stop :around #'+org-gtd/clarify--skip-window-restore)
+
   ;; REQUIRED: Enable org-edna for project dependencies
   (org-edna-mode 1)
   ;; Add org-gtd files to your agenda (must be in :config so org-gtd-directory is defined)

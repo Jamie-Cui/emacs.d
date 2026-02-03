@@ -13,7 +13,7 @@
 (use-package gptel-agent
   :ensure t
   :after gptel
-  :config 
+  :config
   (require 'gptel-agent-tools)
   (add-to-list 'gptel-agent-dirs (concat +emacs/repo-directory "/agents"))
   (gptel-agent-update)
@@ -42,6 +42,8 @@
               ("C-c C-c" . #'gptel-send)
               ("C-c RET" . #'gptel-menu))
   :config
+  ;; use smae window to display gptel buffer
+  (setq gptel-display-buffer-action '(display-buffer-same-window))
 
   ;; register gemini backend
   (gptel-make-gemini "Gemini"
