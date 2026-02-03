@@ -209,4 +209,61 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   (setq evil-emacs-state-cursor  'hbar) ; _
   )
 
+;;;###autoload
+(evil-define-command +evil/window-split-a (&optional count file)
+  "Same as `evil-window-split', but correctly updates the window history."
+  :repeat nil
+  (interactive "P<f>")
+  ;; HACK: This ping-ponging between the destination and source windows is to
+  ;;   update the window focus history, so that, if you close either split
+  ;;   afterwards you won't be sent to some random window.
+  (let ((origwin (selected-window))
+        window-selection-change-functions)
+    (select-window (split-window origwin count 'below))
+    (unless evil-split-window-below
+      (select-window origwin)))
+  (run-hook-with-args 'window-selection-change-functions nil)
+  (recenter)
+  (when (and (not count) evil-auto-balance-windows)
+    (balance-windows (window-parent)))
+  (if file (evil-edit file)))
+
+;;;###autoload
+(evil-define-command +evil/window-vsplit-a (&optional count file)
+  "Same as `evil-window-split', but correctly updates the window history."
+  :repeat nil
+  (interactive "P<f>")
+  ;; HACK: This ping-ponging between the destination and source windows is to
+  ;;   update the window focus history, so that, if you close either split
+  ;;   afterwards you won't be sent to some random window.
+  (let ((origwin (selected-window))
+        window-selection-change-functions)
+    (select-window (split-window origwin count 'right))
+    (unless evil-vsplit-window-right
+      (select-window origwin)))
+  (run-hook-with-args 'window-selection-change-functions nil)
+  (recenter)
+  (when (and (not count) evil-auto-balance-windows)
+    (balance-windows (window-parent)))
+  (if file (evil-edit file)))
+
+(advice-add #'evil-window-split  :override #'+evil/window-split-a)
+(advice-add #'evil-window-vsplit :override #'+evil/window-vsplit-a)
+
+;;;###autoload
+(defun +evil/window-split-and-follow ()
+  "Split current window horizontally, then focus new window.
+If `evil-split-window-below' is non-nil, the new window isn't focused."
+  (interactive)
+  (let ((evil-split-window-below (not evil-split-window-below)))
+    (call-interactively #'evil-window-split)))
+
+;;;###autoload
+(defun +evil/window-vsplit-and-follow ()
+  "Split current window vertically, then focus new window.
+If `evil-vsplit-window-right' is non-nil, the new window isn't focused."
+  (interactive)
+  (let ((evil-vsplit-window-right (not evil-vsplit-window-right)))
+    (call-interactively #'evil-window-vsplit)))
+
 (provide 'init-evil)
