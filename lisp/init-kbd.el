@@ -178,7 +178,7 @@
     "np"      #'org-insert-link
     "nd"      #'deft
     "nt"      #'org-todo-list
-    "nq"      #'org-set-tags
+    "nq"      #'org-set-tags-command
     "nm" '(:ignore t :which-key "modify")
     "nmp"     #'org-priority
     "nmP"     #'org-set-property
