@@ -113,8 +113,8 @@
     "ww"     #'other-window
     "wx"     #'evil-window-exchange
     "wd"     #'delete-window
-    "ws"     #'evil-window-split
-    "wv"     #'evil-window-vsplit
+    "ws"     #'+evil/window-split-and-follow
+    "wv"     #'+evil/window-vsplit-and-follow
     "wm"     #'delete-other-windows
     "wr"     #'redraw-display
     ;; buffer-related key bindings
