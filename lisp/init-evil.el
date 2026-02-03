@@ -266,4 +266,19 @@ If `evil-vsplit-window-right' is non-nil, the new window isn't focused."
   (let ((evil-vsplit-window-right (not evil-vsplit-window-right)))
     (call-interactively #'evil-window-vsplit)))
 
+;; NOTE Since I'm using evil, i want an additional space when inserting
+;;###autoload
+(defun +evil/smart-insert ()
+  "Enter insert mode smartly: if current char is whitespace, append after word."
+  (interactive)
+  (let ((c (char-after (point)))
+        (eow (and (not (eobp)) (looking-at "\\b")))
+        (blank-char-p (and (not (eobp)) (looking-at "\\s-"))))
+    (message "current char: %c" c)
+    (when (and (not eow) (not blank-char-p))
+      (message "moving to the end of word")
+      (call-interactively 'evil-forward-word-end))
+    (call-interactively 'evil-append) ;; append
+    ))
+
 (provide 'init-evil)
