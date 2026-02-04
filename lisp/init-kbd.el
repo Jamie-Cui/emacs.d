@@ -168,16 +168,20 @@
     "pt"     #'projectile-test-project
     ;; note functions
     "n" '(:ignore t :which-key "note")
-    "ne"      #'org-gtd-engage
-    "nc"      #'org-gtd-capture
-    "ni"      #'org-gtd-process-inbox
-    "nl"      #'org-gtd-show-all-next
-    "ns"      #'org-gtd-reflect-stuck-projects
-    "n@"      #'citar-insert-citation ;; insert bib
+    "na"      #'org-agenda-list
+    "nt"      #'org-todo-list
+    "nc"      #'org-gtd-capture ; capture
+    "ni"      #'org-gtd-process-inbox ; process
+    "ne"      #'org-gtd-engage ; engage (do-things)
+    "nl" '(:ignore t :which-key "list")
+    "nln"     #'org-gtd-show-all-next ; list next
+    "nlw"     #'org-gtd-reflect-someday-maybe ; list wait
+    "nlc"     #'org-gtd-reflect-completed-items ; list complete
+    "nls"     #'org-gtd-reflect-stuck-projects ; list stuck
+    "n@"      #'citar-insert-citation
     "ny"      #'org-store-link
     "np"      #'org-insert-link
     "nd"      #'deft
-    "nt"      #'org-todo-list
     "nq"      #'org-set-tags-command
     "nm" '(:ignore t :which-key "modify")
     "nmp"     #'org-priority

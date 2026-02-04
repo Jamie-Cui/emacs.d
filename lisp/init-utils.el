@@ -431,19 +431,4 @@ i.e. disables `ws-butler-mode' in the current buffer."
   "Disable `show-trailing-whitespace' in the current buffer."
   (setq-local show-trailing-whitespace nil))
 
-
-;; NOTE Since I'm using evil, i want an additional space when inserting
-;;###autoload
-(defun +evil/smart-insert ()
-  "Enter insert mode smartly: if current char is whitespace, append after word."
-  (interactive)
-  (let ((c (char-after (point)))
-        (eow (and (not (eobp)) (looking-at "\\b"))))
-    (message "current char: %c" c)
-    (when (not eow)
-      (message "moving to the end of word")
-      (call-interactively 'evil-forward-word-end))
-    (call-interactively 'evil-append) ;; append
-    ))
-
 (provide 'init-utils)

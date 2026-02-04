@@ -596,26 +596,33 @@
   :custom
   (popwin:special-display-config
    '(
+     ;; emacs-builtin
      ("*xref*" :position bottom :position bottom :stick t :dedicated t)
-     ("*Org Agenda*" :position bottom :position bottom :stick t :dedicated t)
-     ("*Org Select*" :position bottom :position bottom :stick t :dedicated t)
+     ("*Messages*" :position bottom :stick t :dedicated t)
+     ("*scratch*" :position bottom :stick t :dedicated t)
+     ;; help
      ("*Multiple Choice Help*" :position bottom :position bottom :stick t :dedicated t)
-     ;; (compilation-mode :position bottom :position bottom :stick t :dedicated t)
-     ;; (comint-mode :position bottom :position bottom :stick t :dedicated t)
      (help-mode :position bottom :stick t :dedicated t)
      (helpful-mode :position bottom :stick t :dedicated t)
-     ;; (agent-shell-mode :position bottom :stick t :dedicated t)
-     ;; ("^\\*eshell\\*.*" :regexp t :position bottom :stick t :dedicated t)
-     ;; (eat-mode :position bottom :stick t :dedicated t)
+     ;; flycheck
      ("*Flycheck errors*" :position bottom :stick t :dedicated t)
-     ("*Messages*" :position bottom :stick t :dedicated t)
+     ;; llm-related
      ("*LLM response*" :position bottom :stick t :dedicated t)
-     ("*scratch*" :position bottom :stick t :dedicated t)
      ;; ((lambda (b) ; predicate for gptel buffer
      ;;    ;; NOTE: buffer check is required (#450)
      ;;    (and-let* ((buf (get-buffer (or (car-safe b) b))))
      ;;      (buffer-local-value 'gptel-mode buf)))
      ;; :position bottom :stick t :tail t :dedicated t)
+     ;; (agent-shell-mode :position bottom :stick t :dedicated t)
+     ;; org-related
+     ("*Org Agenda*" :position bottom :position bottom :stick t :dedicated t)
+     ("*Org Select*" :position bottom :position bottom :stick t :dedicated t)
+     ("CAPTURE-inbox.org" :position bottom :position bottom :stick t :dedicated t)
+     (org-gtd-clarify-mode :position bottom :position bottom :stick t :dedicated t)
+     ;; (compilation-mode :position bottom :position bottom :stick t :dedicated t)
+     ;; (comint-mode :position bottom :position bottom :stick t :dedicated t)
+     ;; ("^\\*eshell\\*.*" :regexp t :position bottom :stick t :dedicated t)
+     ;; (eat-mode :position bottom :stick t :dedicated t)
      )
    )
   :config
