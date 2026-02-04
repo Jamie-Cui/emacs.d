@@ -54,8 +54,8 @@
 (use-package dired-subtree
   :ensure t
   :after dired
-  :config
-  )
+  :custom
+  (dired-subtree-use-backgrounds nil))
 
 (use-package diredfl
   :ensure t
