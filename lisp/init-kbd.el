@@ -169,6 +169,7 @@
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "na"      #'org-agenda-list
+    "nA"      #'consult-org-agenda
     "nt"      #'org-todo-list
     "nc"      #'org-gtd-capture ; capture
     "ni"      #'org-gtd-process-inbox ; process

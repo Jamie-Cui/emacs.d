@@ -96,7 +96,7 @@
 (setopt org-use-fast-todo-selection 'expert)
 (setopt org-todo-keywords '((sequence
                              "TODO(t)"
-                             "NEXT(s)"
+                             "NEXT(n)"
                              "WAIT(w)"
                              "|"
                              "DONE(d)"
