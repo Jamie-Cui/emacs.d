@@ -2,12 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-;; defining your own
-;; macos: ~/Library/Mobile Documents/com~apple~CloudDocs/org-root
-;; linux: ~/opt/org-root
-;; it's recommended to symlink your remote file here
-;; ln -s ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/org-root .
-
 (require 'org)
 (require 'org-agenda)
 (require 'init-utils)
@@ -96,7 +90,7 @@
 (setopt org-use-fast-todo-selection 'expert)
 (setopt org-todo-keywords '((sequence
                              "TODO(t)"
-                             "NEXT(s)"
+                             "NEXT(n)"
                              "WAIT(w)"
                              "|"
                              "DONE(d)"
@@ -130,6 +124,7 @@
           ("" "parskip" t)
           ("" "xeCJK" t)
           ("" "booktabs" t)
+          ("" "amssymb" t)
           ("margin=1.5cm" "geometry" t)
           ("lambda, advantage, operators, sets, adversary, landau,\
     probability, notions, logic, ff, mm, primitives, events, complexity, oracles,\
@@ -256,6 +251,7 @@
   (deft-use-filename-as-title nil)
   (deft-directory (concat +emacs/org-root-dir "/deft"))
   (deft-ignore-file-regexp "^\\(?:\\.|$\\)")
+  (deft-extensions '("org" "tex"))
   :config
   (setq deft-strip-summary-regexp
 	    (concat "\\("
@@ -264,6 +260,16 @@
 		        "\\|^:PROPERTIES:\n\\(.+\n\\)+:END:\n"
 		        "\\)"))
   (setq deft-default-extension "org")
+
+  (defun +deft/title-with-type (orig-fn file)
+    "Append file extension to deft title."
+    (let ((title (funcall orig-fn file))
+          (ext (file-name-extension file)))
+      (if ext
+          (concat (propertize (format "[%s] " ext) 'face 'shadow) title)
+        title)))
+  (advice-add #'deft-file-title :around #'+deft/title-with-type)
+
   ;; NOTE enable auto refresh
   ;; see: https://github.com/jrblevin/deft/pull/62/files
   (defvar deft-auto-refresh-descriptor nil)
@@ -387,5 +393,63 @@
    :keymaps 'org-agenda-mode-map
    "C-c ."   #'org-gtd-agenda-transient)
   )
+
+(defun consult-org--get-heading-time-info (marker)
+  "Extract time info (SCHEDULED, DEADLINE, or timestamp) from heading at MARKER."
+  (with-current-buffer (marker-buffer marker)
+    (save-excursion
+      (goto-char marker)
+      (let ((scheduled (org-entry-get (point) "SCHEDULED"))
+            (deadline (org-entry-get (point) "DEADLINE"))
+            (ts (org-get-scheduled-time (point))))
+        (cond
+         (scheduled (concat " SCH: " (substring scheduled 1 -1)))
+         (deadline (concat " DDL: " (substring deadline 1 -1)))
+         (ts (format-time-string " 🗓 %Y-%m-%d" ts))
+         (t ""))))))
+
+(defun consult-org-agenda-by-todo-status-with-time (orig-fun &optional match)
+  "Around advice for `consult-org-agenda' to group by TODO and show time info,
+with aligned time columns by using fixed-width priority placeholder."
+  (unless org-agenda-files
+    (user-error "No agenda files"))
+  (let* ((prefix t)
+         (cands (consult--slow-operation "Collecting agenda headings..."
+                  (or (consult-org--headings t match 'agenda)
+                      (user-error "No agenda headings"))))
+         (my-annotate
+          (lambda (cand)
+            (pcase-let ((`(,_level ,todo ,prio . ,_)
+                         (get-text-property 0 'consult-org--heading cand)))
+              (let* ((priority-str
+                      (if prio
+                          (propertize (format " [#%c]" prio) 'face 'org-priority)
+                        "     ")) ; 5 spaces = width of " [#A]"
+                     (base-annot (concat (or todo "") priority-str))
+                     (marker (get-text-property 0 'org-marker cand))
+                     (time-info (consult-org--get-heading-time-info marker)))
+                (consult--annotate-align
+                 cand
+                 (concat base-annot
+                         (and (not (string-empty-p time-info)) time-info))))))))
+    (consult--read
+     cands
+     :prompt "Go to agenda heading (by TODO): "
+     :category 'org-heading
+     :sort nil
+     :require-match t
+     :history '(:input consult-org--history)
+     :narrow (consult-org--narrow)
+     :state (consult--jump-state)
+     :annotate my-annotate
+     :group (lambda (cand transform)
+              (pcase-let ((`(,_level ,todo ,_prio . ,_)
+                           (get-text-property 0 'consult-org--heading cand)))
+                (if transform
+                    (substring cand (string-match-p " " cand))
+                  (or todo "[no TODO]"))))
+     :lookup (apply-partially #'consult--lookup-prop 'org-marker))))
+
+(advice-add 'consult-org-agenda :around #'consult-org-agenda-by-todo-status-with-time)
 
 (provide 'init-org)

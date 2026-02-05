@@ -135,21 +135,20 @@
 (require 'init-kbd)
 (require 'init-completion)
 
-;; Core functionality (deferred load)
-(with-eval-after-load 'init-utils
-  (require 'init-core)
-  (require 'init-misc)
-  (require 'init-os))
+;; Core functionality (immediate load)
+;; NOTE: Original with-eval-after-load 'init-utils was a no-op since init-utils
+;; was already loaded above. Keeping immediate load for reliability.
+(require 'init-core)
+(require 'init-misc)
+(require 'init-os)
 
-;; Advanced features (deferred load)
-(with-eval-after-load 'init-core
-  (require 'init-llm)
-  (require 'init-org))
+;; Advanced features
+(require 'init-llm)
+(require 'init-org)
 
 ;; LaTeX support (GUI only)
 (when (display-graphic-p)
-  (with-eval-after-load 'init-org
-    (require 'init-latex)))
+  (require 'init-latex))
 
 (use-package nael
   :ensure t
@@ -183,9 +182,8 @@
 
 (use-package keyfreq
   :ensure t
-  :defer t
+  :hook (after-init . keyfreq-mode)
   :config
-  (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))
 
 ;;; -----------------------------------------------------------
@@ -360,10 +358,3 @@
   :config
   (elfeed-goodies/setup))
 
-;; ------------------------------------------------------------------
-;; HACK minor fixes?
-;; ------------------------------------------------------------------
-
-;; trun off and turn on auto-compression-mode
-(auto-compression-mode nil)
-(auto-compression-mode 1)

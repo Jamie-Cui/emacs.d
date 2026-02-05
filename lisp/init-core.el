@@ -54,8 +54,8 @@
 (use-package dired-subtree
   :ensure t
   :after dired
-  :config
-  )
+  :custom
+  (dired-subtree-use-backgrounds nil))
 
 (use-package diredfl
   :ensure t
@@ -120,13 +120,15 @@
   (global-pangu-spacing-mode 1)
   (setq pangu-spacing-real-insert-separtor nil)
   (add-hook 'org-mode-hook
-            '(lambda ()
-               (set (make-local-variable
-                     'pangu-spacing-real-insert-separtor) t))))
+            #'(lambda ()
+                (set (make-local-variable
+                      'pangu-spacing-real-insert-separtor) t))))
 
 (use-package cnfonts
   :ensure t
   :custom
+  (cnfonts-directory (expand-file-name "cnfonts" +emacs/repo-directory))
+  (cnfonts-profiles '("default" "reading"))
   (cnfonts-personal-fontnames
    '(
      ("Maple Mono NL NF CN" "Maple Mono NF CN") ;; English
@@ -147,19 +149,6 @@
   :config
   ;; load default config
   (require 'smartparens-config))
-
-(use-package which-key
-  :ensure t
-  :custom
-  (which-key-max-display-columns nil)
-  (which-key-min-display-lines 3)
-  (which-key-side-window-slot -10)
-  (which-key-add-column-padding 1)
-  (which-key-sort-order 'which-key-key-order-alpha)
-  (which-key-sort-uppercase-first nil)
-  :config
-  (which-key-setup-side-window-bottom)
-  (which-key-mode 1))
 
 (use-package yasnippet
   :ensure t
@@ -229,7 +218,6 @@
 ;;
 ;; consult-citre
 ;; citre
-;; flycheck-popup-tip
 ;; flycheck
 ;; flycheck-eglot
 ;; eglot
@@ -267,29 +255,30 @@
                 (citre-auto-enable-citre-mode))))
   )
 
-(use-package flycheck-popup-tip
-  :ensure t
-  :after evil
-  :config
-  (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode)
-  ;; NOTE Only display the flycheck popup if we're in normal mode (for evil
-  ;;   users) or if no selection or completion is active. This popup can
-
-  ;;   interfere with the active evil mode, clear active regions, and other
-  ;;   funny business (see #7242).
-  (defun +syntax--disable-flycheck-popup-tip-maybe-a (&rest _)
-    (if (and (bound-and-true-p evil-local-mode)
-             (not (evil-emacs-state-p)))
-        (evil-normal-state-p)
-      (and (not (region-active-p))
-           (not (ignore-errors (>= corfu--index 0))))))
-
-  (advice-add #'flycheck-popup-tip-show-popup :before-while #'+syntax--disable-flycheck-popup-tip-maybe-a))
-
 (use-package flycheck
   :ensure t
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode)
+
+  (defun +flycheck/eldoc-function (callback &rest _)
+    "Show flycheck messages at point via eldoc."
+    (when-let* ((errs (flycheck-overlay-errors-at (point)))
+                (msgs (mapconcat
+                       (lambda (err)
+                         (let ((level (flycheck-error-level err))
+                               (msg (flycheck-error-message err)))
+                           (propertize (format "%s: %s" level msg)
+                                       'face (pcase level
+                                               ('error 'error)
+                                               ('warning 'warning)
+                                               (_ 'success)))))
+                       errs "\n")))
+      (funcall callback msgs)))
+
+  (add-hook 'flycheck-mode-hook
+            (lambda ()
+              (add-hook 'eldoc-documentation-functions #'+flycheck/eldoc-function nil t)))
+
   :custom
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   ;; flycheck has performace issues, make it less automate
@@ -316,17 +305,10 @@
 (use-package eglot
   :ensure t
   :config
-  ;; (add-hook 'c-ts-mode-hook 'eglot-ensure)
-  ;; (add-hook 'c++-ts-mode-hook 'eglot-ensure)
-  ;; (add-hook 'rust-ts-mode-hook 'eglot-ensure)
-  ;; (add-hook 'go-ts-mode-hook 'eglot-ensure)
-  (setq eglot-ignored-server-capabilities '(
-                                            ;; :inlayHintProvider
-                                            :documentHighlightProvider ;; WHY?
-                                            :semanticTokensProvider)) ;; WHY?
+  (setq eglot-ignored-server-capabilities '(:documentHighlightProvider ; no highlight
+                                            :semanticTokensProvider))
   (setq eglot-confirm-server-initiated-edits nil)
-  ;; (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
-  ;; install harper: cargo install harper-ls --locked
+
   (add-to-list 'eglot-server-programs
                '(text-mode . ("harper-ls" "--stdio"))) ;; add harper-ls
 
@@ -362,7 +344,6 @@
   :after eglot
   :if window-system ;; do not load eldoc-box on termial emacs
   :config
-  ;; (setq eldoc-echo-area-use-multiline-p nil)
   (add-hook 'eldoc-mode-hook #'eldoc-box-hover-at-point-mode))
 
 ;; -----------------------------------------------------------
@@ -385,9 +366,8 @@
   (persp-modestring-dividers '("(Proj:" ")" ""))
   (persp-show-modestring nil)
   (persp-modestring-short nil)
-  :init
-  (persp-mode)
   :config
+  (persp-mode)
   (put 'persp-selected-face 'face-alias 'success))
 
 (use-package projectile
