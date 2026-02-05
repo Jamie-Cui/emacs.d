@@ -120,9 +120,9 @@
   (global-pangu-spacing-mode 1)
   (setq pangu-spacing-real-insert-separtor nil)
   (add-hook 'org-mode-hook
-            '(lambda ()
-               (set (make-local-variable
-                     'pangu-spacing-real-insert-separtor) t))))
+            #'(lambda ()
+                (set (make-local-variable
+                      'pangu-spacing-real-insert-separtor) t))))
 
 (use-package cnfonts
   :ensure t
@@ -149,19 +149,6 @@
   :config
   ;; load default config
   (require 'smartparens-config))
-
-(use-package which-key
-  :ensure t
-  :custom
-  (which-key-max-display-columns nil)
-  (which-key-min-display-lines 3)
-  (which-key-side-window-slot -10)
-  (which-key-add-column-padding 1)
-  (which-key-sort-order 'which-key-key-order-alpha)
-  (which-key-sort-uppercase-first nil)
-  :config
-  (which-key-setup-side-window-bottom)
-  (which-key-mode 1))
 
 (use-package yasnippet
   :ensure t
@@ -318,17 +305,10 @@
 (use-package eglot
   :ensure t
   :config
-  ;; (add-hook 'c-ts-mode-hook 'eglot-ensure)
-  ;; (add-hook 'c++-ts-mode-hook 'eglot-ensure)
-  ;; (add-hook 'rust-ts-mode-hook 'eglot-ensure)
-  ;; (add-hook 'go-ts-mode-hook 'eglot-ensure)
-  (setq eglot-ignored-server-capabilities '(
-                                            ;; :inlayHintProvider
-                                            :documentHighlightProvider ;; WHY?
-                                            :semanticTokensProvider)) ;; WHY?
+  (setq eglot-ignored-server-capabilities '(:documentHighlightProvider ; no highlight
+                                            :semanticTokensProvider))
   (setq eglot-confirm-server-initiated-edits nil)
-  ;; (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
-  ;; install harper: cargo install harper-ls --locked
+
   (add-to-list 'eglot-server-programs
                '(text-mode . ("harper-ls" "--stdio"))) ;; add harper-ls
 
@@ -364,7 +344,6 @@
   :after eglot
   :if window-system ;; do not load eldoc-box on termial emacs
   :config
-  ;; (setq eldoc-echo-area-use-multiline-p nil)
   (add-hook 'eldoc-mode-hook #'eldoc-box-hover-at-point-mode))
 
 ;; -----------------------------------------------------------
@@ -387,9 +366,8 @@
   (persp-modestring-dividers '("(Proj:" ")" ""))
   (persp-show-modestring nil)
   (persp-modestring-short nil)
-  :init
-  (persp-mode)
   :config
+  (persp-mode)
   (put 'persp-selected-face 'face-alias 'success))
 
 (use-package projectile

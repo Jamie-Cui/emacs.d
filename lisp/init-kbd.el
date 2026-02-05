@@ -4,7 +4,85 @@
 ;;; Code:
 
 (require 'init-evil)
-(require 'which-key)
+
+;; Named functions for disabled keybindings (better debugging/profiling)
+(defun +kbd/disabled-M-d ()
+  "Placeholder for disabled M-d binding."
+  (interactive)
+  (message "M-d is disabled!"))
+
+(defun +kbd/disabled-M-u ()
+  "Placeholder for disabled M-u binding."
+  (interactive)
+  (message "M-u is disabled!"))
+
+(defun +kbd/disabled-M-q ()
+  "Placeholder for disabled M-q binding (reserved for kill app)."
+  (interactive)
+  (message "M-q is disabled!"))
+
+(defun +kbd/disabled-M-Q ()
+  "Placeholder for disabled M-Q binding (reserved for lock screen)."
+  (interactive)
+  (message "M-Q is disabled!"))
+
+(defun +kbd/disabled-M-h ()
+  "Placeholder for disabled M-h binding."
+  (interactive)
+  (message "M-h is disabled!"))
+
+(defun +kbd/disabled-M-k ()
+  "Placeholder for disabled M-k binding."
+  (interactive)
+  (message "M-k is disabled!"))
+
+(defun +kbd/persp-prev-and-show ()
+  "Switch to previous perspective and show name."
+  (interactive)
+  (persp-prev)
+  (+persp/show-name-in-echo))
+
+(defun +kbd/persp-next-and-show ()
+  "Switch to next perspective and show name."
+  (interactive)
+  (persp-next)
+  (+persp/show-name-in-echo))
+
+(defun +kbd/revert-buffer-no-confirm ()
+  "Revert buffer without confirmation."
+  (interactive)
+  (revert-buffer t t))
+
+(defun +kbd/persp-kill-current ()
+  "Kill the current perspective."
+  (interactive)
+  (persp-kill (persp-current-name)))
+
+(defun +kbd/find-private-config ()
+  "Find private emacs config."
+  (interactive)
+  (projectile-switch-project-by-name +emacs/repo-directory))
+
+(defun +kbd/find-user-emacs-config ()
+  "Find private emacs config in user-emacs-directory."
+  (interactive)
+  (when (not (projectile-project-p user-emacs-directory))
+    (dired-create-empty-file (concat user-emacs-directory projectile-dirconfig-file))
+    (projectile-add-known-project user-emacs-directory))
+  (projectile-switch-project-by-name user-emacs-directory))
+
+(use-package which-key
+  :ensure t
+  :custom
+  (which-key-max-display-columns nil)
+  (which-key-min-display-lines 3)
+  (which-key-side-window-slot -10)
+  (which-key-add-column-padding 1)
+  (which-key-sort-order 'which-key-key-order-alpha)
+  (which-key-sort-uppercase-first nil)
+  :config
+  (which-key-setup-side-window-bottom)
+  (which-key-mode 1))
 
 ;; ------------------------------------------------------------------
 ;; DONE Key Bindings
@@ -45,7 +123,6 @@
    "M-w"     #'widen
    "M-p"     #'+compile-with-no-preset ; just like vscode
    "M-P"     #'+compile-with-comint ; just like vscode
-   "M-d"     #'evil-multiedit-match-symbol-and-next ; default
    ;; more-frequent commands
    "M-j"     #'consult-buffer ; jump to buffers quickly
    "M-e"     #'evil-avy-goto-char-timer ; quick find edit (point)?
@@ -59,14 +136,14 @@
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-v"     #'evil-paste-after ; paste like mac
    ;; disabled
-   "M-d"     #'(lambda () (interactive) (message "M-d is disabled!"))
-   "M-u"     #'(lambda () (interactive) (message "M-u is disabled!"))
-   "M-q"     #'(lambda () (interactive) (message "M-q is disabled!")) ; reserved for kill app
-   "M-Q"     #'(lambda () (interactive) (message "M-Q is disabled!")) ; reserved for lock screen
-   "M-h"     #'(lambda () (interactive) (message "M-h is disabled!"))
-   "M-k"     #'(lambda () (interactive) (message "M-k is disabled!"))
-   "C-h"     #'(lambda () (interactive) (persp-prev) (+persp/show-name-in-echo))
-   "C-l"     #'(lambda () (interactive) (persp-next) (+persp/show-name-in-echo))
+   "M-d"     #'+kbd/disabled-M-d
+   "M-u"     #'+kbd/disabled-M-u
+   "M-q"     #'+kbd/disabled-M-q ; reserved for kill app
+   "M-Q"     #'+kbd/disabled-M-Q ; reserved for lock screen
+   "M-h"     #'+kbd/disabled-M-h
+   "M-k"     #'+kbd/disabled-M-k
+   "C-h"     #'+kbd/persp-prev-and-show
+   "C-l"     #'+kbd/persp-next-and-show
    ;; emacs binding
    ;; NOTE those bindings are set to global since most of time, mac and terminal adopts those bindings
    "C-a"     #'evil-first-non-blank ; like "^" in vim
@@ -125,7 +202,7 @@
     "bs"     #'save-buffer
     "bS"     #'+save-all-buffers
     "by"     #'+copy-buffer-file-name
-    "br"     #'(lambda () (interactive) (revert-buffer t t))
+    "br"     #'+kbd/revert-buffer-no-confirm
     "j" '(:ignore t :which-key "jump (bookmark)")
     "j RET"  #'consult-bookmark
     "jj"     #'consult-bookmark
@@ -152,8 +229,7 @@
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pp"     #'projectile-switch-project
-    "pq"     #'(lambda () (interactive)
-                 (persp-kill (persp-current-name)))
+    "pq"     #'+kbd/persp-kill-current
     "pa"     #'projectile-add-known-project
     "px"     #'projectile-remove-known-project
     "pg"     #'projectile-cleanup-known-projects
@@ -253,14 +329,8 @@
     "fm"     #'consult-man
     "fM"     #'consult-woman
     "fh"     #'consult-history ; find history
-    "fp"     #'(lambda () ; find private emacs config
-                 (interactive) (projectile-switch-project-by-name +emacs/repo-directory))
-    "fP"     #'(lambda () ; find private emacs config in .emacs.d
-                 (interactive)
-                 (when (not (projectile-project-p user-emacs-directory))
-                   (dired-create-empty-file (concat user-emacs-directory projectile-dirconfig-file))
-                   (projectile-add-known-project user-emacs-directory))
-                 (projectile-switch-project-by-name user-emacs-directory))
+    "fp"     #'+kbd/find-private-config ; find private emacs config
+    "fP"     #'+kbd/find-user-emacs-config ; find private emacs config in .emacs.d
     )
 
   ;; occur mode
