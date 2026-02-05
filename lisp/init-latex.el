@@ -7,17 +7,13 @@
 
 ;; -----------------------------------------------------------
 ;; DONE latex
-;; 
+;;
 ;; auctex
 ;; ebib
 ;; pdf-tools
 ;; citar
 ;; citar-embark
 ;; -----------------------------------------------------------
-
-;; default bib file
-;; (add-to-list 'bibtex-files 
-;;              (concat +emacs/org-root-dir "/all-ref.bib"))
 
 (use-package auctex
   :ensure t)
@@ -34,14 +30,14 @@
   (ebib-uniquify-keys t)
   (ebib-autogenerate-keys t)
   :config
-  (add-to-list 'ebib-preload-bib-files 
+  (add-to-list 'ebib-preload-bib-files
                (concat +emacs/org-root-dir "/all-ref.bib")))
 
 (use-package pdf-tools
   :ensure t
-  :if (not (eq system-type 'windows-nt)) 
-  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode) 
-  :magic ("%PDF" . pdf-view-mode) 
+  :if (not (eq system-type 'windows-nt))
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+  :magic ("%PDF" . pdf-view-mode)
   :custom
   ;; to use pdfview with auctex
   (TeX-view-program-selection '((output-pdf "PDF Tools")))
@@ -49,7 +45,7 @@
   (pdf-tools-install)
   :config
   ;; pdf-tools have the buffer refresh after compilation
-  (add-hook 'TeX-after-compilation-finished-functions 
+  (add-hook 'TeX-after-compilation-finished-functions
             #'TeX-revert-document-buffer)
 
   ;; Enable SyncTeX
@@ -58,7 +54,7 @@
 
   ;; Set PDF-Tools as the default viewer
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-        TeX-view-program-list 
+        TeX-view-program-list
         '(("PDF Tools" TeX-pdf-tools-sync-view)))
 
   ;; Define forward search function
@@ -74,7 +70,7 @@
         pdf-sync-generic-forward-search-command
         "emacsclient --no-wait +%l '%f'")
 
-  (setq TeX-PDF-mode t) 
+  (setq TeX-PDF-mode t)
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode))
 
 (use-package citar
@@ -89,15 +85,15 @@
   ;; (org-cite-activate-processor 'citar)
   :config
   (setq citar-at-point-function 'embark-act)
-  (add-to-list 'citar-bibliography 
+  (add-to-list 'citar-bibliography
                (concat +emacs/org-root-dir "/all-ref.bib"))
-  (add-to-list 'citar-library-paths 
+  (add-to-list 'citar-library-paths
                (concat +emacs/org-root-dir "/pdf"))
-  (add-to-list 'citar-notes-paths 
+  (add-to-list 'citar-notes-paths
                (concat +emacs/org-root-dir "/roam"))
   (setf (alist-get 'note citar-templates) "${=key=}")
   ;; NOTE this var is used by org-export
-  (add-to-list 'org-cite-global-bibliography 
+  (add-to-list 'org-cite-global-bibliography
                (concat +emacs/org-root-dir "/all-ref.bib"))
 
   ;; Make citar-open-entry show item in ebib
@@ -169,10 +165,10 @@ is returned unchanged."
                string)))))
 
 ;; NOTE if you are drawing svg through inkscpae
-;; 
+;;
 ;; first, use the following in dir-local if you want to svg in latex
 ;; ((LaTeX-mode . ((TeX-command-extra-options . "-shell-escape"))))
-;; 
+;;
 ;; then, in you latex file, explicitly uses svg package, and let inkscape controls the font
 ;; \usepackage{svg}
 ;; \svgsetup{inkscapelatex=false}

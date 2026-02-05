@@ -169,6 +169,8 @@
     ;; "RET"    #'dashboard-open
     "G"      #'gptel  ;; G -> Gptel
     "A"      #'agent-shell ;; A -> Agent
+    "X"      #'scratch-buffer ; popup
+    "M"      #'popwin:messages ; popup
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer
@@ -224,8 +226,6 @@
     "oD"     #'+os-explorer/dwim
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
-    "ox"     #'scratch-buffer ; popup
-    "om"     #'popwin:messages ; popup
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pp"     #'projectile-switch-project
