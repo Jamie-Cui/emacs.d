@@ -2,12 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-;; defining your own
-;; macos: ~/Library/Mobile Documents/com~apple~CloudDocs/org-root
-;; linux: ~/opt/org-root
-;; it's recommended to symlink your remote file here
-;; ln -s ~/Library/Mobile\ Documents/com\~apple\~CloudDocs/org-root .
-
 (require 'org)
 (require 'org-agenda)
 (require 'init-utils)
@@ -257,6 +251,7 @@
   (deft-use-filename-as-title nil)
   (deft-directory (concat +emacs/org-root-dir "/deft"))
   (deft-ignore-file-regexp "^\\(?:\\.|$\\)")
+  (deft-extensions '("org" "tex"))
   :config
   (setq deft-strip-summary-regexp
 	    (concat "\\("
@@ -265,6 +260,16 @@
 		        "\\|^:PROPERTIES:\n\\(.+\n\\)+:END:\n"
 		        "\\)"))
   (setq deft-default-extension "org")
+
+  (defun +deft/title-with-type (orig-fn file)
+    "Append file extension to deft title."
+    (let ((title (funcall orig-fn file))
+          (ext (file-name-extension file)))
+      (if ext
+          (concat (propertize (format "[%s] " ext) 'face 'shadow) title)
+        title)))
+  (advice-add #'deft-file-title :around #'+deft/title-with-type)
+
   ;; NOTE enable auto refresh
   ;; see: https://github.com/jrblevin/deft/pull/62/files
   (defvar deft-auto-refresh-descriptor nil)

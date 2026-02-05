@@ -127,6 +127,8 @@
 (use-package cnfonts
   :ensure t
   :custom
+  (cnfonts-directory (expand-file-name "cnfonts" +emacs/repo-directory))
+  (cnfonts-profiles '("default" "reading"))
   (cnfonts-personal-fontnames
    '(
      ("Maple Mono NL NF CN" "Maple Mono NF CN") ;; English
@@ -229,7 +231,6 @@
 ;;
 ;; consult-citre
 ;; citre
-;; flycheck-popup-tip
 ;; flycheck
 ;; flycheck-eglot
 ;; eglot
@@ -267,29 +268,30 @@
                 (citre-auto-enable-citre-mode))))
   )
 
-(use-package flycheck-popup-tip
-  :ensure t
-  :after evil
-  :config
-  (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode)
-  ;; NOTE Only display the flycheck popup if we're in normal mode (for evil
-  ;;   users) or if no selection or completion is active. This popup can
-
-  ;;   interfere with the active evil mode, clear active regions, and other
-  ;;   funny business (see #7242).
-  (defun +syntax--disable-flycheck-popup-tip-maybe-a (&rest _)
-    (if (and (bound-and-true-p evil-local-mode)
-             (not (evil-emacs-state-p)))
-        (evil-normal-state-p)
-      (and (not (region-active-p))
-           (not (ignore-errors (>= corfu--index 0))))))
-
-  (advice-add #'flycheck-popup-tip-show-popup :before-while #'+syntax--disable-flycheck-popup-tip-maybe-a))
-
 (use-package flycheck
   :ensure t
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode)
+
+  (defun +flycheck/eldoc-function (callback &rest _)
+    "Show flycheck messages at point via eldoc."
+    (when-let* ((errs (flycheck-overlay-errors-at (point)))
+                (msgs (mapconcat
+                       (lambda (err)
+                         (let ((level (flycheck-error-level err))
+                               (msg (flycheck-error-message err)))
+                           (propertize (format "%s: %s" level msg)
+                                       'face (pcase level
+                                               ('error 'error)
+                                               ('warning 'warning)
+                                               (_ 'success)))))
+                       errs "\n")))
+      (funcall callback msgs)))
+
+  (add-hook 'flycheck-mode-hook
+            (lambda ()
+              (add-hook 'eldoc-documentation-functions #'+flycheck/eldoc-function nil t)))
+
   :custom
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   ;; flycheck has performace issues, make it less automate
