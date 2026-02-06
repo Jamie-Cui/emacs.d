@@ -103,64 +103,6 @@
     ;; Adapted from 'bibtex-completion-show-entry'.
     (ebib (concat +emacs/org-root-dir "/all-ref.bib") citekey))
   (setopt citar-open-entry-function #'citar-open-entry-in-ebib)
-
-  ;; Add "Open in ebib" option to citar-open
-  ;; This allows selecting entries in ebib from citar-open menu
-  (defun +citar/open-in-ebib (citekey)
-    "Open CITEKEY in ebib from citar-open interface."
-    (interactive)
-    (citar-open-entry-in-ebib citekey))
-
-  ;; Create ebib candidates for citar-open
-  (defun +citar/get-ebib-candidates (citekeys)
-    "Return ebib candidates for CITEKEYS."
-    (let ((format (citar-format--parse (citar--get-template 'completion)))
-          (width (- (frame-width) 2)))
-      (mapcar (lambda (key)
-                (let* ((entry (citar-get-entry key))
-                       (cand (citar-format--entry format entry width
-                                                  :ellipsis citar-ellipsis))
-                       (keycand (citar--prepend-candidate-citekey key cand)))
-                  (propertize keycand 'citar--resource 'ebib 'multi-category
-                              (cons 'citar-reference (propertize key 'citar--resource 'ebib)))))
-              citekeys)))
-
-  ;; Override citar--get-resource-candidates to add ebib resources
-  (advice-add 'citar--get-resource-candidates :around
-              (lambda (orig-fun citekeys &rest args)
-                (let ((original-result (apply orig-fun citekeys args))
-                      (ebib-cands (+citar/get-ebib-candidates citekeys)))
-                  (if original-result
-                      (pcase-let ((`(,category . ,cands) original-result))
-                        (if (eq category 'multi-category)
-                            ;; Already multi-category, just append
-                            (cons 'multi-category (append cands ebib-cands))
-                          ;; Convert to multi-category
-                          (cons 'multi-category
-                                (append (mapcar (lambda (c)
-                                                  (if (get-text-property 0 'multi-category c)
-                                                      c
-                                                    (propertize c 'multi-category (cons category c))))
-                                                cands)
-                                        ebib-cands))))
-                    ;; No other resources, return just ebib
-                    (cons 'citar-reference ebib-cands)))))
-
-  ;; Override citar--select-group-related-resources to handle ebib grouping
-  (advice-add 'citar--select-group-related-resources :around
-              (lambda (orig-fun resource transform)
-                (pcase (get-text-property 0 'citar--resource resource)
-                  ('ebib (if transform resource "Open in Ebib"))
-                  (_ (funcall orig-fun resource transform)))))
-
-  ;; Override citar--open-resource to handle ebib opening
-  (advice-add 'citar--open-resource :around
-              (lambda (orig-fun resource &optional type)
-                (let ((res-type (or type (get-text-property 0 'citar--resource resource))))
-                  (if (eq res-type 'ebib)
-                      (+citar/open-in-ebib (citar--extract-candidate-citekey resource))
-                    (funcall orig-fun resource type)))))
-
   (advice-add 'citar-insert-citation :around
               (lambda (orig-fun &rest args)
                 (+evil/smart-insert)
