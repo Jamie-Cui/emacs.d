@@ -617,4 +617,7 @@
   (envrc-remote t)
   :hook (after-init . envrc-global-mode))
 
+(use-package crux
+  :ensure t)
+
 (provide 'init-core)

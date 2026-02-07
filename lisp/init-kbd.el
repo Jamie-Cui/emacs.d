@@ -214,6 +214,7 @@
     "D"      #'docker
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
+    "oo"     #'crux-open-with
     "ob"     #'citar-open ; open/find bib
     "oB"     #'ebib ; edit bib
     "oe"     #'elfeed
