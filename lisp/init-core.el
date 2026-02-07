@@ -376,8 +376,8 @@
   (projectile-indexing-method 'hybrid)
   ;; DO NOT add / remove project automatically
   (projectile-track-known-projects-automatically nil)
-  ;; enable cache persistently
-  (projectile-enable-caching 'persistent)
+  ;; DO NOT enable cache
+  (projectile-enable-caching nil)
   ;; each project has a separate compilation buffer
   (projectile-per-project-compilation-buffer t)
   ;; remote cache is avaliable for 5 min

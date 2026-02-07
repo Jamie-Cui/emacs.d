@@ -124,7 +124,7 @@
    "M-p"     #'+compile-with-no-preset ; just like vscode
    "M-P"     #'+compile-with-comint ; just like vscode
    ;; more-frequent commands
-   "M-j"     #'consult-buffer ; jump to buffers quickly
+   "M-b"     #'consult-buffer ; jump to buffers quickly
    "M-e"     #'evil-avy-goto-char-timer ; quick find edit (point)?
    "M-i"     #'consult-imenu
    "M-m"     #'evil-multiedit-match-symbol-and-next  ; match
@@ -140,7 +140,6 @@
    "M-u"     #'+kbd/disabled-M-u
    "M-q"     #'+kbd/disabled-M-q ; reserved for kill app
    "M-Q"     #'+kbd/disabled-M-Q ; reserved for lock screen
-   "M-h"     #'+kbd/disabled-M-h
    "M-k"     #'+kbd/disabled-M-k
    "C-h"     #'+kbd/persp-prev-and-show
    "C-l"     #'+kbd/persp-next-and-show
@@ -169,6 +168,8 @@
     ;; "RET"    #'dashboard-open
     "G"      #'gptel  ;; G -> Gptel
     "A"      #'agent-shell ;; A -> Agent
+    "X"      #'scratch-buffer ; popup
+    "M"      #'popwin:messages ; popup
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer
@@ -224,8 +225,6 @@
     "oD"     #'+os-explorer/dwim
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
-    "ox"     #'scratch-buffer ; popup
-    "om"     #'popwin:messages ; popup
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pp"     #'projectile-switch-project
