@@ -54,11 +54,14 @@
 (setopt org-cycle-hide-drawer-startup t)
 (setopt org-cycle-hide-block-startup t)
 (setopt org-cycle-open-archived-trees nil)
+(setopt org-indirect-buffer-display 'current-window)
 
 (setopt org-startup-indented t)
 (setopt org-startup-folded 'nofold)
 (setopt org-startup-with-inline-images t)
 (setopt org-startup-with-latex-preview nil)
+
+(setopt org-enforce-todo-dependencies t)
 
 (setq org-preview-latex-process-alist
       '((xdvisvgm
