@@ -352,6 +352,7 @@
   ;; Suppress upgrade warnings (must be set before package loads)
   (setq org-gtd-update-ack "4.0.0")
   :custom
+  (org-gtd-prefix-width 20)
   (org-gtd-save-after-organize t)
   (org-gtd-directory (concat +emacs/org-root-dir "/gtd"))
   ;; Map GTD semantic states to your keywords
