@@ -595,7 +595,7 @@
      ;; :position bottom :stick t :tail t :dedicated t)
      ;; (agent-shell-mode :position bottom :stick t :dedicated t)
      ;; org-related
-     ("*Org Agenda*" :position bottom :position bottom :stick t :dedicated t)
+     ;; ("*Org Agenda*" :position bottom :position bottom :stick t :dedicated t)
      ("*Org Select*" :position bottom :position bottom :stick t :dedicated t)
      ("CAPTURE-inbox.org" :position bottom :position bottom :stick t :dedicated t)
      (org-gtd-clarify-mode :position bottom :position bottom :stick t :dedicated t)

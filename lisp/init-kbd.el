@@ -191,10 +191,11 @@
     "ww"     #'other-window
     "wx"     #'evil-window-exchange
     "wd"     #'delete-window
+    "wr"     #'balance-windows
     "ws"     #'+evil/window-split-and-follow
     "wv"     #'+evil/window-vsplit-and-follow
     "wm"     #'delete-other-windows
-    "wr"     #'redraw-display
+    "wR"     #'redraw-display
     ;; buffer-related key bindings
     "b" '(:ignore t :which-key "buffer")
     "ba"     #'evil-buffer-new
@@ -251,6 +252,7 @@
     "ni"      #'org-gtd-process-inbox ; process
     "ne"      #'org-gtd-engage ; engage (do-things)
     "nl" '(:ignore t :which-key "list")
+    "nll"     #'org-gtd-show-all-next ; list next (alias)
     "nln"     #'org-gtd-show-all-next ; list next
     "nlw"     #'org-gtd-reflect-someday-maybe ; list wait
     "nlc"     #'org-gtd-reflect-completed-items ; list complete

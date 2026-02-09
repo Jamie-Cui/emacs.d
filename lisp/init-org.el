@@ -308,6 +308,8 @@
 
 (use-package org-appear
   :ensure t
+  :custom
+  (org-hide-emphasis-markers t)
   :config
   (add-hook 'org-mode-hook 'org-appear-mode))
 
