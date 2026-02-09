@@ -10,25 +10,10 @@
 ;; DONE org: the built-in package
 ;; -----------------------------------------------------------
 
-(use-package org-remoteimg
-  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
-  :config
-  (setq url-cache-directory (concat user-emacs-directory "url/")) ; cache store location
-  (setq org-display-remote-inline-images 'cache) ; enable caching
-  )
-
 (use-package toc-org
   :ensure t
   :config
   (add-hook 'org-mode-hook 'toc-org-mode))
-
-;; REVIEW no need for this package if we already have org-toggle-inline images
-;; (use-package org-imgtog
-;;   :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
-;;   :hook (org-mode . org-imgtog-mode)
-;;   :config
-;;   (setq org-imgtog-preview-delay 0.5) ;; wait 0.5 seconds before toggling
-;;   (setq org-imgtog-preview-delay-only-remote t)) ;; only delay for remote images
 
 ;;; list
 (setopt org-list-allow-alphabetical t)
@@ -186,7 +171,6 @@
 ;; -----------------------------------------------------------
 ;; DONE org
 ;;
-;; org-journal
 ;; org-download
 ;; ob-http
 ;; plantuml-mode
@@ -195,20 +179,7 @@
 ;; org-appear
 ;; xenops
 ;; engrave-faces
-;; consult-notes
 ;; -----------------------------------------------------------
-
-(use-package org-journal
-  :ensure t
-  :custom
-  (org-journal-dir (concat +emacs/org-root-dir "/journal"))
-  (org-journal-find-file-fn 'find-file)
-  (org-journal-file-format "%Y%m%d.org")
-  (org-journal-file-type 'monthly)
-  (org-journal-carryover-items "TODO=\"[ ]\"|TODO=\"[?]\"|TODO=\"[-]\"")
-  (org-journal-enable-agenda-integration t)
-  :config
-  (add-to-list 'org-agenda-files org-journal-dir))
 
 (use-package org-download
   :ensure t

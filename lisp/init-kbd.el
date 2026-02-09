@@ -165,7 +165,6 @@
     :states '(normal visual motion)
     :keymaps 'override ; prevent from being override
     ;; most-frequency keys
-    ;; "RET"    #'dashboard-open
     "G"      #'gptel  ;; G -> Gptel
     "A"      #'agent-shell ;; A -> Agent
     "X"      #'scratch-buffer ; popup
@@ -216,8 +215,8 @@
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "oo"     #'crux-open-with
-    "ob"     #'citar-open ; open/find bib
-    "oB"     #'ebib ; edit bib
+    "ob"     #'citar-open
+    "oB"     #'ebib
     "oe"     #'elfeed
     "oE"     #'ielm ; elisp repl
     "og"     #'magit-status-quick
@@ -227,6 +226,8 @@
     "oD"     #'+os-explorer/dwim
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
+    "ox"     #'scratch-buffer
+    "om"     #'popwin:messages
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pp"     #'projectile-switch-project

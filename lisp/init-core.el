@@ -579,7 +579,7 @@
      ;; emacs-builtin
      ("*xref*" :position bottom :position bottom :stick t :dedicated t)
      ("*Messages*" :position bottom :stick t :dedicated t)
-     ("*scratch*" :position bottom :stick t :dedicated t)
+     ;; ("*scratch*" :position bottom :stick t :dedicated t)
      ;; help
      ("*Multiple Choice Help*" :position bottom :position bottom :stick t :dedicated t)
      (help-mode :position bottom :stick t :dedicated t)
