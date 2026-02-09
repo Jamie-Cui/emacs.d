@@ -247,7 +247,8 @@
     "n" '(:ignore t :which-key "note")
     "na"      #'org-agenda-list
     "nA"      #'consult-org-agenda
-    "nt"      #'org-todo-list
+    "nt"      #'org-todo-list ; todo list
+    "nw"      #'org-gtd-reflect-someday-maybe ; wait list
     "nc"      #'org-gtd-capture ; capture
     "ni"      #'org-gtd-process-inbox ; process
     "ne"      #'org-gtd-engage ; engage (do-things)
