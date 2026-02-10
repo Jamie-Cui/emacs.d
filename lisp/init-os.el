@@ -5,6 +5,8 @@
 (use-package sis
   :ensure t
   :config
+  (setq sis-auto-refresh-seconds nil)
+
   ;; GNU/Linux - ibus
   (when (eq system-type 'gnu/linux)
     (sis-ism-lazyman-config "xkb:us::eng" "OTHER_INPUT_SOURCE" 'ibus))
@@ -18,8 +20,6 @@
     (sis-ism-lazyman-config
      "com.apple.keylayout.ABC"
      "com.apple.inputmethod.SCIM.ITABC")
-    ;; (setq sis-do-set
-    ;;       (lambda(source) (start-process "set-input-source" nil "macism" source "50000")))
     )
 
   ;; windows (auto-config, no extra effort needed)

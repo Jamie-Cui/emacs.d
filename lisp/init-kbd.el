@@ -117,17 +117,14 @@
    :keymaps 'override
    "M-RET"   #'completion-at-point ;; FIXME org-mode should not use that
    "C-M-<return>" #'completion-at-point ; alternative
-   ;; less-frequent commands
+   ;; more-frequent commands
    "M-y"     #'yas-expand
-   "M-n"     #'narrow-to-region
-   "M-w"     #'widen
    "M-p"     #'+compile-with-no-preset ; just like vscode
    "M-P"     #'+compile-with-comint ; just like vscode
-   ;; more-frequent commands
    "M-b"     #'consult-buffer ; jump to buffers quickly
-   "M-e"     #'evil-avy-goto-char-timer ; quick find edit (point)?
+   "M-w"     #'evil-avy-goto-char-timer ; quick find edit (point)?
    "M-i"     #'consult-imenu
-   "M-m"     #'evil-multiedit-match-symbol-and-next  ; match
+   "M-d"     #'evil-multiedit-match-symbol-and-next  ; dup
    ;; mac-like binding
    "M-f"     #'consult-line ; search like mac
    "M-a"     #'mark-whole-buffer ; select like mac
@@ -136,7 +133,6 @@
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-v"     #'evil-paste-after ; paste like mac
    ;; disabled
-   "M-d"     #'+kbd/disabled-M-d
    "M-u"     #'+kbd/disabled-M-u
    "M-q"     #'+kbd/disabled-M-q ; reserved for kill app
    "M-Q"     #'+kbd/disabled-M-Q ; reserved for lock screen

@@ -136,7 +136,7 @@
                 imenu-list-minor-mode-hook
                 imenu-list-major-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode -1))))
-(setq-default display-line-numbers-type 't)
+(setq-default display-line-numbers-type 'visual)
 
 ;; use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
