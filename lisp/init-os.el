@@ -9,12 +9,21 @@
   (when (eq system-type 'gnu/linux)
     (sis-ism-lazyman-config "xkb:us::eng" "OTHER_INPUT_SOURCE" 'ibus))
 
-  ;; Macos - native input source
+  ;; Macos (auto-config, no extra effort needed)
+  ;;
+  ;; brew tap laishulu/homebrew
+  ;; brew install macism
+  ;;
   (when (eq system-type 'darwin)
-    (sis-ism-lazyman-config "com.apple.keylayout.US"))
+    (sis-ism-lazyman-config
+     "com.apple.keylayout.ABC"
+     "com.apple.inputmethod.SCIM.ITABC")
+    ;; (setq sis-do-set
+    ;;       (lambda(source) (start-process "set-input-source" nil "macism" source "50000")))
+    )
 
   ;; windows (auto-config, no extra effort needed)
-  (when (eq system-type 'windows-nt))
+  ;; (when (eq system-type 'windows-nt))
 
   ;; enable the /cursor color/ mode
   ;; (sis-global-cursor-color-mode t)
