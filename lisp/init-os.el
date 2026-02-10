@@ -2,6 +2,30 @@
 ;;; Commentary:
 ;;; Code:
 
+(use-package sis
+  :ensure t
+  :config
+  ;; GNU/Linux - ibus
+  (when (eq system-type 'gnu/linux)
+    (sis-ism-lazyman-config "xkb:us::eng" "OTHER_INPUT_SOURCE" 'ibus))
+
+  ;; Macos - native input source
+  (when (eq system-type 'darwin)
+    (sis-ism-lazyman-config "com.apple.keylayout.US"))
+
+  ;; windows (auto-config, no extra effort needed)
+  (when (eq system-type 'windows-nt))
+
+  ;; enable the /cursor color/ mode
+  (sis-global-cursor-color-mode t)
+  ;; enable the /respect/ mode
+  (sis-global-respect-mode t)
+  ;; enable the /context/ mode for all buffers
+  (sis-global-context-mode t)
+  ;; enable the /inline english/ mode for all buffers
+  (sis-global-inline-mode t)
+  )
+
 ;;; --------------------------------------
 ;;; Darwin (MacOs)
 ;;; --------------------------------------

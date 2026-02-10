@@ -459,9 +459,8 @@
 ;; eat
 ;; helpful
 ;; popwin
-;; eaf
 ;; envrc
-;; treesit-fold
+;; crux
 ;; -----------------------------------------------------------
 
 (use-package docker
