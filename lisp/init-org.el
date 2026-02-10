@@ -292,7 +292,7 @@
   :if (and window-system (not (eq system-type 'windows-nt))) ;; do not load xenops on termial emacs or windows nt
   :config
   (setq xenops-font-family "Maple Mono NL NF CN")
-  (setq xenops-reveal-on-entry nil)
+  (setq xenops-reveal-on-entry t)
   (setopt xenops-math-image-scale-factor 1.2)
   (setq xenops-math-latex-process-alist org-preview-latex-process-alist)
   (add-hook 'org-mode-hook #'xenops-mode)
