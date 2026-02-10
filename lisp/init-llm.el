@@ -104,7 +104,49 @@
           (skip-chars-backward " \t\r")
           (insert-and-inherit "*")))))
 
-  (add-hook 'gptel-post-response-functions #'+gptel/remove-headings))
+  (add-hook 'gptel-post-response-functions #'+gptel/remove-headings)
+
+  ;; -----------------------------------------------------------
+  ;; PlantUML Beautification (using gptel-rewrite)
+  ;; -----------------------------------------------------------
+
+  (defvar +gptel/beautify-plantuml-directive
+    "You are a PlantUML expert. Beautify and improve the PlantUML diagram while preserving its semantic meaning. Improve layout, add appropriate styling/colors, organize elements logically, add skinparams for professional appearance. Return ONLY the improved PlantUML code without any explanations or markdown formatting."
+    "Rewrite directive for PlantUML beautification.")
+
+  (defun gptel-beautify-plantuml ()
+    "Beautify PlantUML source block at point using gptel-rewrite.
+This selects the PlantUML code region and invokes gptel's rewrite
+functionality, allowing you to diff/ediff/merge the changes."
+    (interactive)
+    (require 'gptel-rewrite)
+    ;; 1. Validate we're in org-mode
+    (unless (derived-mode-p 'org-mode)
+      (user-error "Not in org-mode"))
+
+    ;; 2. Validate we're in a PlantUML source block
+    (let* ((info (org-babel-get-src-block-info))
+           (lang (car info)))
+      (unless info
+        (user-error "Not in a source block"))
+      (unless (string= lang "plantuml")
+        (user-error "Not in a PlantUML block (current: %s)" lang))
+
+      ;; 3. Select the code region
+      (let ((code-start (save-excursion
+                          (org-babel-goto-src-block-head)
+                          (forward-line 1)
+                          (point)))
+            (code-end (save-excursion
+                        (org-babel-goto-src-block-head)
+                        (re-search-forward "^[ \t]*#\\+end_src")
+                        (match-beginning 0))))
+        ;; 4. Set region and invoke gptel-rewrite
+        (goto-char code-start)
+        (push-mark code-end t t)
+        (let ((gptel--rewrite-directive +gptel/beautify-plantuml-directive))
+          (gptel--suffix-rewrite)))))
+  )
 
 (use-package gptel-magit
   :ensure t
