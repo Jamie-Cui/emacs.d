@@ -350,6 +350,8 @@
                   ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance")
                   ;; 求是网
                   ("https://plink.anyfeeder.com/qstheory")
+                  ;; Paper Pulse
+                  ("https://jamie-cui.github.io/paper-pulse/feed.xml")
                   )))
 
 (use-package elfeed-goodies
