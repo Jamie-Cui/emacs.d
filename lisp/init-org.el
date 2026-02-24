@@ -97,7 +97,7 @@
 (add-to-list 'org-file-apps '("\\.pdf\\'" . emacs))
 
 (add-to-list 'org-export-backends 'beamer)
-(add-to-list 'org-export-backends 'markdown)
+;; (add-to-list 'org-export-backends 'markdown)
 
 ;;; org-latex
 ;; NOTE default latex:
