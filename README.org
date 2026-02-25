@@ -2,7 +2,7 @@
 
 * Emacs.d
 
-**Personal Emacs configuration with two-level deferred loading, Evil mode, and gptel LLM integration. Targets Emacs 30.1+.**
+Personal Emacs configuration with two-level deferred loading, Evil mode, and gptel LLM integration. Targets Emacs 30.1+.
 
 #+begin_src
 ░▒▓████████▓▒░▒▓██████████████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓███████▓▒░
