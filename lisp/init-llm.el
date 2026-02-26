@@ -57,7 +57,7 @@
       :endpoint "/chat/completions"
       :stream t
       :key (auth-source-pick-first-password :host "aliyun")
-      :models '(qwen3-max qwen-plus deepseek-r1 qwen3-coder-plus)))
+      :models '(glm-5 qwen3-max qwen-plus deepseek-r1 qwen3-coder-plus)))
 
   ;; register zhipu backend
   (defvar +gptel/zhipu
@@ -82,7 +82,7 @@
 
   ;; set default values
   (setopt gptel-backend +gptel/aliyun)
-  (setopt gptel-model 'qwen3-max)
+  (setopt gptel-model 'glm-5)
 
   ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")

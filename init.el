@@ -359,3 +359,27 @@
   :after elfeed
   :config
   (elfeed-goodies/setup))
+
+;; (use-package magent
+;;   :after gptel
+;;   :demand t
+;;   :load-path "~/proj/magent/lisp"
+;;   :config
+;;   (+my-leader-def
+;;     :states '(normal visual motion)
+;;     :keymaps 'override ; prevent from being override
+;;     "mp" #'magent-prompt
+;;     "mr" #'magent-prompt-region
+;;     "ma" #'magent-ask-at-point
+;;     "mc" #'magent-clear-session
+;;     "ms" #'magent-show-session
+;;     "ml" #'magent-show-log
+;;     "mL" #'magent-clear-log
+;;     "mA" #'magent-select-agent
+;;     "mi" #'magent-show-current-agent
+;;     "mv" #'magent-list-agents
+;;     ))
+
+;; HACK
+(auto-compression-mode 0)
+(auto-compression-mode 1)
