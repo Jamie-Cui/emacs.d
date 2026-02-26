@@ -365,6 +365,13 @@
 ;;   :demand t
 ;;   :load-path "~/proj/magent/lisp"
 ;;   :config
+
+;;   ;; keybindings that should not be overriden
+;;   (general-define-key
+;;    :keymaps 'override
+;;    "M-m"   #'magent-prompt
+;;    )
+
 ;;   (+my-leader-def
 ;;     :states '(normal visual motion)
 ;;     :keymaps 'override ; prevent from being override
