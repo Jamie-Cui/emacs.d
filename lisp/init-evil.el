@@ -49,6 +49,7 @@
 (use-package evil
   :ensure t
   :preface
+  (setq sentence-end-double-space nil) ; single space for sentence
   (setq evil-overriding-maps nil)
   (setq evil-want-keybinding nil)
   (setq evil-auto-indent nil)
