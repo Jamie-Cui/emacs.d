@@ -104,7 +104,19 @@
    :preview-key '(:debounce 1 any))
   :config
   (setq xref-show-xrefs-function       #'consult-xref
-        xref-show-definitions-function #'consult-xref))
+        xref-show-definitions-function #'consult-xref)
+  ;; config python imenu
+  (add-to-list 'consult-imenu-config
+               '(python-mode
+                 :toplevel "Function"
+                 :types
+                 ((?f "Function" font-lock-function-name-face)
+                  (?m "Method" font-lock-function-name-face)
+                  (?c "Class" font-lock-property-use-face)
+                  (?M "Module" font-lock-builtin-face)
+                  (?F "Field" font-lock-regexp-face)
+                  (?v "Variable" font-lock-constant-face))))
+  )
 
 ;; -----------------------------------------------------------
 ;; Custom Functions

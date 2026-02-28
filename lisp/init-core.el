@@ -315,28 +315,29 @@
   ;; default setup for harper-ls
   ;; see: https://writewithharper.com/docs/integrations/emacs
   (setq-default eglot-workspace-configuration
-                '(:harper-ls (:userDictPath ""
-                                            :workspaceDictPath ""
-                                            :fileDictPath ""
-                                            :linters (:SpellCheck t
-                                                                  :SpelledNumbers :json-false
-                                                                  :AnA t
-                                                                  :SentenceCapitalization t
-                                                                  :UnclosedQuotes t
-                                                                  :WrongQuotes :json-false
-                                                                  :LongSentences t
-                                                                  :RepeatedWords t
-                                                                  :Spaces :json-false ;; no space!
-                                                                  :Matcher t
-                                                                  :CorrectNumberSuffix t)
-                                            :codeActions (:ForceStable :json-false)
-                                            :markdown (:IgnoreLinkTitle :json-false)
-                                            :diagnosticSeverity "hint"
-                                            :isolateEnglish :json-false
-                                            :dialect "American"
-                                            :maxFileLength 120000
-                                            :ignoredLintsPath ""
-                                            :excludePatterns [])))
+                '(:harper-ls
+                  (:userDictPath ""
+                                 :workspaceDictPath ""
+                                 :fileDictPath ""
+                                 :linters (:SpellCheck t
+                                                       :SpelledNumbers :json-false
+                                                       :AnA t
+                                                       :SentenceCapitalization t
+                                                       :UnclosedQuotes t
+                                                       :WrongQuotes :json-false
+                                                       :LongSentences t
+                                                       :RepeatedWords t
+                                                       :Spaces :json-false ;; no space!
+                                                       :Matcher t
+                                                       :CorrectNumberSuffix t)
+                                 :codeActions (:ForceStable :json-false)
+                                 :markdown (:IgnoreLinkTitle :json-false)
+                                 :diagnosticSeverity "hint"
+                                 :isolateEnglish :json-false
+                                 :dialect "American"
+                                 :maxFileLength 120000
+                                 :ignoredLintsPath ""
+                                 :excludePatterns [])))
   )
 
 (use-package eldoc-box
