@@ -56,9 +56,9 @@ init.el
 | Directory | Purpose |
 |-----------|---------|
 | `lisp/` | Core module files (`init-*.el`) |
-| `site-lisp/` | Local packages (org-remoteimg, org-imgtog, persp-projectile, consult-citre, agent-review) |
+| `site-lisp/` | Local packages and development projects |
+| `site-lisp/magent/` | AI coding agent for Emacs (see Magent section below) |
 | `agents/` | gptel-agent tool configurations (org-mode files loaded via MCP) |
-| `agent-skills/` | Claude Code skills for Emacs integration (e.g., `dired/` opens files in Emacs via emacsclient) |
 | `snippets/` | YASnippet templates (org-mode, c++-ts-mode, LaTeX-mode) |
 | `templates/` | User-facing templates (`init.el`, `.authinfo`) |
 | `cnfonts/` | cnfonts profiles (`default`, `reading`) and config |
@@ -120,6 +120,8 @@ OS-specific settings (keyboard modifiers, clipboard, etc.).
 - **gptel**: Gemini (via auth-source), Aliyun/Dashscope (qwen3-max, qwen-plus, deepseek-r1, qwen3-coder-plus), Zhipu (glm-4.7)
 - **gptel-agent**: Loads tools from `agents/` directory (org-mode files with MCP tool definitions)
 - **gptel-magit**: AI commit messages with reasoning model formatting
+- **magent**: Multi-agent AI coding assistant loaded from `site-lisp/magent/` with keybindings `M-m` and `SPC m*`
+- **agent-shell**: Interactive AI shell interface
 - Org-mode context prefixes: `=@Jamie=` and `=@AI=`
 
 ### init-org.el
@@ -133,6 +135,35 @@ OS-specific settings (keyboard modifiers, clipboard, etc.).
 ### init-latex.el
 GUI-only, non-Windows. AUCTeX with LatexMk, cdlatex, citar for bibliography.
 
+## Magent - AI Coding Agent
+
+Magent is a local development project in `site-lisp/magent/` providing multi-agent AI assistance within Emacs.
+
+### Architecture
+- **Multi-agent system**: `build` (default), `plan`, `explore`, `general`, plus custom agents via `.magent/agent/*.md`
+- **Permission-based tools**: Per-agent control over `read_file`, `write_file`, `grep`, `glob`, `bash`
+- **gptel integration**: All LLM communication delegated to gptel (supports Claude, OpenAI, local models)
+- **Session persistence**: Conversation history saved to `~/.emacs.d/magent-sessions/`
+
+### Keybindings
+Global override: `M-m` → `magent-prompt`
+
+Leader keybindings (`SPC m`):
+- `SPC mp` → prompt, `SPC mr` → prompt with region, `SPC ma` → ask at point
+- `SPC mc` → clear session, `SPC ms` → show session, `SPC ml` → show log
+- `SPC mA` → select agent, `SPC mi` → show current agent, `SPC mv` → list agents
+
+### Development
+Magent has its own `Makefile` in `site-lisp/magent/`:
+```bash
+cd site-lisp/magent
+make compile    # Byte-compile all magent Elisp files
+make test       # Run magent tests
+make clean      # Remove .elc files
+```
+
+See `site-lisp/magent/README.md` and `site-lisp/magent/CLAUDE.md` for full documentation.
+
 ## Important Notes
 
 - **Emacs version**: 30.1+ required
@@ -141,3 +172,4 @@ GUI-only, non-Windows. AUCTeX with LatexMk, cdlatex, citar for bibliography.
 - **Font**: Maple Mono NL NF CN (configured via cnfonts, profiles stored in `cnfonts/`). `default` profile for coding, `reading` profile (CMU Serif + FandolKai) for documents. Per-file profile switching via Local Variables.
 - **External tools needed**: ripgrep, PlantUML, universal-ctags, direnv
 - **Startup performance**: GC threshold set to `most-positive-fixnum` during init (reset to 16MB/0.1%), file-name-handler-alist unset during init, read-process-output-max at 1MB
+- **Server mode**: Emacs server started automatically at end of init (`server-start`)
