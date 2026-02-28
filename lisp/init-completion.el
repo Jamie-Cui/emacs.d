@@ -33,8 +33,8 @@
 (use-package vertico-posframe
   :ensure t
   :after vertico
-  :custom
-  (vertico-posframe-border-width 5)
+  ;; :custom
+  ;; (vertico-posframe-border-width 5)
   ;; make posframe transparent
   ;; (vertico-posframe-parameters '((alpha . 0.9)))
   :config
@@ -103,6 +103,7 @@
    consult--source-recent-file consult--source-project-recent-file
    :preview-key '(:debounce 1 any))
   :config
+  (require 'consult-imenu)
   (setq xref-show-xrefs-function       #'consult-xref
         xref-show-definitions-function #'consult-xref)
   ;; config python imenu
