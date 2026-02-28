@@ -390,3 +390,6 @@
 ;; HACK
 (auto-compression-mode 0)
 (auto-compression-mode 1)
+
+;; start emacs server
+(server-start)
