@@ -4,11 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture Overview
 
-Modern Emacs configuration targeting Emacs 30.1+ with two-level deferred loading for fast startup.
+Modern Emacs configuration targeting Emacs 30.1+ with immediate module loading and startup performance tuning.
 
 ### Two-file Entry Point
 
-The configuration uses a two-file entry system:
 - **`templates/init.el`** → installed to `~/.emacs.d/init.el` via `make init`. This is the **user-facing config** where `+emacs/*` variables, package archives, theme, proxy, and keyboard layout are customized. It loads the main `init.el` via `(load ...)`.
 - **`init.el`** (repo root) → the actual configuration entry point. Sets up performance tuning, custom variables, package management, environment, and loads all modules.
 
@@ -22,24 +21,20 @@ The configuration uses a two-file entry system:
 
 ### Module Loading Order
 
+All modules are loaded immediately via `require`. Individual packages within modules use `use-package` with `:defer t` where appropriate.
+
 ```
 init.el
-  ├─ init-utils       (immediate)
+  ├─ init-utils       (immediate, must be first)
   ├─ init-evil         (immediate)
   ├─ init-kbd          (immediate, requires init-evil)
   ├─ init-completion   (immediate)
-  │
-  ├─ with-eval-after-load 'init-utils:
-  │   ├─ init-core     (deferred)
-  │   ├─ init-misc     (deferred)
-  │   └─ init-os       (deferred)
-  │
-  ├─ with-eval-after-load 'init-core:
-  │   ├─ init-llm      (deferred)
-  │   └─ init-org      (deferred)
-  │
-  └─ when GUI + with-eval-after-load 'init-org:
-      └─ init-latex    (GUI only, deferred)
+  ├─ init-core         (immediate)
+  ├─ init-misc         (immediate)
+  ├─ init-os           (immediate)
+  ├─ init-llm          (immediate)
+  ├─ init-org          (immediate)
+  └─ init-latex        (immediate, GUI only)
 
   Additional packages defined inline in init.el:
     nael, protobuf-mode, meson-mode, themes, speed-type,
@@ -49,6 +44,7 @@ init.el
 
 ### Package Management
 
+- Uses built-in `package.el` + `use-package` (no straight.el or elpaca)
 - **Four archives**: gnu, nongnu, org, melpa (configured in `templates/init.el`)
 - Package-quickstart enabled (Emacs 30+)
 - Native compilation enabled (`package-native-compile t`)
@@ -59,9 +55,10 @@ init.el
 
 | Directory | Purpose |
 |-----------|---------|
-| `lisp/` | Core module files |
+| `lisp/` | Core module files (`init-*.el`) |
 | `site-lisp/` | Local packages (org-remoteimg, org-imgtog, persp-projectile, consult-citre, agent-review) |
-| `agents/` | gptel-agent tool configurations |
+| `agents/` | gptel-agent tool configurations (org-mode files loaded via MCP) |
+| `agent-skills/` | Claude Code skills for Emacs integration (e.g., `dired/` opens files in Emacs via emacsclient) |
 | `snippets/` | YASnippet templates (org-mode, c++-ts-mode, LaTeX-mode) |
 | `templates/` | User-facing templates (`init.el`, `.authinfo`) |
 | `cnfonts/` | cnfonts profiles (`default`, `reading`) and config |
@@ -82,6 +79,8 @@ make download      # Batch download/update all ELPA packages
 ```
 
 ### Testing
+
+No automated test infrastructure. Manual testing via:
 ```bash
 emacs -q --load /path/to/this/init.el --debug-init
 ```
@@ -119,7 +118,7 @@ OS-specific settings (keyboard modifiers, clipboard, etc.).
 
 ### init-llm.el
 - **gptel**: Gemini (via auth-source), Aliyun/Dashscope (qwen3-max, qwen-plus, deepseek-r1, qwen3-coder-plus), Zhipu (glm-4.7)
-- **gptel-agent**: Loads tools from `agents/` directory
+- **gptel-agent**: Loads tools from `agents/` directory (org-mode files with MCP tool definitions)
 - **gptel-magit**: AI commit messages with reasoning model formatting
 - Org-mode context prefixes: `=@Jamie=` and `=@AI=`
 
@@ -128,6 +127,7 @@ OS-specific settings (keyboard modifiers, clipboard, etc.).
 - Org babel: C, shell, LaTeX, PlantUML
 - LaTeX preview: xelatex + dvisvgm (xdvisvgm)
 - Org-roam, org-journal, deft (with file type display), toc-org, org-appear
+- org-gtd with org-edna for task dependencies
 - xenops for enhanced math rendering (non-Windows only)
 
 ### init-latex.el
@@ -138,6 +138,6 @@ GUI-only, non-Windows. AUCTeX with LatexMk, cdlatex, citar for bibliography.
 - **Emacs version**: 30.1+ required
 - **Lexical binding**: All files use `;;; -*- lexical-binding: t; -*-`
 - **Naming convention**: Custom functions/variables use `+module/name` prefix (e.g., `+evil/smart-insert`, `+emacs/proxy`)
-- **Font**: Maple Mono NF CN (configured via cnfonts, profiles stored in `cnfonts/`). `default` profile for coding, `reading` profile (CMU Serif + FandolKai) for documents. Per-file profile switching via Local Variables.
+- **Font**: Maple Mono NL NF CN (configured via cnfonts, profiles stored in `cnfonts/`). `default` profile for coding, `reading` profile (CMU Serif + FandolKai) for documents. Per-file profile switching via Local Variables.
 - **External tools needed**: ripgrep, PlantUML, universal-ctags, direnv
 - **Startup performance**: GC threshold set to `most-positive-fixnum` during init (reset to 16MB/0.1%), file-name-handler-alist unset during init, read-process-output-max at 1MB

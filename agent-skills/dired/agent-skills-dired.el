@@ -1,7 +1,7 @@
 (require 'cl-lib)
 (require 'dired)
 
-(cl-defun agent-skill-dired (&key dir files)
+(cl-defun agent-skills/dired (&key dir files)
   "Open a dired buffer at DIR with FILES marked.
 
 When all files share the same parent directory, DIR is that
@@ -23,4 +23,4 @@ is created instead."
         (dired-unmark-all-marks)
         (dired-toggle-marks)))))
 
-(provide 'agent-skill-dired)
+(provide 'agent-skills/dired)

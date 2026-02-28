@@ -11,7 +11,7 @@ Open files from the most recent interaction in an Emacs dired buffer using `emac
 
 ## Strategy
 
-Determine whether the relevant files all reside in the same directory or span multiple directories, then call `agent-skills-dired` accordingly.
+Determine whether the relevant files all reside in the same directory or span multiple directories, then call `agent-skills/dired` accordingly.
 
 - **Same directory**: `:dir` is the directory, `:files` are basenames. Opens dired at that directory with the files marked in context.
 - **Multiple directories**: `:dir` is the common ancestor, `:files` are relative paths. Creates a curated `*agent-files*` buffer with all files marked.
@@ -22,7 +22,7 @@ First, locate `agent-skills-dired.el` which lives alongside this skill file.
 emacsclient --eval '
 (progn
   (load "/path/to/skills/dired/agent-skills-dired.el" nil t)
-  (agent-skills-dired
+  (agent-skills/dired
     :dir "/path/to/directory"
     :files (quote ("file1.txt"
                    "file2.txt"
