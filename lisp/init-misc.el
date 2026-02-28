@@ -507,6 +507,9 @@
 (setopt mode-line-end-spaces nil)
 (setopt mode-line-front-space nil)
 
+;; turn on size in bytes indicator on modeline
+;; (size-indication-mode 1)
+
 ;; mode-line format
 (setopt mode-line-format
         (list
@@ -514,14 +517,6 @@
          'mode-line-front-space
          '(:eval (format-mode-line
                   (propertized-buffer-identification "%b")))
-         ;; '(:eval (format-mode-line
-         ;;          (propertized-buffer-identification
-         ;;           (or (when-let* ((buffer-file-truename buffer-file-truename)
-         ;;                           (project (cdr-safe (project-current)))
-         ;;                           (project-parent (file-name-directory (directory-file-name (expand-file-name project)))))
-         ;;                 (concat (file-relative-name (file-name-directory buffer-file-truename) project-parent)
-         ;;                         (file-name-nondirectory buffer-file-truename)))
-         ;;               "%b"))))
          "   "
          'mode-line-position
          "   "
@@ -529,22 +524,15 @@
                      (format " (Sel: %d)" (abs (- (point) (mark)))) ""))
          'mode-line-format-right-align
          'mode-line-misc-info
-         " "
-         ;; '(:eval
-         ;;   (propertize
-         ;;    (if (tramp-tramp-file-p buffer-file-name)
-         ;;        (format "[%s:%s]"
-         ;;                (tramp-file-name-method (tramp-dissect-file-name buffer-file-name))
-         ;;                (persp-current-name))
-         ;;      (format "[%s]" (persp-current-name)))
-         ;;    'face 'font-lock-keyword-face))
-         " "
+         "   "
+         '(:eval (format "%.1fk" (/ (count-lines (point-min) (point-max)) 1000.0)))
+         "   "
          'mode-name
          " (+"
          '(:eval (format "%d" (length local-minor-modes)))
          ")"
          'mode-line-end-spaces
-         " "
+         "   "
          )
         )
 
