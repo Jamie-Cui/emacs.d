@@ -361,7 +361,7 @@
   (elfeed-goodies/setup))
 
 (+use-package-when-dir-exists magent
-    (concat +emacs/repo-directory "/site-lisp/magent/lisp")
+    (concat +emacs/repo-directory "/site-lisp/magent")
   :after gptel
   :demand t
   :config

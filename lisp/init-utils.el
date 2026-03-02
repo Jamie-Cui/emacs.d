@@ -436,8 +436,8 @@ i.e. disables `ws-butler-mode' in the current buffer."
 NAME is the package name, DIR is the load-path directory, and
 ARGS are passed to `use-package'."
   (declare (indent 2))
-  `(let ((dir ,dir))
-     (when (file-directory-p dir)
-       (use-package ,name :load-path dir ,@args))))
+  (let ((resolved-dir (eval dir t)))
+    (when (file-directory-p resolved-dir)
+      `(use-package ,name :load-path ,resolved-dir ,@args))))
 
 (provide 'init-utils)
