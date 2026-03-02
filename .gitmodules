@@ -1,0 +1,6 @@
+[submodule "site-lisp/el-easydraw"]
+	path = site-lisp/el-easydraw
+	url = https://github.com/misohena/el-easydraw.git
+[submodule "site-lisp/magent"]
+	path = site-lisp/magent
+	url = git@github.com:Jamie-Cui/magent.git

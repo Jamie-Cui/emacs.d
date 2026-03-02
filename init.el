@@ -360,10 +360,10 @@
   :config
   (elfeed-goodies/setup))
 
-(use-package magent
+(+use-package-when-dir-exists magent
+    (concat +emacs/repo-directory "/site-lisp/magent/lisp")
   :after gptel
   :demand t
-  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/magent/lisp"))
   :config
 
   ;; keybindings that should not be overriden
@@ -386,6 +386,16 @@
     "mi" #'magent-show-current-agent
     "mv" #'magent-list-agents
     ))
+
+(+use-package-when-dir-exists edraw
+    (concat +emacs/repo-directory "/site-lisp/el-easydraw")
+  :after org
+  :demand t
+  :config
+  (require 'edraw-org)
+  (edraw-org-setup-default)
+  (edraw-org-setup-exporter)
+  )
 
 ;; HACK
 (auto-compression-mode 0)

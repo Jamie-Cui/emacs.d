@@ -431,4 +431,13 @@ i.e. disables `ws-butler-mode' in the current buffer."
   "Disable `show-trailing-whitespace' in the current buffer."
   (setq-local show-trailing-whitespace nil))
 
+(defmacro +use-package-when-dir-exists (name dir &rest args)
+  "Like `use-package', but only if DIR exists.
+NAME is the package name, DIR is the load-path directory, and
+ARGS are passed to `use-package'."
+  (declare (indent 2))
+  `(let ((dir ,dir))
+     (when (file-directory-p dir)
+       (use-package ,name :load-path dir ,@args))))
+
 (provide 'init-utils)
