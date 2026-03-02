@@ -395,6 +395,12 @@
   (require 'edraw-org)
   (edraw-org-setup-default)
   (edraw-org-setup-exporter)
+
+  ;; keybindings that should not be overriden
+  (general-define-key
+   :keymaps 'edraw-editor-map
+   "<backspace>"   #'edraw-editor-delete-selected
+   )
   )
 
 ;; HACK
