@@ -1,6 +1,6 @@
 ---
 name: emacs
-description: 'This skill should be used when the user invokes "/emacs" to list elisp functions, describe a function, evaluate an elisp expression, simulate keystrokes, or inspect the minibuffer/current buffer in the running Emacs instance via emacsclient.'
+description: 'Use this skill proactively for any Emacs-related task: exploring Emacs configuration, debugging issues, testing packages, or interacting with a running Emacs instance. Capabilities: list/describe elisp functions, evaluate expressions, simulate keystrokes, inspect buffer/minibuffer state via emacsclient.'
 tools: Bash
 disable-model-invocation: true
 ---
