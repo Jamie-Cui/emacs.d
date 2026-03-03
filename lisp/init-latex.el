@@ -31,7 +31,7 @@
   (ebib-autogenerate-keys t)
   :config
   (add-to-list 'ebib-preload-bib-files
-               (concat +emacs/org-root-dir "/all-ref.bib")))
+               (concat (+emacs/ensure-directory +emacs/org-root-dir) "/all-ref.bib")))
 
 (use-package pdf-tools
   :ensure t
@@ -86,22 +86,22 @@
   :config
   (setq citar-at-point-function 'embark-act)
   (add-to-list 'citar-bibliography
-               (concat +emacs/org-root-dir "/all-ref.bib"))
+               (concat (+emacs/ensure-directory +emacs/org-root-dir) "/all-ref.bib"))
   (add-to-list 'citar-library-paths
-               (concat +emacs/org-root-dir "/pdf"))
+               (+emacs/org-subdir "pdf"))
   (add-to-list 'citar-notes-paths
-               (concat +emacs/org-root-dir "/roam"))
+               (+emacs/org-subdir "roam"))
   (setf (alist-get 'note citar-templates) "${=key=}")
   ;; NOTE this var is used by org-export
   (add-to-list 'org-cite-global-bibliography
-               (concat +emacs/org-root-dir "/all-ref.bib"))
+               (concat (+emacs/ensure-directory +emacs/org-root-dir) "/all-ref.bib"))
 
   ;; Make citar-open-entry show item in ebib
   ;; NOTE only global bib works, we do not support project-wise bib
   (defun citar-open-entry-in-ebib (citekey)
     "Open entry for CITEKEY in ebib."
     ;; Adapted from 'bibtex-completion-show-entry'.
-    (ebib (concat +emacs/org-root-dir "/all-ref.bib") citekey))
+    (ebib (concat (+emacs/ensure-directory +emacs/org-root-dir) "/all-ref.bib") citekey))
   (setopt citar-open-entry-function #'citar-open-entry-in-ebib)
   (advice-add 'citar-insert-citation :around
               (lambda (orig-fun &rest args)

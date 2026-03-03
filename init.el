@@ -62,20 +62,28 @@
 (add-to-list 'load-path (expand-file-name "lisp" +emacs/repo-directory))
 
 ;;; -----------------------------------------------------------
-;;; DONE Setup folders
+;;; DONE Setup folders - Lazy Creation
 ;;; -----------------------------------------------------------
 
-;; Defer directory creation to after startup for faster init
-(defun +emacs/create-directories ()
-  "Create necessary directories for Emacs configuration."
-  (make-directory (concat +emacs/org-root-dir "/roam") t)
-  (make-directory (concat +emacs/org-root-dir "/journal") t)
-  (make-directory (concat +emacs/org-root-dir "/deft") t)
-  (when (and user-init-file (stringp user-init-file))
-    (make-directory (concat (file-name-directory user-init-file) "/bin") t)))
+;; Lazily create directories only when first accessed
+(defun +emacs/ensure-directory (dir)
+  "Lazily create DIR when first accessed.
+Returns DIR after ensuring it exists."
+  (unless (file-exists-p dir)
+    (make-directory dir t))
+  dir)
 
-;; Create directories after Emacs startup completes
-(add-hook 'emacs-startup-hook #'+emacs/create-directories)
+;; Helper for org subdirectories
+(defun +emacs/org-subdir (name)
+  "Return path to org subdirectory NAME, creating it if needed."
+  (+emacs/ensure-directory (concat +emacs/org-root-dir "/" name)))
+
+;; Bin directory helper
+(defun +emacs/bin-directory ()
+  "Return path to bin directory, creating it if needed."
+  (when (and user-init-file (stringp user-init-file))
+    (+emacs/ensure-directory
+     (concat (file-name-directory user-init-file) "/bin"))))
 
 ;;; -----------------------------------------------------------
 ;;; DONE Setup packages

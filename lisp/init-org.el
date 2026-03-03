@@ -223,7 +223,7 @@
   (deft-auto-save-interval -1.0)
   (deft-use-filter-string-for-filename nil)
   (deft-use-filename-as-title nil)
-  (deft-directory (concat +emacs/org-root-dir "/deft"))
+  (deft-directory (+emacs/org-subdir "deft"))
   (deft-ignore-file-regexp "^\\(?:\\.|$\\)")
   (deft-extensions '("org" "tex"))
   :config
@@ -260,7 +260,7 @@
   :ensure t
   :after evil
   :custom
-  (org-roam-directory (concat +emacs/org-root-dir "/roam"))
+  (org-roam-directory (+emacs/org-subdir "roam"))
   :config
   ;; If you're using a vertical completion framework, you might want
   ;; a more informative completion interface
@@ -328,7 +328,7 @@
   :custom
   (org-gtd-prefix-width 20)
   (org-gtd-save-after-organize t)
-  (org-gtd-directory (concat +emacs/org-root-dir "/gtd"))
+  (org-gtd-directory (+emacs/org-subdir "gtd"))
   ;; Map GTD semantic states to your keywords
   (org-gtd-keyword-mapping '((todo . "TODO")
                              (next . "NEXT")
