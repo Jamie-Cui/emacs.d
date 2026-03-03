@@ -368,9 +368,12 @@ Returns DIR after ensuring it exists."
   :config
   (elfeed-goodies/setup))
 
+(use-package spinner
+  :ensure t)
+
 (+use-package-when-dir-exists magent
     (concat +emacs/repo-directory "/site-lisp/magent")
-  :after gptel
+  :after gptel spinner
   :demand t
   :config
 
