@@ -6,6 +6,8 @@ tools: Bash
 
 # Emacs Operations
 
+The user has an Emacs server running. **All** Emacs operations must go through `emacsclient`, never `emacs` or `emacs --batch`. This includes both user-requested actions and agent-initiated operations like byte compilation, syntax checking, or running tests.
+
 Interact with the running Emacs instance using `emacsclient --eval`. Supports six operations:
 
 - **List functions**: Return interactive command names matching a prefix.

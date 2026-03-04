@@ -286,6 +286,7 @@
     "qr"     #'restart-emacs
     ;; toggles
     "t" '(:ignore t :which-key "toggle")
+    "td"     #'toggle-debug-on-error
     "tb"     #'magit-blame-addition
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen
