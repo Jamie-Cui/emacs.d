@@ -376,6 +376,7 @@ Returns DIR after ensuring it exists."
   :after gptel spinner
   :demand t
   :config
+  (global-magent-mode 1)
 
   ;; keybindings that should not be overriden
   (general-define-key
