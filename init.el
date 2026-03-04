@@ -69,8 +69,7 @@
 (defun +emacs/ensure-directory (dir)
   "Lazily create DIR when first accessed.
 Returns DIR after ensuring it exists."
-  (unless (file-exists-p dir)
-    (make-directory dir t))
+  (make-directory dir t)
   dir)
 
 ;; Helper for org subdirectories
@@ -115,7 +114,6 @@ Returns DIR after ensuring it exists."
 ;; (when (not (file-exists-p (expand-file-name "package-quickstart.el" package-user-dir)))
 ;;   (package-refresh-contents)
 ;;   (package-quickstart-refresh))
-
 
 ;; -----------------------------------------------------------
 ;; DONE Setup environment and compilation
@@ -384,7 +382,6 @@ Returns DIR after ensuring it exists."
    :states '(normal visual motion)
    "?"   #'magent-transient-menu
    ))
-
 
 (+use-package-when-dir-exists edraw
     (concat +emacs/repo-directory "/site-lisp/el-easydraw")

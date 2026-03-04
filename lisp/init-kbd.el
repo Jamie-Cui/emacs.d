@@ -6,11 +6,6 @@
 (require 'init-evil)
 
 ;; Named functions for disabled keybindings (better debugging/profiling)
-(defun +kbd/disabled-M-d ()
-  "Placeholder for disabled M-d binding."
-  (interactive)
-  (message "M-d is disabled!"))
-
 (defun +kbd/disabled-M-u ()
   "Placeholder for disabled M-u binding."
   (interactive)
@@ -25,11 +20,6 @@
   "Placeholder for disabled M-Q binding (reserved for lock screen)."
   (interactive)
   (message "M-Q is disabled!"))
-
-(defun +kbd/disabled-M-h ()
-  "Placeholder for disabled M-h binding."
-  (interactive)
-  (message "M-h is disabled!"))
 
 (defun +kbd/disabled-M-k ()
   "Placeholder for disabled M-k binding."
@@ -267,7 +257,6 @@
     "nTa"     #'org-timer-set-timer ; add timer
     "nT RET"  #'org-timer-pause-or-continue ; pause or continue
     "nTd"     #'org-timer-stop ; delete timer
-    "nj"      #'org-journal-new-entry
     "nr" '(:ignore t :which-key "org-roam")
     "nra"     #'org-roam-alias-add
     "nrf"     #'org-roam-node-find

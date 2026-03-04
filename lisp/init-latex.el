@@ -38,9 +38,6 @@
   :if (not (eq system-type 'windows-nt))
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :magic ("%PDF" . pdf-view-mode)
-  :custom
-  ;; to use pdfview with auctex
-  (TeX-view-program-selection '((output-pdf "PDF Tools")))
   :init
   (pdf-tools-install)
   :config
@@ -61,7 +58,6 @@
   (defun TeX-pdf-tools-sync-view ()
     (require 'pdf-sync)
     (let ((pdf-file (expand-file-name (TeX-master-file "pdf")))
-          (tex-file buffer-file-name) ; unused
           (line (line-number-at-pos)))
       (pdf-sync-forward-search line)))
 

@@ -21,7 +21,6 @@
 ;;; editing
 (setopt org-return-follows-link nil)
 (setopt org-link-elisp-confirm-function nil)
-(setopt org-use-fast-todo-selection 'auto)
 
 ;;; agenda
 (setopt org-agenda-window-setup 'current-window)
@@ -104,7 +103,6 @@
 ;; - font: Computer Modern Unicode (CMU)
 ;; - font size: 10
 (setopt org-latex-compiler "xelatex")
-(setopt org-latex t)
 (setopt org-latex-src-block-backend 'engraved)
 (setopt org-latex-engraved-theme 't)
 (setopt org-latex-packages-alist
@@ -125,10 +123,10 @@
 
 (org-babel-do-load-languages
  'org-babel-load-languages
- ;; this line activates plantuml
  '((C . t) ; c, c++, and D
    (shell . t)
    (latex . t)
+   (plantuml . t)
    ))
 
 ;; HACK from doom-emacs
@@ -206,11 +204,7 @@
   (org-plantuml-jar-path plantuml-jar-path)
   :config
   (setq plantuml-default-exec-mode 'executable)
-  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   ;; this line activates plantuml
-   '((plantuml . t))))
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
 
 (use-package deft
   :ensure t

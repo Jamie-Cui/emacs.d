@@ -22,8 +22,6 @@
 ;; Supress warnings about file
 (setopt warning-suppress-log-types '((files)))
 
-;; Set Lexical Binding Globally
-(setq lexical-binding t)
 (setq byte-compile-warnings '(not lexical))
 
 ;; make minimal margin
@@ -35,16 +33,6 @@
 ;; Emacs 30 and newer: Disable Ispell completion function.
 ;; Try `cape-dict' as an alternative.
 (setopt text-mode-ispell-word-completion nil)
-
-;; stop makding ~ files!
-(setq make-backup-files nil)
-
-;; stop makding #...# files!
-(setq create-lockfiles nil)
-
-;; if use backup, put it in .emacs.d/backup
-(setopt backup-directory-alist (list (cons "." (concat user-emacs-directory "backup/")))
-        tramp-backup-directory-alist backup-directory-alist)
 
 ;; Don't generate backups or lockfiles. While auto-save maintains a copy so long
 ;; as a buffer is unsaved, backups create copies once, when the file is first
@@ -259,14 +247,11 @@
 ;; see: https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
 (setopt tramp-allow-unsafe-temporary-files t ; do not warn me, please
         remote-file-name-inhibit-locks t
-        tramp-use-scp-direct-remote-copying t
-        remote-file-name-inhibit-auto-save-visited t)
+        tramp-use-scp-direct-remote-copying t)
 
 (connection-local-set-profile-variables
  'remote-direct-async-process
  '((tramp-direct-async-process . t)))
-
-(setopt tramp-auto-save-directory (concat user-emacs-directory "tramp-autosave/"))
 
 (connection-local-set-profiles
  '(:application tramp :protocol "scp")
@@ -451,10 +436,11 @@
   (eshell-printn (format "[git] https_proxy : %s" (+eshell/format-shell-command "git config --global --get https.proxy"))))
 
 ;; HACK redefine eshell/clear function using advice
-(defadvice eshell/clear (around clear-buffer activate)
+(defun +eshell/clear-buffer-a (&rest _)
   "Clear the eshell buffer by erasing its contents."
   (let ((inhibit-read-only t))
     (erase-buffer)))
+(advice-add #'eshell/clear :override #'+eshell/clear-buffer-a)
 
 ;; ------------------------------------------------------------------
 ;; TTY Configuration
@@ -562,8 +548,9 @@
 (defun +copy-buffer-file-name ()
   "Copy the current buffer file name to clipboard."
   (interactive)
-  (kill-new (buffer-file-name))
-  (message "Copied: %s" (buffer-file-name)))
+  (let ((name (buffer-file-name)))
+    (kill-new name)
+    (message "Copied: %s" name)))
 
 (setopt duplicate-line-final-position 1) ; move point to the first newline
 

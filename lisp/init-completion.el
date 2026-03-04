@@ -62,7 +62,7 @@
 
 (use-package corfu-terminal
   :ensure t
-  :defer t
+  :after corfu
   :config
   (when (version< emacs-version "31")
     (corfu-terminal-mode +1)))
@@ -96,13 +96,13 @@
   :ensure t
   :custom
   (consult-preview-max-count 17)
+  :config
   (consult-customize
    consult-ripgrep consult-git-grep consult-grep consult-man
    consult-bookmark consult-recent-file consult-xref
    consult--source-bookmark consult--source-file-register
    consult--source-recent-file consult--source-project-recent-file
    :preview-key '(:debounce 1 any))
-  :config
   (require 'consult-imenu)
   (setq xref-show-xrefs-function       #'consult-xref
         xref-show-definitions-function #'consult-xref)
