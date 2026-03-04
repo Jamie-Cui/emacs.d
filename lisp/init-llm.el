@@ -82,7 +82,7 @@
 
   ;; set default values
   (setopt gptel-backend +gptel/aliyun)
-  (setopt gptel-model 'glm-5)
+  (setopt gptel-model 'qwen3-coder-next)
 
   ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
