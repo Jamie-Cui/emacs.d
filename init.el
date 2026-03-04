@@ -384,6 +384,13 @@ Returns DIR after ensuring it exists."
    "M-m"   #'magent-prompt
    )
 
+  ;; keybindings that should not be overriden
+  (general-define-key
+   :keymaps 'magent-output-mode-map
+   :states '(normal visual motion)
+   "?"   #'magent-transient-menu
+   )
+
   (+my-leader-def
     :states '(normal visual motion)
     :keymaps 'override ; prevent from being override
