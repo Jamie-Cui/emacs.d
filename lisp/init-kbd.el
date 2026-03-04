@@ -163,8 +163,7 @@
     ;; most-frequency keys
     "G"      #'gptel  ;; G -> Gptel
     "A"      #'agent-shell ;; A -> Agent
-    "X"      #'scratch-buffer ; popup
-    "M"      #'popwin:messages ; popup
+    "M"      #'magent-prompt ;; M -> Magent
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer

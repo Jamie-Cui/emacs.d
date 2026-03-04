@@ -380,31 +380,11 @@ Returns DIR after ensuring it exists."
 
   ;; keybindings that should not be overriden
   (general-define-key
-   :keymaps 'override
-   "M-m"   #'magent-prompt
-   )
-
-  ;; keybindings that should not be overriden
-  (general-define-key
    :keymaps 'magent-output-mode-map
    :states '(normal visual motion)
    "?"   #'magent-transient-menu
-   )
+   ))
 
-  (+my-leader-def
-    :states '(normal visual motion)
-    :keymaps 'override ; prevent from being override
-    "mp" #'magent-prompt
-    "mr" #'magent-prompt-region
-    "ma" #'magent-ask-at-point
-    "mc" #'magent-clear-session
-    "ms" #'magent-show-session
-    "ml" #'magent-show-log
-    "mL" #'magent-clear-log
-    "mA" #'magent-select-agent
-    "mi" #'magent-show-current-agent
-    "mv" #'magent-list-agents
-    ))
 
 (+use-package-when-dir-exists edraw
     (concat +emacs/repo-directory "/site-lisp/el-easydraw")
