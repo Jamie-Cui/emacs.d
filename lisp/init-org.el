@@ -77,8 +77,8 @@
 (setopt org-use-fast-todo-selection 'expert)
 (setopt org-todo-keywords '((sequence
                              "TODO(t)"
-                             "NEXT(n)"
                              "WAIT(w)"
+                             "PROJ(p)"
                              "|"
                              "DONE(d)"
                              "KILL(k)")))
@@ -169,6 +169,7 @@
 ;; -----------------------------------------------------------
 ;; DONE org
 ;;
+;; org-journal
 ;; org-download
 ;; ob-http
 ;; plantuml-mode
@@ -178,6 +179,19 @@
 ;; xenops
 ;; engrave-faces
 ;; -----------------------------------------------------------
+
+(use-package org-journal
+  :ensure t
+  :custom
+  (org-journal-dir (concat +emacs/org-root-dir "/journal"))
+  (org-journal-find-file-fn 'find-file)
+  (org-journal-file-format "%Y%m%d.org")
+  (org-journal-file-type 'monthly)
+  (org-journal-carryover-items "TODO=\"TODO\"|TODO=\"WAIT\"|TODO=\"PROJ\"")
+  (org-journal-enable-agenda-integration t)
+  :config
+  (setq org-element-use-cache nil)
+  (add-to-list 'org-agenda-files org-journal-dir))
 
 (use-package org-download
   :ensure t
@@ -313,57 +327,57 @@
 (use-package engrave-faces
   :ensure t)
 
-(use-package org-gtd
-  :ensure t
-  :after popwin
-  :init
-  ;; Suppress upgrade warnings (must be set before package loads)
-  (setq org-gtd-update-ack "4.0.0")
-  :custom
-  (org-gtd-prefix-width 20)
-  (org-gtd-save-after-organize t)
-  (org-gtd-directory (+emacs/org-subdir "gtd"))
-  ;; Map GTD semantic states to your keywords
-  (org-gtd-keyword-mapping '((todo . "TODO")
-                             (next . "NEXT")
-                             (wait . "WAIT")
-                             (done . "DONE")
-                             (canceled . "KILL")))
-  :config
+;; (use-package org-gtd
+;;   :ensure t
+;;   :after popwin
+;;   :init
+;;   ;; Suppress upgrade warnings (must be set before package loads)
+;;   (setq org-gtd-update-ack "4.0.0")
+;;   :custom
+;;   (org-gtd-prefix-width 20)
+;;   (org-gtd-save-after-organize t)
+;;   (org-gtd-directory (+emacs/org-subdir "gtd"))
+;;   ;; Map GTD semantic states to your keywords
+;;   (org-gtd-keyword-mapping '((todo . "TODO")
+;;                              (next . "NEXT")
+;;                              (wait . "WAIT")
+;;                              (done . "DONE")
+;;                              (canceled . "KILL")))
+;;   :config
 
-  ;; Advise =org-gtd-clarify-setup-windows=
-  (defun +org-gtd/clarify--use-popwin (orig-fun buffer-or-name)
-    "Display BUFFER-OR-NAME using popwin instead of default window setup."
-    (let ((buffer (get-buffer buffer-or-name)))
-      ;; Show main clarify buffer via popwin
-      (popwin:popup-buffer buffer)
-      ;; Optionally show horizons if enabled (keep original behavior)
-      (when org-gtd-clarify-show-horizons
-        (org-gtd-clarify--display-horizons-window))))
+;;   ;; Advise =org-gtd-clarify-setup-windows=
+;;   (defun +org-gtd/clarify--use-popwin (orig-fun buffer-or-name)
+;;     "Display BUFFER-OR-NAME using popwin instead of default window setup."
+;;     (let ((buffer (get-buffer buffer-or-name)))
+;;       ;; Show main clarify buffer via popwin
+;;       (popwin:popup-buffer buffer)
+;;       ;; Optionally show horizons if enabled (keep original behavior)
+;;       (when org-gtd-clarify-show-horizons
+;;         (org-gtd-clarify--display-horizons-window))))
 
-  (advice-add 'org-gtd-clarify-setup-windows :around #'+org-gtd/clarify--use-popwin)
+;;   (advice-add 'org-gtd-clarify-setup-windows :around #'+org-gtd/clarify--use-popwin)
 
-  ;; Prevent manual window restoration in org-gtd-clarify-stop
-  (defun +org-gtd/clarify--skip-window-restore (orig-fun &rest args)
-    "Skip restoring window config (handled by popwin)."
-    (let ((org-gtd-clarify--window-config nil)) ; Shadow the var
-      (apply orig-fun args)))
+;;   ;; Prevent manual window restoration in org-gtd-clarify-stop
+;;   (defun +org-gtd/clarify--skip-window-restore (orig-fun &rest args)
+;;     "Skip restoring window config (handled by popwin)."
+;;     (let ((org-gtd-clarify--window-config nil)) ; Shadow the var
+;;       (apply orig-fun args)))
 
-  (advice-add 'org-gtd-clarify-stop :around #'+org-gtd/clarify--skip-window-restore)
+;;   (advice-add 'org-gtd-clarify-stop :around #'+org-gtd/clarify--skip-window-restore)
 
-  ;; REQUIRED: Enable org-edna for project dependencies
-  (org-edna-mode 1)
-  ;; Add org-gtd files to your agenda (must be in :config so org-gtd-directory is defined)
-  (setq org-agenda-files (list org-gtd-directory))
+;;   ;; REQUIRED: Enable org-edna for project dependencies
+;;   (org-edna-mode 1)
+;;   ;; Add org-gtd files to your agenda (must be in :config so org-gtd-directory is defined)
+;;   (setq org-agenda-files (list org-gtd-directory))
 
-  (general-define-key
-   :keymaps 'org-gtd-clarify-mode-map
-   "C-c c"   #'org-gtd-organize)
+;;   (general-define-key
+;;    :keymaps 'org-gtd-clarify-mode-map
+;;    "C-c c"   #'org-gtd-organize)
 
-  (general-define-key
-   :keymaps 'org-agenda-mode-map
-   "C-c ."   #'org-gtd-agenda-transient)
-  )
+;;   (general-define-key
+;;    :keymaps 'org-agenda-mode-map
+;;    "C-c ."   #'org-gtd-agenda-transient)
+;;   )
 
 (defun consult-org--get-heading-time-info (marker)
   "Extract time info (SCHEDULED, DEADLINE, or timestamp) from heading at MARKER."

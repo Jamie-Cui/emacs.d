@@ -233,17 +233,18 @@
     "n" '(:ignore t :which-key "note")
     "na"      #'org-agenda-list
     "nA"      #'consult-org-agenda
-    "nt"      #'org-todo-list ; todo list
-    "nw"      #'org-gtd-reflect-someday-maybe ; wait list
-    "nc"      #'org-gtd-capture ; capture
-    "ni"      #'org-gtd-process-inbox ; process
-    "ne"      #'org-gtd-engage ; engage (do-things)
-    "nl" '(:ignore t :which-key "list")
-    "nll"     #'org-gtd-show-all-next ; list next (alias)
-    "nln"     #'org-gtd-show-all-next ; list next
-    "nlw"     #'org-gtd-reflect-someday-maybe ; list wait
-    "nlc"     #'org-gtd-reflect-completed-items ; list complete
-    "nls"     #'org-gtd-reflect-stuck-projects ; list stuck
+    "nt"      #'org-todo-list
+    "nj"      #'org-journal-new-entry
+    ;; "nw"      #'org-gtd-reflect-someday-maybe ; wait list
+    ;; "nc"      #'org-gtd-capture ; capture
+    ;; "ni"      #'org-gtd-process-inbox ; process
+    ;; "ne"      #'org-gtd-engage ; engage (do-things)
+    ;; "nl" '(:ignore t :which-key "list")
+    ;; "nll"     #'org-gtd-show-all-next ; list next (alias)
+    ;; "nln"     #'org-gtd-show-all-next ; list next
+    ;; "nlw"     #'org-gtd-reflect-someday-maybe ; list wait
+    ;; "nlc"     #'org-gtd-reflect-completed-items ; list complete
+    ;; "nls"     #'org-gtd-reflect-stuck-projects ; list stuck
     "n@"      #'citar-insert-citation
     "ny"      #'org-store-link
     "np"      #'org-insert-link
