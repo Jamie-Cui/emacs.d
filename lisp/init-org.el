@@ -28,7 +28,7 @@
 (general-define-key
  :keymaps 'org-agenda-mode-map
  :states 'normal
- "RET"   #'org-agenda-switch-to))
+ "RET"   #'org-agenda-switch-to)
 
 ;; make org file find org-journal files (maybe not needed?)
 ;; (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
@@ -80,7 +80,6 @@
 
 ;; todo keywords
 (setopt org-use-fast-todo-selection 'expert)
-(setopt org-log-into-drawer "LOGBOOK")
 (setopt org-todo-keywords '((sequence
                              "TODO(t)"
                              "WAIT(w)"
