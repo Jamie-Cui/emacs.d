@@ -8,13 +8,14 @@ tools: Bash
 
 The user has an Emacs server running. **All** Emacs operations must go through `emacsclient`, never `emacs` or `emacs --batch`. This includes both user-requested actions and agent-initiated operations like byte compilation, syntax checking, or running tests.
 
-Interact with the running Emacs instance using `emacsclient --eval`. Supports six operations:
+Interact with the running Emacs instance using `emacsclient --eval`. Supports seven operations:
 
 - **List functions**: Return interactive command names matching a prefix.
 - **Describe function**: Return the arglist and docstring of a function.
 - **Eval expression**: Evaluate an arbitrary elisp expression and return the result.
 - **Execute keys**: Simulate keystrokes as if typed by the user.
 - **Minibuffer prompt**: Read the current minibuffer prompt and contents (useful for seeing what Emacs is asking).
+- **Minibuffer insert**: Insert text into the minibuffer at point.
 - **Current buffer state**: Return the name, major mode, and excerpt of the focused buffer.
 
 ## Usage
@@ -68,6 +69,15 @@ emacsclient --eval '
   (agent-skills/minibuffer-prompt))'
 ```
 
+### Insert into minibuffer
+
+```sh
+emacsclient --eval '
+(progn
+  (load "/path/to/skills/emacs/agent-skills-emacs.el" nil t)
+  (agent-skills/minibuffer-insert "TEXT"))'
+```
+
 ### Read current buffer state
 
 ```sh
@@ -86,6 +96,7 @@ emacsclient --eval '
   - To evaluate elisp → call `agent-skills/eval-expression` with the expression string.
   - To simulate keystrokes → call `agent-skills/execute-keys` with a `kbd`-format key string.
   - To check what Emacs is prompting for → call `agent-skills/minibuffer-prompt`.
+  - To insert text into the minibuffer → call `agent-skills/minibuffer-insert` with the text string.
   - To see the focused buffer → call `agent-skills/current-buffer-state`.
 - When driving interactive commands, use `minibuffer-prompt` and `current-buffer-state` to observe Emacs state between `execute-keys` calls.
 - Note that `execute-keys` runs synchronously — if a command is async (e.g. magit refresh), a subsequent `execute-keys` call may need to be a separate `emacsclient` invocation.

@@ -54,4 +54,14 @@ KEYS is a string in `kbd' format (e.g. \"C-x C-s\", \"S c c\")."
                       (min (point-max) (+ (point-min) 2000)))))
         (format "Buffer: %s\nMode: %s\nPoint: %d\n---\n%s" name mode point excerpt)))))
 
+(cl-defun agent-skills/minibuffer-insert (text)
+  "Insert TEXT into the minibuffer at point.
+TEXT is inserted at point in the minibuffer. If the minibuffer is
+not active, raises an error."
+  (if (minibufferp (window-buffer (minibuffer-window)))
+      (with-current-buffer (window-buffer (minibuffer-window))
+        (insert text)
+        (format "Inserted into minibuffer: %s" text))
+    (error "Minibuffer is not active")))
+
 (provide 'agent-skills/emacs)
