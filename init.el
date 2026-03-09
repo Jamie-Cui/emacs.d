@@ -334,6 +334,8 @@ Returns DIR after ensuring it exists."
                   ("https://planet.emacslife.com/atom.xml")
                   ;; Emacs China
                   ("https://emacs-china.org/latest.rss")
+                  ;; Linux Do
+                  ("https://linux.do/latest.rss")
                   ;; iacr
                   ("https://eprint.iacr.org/rss/rss.xml")
                   ;; Linux Security
@@ -342,8 +344,6 @@ Returns DIR after ensuring it exists."
                   ("http://lwn.net/headlines/rss")
                   ;; Feisty Duck's Security and Cryptography newsletter
                   ("https://www.feistyduck.com/newsletter/feed")
-                  ;; Fedora Magazine
-                  ("https://fedoramagazine.org/feed/")
                   ;; Hack News front page
                   ("https://hnrss.org/frontpage")
                   ;; 机器之心
@@ -356,8 +356,6 @@ Returns DIR after ensuring it exists."
                   ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance")
                   ;; 求是网
                   ("https://plink.anyfeeder.com/qstheory")
-                  ;; Paper Pulse
-                  ("https://jamie-cui.github.io/paper-pulse/feed.xml")
                   )))
 
 (use-package elfeed-goodies
