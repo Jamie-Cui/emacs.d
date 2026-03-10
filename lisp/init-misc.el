@@ -4,6 +4,9 @@
 
 (require 'init-utils)
 
+;; fix macos display issue
+(setq frame-resize-pixelwise t)
+
 ;; smooth scrolling
 (pixel-scroll-mode +1)
 ;; Optional configurations for fine-tuning
