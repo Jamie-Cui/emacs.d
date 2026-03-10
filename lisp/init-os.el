@@ -20,6 +20,9 @@
     (sis-ism-lazyman-config
      "com.apple.keylayout.ABC"
      "com.apple.inputmethod.SCIM.ITABC")
+
+    ;; fix macos display issue
+    (setq frame-resize-pixelwise t)
     )
 
   ;; windows (auto-config, no extra effort needed)
