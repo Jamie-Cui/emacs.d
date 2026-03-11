@@ -57,7 +57,7 @@
       :endpoint "/chat/completions"
       :stream t
       :key (auth-source-pick-first-password :host "aliyun")
-      :models '(glm-5 qwen3-max qwen-plus deepseek-r1 qwen3-coder-plus)))
+      :models '(qwen3-coder-next glm-5 qwen3-max qwen-plus deepseek-r1 qwen3-coder-plus)))
 
   ;; register zhipu backend
   (defvar +gptel/zhipu
