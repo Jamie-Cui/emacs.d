@@ -150,7 +150,7 @@
     :keymaps 'override ; prevent from being override
     ;; application keys
     "G"      #'gptel  ;; G -> Gptel
-    "A"      #'magent-prompt ;; A -> Magent
+    "A"      #'magent-dwim ;; A -> Magent
     "T"      #'telega ;; T -> Telegram
     "D"      #'docker
     ;; most-frequency keys
