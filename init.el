@@ -367,6 +367,18 @@ Returns DIR after ensuring it exists."
 (use-package spinner
   :ensure t)
 
+(use-package telega
+  :ensure t
+  :config
+  (let* ((parts (split-string +emacs/proxy ":"))
+         (server (car parts))
+         (port (string-to-number (cadr parts))))
+    (setq telega-proxies
+          (list `(:server ,server
+                          :port ,port
+                          :enable t
+                          :type (:@type "proxyTypeSocks5"))))))
+
 (+use-package-when-dir-exists magent
     (concat +emacs/repo-directory "/site-lisp/magent")
   :after gptel spinner

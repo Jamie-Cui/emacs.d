@@ -110,8 +110,6 @@
    ;; more-frequent commands
    "M-y"     #'yas-expand
    "M-p"     #'+compile-with-no-preset ; just like vscode
-   "M-P"     #'+compile-with-comint ; just like vscode
-   "M-b"     #'consult-buffer ; jump to buffers quickly
    "M-w"     #'evil-avy-goto-char-timer ; quick find edit (point)?
    "M-i"     #'consult-imenu
    "M-d"     #'evil-multiedit-match-symbol-and-next  ; dup
@@ -150,10 +148,12 @@
   (+my-leader-def
     :states '(normal visual motion)
     :keymaps 'override ; prevent from being override
-    ;; most-frequency keys
+    ;; application keys
     "G"      #'gptel  ;; G -> Gptel
-    "A"      #'agent-shell ;; A -> Agent
-    "M"      #'magent-prompt ;; M -> Magent
+    "A"      #'magent-prompt ;; A -> Magent
+    "T"      #'telega ;; T -> Telegram
+    "D"      #'docker
+    ;; most-frequency keys
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer
@@ -194,9 +194,6 @@
     "jj"     #'consult-bookmark
     "ja"     #'bookmark-set
     "jx"     #'bookmark-delete
-    ;; docker-related key bindings
-    ;; I do not use that very often
-    "D"      #'docker
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "oo"     #'crux-open-with
@@ -235,16 +232,6 @@
     "nA"      #'consult-org-agenda
     "nt"      #'org-todo-list
     "nj"      #'org-journal-new-entry
-    ;; "nw"      #'org-gtd-reflect-someday-maybe ; wait list
-    ;; "nc"      #'org-gtd-capture ; capture
-    ;; "ni"      #'org-gtd-process-inbox ; process
-    ;; "ne"      #'org-gtd-engage ; engage (do-things)
-    ;; "nl" '(:ignore t :which-key "list")
-    ;; "nll"     #'org-gtd-show-all-next ; list next (alias)
-    ;; "nln"     #'org-gtd-show-all-next ; list next
-    ;; "nlw"     #'org-gtd-reflect-someday-maybe ; list wait
-    ;; "nlc"     #'org-gtd-reflect-completed-items ; list complete
-    ;; "nls"     #'org-gtd-reflect-stuck-projects ; list stuck
     "n@"      #'citar-insert-citation
     "ny"      #'org-store-link
     "np"      #'org-insert-link
