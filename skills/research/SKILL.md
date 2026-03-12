@@ -33,12 +33,14 @@ If no files remain after filtering: output the following and stop:
 
 Use the Read tool to read every file discovered in Step 1. Read them in parallel where possible.
 
+If the total file count exceeds 20, or any single file is likely very large (e.g., a full thesis or book), ask the user which files are most relevant before reading all of them. Prefer files at the root of the working directory first.
+
 Do not summarize yet — load the full content into context.
 
-## Step 3: Understand the Document
+## Step 3: Understand the Documents
 
 From the loaded content, extract and hold in mind:
-- Title or topic of the document/project
+- Title or topic of each document (if multiple unrelated documents are found, treat each separately and note this in the overview)
 - Core research question or thesis (if present)
 - Main sections or structure
 - Key terminology, methods, and concepts
@@ -50,6 +52,8 @@ No need to output this yet — it is internal context for the following steps.
 ### If the user provided a task argument:
 
 Execute the task immediately using the document content as context. Be specific and grounded in the actual paper — reference sections, quote relevant passages, and tailor your response to the document's topic and stage.
+
+When the task requires external literature or recent information, use the WebSearch tool to find relevant papers or sources, then synthesize the results together with the document content.
 
 Example tasks you should handle well:
 - `find related work on [topic]` → search web + synthesize relevant literature in context of the paper
@@ -65,7 +69,7 @@ Output a brief document overview in this format:
 ```
 ## Document Overview
 
-**Topic:** [inferred title or topic]
+**Topic:** [inferred title or topic; if multiple unrelated documents, list each separately]
 **Type:** [e.g., research paper, technical report, notes]
 **Structure:** [list of main sections/files, one per line]
 **Core question:** [one sentence summary of the research question or main argument]
@@ -88,4 +92,4 @@ Then wait for the user's input. All subsequent conversation in this session uses
 
 - Default: respond conversationally in the terminal
 - Write to file only when the user explicitly requests it (e.g., "save this to notes.md" or "add this to the paper")
-- When writing to file, confirm the path with the user before writing
+- When writing to file, confirm the path with the user before writing; if the user declines or does not confirm, do not write the file
