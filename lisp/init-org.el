@@ -275,7 +275,7 @@
     :type '(repeat string)
     :group 'deft)
 
-  (defconst +deft/pin-prefix "📌 "
+  (defconst +deft/pin-prefix "* "
     "Prefix string shown before pinned file titles.")
 
   (defun +deft/sort-pin-a (files)
