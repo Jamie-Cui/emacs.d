@@ -267,7 +267,55 @@
           (file-notify-add-watch
            deft-directory
            '(change attribute-change)
-           'deft-auto-refresh))))
+           'deft-auto-refresh)))
+
+  ;; NOTE pin files to top
+  (defcustom +deft/pinned-files nil
+    "List of pinned file paths shown at the top of the Deft browser."
+    :type '(repeat string)
+    :group 'deft)
+
+  (defconst +deft/pin-prefix "📌 "
+    "Prefix string shown before pinned file titles.")
+
+  (defun +deft/sort-pin-a (files)
+    "Move pinned files to the front of FILES, preserving relative order."
+    (let (pinned rest)
+      (dolist (f files)
+        (if (member f +deft/pinned-files)
+            (push f pinned)
+          (push f rest)))
+      (append (nreverse pinned) (nreverse rest))))
+  (advice-add #'deft-sort-files :filter-return #'+deft/sort-pin-a)
+
+  (defun +deft/file-button-pin-a (orig-fn file)
+    "Show pin prefix for pinned files in Deft browser."
+    (if (member file +deft/pinned-files)
+        (let ((deft-window-width (- deft-window-width
+                                    (string-width +deft/pin-prefix)))
+              (start (point)))
+          (funcall orig-fn file)
+          (save-excursion
+            (goto-char start)
+            (insert +deft/pin-prefix)))
+      (funcall orig-fn file)))
+  (advice-add #'deft-file-button :around #'+deft/file-button-pin-a)
+
+  (defun +deft/toggle-pin ()
+    "Toggle pinning of the file at point in the Deft browser."
+    (interactive)
+    (let ((file (deft-filename-at-point)))
+      (if (not file)
+          (message "No file at point")
+        (if (member file +deft/pinned-files)
+            (progn
+              (setq +deft/pinned-files (delete file +deft/pinned-files))
+              (message "Unpinned: %s" (file-name-nondirectory file)))
+          (push file +deft/pinned-files)
+          (message "Pinned: %s" (file-name-nondirectory file)))
+        (customize-save-variable '+deft/pinned-files +deft/pinned-files)
+        (deft-refresh))))
+  (define-key deft-mode-map (kbd "C-c C-p") #'+deft/toggle-pin))
 
 (use-package org-roam
   :ensure t
