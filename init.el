@@ -383,6 +383,8 @@ Returns DIR after ensuring it exists."
     (concat +emacs/repo-directory "/site-lisp/magent")
   :after gptel spinner
   :demand t
+  :custom
+  (magent-skill-directories (list (expand-file-name "skills" +emacs/repo-directory)))
   :config
   (global-magent-mode 1)
 
