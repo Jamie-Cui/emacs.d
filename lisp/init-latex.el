@@ -99,6 +99,50 @@
     ;; Adapted from 'bibtex-completion-show-entry'.
     (ebib (concat (+emacs/ensure-directory +emacs/org-root-dir) "/all-ref.bib") citekey))
   (setopt citar-open-entry-function #'citar-open-entry-in-ebib)
+
+  ;; Extend citar-open popup with "Copy Title" and "Open in Ebib" options.
+  ;; Candidates are encoded as "[Copy Title] KEY" / "[Open in Ebib] KEY" so
+  ;; the key survives citar--select-resource stripping text properties.
+  (defun +citar--get-resource-extras-a (orig citekeys &rest args)
+    "Inject copy-title and open-in-ebib candidates into `citar--get-resource-candidates'."
+    (let* ((result (apply orig citekeys args))
+           (extra-cands
+            (apply #'append
+                   (mapcar (lambda (key)
+                             (list
+                              (propertize (format "[Copy Title] %s" key)
+                                          'citar--resource 'copy-title)
+                              (propertize (format "[Open in Ebib] %s" key)
+                                          'citar--resource 'open-in-ebib)))
+                           citekeys))))
+      (cons 'multi-category (append (when result (cdr result)) extra-cands))))
+
+  (defun +citar--open-resource-extras-a (orig resource &optional type)
+    "Handle copy-title and open-in-ebib in `citar--open-resource'."
+    (pcase (or type (get-text-property 0 'citar--resource resource))
+      ('copy-title
+       (let* ((key (string-trim (string-remove-prefix "[Copy Title] "
+                                                      (substring-no-properties resource))))
+              (title (or (citar-get-value "title" key) key)))
+         (kill-new title)
+         (message "Copied title: %s" title)))
+      ('open-in-ebib
+       (citar-open-entry-in-ebib
+        (string-trim (string-remove-prefix "[Open in Ebib] "
+                                           (substring-no-properties resource)))))
+      (_ (funcall orig resource type))))
+
+  (defun +citar--select-group-extras-a (orig resource transform)
+    "Add group labels for copy-title and open-in-ebib in completing-read."
+    (pcase (get-text-property 0 'citar--resource resource)
+      ('copy-title    (if transform resource "Copy Title"))
+      ('open-in-ebib  (if transform resource "Open in Ebib"))
+      (_ (funcall orig resource transform))))
+
+  (advice-add 'citar--get-resource-candidates :around #'+citar--get-resource-extras-a)
+  (advice-add 'citar--open-resource :around #'+citar--open-resource-extras-a)
+  (advice-add 'citar--select-group-related-resources :around #'+citar--select-group-extras-a)
+
   (advice-add 'citar-insert-citation :around
               (lambda (orig-fun &rest args)
                 (+evil/smart-insert)
