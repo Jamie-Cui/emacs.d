@@ -59,6 +59,14 @@
       :key (auth-source-pick-first-password :host "aliyun")
       :models '(qwen3-coder-next glm-5 qwen3-max qwen-plus deepseek-r1 qwen3-coder-plus)))
 
+  (defvar +gptel/sssaicode
+    (gptel-make-openai "SssAiCode"
+      :host "https://codex1.sssaicode.com/api/v1"
+      :endpoint "/chat/completions"
+      :stream t
+      :key (auth-source-pick-first-password :host "sssaicode")
+      :models '(gpt-5.4)))
+
   ;; register zhipu backend
   (defvar +gptel/zhipu
     (gptel-make-deepseek "Zhipu"
