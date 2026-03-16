@@ -104,40 +104,78 @@
   ;; Candidates are encoded as "[Copy Title] KEY" / "[Open in Ebib] KEY" so
   ;; the key survives citar--select-resource stripping text properties.
   (defun +citar--get-resource-extras-a (orig citekeys &rest args)
-    "Inject copy-title and open-in-ebib candidates into `citar--get-resource-candidates'."
-    (let* ((result (apply orig citekeys args))
+    "Inject per-field copy and open-in-ebib candidates into `citar--get-resource-candidates'.
+Also simplifies create-note candidates to show only the note filename."
+    (let* ((orig-result (apply orig citekeys args))
+           ;; Cache entries — citar-get-entry is otherwise called twice per key.
+           (entry-cache (let ((tbl (make-hash-table :test #'equal :size (length citekeys))))
+                          (dolist (k citekeys tbl) (puthash k (citar-get-entry k) tbl))))
+           ;; Replace create-note candidates' verbose display with just the note filename.
+           (result (when orig-result
+                     (cons (car orig-result)
+                           (mapcar (lambda (cand)
+                                     (let* ((mc    (get-text-property 0 'multi-category cand))
+                                            (inner (and mc (cdr mc)))
+                                            (rtype (and inner (get-text-property 0 'citar--resource inner))))
+                                       (if (eq rtype 'create-note)
+                                           (let* ((key  (substring-no-properties inner))
+                                                  (name (when-let* (((fboundp 'citar-file--get-note-filename))
+                                                                      (path (citar-file--get-note-filename key)))
+                                                          (file-name-nondirectory path)))
+                                                  (name (or name key)))
+                                             (propertize name 'multi-category mc))
+                                         cand)))
+                                   (cdr orig-result)))))
            (extra-cands
-            (apply #'append
-                   (mapcar (lambda (key)
-                             (list
-                              (propertize (format "[Copy Title] %s" key)
-                                          'citar--resource 'copy-title)
-                              (propertize (format "[Open in Ebib] %s" key)
-                                          'citar--resource 'open-in-ebib)))
-                           citekeys))))
+            (mapcan (lambda (key)
+                      (let* ((entry   (gethash key entry-cache))
+                             (fields  (seq-remove (lambda (c) (string-prefix-p "=" (car c))) entry))
+                             (max-len (apply #'max (length "key")
+                                            (mapcar (lambda (c) (length (car c))) fields)))
+                             (fmt     (format "[%%-%ds] %%s" max-len))
+                             (key-cand (propertize (format fmt "key" key)
+                                                   'citar--resource 'copy-field))
+                             (copy-cands (mapcar (lambda (cell)
+                                                   (propertize (format fmt (car cell) (cdr cell))
+                                                               'citar--resource 'copy-field))
+                                                 fields)))
+                        (append (list key-cand) copy-cands
+                                (list (propertize key 'citar--resource 'open-in-ebib)))))
+                    citekeys)))
       (cons 'multi-category (append (when result (cdr result)) extra-cands))))
 
   (defun +citar--open-resource-extras-a (orig resource &optional type)
-    "Handle copy-title and open-in-ebib in `citar--open-resource'."
+    "Handle copy-field and open-in-ebib in `citar--open-resource'."
     (pcase (or type (get-text-property 0 'citar--resource resource))
-      ('copy-title
-       (let* ((key (string-trim (string-remove-prefix "[Copy Title] "
-                                                      (substring-no-properties resource))))
-              (title (or (citar-get-value "title" key) key)))
-         (kill-new title)
-         (message "Copied title: %s" title)))
+      ('copy-field
+       (let ((val (and (string-match "\\`\\[[^]]+\\] \\(\\(?:.\\|\n\\)*\\)\\'" resource)
+                       (match-string 1 resource))))
+         (kill-new (or val resource))
+         (message "Copied: %s" (or val resource))))
       ('open-in-ebib
-       (citar-open-entry-in-ebib
-        (string-trim (string-remove-prefix "[Open in Ebib] "
-                                           (substring-no-properties resource)))))
+       (citar-open-entry-in-ebib (substring-no-properties resource)))
       (_ (funcall orig resource type))))
 
   (defun +citar--select-group-extras-a (orig resource transform)
-    "Add group labels for copy-title and open-in-ebib in completing-read."
-    (pcase (get-text-property 0 'citar--resource resource)
-      ('copy-title    (if transform resource "Copy Title"))
-      ('open-in-ebib  (if transform resource "Open in Ebib"))
-      (_ (funcall orig resource transform))))
+    "Add group labels for copy-field and open-in-ebib in completing-read.
+Also fixes create-note grouping: after display replacement the outer string
+has no direct `citar--resource', so we look it up via `multi-category'."
+    (let* ((direct (get-text-property 0 'citar--resource resource))
+           (rtype  (or direct
+                       (when-let* ((mc    (get-text-property 0 'multi-category resource))
+                                   (inner (cdr mc)))
+                         (get-text-property 0 'citar--resource inner)))))
+      (pcase rtype
+        ('copy-field   (if transform resource "Copy Field"))
+        ('open-in-ebib (if transform resource "Open in Ebib"))
+        (_
+         ;; Pass the resource with citar--resource set so the original
+         ;; group function correctly labels create-note (and other) types.
+         (funcall orig
+                  (if (and rtype (not direct))
+                      (propertize resource 'citar--resource rtype)
+                    resource)
+                  transform)))))
 
   (advice-add 'citar--get-resource-candidates :around #'+citar--get-resource-extras-a)
   (advice-add 'citar--open-resource :around #'+citar--open-resource-extras-a)
