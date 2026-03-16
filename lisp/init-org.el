@@ -323,6 +323,12 @@
   :custom
   (org-roam-directory (+emacs/org-subdir "roam"))
   :config
+  ;; 例如改成只用时间戳：
+  (setq org-roam-capture-templates
+        '(("d" "default" plain "%?"
+           :target (file+head "%<%Y-%m-%dt%H%M>.org" "#+title: ${title}\n")
+           :unnarrowed t)))
+
   ;; If you're using a vertical completion framework, you might want
   ;; a more informative completion interface
   (setq org-roam-node-display-template
