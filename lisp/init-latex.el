@@ -122,8 +122,14 @@ Also simplifies create-note candidates to show only the note filename."
                                                   (name (when-let* (((fboundp 'citar-file--get-note-filename))
                                                                       (path (citar-file--get-note-filename key)))
                                                           (file-name-nondirectory path)))
-                                                  (name (or name key)))
-                                             (propertize name 'multi-category mc))
+                                                  (name (or name key))
+                                                  ;; Keep the hidden citekey prefix and outer resource
+                                                  ;; type so `citar--select-resource' and Embark can
+                                                  ;; still dispatch create-note correctly.
+                                                  (display (citar--prepend-candidate-citekey key name)))
+                                             (propertize display
+                                                         'citar--resource rtype
+                                                         'multi-category mc))
                                          cand)))
                                    (cdr orig-result)))))
            (extra-cands
