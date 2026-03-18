@@ -57,7 +57,12 @@
       :endpoint "/chat/completions"
       :stream t
       :key (auth-source-pick-first-password :host "aliyun")
-      :models '(qwen3-coder-next glm-5 qwen3-max qwen-plus deepseek-r1 qwen3-coder-plus)))
+      :models '((qwen3-coder-next :request-params (:enable_thinking t))
+                glm-5
+                (qwen3-max :request-params (:enable_thinking t))
+                qwen-plus
+                deepseek-r1
+                qwen3-coder-plus))))
 
   (defvar +gptel/sssaicode
     (gptel-make-openai "SssAiCode"
@@ -90,7 +95,7 @@
 
   ;; set default values
   (setopt gptel-backend +gptel/aliyun)
-  (setopt gptel-model 'qwen3-coder-next)
+  (setopt gptel-model 'qwen3-max)
 
   ;; set context
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
