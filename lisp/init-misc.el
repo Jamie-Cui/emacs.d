@@ -496,13 +496,32 @@
 ;; turn on size in bytes indicator on modeline
 ;; (size-indication-mode 1)
 
+(defun +modeline/project-buffer-name ()
+  "Return the current buffer name relative to the project root."
+  (if-let* ((file buffer-file-name)
+            (project (project-current nil (file-name-directory file)))
+            (root (project-root project))
+            (name (or (project-name project)
+                      (file-name-nondirectory
+                       (directory-file-name root))))
+            (relative (file-relative-name file root)))
+      (concat name "/" relative)
+    (buffer-name)))
+
+(defun +modeline/buffer-identification ()
+  "Return the propertized current buffer identifier for the mode line."
+  (propertize (+modeline/project-buffer-name)
+              'face 'mode-line-buffer-id
+              'help-echo "Buffer name\nmouse-1: Previous buffer\nmouse-3: Next buffer"
+              'mouse-face 'mode-line-highlight
+              'local-map mode-line-buffer-identification-keymap))
+
 ;; mode-line format
 (setopt mode-line-format
         (list
          "%e"
          'mode-line-front-space
-         '(:eval (format-mode-line
-                  (propertized-buffer-identification "%b")))
+         '(:eval (+modeline/buffer-identification))
          "   "
          'mode-line-position
          "   "
