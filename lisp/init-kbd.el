@@ -151,7 +151,7 @@
     ;; application keys
     "G"      #'gptel  ;; G -> Gptel
     "A"      #'magent-dwim ;; A -> Magent
-    "C"      #'agent-shell-anthropic-start-claude-code ;; C -> Claude Code
+    "S"      #'agent-shell ;; S -> Agent Shell
     "T"      #'telega ;; T -> Telegram
     "D"      #'docker
     ;; most-frequency keys
