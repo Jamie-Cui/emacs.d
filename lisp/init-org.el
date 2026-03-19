@@ -33,6 +33,15 @@
 ;; make org file find org-journal files (maybe not needed?)
 ;; (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
 
+;; HACK markup 记号前后允许中文
+(setopt org-emphasis-regexp-components
+        (list (concat " \t('\"{"            "[:nonascii:]")
+              (concat "- \t.,:!?;'\")}\\["  "[:nonascii:]")
+              " \t\r\n,\"'"
+              "."
+              1))
+(org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
+
 ;;; timer
 (setopt org-timer-default-timer "20") ; 20 mins
 (setopt org-clock-sound t) ; use default sound
