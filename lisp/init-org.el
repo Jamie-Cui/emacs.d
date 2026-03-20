@@ -4,8 +4,42 @@
 
 (require 'org)
 (require 'org-agenda)
+(require 'org-element)
 (require 'init-utils)
 (require 'init-org-project)
+
+(defun +org-element-get-category-fixed ()
+  "Return category in current buffer.
+This mirrors upstream Org's zero-argument implementation and avoids a
+broken precompiled `org-element.elc' path in the current Emacs bundle."
+  (let ((default-category
+         (cond ((null org-category)
+                (when (org-with-base-buffer nil
+                        buffer-file-name)
+                  (file-name-sans-extension
+                   (file-name-nondirectory
+                    (org-with-base-buffer nil
+                      buffer-file-name)))))
+               ((symbolp org-category) (symbol-name org-category))
+               (t org-category)))
+        category)
+    (org-with-point-at (point-max)
+      (while (and (not category)
+                  (re-search-backward "^[ \t]*#\\+CATEGORY:" (point-min) t))
+        (let ((element (org-element-at-point-no-context)))
+          (when (org-element-type-p element 'keyword)
+            (setq category (org-element-property :value element))))))
+    (or category default-category)))
+
+(defun +org-fix-category-runtime ()
+  "Repair Org category lookup for the current runtime."
+  (advice-mapc
+   (lambda (fn _props)
+     (advice-remove 'org-element--get-category fn))
+   'org-element--get-category)
+  (defalias 'org-element--get-category #'+org-element-get-category-fixed))
+
+(+org-fix-category-runtime)
 
 (defgroup +org-agenda nil
   "Local agenda hygiene helpers."
@@ -80,7 +114,7 @@
 Uses `string-width' for CJK-aware column counting.
 Intended for use in `org-agenda-prefix-format' via %(...)."
   (let* ((width (or width 22))
-         (cat (format "%s" (or (bound-and-true-p org-category) "")))
+         (cat (org-get-category (point)))
          (w (string-width cat)))
     (cond
      ((> w width) (truncate-string-to-width cat (- width 1) nil nil "…"))
@@ -91,8 +125,7 @@ Intended for use in `org-agenda-prefix-format' via %(...)."
       '((agenda           . " %i %(+org-agenda-category 22)%?-12t% s")
         (todo             . " %i %(+org-agenda-category 22) ")
         (tags             . " %i %(+org-agenda-category 22) ")
-        (search           . " %i %(+org-agenda-category 22) ")
-        (dashboard-agenda . " %i %(+org-agenda-category 18) %s ")))
+        (search           . " %i %(+org-agenda-category 22) ")))
 
 ;; make org file find org-journal files (maybe not needed?)
 ;; (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
