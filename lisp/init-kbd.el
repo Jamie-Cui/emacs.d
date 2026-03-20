@@ -231,6 +231,7 @@
     "n" '(:ignore t :which-key "note")
     "na"      #'org-agenda-list
     "nA"      #'consult-org-agenda
+    "nc"      #'+org-project-capture
     "nt"      #'org-todo-list
     "nj"      #'org-journal-new-entry
     "n@"      #'citar-insert-citation

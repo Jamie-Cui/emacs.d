@@ -5,6 +5,51 @@
 (require 'org)
 (require 'org-agenda)
 (require 'init-utils)
+(require 'init-org-project)
+
+(defgroup +org-agenda nil
+  "Local agenda hygiene helpers."
+  :group 'org)
+
+(defcustom +org-agenda-ignored-file-regexps
+  '("\\.sync-conflict-[^/]*\\.org\\'"
+    "/[^/]+-beorg\\.org\\'")
+  "Regexps for agenda files that should be ignored locally."
+  :type '(repeat string)
+  :group '+org-agenda)
+
+(defun +org-agenda-ignored-file-p (file)
+  "Return non-nil when FILE should be excluded from `org-agenda-files'."
+  (when (stringp file)
+    (let ((path (expand-file-name file))
+          ignored)
+      (dolist (regexp +org-agenda-ignored-file-regexps ignored)
+        (when (string-match-p regexp path)
+          (setq ignored t))))))
+
+(defun +org-agenda-prune-files (&optional files)
+  "Remove ignored entries from FILES or `org-agenda-files'."
+  (interactive)
+  (let* ((targets (or files org-agenda-files))
+         (normalized (delete-dups
+                      (delq nil
+                            (mapcar (lambda (file)
+                                      (when (stringp file)
+                                        (expand-file-name file)))
+                                    (copy-sequence targets)))))
+         (filtered (delq nil
+                         (mapcar (lambda (file)
+                                   (unless (+org-agenda-ignored-file-p file)
+                                     file))
+                                 normalized))))
+    (when (or (null files)
+              (called-interactively-p 'interactive))
+      (setq org-agenda-files filtered))
+    filtered))
+
+(defun +org-agenda--prune-after-journal-update (&rest _)
+  "Keep generated journal side files out of `org-agenda-files'."
+  (+org-agenda-prune-files))
 
 ;; -----------------------------------------------------------
 ;; DONE org: the built-in package
@@ -29,6 +74,25 @@
  :keymaps 'org-agenda-mode-map
  :states 'normal
  "RET"   #'org-agenda-switch-to)
+
+(defun +org-agenda-category (&optional width)
+  "Return category padded or truncated to WIDTH columns (default 22).
+Uses `string-width' for CJK-aware column counting.
+Intended for use in `org-agenda-prefix-format' via %(...)."
+  (let* ((width (or width 22))
+         (cat (format "%s" (or (bound-and-true-p org-category) "")))
+         (w (string-width cat)))
+    (cond
+     ((> w width) (truncate-string-to-width cat (- width 1) nil nil "…"))
+     ((< w width) (concat cat (make-string (- width w) ?\s)))
+     (t cat))))
+
+(setq org-agenda-prefix-format
+      '((agenda           . " %i %(+org-agenda-category 22)%?-12t% s")
+        (todo             . " %i %(+org-agenda-category 22) ")
+        (tags             . " %i %(+org-agenda-category 22) ")
+        (search           . " %i %(+org-agenda-category 22) ")
+        (dashboard-agenda . " %i %(+org-agenda-category 18) %s ")))
 
 ;; make org file find org-journal files (maybe not needed?)
 ;; (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
@@ -205,7 +269,12 @@
   (org-journal-enable-agenda-integration t)
   :config
   (setq org-element-use-cache nil)
-  (add-to-list 'org-agenda-files org-journal-dir))
+  (add-to-list 'org-agenda-files org-journal-dir)
+  (+org-project-sync-agenda-files)
+  (+org-agenda-prune-files)
+  (advice-add 'org-journal--update-org-agenda-files
+              :after
+              #'+org-agenda--prune-after-journal-update))
 
 (use-package org-download
   :ensure t
@@ -256,6 +325,11 @@
 		        "\\|^:PROPERTIES:\n\\(.+\n\\)+:END:\n"
 		        "\\)"))
   (setq deft-default-extension "org")
+
+  (add-hook 'deft-mode-hook
+            (lambda ()
+              (setq-local revert-buffer-function
+                          (lambda (&rest _) (deft-refresh)))))
 
   (defun +deft/title-with-type (orig-fn file)
     "Append file extension to deft title."

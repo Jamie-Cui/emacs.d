@@ -580,4 +580,18 @@
 ;; see: https://www.gnu.org/software/emacs/manual/html_node/elisp/Disabling-Commands.html
 (put 'narrow-to-region 'disabled nil)
 
+(defun +emacs/clear-native-compile-cache ()
+  "Delete all native-compiled .eln files and kill Emacs.
+On next startup Emacs will recompile everything from scratch."
+  (interactive)
+  (when (yes-or-no-p "Delete all .eln files in eln-cache and restart Emacs? ")
+    (let ((dir (expand-file-name "eln-cache" user-emacs-directory)))
+      (if (file-directory-p dir)
+          (progn
+            (delete-directory dir t)
+            (message "Deleted %s — restarting Emacs..." dir)
+            (sit-for 1)
+            (restart-emacs))
+        (user-error "eln-cache directory not found: %s" dir)))))
+
 (provide 'init-misc)
