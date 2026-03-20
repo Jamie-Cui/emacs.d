@@ -479,9 +479,9 @@
   (dashboard-startup-banner 4) ; 4 means using 4.txt
   (dashboard-set-file-icons nil)
   (dashboard-items '(
-                     (agenda . 5)
+                     ;; (agenda . 5)
                      (recents  . 5)
-                     ;; (projects  . 5)
+                     (projects  . 5)
                      (bookmarks . 5)
                      ))
   (dashboard-projects-backend 'projectile)
