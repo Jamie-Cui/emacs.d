@@ -8,10 +8,11 @@
 (require 'init-utils)
 (require 'init-org-project)
 
-(defun +org-element-get-category-fixed ()
-  "Return category in current buffer.
-This mirrors upstream Org's zero-argument implementation and avoids a
-broken precompiled `org-element.elc' path in the current Emacs bundle."
+;; Emacs 30.2 can native-compile this helper incorrectly and then call
+;; `org-element-with-disabled-cache' like a function while dashboard renders
+;; agenda items.
+(defun +org--org-element-get-category-interpreted ()
+  "Interpreted replacement for `org-element--get-category'."
   (let ((default-category
          (cond ((null org-category)
                 (when (org-with-base-buffer nil
@@ -31,15 +32,15 @@ broken precompiled `org-element.elc' path in the current Emacs bundle."
             (setq category (org-element-property :value element))))))
     (or category default-category)))
 
-(defun +org-fix-category-runtime ()
-  "Repair Org category lookup for the current runtime."
-  (advice-mapc
-   (lambda (fn _props)
-     (advice-remove 'org-element--get-category fn))
-   'org-element--get-category)
-  (defalias 'org-element--get-category #'+org-element-get-category-fixed))
+(when (and (string-prefix-p "30.2" emacs-version)
+           (fboundp 'org-element--get-category)
+           (subrp (symbol-function 'org-element--get-category)))
+  (defalias 'org-element--get-category
+    #'+org--org-element-get-category-interpreted))
 
-(+org-fix-category-runtime)
+;; -----------------------------------------------------------
+;; DONE hack: filter out sync-conflict and *-beorg
+;; -----------------------------------------------------------
 
 (defgroup +org-agenda nil
   "Local agenda hygiene helpers."
@@ -108,24 +109,6 @@ broken precompiled `org-element.elc' path in the current Emacs bundle."
  :keymaps 'org-agenda-mode-map
  :states 'normal
  "RET"   #'org-agenda-switch-to)
-
-(defun +org-agenda-category (&optional width)
-  "Return category padded or truncated to WIDTH columns (default 22).
-Uses `string-width' for CJK-aware column counting.
-Intended for use in `org-agenda-prefix-format' via %(...)."
-  (let* ((width (or width 22))
-         (cat (org-get-category (point)))
-         (w (string-width cat)))
-    (cond
-     ((> w width) (truncate-string-to-width cat (- width 1) nil nil "…"))
-     ((< w width) (concat cat (make-string (- width w) ?\s)))
-     (t cat))))
-
-(setq org-agenda-prefix-format
-      '((agenda           . " %i %(+org-agenda-category 22)%?-12t% s")
-        (todo             . " %i %(+org-agenda-category 22) ")
-        (tags             . " %i %(+org-agenda-category 22) ")
-        (search           . " %i %(+org-agenda-category 22) ")))
 
 ;; make org file find org-journal files (maybe not needed?)
 ;; (setq org-agenda-file-regexp "\\`\\\([^.].*\\.org\\\|[0-9]\\\{8\\\}\\\(\\.gpg\\\)?\\\)\\'")
@@ -501,58 +484,6 @@ Intended for use in `org-agenda-prefix-format' via %(...)."
 
 (use-package engrave-faces
   :ensure t)
-
-;; (use-package org-gtd
-;;   :ensure t
-;;   :after popwin
-;;   :init
-;;   ;; Suppress upgrade warnings (must be set before package loads)
-;;   (setq org-gtd-update-ack "4.0.0")
-;;   :custom
-;;   (org-gtd-prefix-width 20)
-;;   (org-gtd-save-after-organize t)
-;;   (org-gtd-directory (+emacs/org-subdir "gtd"))
-;;   ;; Map GTD semantic states to your keywords
-;;   (org-gtd-keyword-mapping '((todo . "TODO")
-;;                              (next . "NEXT")
-;;                              (wait . "WAIT")
-;;                              (done . "DONE")
-;;                              (canceled . "KILL")))
-;;   :config
-
-;;   ;; Advise =org-gtd-clarify-setup-windows=
-;;   (defun +org-gtd/clarify--use-popwin (orig-fun buffer-or-name)
-;;     "Display BUFFER-OR-NAME using popwin instead of default window setup."
-;;     (let ((buffer (get-buffer buffer-or-name)))
-;;       ;; Show main clarify buffer via popwin
-;;       (popwin:popup-buffer buffer)
-;;       ;; Optionally show horizons if enabled (keep original behavior)
-;;       (when org-gtd-clarify-show-horizons
-;;         (org-gtd-clarify--display-horizons-window))))
-
-;;   (advice-add 'org-gtd-clarify-setup-windows :around #'+org-gtd/clarify--use-popwin)
-
-;;   ;; Prevent manual window restoration in org-gtd-clarify-stop
-;;   (defun +org-gtd/clarify--skip-window-restore (orig-fun &rest args)
-;;     "Skip restoring window config (handled by popwin)."
-;;     (let ((org-gtd-clarify--window-config nil)) ; Shadow the var
-;;       (apply orig-fun args)))
-
-;;   (advice-add 'org-gtd-clarify-stop :around #'+org-gtd/clarify--skip-window-restore)
-
-;;   ;; REQUIRED: Enable org-edna for project dependencies
-;;   (org-edna-mode 1)
-;;   ;; Add org-gtd files to your agenda (must be in :config so org-gtd-directory is defined)
-;;   (setq org-agenda-files (list org-gtd-directory))
-
-;;   (general-define-key
-;;    :keymaps 'org-gtd-clarify-mode-map
-;;    "C-c c"   #'org-gtd-organize)
-
-;;   (general-define-key
-;;    :keymaps 'org-agenda-mode-map
-;;    "C-c ."   #'org-gtd-agenda-transient)
-;;   )
 
 (defun consult-org--get-heading-time-info (marker)
   "Extract time info (SCHEDULED, DEADLINE, or timestamp) from heading at MARKER."

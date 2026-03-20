@@ -39,6 +39,11 @@
   (when (version< emacs-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
 
+;; Work around an Emacs 30.2 native-comp regression in built-in Org.
+(defvar native-comp-jit-compilation-deny-list nil)
+(dolist (regexp '(".*org-element.*" ".*org-macs.*"))
+  (add-to-list 'native-comp-jit-compilation-deny-list regexp))
+
 (defcustom +emacs/repo-directory (expand-file-name "~/.emacs.d")
   "Path to emacs.d folder"
   :type 'string
@@ -395,21 +400,21 @@ Returns DIR after ensuring it exists."
    "?"   #'magent-transient-menu
    ))
 
-(+use-package-when-dir-exists edraw
-    (concat +emacs/repo-directory "/site-lisp/el-easydraw")
-  :after org
-  :demand t
-  :config
-  (require 'edraw-org)
-  (edraw-org-setup-default)
-  (edraw-org-setup-exporter)
+;; (+use-package-when-dir-exists edraw
+;;     (concat +emacs/repo-directory "/site-lisp/el-easydraw")
+;;   :after org
+;;   :demand t
+;;   :config
+;;   (require 'edraw-org)
+;;   (edraw-org-setup-default)
+;;   (edraw-org-setup-exporter)
 
-  ;; keybindings that should not be overriden
-  (general-define-key
-   :keymaps 'edraw-editor-map
-   "<backspace>"   #'edraw-editor-delete-selected
-   )
-  )
+;;   ;; keybindings that should not be overriden
+;;   (general-define-key
+;;    :keymaps 'edraw-editor-map
+;;    "<backspace>"   #'edraw-editor-delete-selected
+;;    )
+;;   )
 
 ;; HACK
 (auto-compression-mode 0)

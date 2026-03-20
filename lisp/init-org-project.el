@@ -6,11 +6,13 @@
 
 (require 'cl-lib)
 (require 'org)
+(require 'org-agenda)
 (require 'org-capture)
 (require 'org-element)
 (require 'org-id)
 (require 'outline)
 (require 'subr-x)
+(require 'tabulated-list)
 
 (declare-function org-journal--get-entry-path "org-journal" (&optional time))
 (declare-function org-journal-new-entry "org-journal" (prefix &optional time no-timestamp))
@@ -65,11 +67,84 @@
   '("active" "archived" "deleted" "done" "moved" "reverted")
   "Status tags used by journal capture audit entries.")
 
+(defconst org-project-todo-list-buffer-name "*Org Project TODO List*"
+  "Buffer name used by `org-project-todo-list'.")
+
+(defvar-local org-project-todo-list--keyword-filter nil
+  "Current TODO keyword filter for `org-project-todo-list'.")
+
+(defvar-local org-project-todo-list--edit-marker nil
+  "Source marker for the row currently being edited.")
+
+(defvar-local org-project-todo-list--edit-original nil
+  "Original action item text before editing.")
+
+(defvar-local org-project-todo-list--edit-overlay nil
+  "Overlay covering the editable action item region.")
+
+(defvar-local org-project-todo-list--edit-start nil
+  "Marker at the start of the editable action item region.")
+
+(defvar-local org-project-todo-list--edit-end nil
+  "Marker at the end of the editable action item region.")
+
+(defvar-local org-project-todo-list--edit-guards nil
+  "Read-only guard overlays outside the editable region.")
+
+(defvar-local org-project-todo-list--header-columns nil
+  "Base tabulated-list header used by `org-project-todo-list'.")
+
+(defface org-project-todo-list-project-face
+  '((t (:inherit font-lock-doc-face)))
+  "Face used for the project column."
+  :group '+org-project)
+
+(defface org-project-todo-list-hierarchy-face
+  '((t (:inherit shadow)))
+  "Face used for the hierarchy column."
+  :group '+org-project)
+
+(defface org-project-todo-list-tag-face
+  '((t (:inherit org-tag)))
+  "Face used for the tag column."
+  :group '+org-project)
+
+(defface org-project-todo-list-action-face
+  '((t (:inherit default :weight semibold)))
+  "Base face used for action items."
+  :group '+org-project)
+
+(defface org-project-todo-list-action-wait-face
+  '((t (:inherit (org-project-todo-list-action-face warning))))
+  "Face used for WAIT action items."
+  :group '+org-project)
+
+(defface org-project-todo-list-action-project-face
+  '((t (:inherit (org-project-todo-list-action-face font-lock-keyword-face))))
+  "Face used for PROJ action items that are still leaf actions."
+  :group '+org-project)
+
+(defface org-project-todo-list-deadline-face
+  '((t (:inherit shadow)))
+  "Face used for deadlines that are not urgent."
+  :group '+org-project)
+
+(defface org-project-todo-list-deadline-soon-face
+  '((t (:inherit warning :weight semibold)))
+  "Face used for deadlines due soon."
+  :group '+org-project)
+
+(defface org-project-todo-list-deadline-overdue-face
+  '((t (:inherit error :weight bold)))
+  "Face used for overdue deadlines."
+  :group '+org-project)
+
 (defun +org-project--save-buffer-no-hooks ()
   "Save the current buffer without org-heavy save hooks."
   (unless buffer-file-name
     (user-error "Current buffer is not visiting a file"))
   (write-region (point-min) (point-max) buffer-file-name nil 0)
+  (set-visited-file-modtime)
   (set-buffer-modified-p nil))
 
 (defun +org-project--inactive-timestamp (&optional time)
@@ -301,6 +376,644 @@ TITLE, ROOT and SLUG seed the initial metadata."
      (plist-get context :root)
      (plist-get context :slug))))
 
+(defun +org-project--todo-list-format ()
+  "Return the column format for `org-project-todo-list'."
+  (let* ((total-width (max 120 (frame-width)))
+         (project-width 22)
+         (hierarchy-width 28)
+         (state-width 8)
+         (tag-width 18)
+         (time-width 24)
+         (action-width (max 28
+                            (- total-width
+                               project-width
+                               hierarchy-width
+                               state-width
+                               tag-width
+                               time-width
+                               14))))
+    (vector
+     `("Project" ,project-width t)
+     `("Hierarchy" ,hierarchy-width t)
+     `("State" ,state-width t)
+     `("Items" ,action-width t)
+     `("Tag" ,tag-width t)
+     `("Time" ,time-width t))))
+
+(defun +org-project--resolve-todo-filter (arg)
+  "Resolve prefix ARG into an `org-project-todo-list' keyword filter."
+  (when (and (stringp arg)
+             (not (string-match-p "\\S-" arg)))
+    (setq arg nil))
+  (let* ((completion-ignore-case t)
+         (todo-keywords (or (and (boundp 'org-todo-keywords-for-agenda)
+                                 org-todo-keywords-for-agenda)
+                            org-not-done-keywords))
+         filter)
+    (setq filter
+          (cond ((stringp arg) arg)
+                ((and (integerp arg) (> arg 0))
+                 (nth (1- arg) todo-keywords))))
+    (when (equal arg '(4))
+      (setq filter
+            (mapconcat
+             #'identity
+             (let ((crm-separator "|"))
+               (completing-read-multiple
+                "Keyword (or KWD1|KWD2|...): "
+                (mapcar #'list todo-keywords)
+                nil
+                t))
+             "|")))
+    (when (equal arg 0)
+      (setq filter nil))
+    filter))
+
+(defun +org-project--todo-filter-label (filter)
+  "Return a display label for TODO FILTER."
+  (if (stringp filter)
+      filter
+    "ALL"))
+
+(defun +org-project--todo-matches-filter-p (todo-state filter)
+  "Return non-nil when TODO-STATE matches FILTER."
+  (or (null filter)
+      (member todo-state (split-string filter "|" t "[[:space:]]*"))))
+
+(defun +org-project--todo-heading-has-children-p ()
+  "Return non-nil when the current heading has child headings."
+  (save-excursion
+    (let ((level (org-outline-level))
+          (subtree-end (save-excursion (org-end-of-subtree t t))))
+      (forward-line 1)
+      (catch 'found
+        (while (re-search-forward org-outline-regexp-bol subtree-end t)
+          (when (> (org-outline-level) level)
+            (throw 'found t)))
+        nil))))
+
+(defun +org-project--action-item-p (&optional filter bucket)
+  "Return non-nil when the current heading is a leaf action item.
+Optional FILTER limits the result to matching TODO keywords."
+  (let ((todo-state (org-get-todo-state))
+        (level (org-outline-level)))
+    (and todo-state
+         (or (> level 1)
+             (eq bucket 'non-project))
+         (not (member todo-state org-done-keywords))
+         (not (+org-project-in-archive-p))
+         (+org-project--todo-matches-filter-p todo-state filter)
+         (not (+org-project--todo-heading-has-children-p)))))
+
+(defun +org-project--project-title (&optional fallback-file)
+  "Return the current project title, falling back to FALLBACK-FILE."
+  (save-excursion
+    (goto-char (point-min))
+    (let ((title (when (re-search-forward "^#\\+title:[ \t]*\\(.+\\)$" nil t)
+                   (string-trim (match-string-no-properties 1)))))
+      (if (and (stringp title)
+               (not (string-empty-p title)))
+          title
+        (file-name-base (or fallback-file
+                            (buffer-file-name)
+                            "project"))))))
+
+(defun +org-project--parent-headings ()
+  "Return parent headings for the current entry from top to bottom."
+  (let (parents)
+    (save-excursion
+      (while (org-up-heading-safe)
+        (push (substring-no-properties (org-get-heading t t t t)) parents)))
+    parents))
+
+(defun +org-project--parent-hierarchy ()
+  "Return the parent heading path of the current entry."
+  (string-join (+org-project--parent-headings) " / "))
+
+(defun +org-project--entry-context (file bucket)
+  "Return display context plist for the current entry in FILE and BUCKET."
+  (let* ((parents (+org-project--parent-headings))
+         (project (+org-project--project-title file))
+         (hierarchy (string-join parents " / ")))
+    (if (eq bucket 'non-project)
+        (list :project ""
+              :hierarchy hierarchy
+              :sort-project (expand-file-name file)
+              :sort-hierarchy (format "%020d" (point)))
+      (list :project project
+            :hierarchy hierarchy
+            :sort-project project
+            :sort-hierarchy hierarchy))))
+
+(defun +org-project--entry-deadline ()
+  "Return the current heading deadline as YYYY-MM-DD, or an empty string."
+  (when-let ((deadline (org-entry-get (point) "DEADLINE")))
+    (format-time-string "%Y-%m-%d" (org-time-string-to-time deadline))))
+
+(defun +org-project--format-org-time-string (time-string)
+  "Return TIME-STRING as a normalized display string."
+  (when (and (stringp time-string)
+             (not (string-empty-p time-string)))
+    (let ((fmt (if (string-match-p "[0-9]\\{1,2\\}:[0-9]\\{2\\}" time-string)
+                   "%Y-%m-%d %H:%M"
+                 "%Y-%m-%d")))
+      (format-time-string fmt (org-time-string-to-time time-string)))))
+
+(defun +org-project--entry-time ()
+  "Return the current heading planning info as a display string."
+  (let (parts)
+    (when-let ((deadline (+org-project--format-org-time-string
+                           (org-entry-get (point) "DEADLINE"))))
+      (push (concat "D:" deadline) parts))
+    (when-let ((scheduled (+org-project--format-org-time-string
+                            (org-entry-get (point) "SCHEDULED"))))
+      (push (concat "S:" scheduled) parts))
+    (when-let ((timestamp (+org-project--format-org-time-string
+                            (or (org-entry-get (point) "TIMESTAMP")
+                                (org-entry-get (point) "TIMESTAMP_IA")))))
+      (push (concat "T:" timestamp) parts))
+    (string-join (nreverse parts) "  ")))
+
+(defun +org-project--entry-tags ()
+  "Return the current heading tags as a display string."
+  (let* ((origin (or (org-entry-get-with-inheritance "ORIGIN") ""))
+         (tags (delete-dups
+                (mapcar #'substring-no-properties
+                        (org-get-tags)))))
+    (cond
+     ((or (string-match-p "human" origin)
+          (member "human" tags)
+          (member "captured" tags))
+      "human")
+     ((or (string-match-p "agent\\|ai" origin)
+          (member "agent" tags)
+          (member "ai" tags))
+      "agent")
+     (t ""))))
+
+(defun +org-project--collect-file-action-items (file &optional filter bucket)
+  "Collect leaf action items from FILE matching FILTER in BUCKET."
+  (let ((buffer (find-file-noselect file))
+        items)
+    (with-current-buffer buffer
+      (unless (derived-mode-p 'org-mode)
+        (org-mode))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (goto-char (point-min))
+          (let ((bucket (or bucket 'project)))
+            (while (re-search-forward org-outline-regexp-bol nil t)
+              (goto-char (match-beginning 0))
+              (when (+org-project--action-item-p filter bucket)
+                (let ((context (+org-project--entry-context file bucket)))
+                  (push (list :marker (copy-marker (point))
+                              :bucket bucket
+                              :bucket-rank (if (eq bucket 'non-project) 0 1)
+                              :project (plist-get context :project)
+                              :hierarchy (plist-get context :hierarchy)
+                              :sort-project (plist-get context :sort-project)
+                              :sort-hierarchy (plist-get context :sort-hierarchy)
+                              :state (substring-no-properties
+                                      (org-get-todo-state))
+                              :action (substring-no-properties
+                                       (org-get-heading t t t t))
+                              :tags (+org-project--entry-tags)
+                              :deadline (or (+org-project--entry-deadline) "")
+                              :time (+org-project--entry-time))
+                        items)))
+              (forward-line 1))))))
+    items))
+
+(defun +org-project--todo-entry< (left right)
+  "Return non-nil when LEFT should sort before RIGHT."
+  (let ((left-rank (or (plist-get left :bucket-rank) 1))
+        (right-rank (or (plist-get right :bucket-rank) 1)))
+    (if (/= left-rank right-rank)
+        (< left-rank right-rank)
+      (catch 'result
+        (dolist (key '(:sort-project :sort-hierarchy :state :action :tags :time))
+          (let ((left-value (or (plist-get left key) ""))
+                (right-value (or (plist-get right key) "")))
+            (unless (string= left-value right-value)
+              (throw 'result (string< left-value right-value)))))
+        nil))))
+
+(defun +org-project--action-face (state)
+  "Return the face used for a leaf action item in STATE."
+  (pcase state
+    ("WAIT" 'org-project-todo-list-action-wait-face)
+    ("PROJ" 'org-project-todo-list-action-project-face)
+    (_ 'org-project-todo-list-action-face)))
+
+(defun +org-project--deadline-face (deadline)
+  "Return the face used for DEADLINE."
+  (if (string-empty-p deadline)
+      'org-project-todo-list-deadline-face
+    (let ((days-left (floor (/ (float-time
+                                (time-subtract
+                                 (org-time-string-to-time deadline)
+                                 (current-time)))
+                               86400.0))))
+      (cond ((< days-left 0) 'org-project-todo-list-deadline-overdue-face)
+            ((<= days-left 7) 'org-project-todo-list-deadline-soon-face)
+            (t 'org-project-todo-list-deadline-face)))))
+
+(defun +org-project--time-face (item)
+  "Return the face used for ITEM's time column."
+  (+org-project--deadline-face (or (plist-get item :deadline) "")))
+
+(defun +org-project--tabulated-cell (text width &optional face prefix &rest properties)
+  "Return TEXT truncated to WIDTH, optionally propertized with FACE, PREFIX and PROPERTIES."
+  (let* ((raw (concat (or prefix "") (or text "")))
+         (cell (truncate-string-to-width raw width nil nil "…")))
+    (apply #'propertize cell
+           'face face
+           'help-echo raw
+           properties)))
+
+(defun +org-project--todo-list-help-message ()
+  "Return the current help string for `org-project-todo-list'."
+  (if org-project-todo-list--edit-marker
+      "Editing item: C-c C-c apply, C-c C-k cancel"
+    "RET open, o other-window, i edit, C-c C-t todo, C-c C-q tags, C-c C-a archive, g refresh"))
+
+(defun +org-project--update-header-line ()
+  "Refresh the header line for `org-project-todo-list'."
+  (setq header-line-format
+        (list org-project-todo-list--header-columns
+              (propertize
+               (concat "    " (+org-project--todo-list-help-message))
+               'face 'shadow))))
+
+(defun +org-project--visit-marker (marker &optional other-window)
+  "Visit MARKER in its original Org file.
+When OTHER-WINDOW is non-nil, display it in another window."
+  (when org-project-todo-list--edit-marker
+    (user-error "Finish editing first with C-c C-c or C-c C-k"))
+  (unless (markerp marker)
+    (user-error "No project action item on this line"))
+  (if other-window
+      (pop-to-buffer (marker-buffer marker))
+    (pop-to-buffer-same-window (marker-buffer marker)))
+  (goto-char marker)
+  (org-back-to-heading t)
+  (org-fold-show-context 'agenda)
+  (org-fold-show-entry)
+  (org-reveal))
+
+(defun org-project-todo-list-open-at-point ()
+  "Open the original org heading for the current row."
+  (interactive)
+  (+org-project--visit-marker (tabulated-list-get-id)))
+
+(defun org-project-todo-list-open-original-file ()
+  "Open the original org heading for the current row in another window."
+  (interactive)
+  (+org-project--visit-marker (tabulated-list-get-id) t))
+
+(defun +org-project--tabulated-widths ()
+  "Return the current column widths for `org-project-todo-list'."
+  (list (nth 1 (aref tabulated-list-format 0))
+        (nth 1 (aref tabulated-list-format 1))
+        (nth 1 (aref tabulated-list-format 2))
+        (nth 1 (aref tabulated-list-format 3))
+        (nth 1 (aref tabulated-list-format 4))
+        (nth 1 (aref tabulated-list-format 5))))
+
+(defun +org-project--agenda-non-project-files ()
+  "Return non-project agenda files for `org-project-todo-list'."
+  (let* ((project-files (mapcar #'expand-file-name (+org-project-known-files)))
+         (agenda-files (when (fboundp 'org-agenda-files)
+                         (org-agenda-files nil 'ifmode))))
+    (sort
+     (delete-dups
+      (delq nil
+            (mapcar (lambda (file)
+                      (when (and (stringp file)
+                                 (file-exists-p file))
+                        (let ((expanded (expand-file-name file)))
+                          (unless (or (member expanded project-files)
+                                      (+org-project-file-p expanded))
+                            expanded))))
+                    agenda-files)))
+     #'string<)))
+
+(defun +org-project--marker-source (marker)
+  "Return a stable source identifier for MARKER."
+  (when (markerp marker)
+    (list (buffer-file-name (marker-buffer marker))
+          (marker-position marker))))
+
+(defun +org-project--goto-source (source)
+  "Move point to the row matching SOURCE.
+SOURCE should be produced by `+org-project--marker-source'."
+  (when source
+    (goto-char (point-min))
+    (catch 'found
+      (while (< (point) (point-max))
+        (let ((marker (tabulated-list-get-id)))
+          (when (equal (+org-project--marker-source marker) source)
+            (throw 'found t)))
+        (forward-line 1))
+      nil)))
+
+(defun +org-project--action-cell-bounds ()
+  "Return the editable action cell bounds for the current row."
+  (let* ((bol (line-beginning-position))
+         (eol (line-end-position))
+         (start (text-property-any bol eol 'org-project-todo-list-column 'action)))
+    (when start
+      (cons start
+            (or (next-single-property-change start 'org-project-todo-list-column nil eol)
+                eol)))))
+
+(defun +org-project--cleanup-edit-state ()
+  "Reset local edit state for `org-project-todo-list'."
+  (when (overlayp org-project-todo-list--edit-overlay)
+    (delete-overlay org-project-todo-list--edit-overlay))
+  (dolist (overlay org-project-todo-list--edit-guards)
+    (when (overlayp overlay)
+      (delete-overlay overlay)))
+  (when (markerp org-project-todo-list--edit-start)
+    (set-marker org-project-todo-list--edit-start nil))
+  (when (markerp org-project-todo-list--edit-end)
+    (set-marker org-project-todo-list--edit-end nil))
+  (setq-local org-project-todo-list--edit-marker nil)
+  (setq-local org-project-todo-list--edit-original nil)
+  (setq-local org-project-todo-list--edit-overlay nil)
+  (setq-local org-project-todo-list--edit-start nil)
+  (setq-local org-project-todo-list--edit-end nil)
+  (setq-local org-project-todo-list--edit-guards nil)
+  (+org-project--update-header-line))
+
+(defun org-project-todo-list-edit-action-item ()
+  "Edit the current row's action item in place."
+  (interactive)
+  (when org-project-todo-list--edit-marker
+    (user-error "Already editing; use C-c C-c or C-c C-k"))
+  (let* ((marker (tabulated-list-get-id))
+         (bounds (+org-project--action-cell-bounds))
+         (start (car bounds))
+         (end (cdr bounds))
+         (state (and start (get-text-property start 'org-project-todo-list-state)))
+         (raw (and start (get-text-property start 'org-project-todo-list-value))))
+    (unless (and (markerp marker) start end raw)
+      (user-error "No editable action item on this line"))
+    (setq-local org-project-todo-list--edit-marker marker)
+    (setq-local org-project-todo-list--edit-original raw)
+    (let ((inhibit-read-only t))
+      (setq buffer-read-only nil)
+      (goto-char start)
+      (delete-region start end)
+      (insert (propertize raw
+                          'face (+org-project--action-face state)
+                          'help-echo raw
+                          'org-project-todo-list-column 'action
+                          'org-project-todo-list-state state
+                          'org-project-todo-list-value raw))
+      (setq-local org-project-todo-list--edit-start
+                  (copy-marker start nil))
+      (setq-local org-project-todo-list--edit-end
+                  (copy-marker (+ start (length raw)) t))
+      (setq-local org-project-todo-list--edit-overlay
+                  (make-overlay start (+ start (length raw)) nil t t))
+      (setq-local org-project-todo-list--edit-guards
+                  (list (let ((overlay (make-overlay (point-min) start nil nil nil)))
+                          (overlay-put overlay 'read-only t)
+                          overlay)
+                        (let ((overlay (make-overlay (+ start (length raw)) (point-max) nil t nil)))
+                          (overlay-put overlay 'read-only t)
+                          overlay))))
+    (goto-char start)
+    (when (fboundp 'evil-insert-state)
+      (evil-insert-state))
+    (+org-project--update-header-line)
+    (message "Editing action item. C-c C-c to save, C-c C-k to cancel.")))
+
+(defun org-project-todo-list-commit-edit ()
+  "Apply the current in-place edit to the original project file."
+  (interactive)
+  (unless org-project-todo-list--edit-marker
+    (user-error "No active edit"))
+  (let* ((marker org-project-todo-list--edit-marker)
+         (source (+org-project--marker-source marker))
+         (updated (and (markerp org-project-todo-list--edit-start)
+                       (markerp org-project-todo-list--edit-end)
+                       (buffer-substring-no-properties
+                        org-project-todo-list--edit-start
+                        org-project-todo-list--edit-end))))
+    (unless (and updated (not (string-empty-p (string-trim updated))))
+      (user-error "Action item cannot be empty"))
+    (org-with-point-at marker
+      (org-back-to-heading t)
+      (org-edit-headline updated)
+      (with-current-buffer (marker-buffer marker)
+        (+org-project--save-buffer-no-hooks)))
+    (+org-project--cleanup-edit-state)
+    (when (fboundp 'evil-emacs-state)
+      (evil-emacs-state))
+    (+org-project--render-todo-list)
+    (+org-project--goto-source source)
+    (message "Updated action item")))
+
+(defun org-project-todo-list-cancel-edit ()
+  "Cancel the current in-place edit."
+  (interactive)
+  (unless org-project-todo-list--edit-marker
+    (user-error "No active edit"))
+  (let ((source (+org-project--marker-source org-project-todo-list--edit-marker)))
+    (+org-project--cleanup-edit-state)
+    (when (fboundp 'evil-emacs-state)
+      (evil-emacs-state))
+    (+org-project--render-todo-list)
+    (+org-project--goto-source source)
+    (message "Canceled action item edit")))
+
+(defun org-project-todo-list-toggle-state (&optional arg)
+  "Toggle the TODO state for the current action item.
+With optional ARG, pass it through to `org-todo'."
+  (interactive "P")
+  (when org-project-todo-list--edit-marker
+    (user-error "Finish editing first with C-c C-c or C-c C-k"))
+  (let* ((marker (tabulated-list-get-id))
+         (source (+org-project--marker-source marker))
+         next-state)
+    (unless (markerp marker)
+      (user-error "No action item on this line"))
+    (org-with-point-at marker
+      (org-back-to-heading t)
+      (org-todo arg)
+      (setq next-state (org-get-todo-state))
+      (with-current-buffer (marker-buffer marker)
+        (+org-project--save-buffer-no-hooks)))
+    (+org-project--render-todo-list)
+    (unless (+org-project--goto-source source)
+      (goto-char (point-min)))
+    (message "TODO state: %s" (or next-state "done"))))
+
+(defun org-project-todo-list-set-tags (&optional arg)
+  "Set tags on the current action item using Org's tag UI.
+With optional ARG, pass it through as `current-prefix-arg'."
+  (interactive "P")
+  (when org-project-todo-list--edit-marker
+    (user-error "Finish editing first with C-c C-c or C-c C-k"))
+  (let* ((marker (tabulated-list-get-id))
+         (source (+org-project--marker-source marker))
+         (current-prefix-arg arg))
+    (unless (markerp marker)
+      (user-error "No action item on this line"))
+    (org-with-point-at marker
+      (org-back-to-heading t)
+      (call-interactively #'org-set-tags-command)
+      (with-current-buffer (marker-buffer marker)
+        (+org-project--save-buffer-no-hooks)))
+    (+org-project--render-todo-list)
+    (unless (+org-project--goto-source source)
+      (goto-char (point-min)))
+    (message "Updated tags")))
+
+(defun org-project-todo-list-archive ()
+  "Archive the current action item into the project's Archive section."
+  (interactive)
+  (when org-project-todo-list--edit-marker
+    (user-error "Finish editing first with C-c C-c or C-c C-k"))
+  (let* ((marker (tabulated-list-get-id))
+         (source (+org-project--marker-source marker)))
+    (unless (markerp marker)
+      (user-error "No action item on this line"))
+    (org-with-point-at marker
+      (if (+org-project-file-p)
+          (+org-project-archive-task "todo-list")
+        (org-archive-subtree))
+      (with-current-buffer (marker-buffer marker)
+        (+org-project--save-buffer-no-hooks)))
+    (+org-project--render-todo-list)
+    (unless (+org-project--goto-source source)
+      (goto-char (point-min)))
+    (message "Archived action item")))
+
+(defun +org-project--collect-action-items (&optional filter)
+  "Collect and sort leaf action items matching FILTER."
+  (let (items)
+    (dolist (file (+org-project--agenda-non-project-files))
+      (setq items
+            (nconc items (+org-project--collect-file-action-items
+                          file filter 'non-project))))
+    (dolist (file (+org-project-known-files))
+      (setq items
+            (nconc items (+org-project--collect-file-action-items
+                          file filter 'project))))
+    (sort items #'+org-project--todo-entry<)))
+
+(defun +org-project--todo-list-entries ()
+  "Return tabulated entries for `org-project-todo-list'."
+  (pcase-let ((`(,project-width ,hierarchy-width ,state-width ,action-width ,tag-width ,time-width)
+                (+org-project--tabulated-widths)))
+    (mapcar
+     (lambda (item)
+       (let ((state (plist-get item :state)))
+         (list
+          (plist-get item :marker)
+          (vector
+           (+org-project--tabulated-cell
+            (plist-get item :project)
+            project-width
+            'org-project-todo-list-project-face)
+           (+org-project--tabulated-cell
+            (plist-get item :hierarchy)
+            hierarchy-width
+            'org-project-todo-list-hierarchy-face)
+           (+org-project--tabulated-cell
+            state
+            state-width
+            (org-get-todo-face state))
+           (+org-project--tabulated-cell
+            (plist-get item :action)
+            action-width
+            (+org-project--action-face state)
+            "> "
+            'org-project-todo-list-column 'action
+            'org-project-todo-list-state state
+            'org-project-todo-list-value (plist-get item :action))
+           (+org-project--tabulated-cell
+            (plist-get item :tags)
+            tag-width
+            'org-project-todo-list-tag-face)
+           (+org-project--tabulated-cell
+            (plist-get item :time)
+            time-width
+            (+org-project--time-face item))))))
+     (+org-project--collect-action-items org-project-todo-list--keyword-filter))))
+
+(defun +org-project--render-todo-list (&optional _ignore-auto _noconfirm)
+  "Render the current `org-project-todo-list' buffer."
+  (let ((inhibit-read-only t))
+    (setq tabulated-list-format (+org-project--todo-list-format))
+    (setq tabulated-list-entries (+org-project--todo-list-entries))
+    (tabulated-list-init-header)
+    (setq-local org-project-todo-list--header-columns header-line-format)
+    (+org-project--update-header-line)
+    (tabulated-list-print t)
+    (setq buffer-read-only t)))
+
+(defun org-project-todo-list-refresh ()
+  "Refresh the current `org-project-todo-list' buffer."
+  (interactive)
+  (unless (derived-mode-p 'org-project-todo-list-mode)
+    (user-error "Current buffer is not an org-project todo list"))
+  (when org-project-todo-list--edit-marker
+    (user-error "Finish editing first with C-c C-c or C-c C-k"))
+  (+org-project--render-todo-list)
+  (when (called-interactively-p 'interactive)
+    (message "%s" (+org-project--todo-list-help-message))))
+
+(defun org-project-todo-list-visit ()
+  "Visit the org heading on the current line."
+  (interactive)
+  (org-project-todo-list-open-at-point))
+
+(define-derived-mode org-project-todo-list-mode tabulated-list-mode "Org Project TODOs"
+  "Major mode for browsing leaf agenda action items."
+  (setq truncate-lines t)
+  (setq tabulated-list-padding 2)
+  (setq tabulated-list-format (+org-project--todo-list-format))
+  (setq tabulated-list-entries nil)
+  (setq-local revert-buffer-function #'+org-project--render-todo-list)
+  (tabulated-list-init-header))
+
+(define-key org-project-todo-list-mode-map (kbd "RET") #'org-project-todo-list-visit)
+(define-key org-project-todo-list-mode-map (kbd "i") #'org-project-todo-list-edit-action-item)
+(define-key org-project-todo-list-mode-map (kbd "g") #'org-project-todo-list-refresh)
+(define-key org-project-todo-list-mode-map (kbd "o") #'org-project-todo-list-open-original-file)
+(define-key org-project-todo-list-mode-map (kbd "C-c C-c") #'org-project-todo-list-commit-edit)
+(define-key org-project-todo-list-mode-map (kbd "C-c C-a") #'org-project-todo-list-archive)
+(define-key org-project-todo-list-mode-map (kbd "C-c C-k") #'org-project-todo-list-cancel-edit)
+(define-key org-project-todo-list-mode-map (kbd "C-c C-q") #'org-project-todo-list-set-tags)
+(define-key org-project-todo-list-mode-map (kbd "C-c C-t") #'org-project-todo-list-toggle-state)
+
+(defun org-project-todo-list (&optional arg)
+  "Show all leaf action items from agenda files.
+
+Non-project agenda items are listed first.  With prefix ARG, filter by
+TODO keyword like `org-todo-list'."
+  (interactive "P")
+  (let* ((filter (+org-project--resolve-todo-filter arg))
+         (buffer (get-buffer-create org-project-todo-list-buffer-name))
+         (files (append (+org-project--agenda-non-project-files)
+                        (+org-project-known-files))))
+    (unless files
+      (user-error "No agenda files available for org-project-todo-list"))
+    (with-current-buffer buffer
+      (org-project-todo-list-mode)
+      (setq-local org-project-todo-list--keyword-filter filter)
+      (setq-local mode-name
+                  (format "Org Project TODOs[%s, leaf]"
+                          (+org-project--todo-filter-label filter)))
+      (+org-project--render-todo-list))
+    (pop-to-buffer-same-window buffer)
+    (message "%s" (+org-project--todo-list-help-message))))
+
 (defun +org-project--goto-inbox ()
   "Move point to the insertion location in the Inbox section."
   (goto-char (+org-project--ensure-section "Inbox"))
@@ -333,7 +1046,13 @@ TITLE, ROOT and SLUG seed the initial metadata."
 (defun +org-project-in-archive-p (&optional marker)
   "Return non-nil when MARKER or point is inside the Archive subtree."
   (org-with-point-at (or marker (point))
-    (member "Archive" (org-get-outline-path t t))))
+    (or (string= (org-get-heading t t t t) "Archive")
+        (save-excursion
+          (catch 'found
+            (while (org-up-heading-safe)
+              (when (string= (org-get-heading t t t t) "Archive")
+                (throw 'found t)))
+            nil)))))
 
 (defun +org-project-capture-target ()
   "Visit the right project org file and move point to Inbox."

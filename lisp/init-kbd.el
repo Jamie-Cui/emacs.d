@@ -232,7 +232,7 @@
     "na"      #'org-agenda-list
     "nA"      #'consult-org-agenda
     "nc"      #'+org-project-capture
-    "nt"      #'org-todo-list
+    "nt"      #'org-project-todo-list
     "nj"      #'org-journal-new-entry
     "n@"      #'citar-insert-citation
     "ny"      #'org-store-link
@@ -331,6 +331,24 @@
    :states 'normal ;; all modes
    "q"       #'org-agenda-quit ;; make it behaves the same as wgrep-mode map
    )
+
+  ;; org-project-todo-list
+  (general-define-key
+   :keymaps 'org-project-todo-list-mode-map
+   :states 'normal
+   "RET"     #'org-project-todo-list-visit
+   "i"       #'org-project-todo-list-edit-action-item
+   "o"       #'org-project-todo-list-open-original-file
+   "q"       #'quit-window)
+
+  (general-define-key
+   :keymaps 'org-project-todo-list-mode-map
+   :states '(normal insert)
+   "C-c C-a" #'org-project-todo-list-archive
+   "C-c C-c" #'org-project-todo-list-commit-edit
+   "C-c C-k" #'org-project-todo-list-cancel-edit
+   "C-c C-q" #'org-project-todo-list-set-tags
+   "C-c C-t" #'org-project-todo-list-toggle-state)
 
   ;; smerge-mode
   (general-define-key

@@ -468,11 +468,6 @@
   (docker-show-messages nil)
   (docker-container-shell-file-name "/bin/bash"))
 
-(defcustom +dashboard-agenda-max-length 72
-  "Maximum display width for agenda headlines in `dashboard'."
-  :type 'integer
-  :group 'dashboard)
-
 (use-package dashboard
   :ensure t
   :custom
@@ -492,17 +487,7 @@
   (dashboard-projects-backend 'projectile)
   (dashboard-filter-agenda-entry 'dashboard-filter-agenda-by-todo)
   (dashboard-agenda-sort-strategy '(priority-up))
-  (dashboard-agenda-prefix-format " %i %(+org-agenda-category 18) %s ")
   :config
-  (defun +dashboard-truncate-agenda-headline (headline)
-    "Truncate dashboard agenda HEADLINE to `+dashboard-agenda-max-length'."
-    (if (<= (string-width headline) +dashboard-agenda-max-length)
-        headline
-      (truncate-string-to-width headline +dashboard-agenda-max-length 0 nil "…")))
-
-  (advice-add 'dashboard-agenda--formatted-headline
-              :filter-return #'+dashboard-truncate-agenda-headline)
-
   (dashboard-setup-startup-hook)
 
   ;; HACK from https://github.com/emacs-dashboard/emacs-dashboard/issues/153#issuecomment-714406661
