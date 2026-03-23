@@ -183,7 +183,7 @@ Vertico + Corfu + Consult + Orderless + Marginalia. `+vertico/file-search` and `
 
 ### init-llm.el
 - gptel backends: Gemini (auth-source), Aliyun/Dashscope (multiple models), Zhipu
-- `gptel-magit--format-commit-message` overridden to handle `(reasoning . text)` cons cells
+- `magent-magit` handles Magit commit drafting and diff explanation through isolated `gptel-request` calls
 - gptel-agent loads tools from `agents/` directory
 - Org-mode context prefixes: `=@Jamie=` and `=@AI=`
 

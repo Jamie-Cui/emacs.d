@@ -7,7 +7,7 @@
 ;;
 ;; agent-shell
 ;; gptel
-;; gptel-magit
+;; magent-magit
 ;; -----------------------------------------------------------
 
 (use-package gptel-agent
@@ -160,14 +160,11 @@ functionality, allowing you to diff/ediff/merge the changes."
       (let ((gptel--rewrite-directive +gptel/beautify-plantuml-directive))
         (gptel--suffix-rewrite)))))
 
-(use-package gptel-magit
-  :ensure t
-  :hook (magit-mode . gptel-magit-install)
-  :config
-  (setopt gptel-magit-model 'qwen-plus)
-  (setopt gptel-magit-commit-prompt
+(with-eval-after-load 'magent-magit
+  (setopt magent-magit-model 'qwen-plus)
+  (setopt magent-magit-commit-prompt
           (concat
-           gptel-magit-prompt-conventional-commits
+           magent-magit-commit-prompt
            "\n\nAdditional hard requirements for this setup:\n"
            "- The first line MUST fit within 50 characters, counting all spaces and punctuation\n"
            "- The first line MUST already be a single line before any editor wrapping or filling\n"
@@ -175,7 +172,6 @@ functionality, allowing you to diff/ediff/merge the changes."
            "- If your first attempt is longer than 50 characters, rewrite it until it is 50 characters or shorter\n"
            "- The body MAY be longer, but only after one blank line following the first line\n"
            "- Return plain text only\n"
-           "- Never use markdown, code fences, or labels such as ```commit\n"))
-  )
+           "- Never use markdown, code fences, or labels such as ```commit\n")))
 
 (provide 'init-llm)

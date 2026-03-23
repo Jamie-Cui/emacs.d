@@ -523,14 +523,14 @@ Optional FILTER limits the result to matching TODO keywords."
   "Return the current heading planning info as a display string."
   (let (parts)
     (when-let ((deadline (+org-project--format-org-time-string
-                           (org-entry-get (point) "DEADLINE"))))
+                          (org-entry-get (point) "DEADLINE"))))
       (push (concat "D:" deadline) parts))
     (when-let ((scheduled (+org-project--format-org-time-string
-                            (org-entry-get (point) "SCHEDULED"))))
+                           (org-entry-get (point) "SCHEDULED"))))
       (push (concat "S:" scheduled) parts))
     (when-let ((timestamp (+org-project--format-org-time-string
-                            (or (org-entry-get (point) "TIMESTAMP")
-                                (org-entry-get (point) "TIMESTAMP_IA")))))
+                           (or (org-entry-get (point) "TIMESTAMP")
+                               (org-entry-get (point) "TIMESTAMP_IA")))))
       (push (concat "T:" timestamp) parts))
     (string-join (nreverse parts) "  ")))
 
@@ -909,7 +909,7 @@ With optional ARG, pass it through as `current-prefix-arg'."
 (defun +org-project--todo-list-entries ()
   "Return tabulated entries for `org-project-todo-list'."
   (pcase-let ((`(,project-width ,hierarchy-width ,state-width ,action-width ,tag-width ,time-width)
-                (+org-project--tabulated-widths)))
+               (+org-project--tabulated-widths)))
     (mapcar
      (lambda (item)
        (let ((state (plist-get item :state)))
@@ -1201,12 +1201,12 @@ EXPECTED-FILE is the project file recorded in the journal audit entry."
   (interactive)
   (org-back-to-heading t)
   (let* ((task-id (org-entry-get (point) "TASK_ID"))
-           (expected-file (org-entry-get (point) "PROJECT_FILE"))
-           (current-status (org-entry-get (point) "AUDIT_STATUS"))
-           (marker (+org-project-find-task-by-id task-id))
-           (status (or (+org-project-audit-status-for-task-id task-id expected-file)
-                       'deleted))
-           (status-name (symbol-name status)))
+         (expected-file (org-entry-get (point) "PROJECT_FILE"))
+         (current-status (org-entry-get (point) "AUDIT_STATUS"))
+         (marker (+org-project-find-task-by-id task-id))
+         (status (or (+org-project-audit-status-for-task-id task-id expected-file)
+                     'deleted))
+         (status-name (symbol-name status)))
     (when (not (equal current-status status-name))
       (+org-project--set-property "REVIEWED_AT" (+org-project--inactive-timestamp)))
     (+org-project--set-property "AUDIT_STATUS" status-name)
