@@ -101,8 +101,13 @@
           ("REVIEW" warning bold) ;; I've write something uncertain, double check this
           ("HACK" warning bold) ;; This is a temp/ugly fix, and should have other solutions, fix it if possible
           ("DEPRECATED" warning bold) ;; require notice
+          ("WAIT" warning bold) ;; require notice
+          ("PROJ" warning bold) ;; require notice
           ("NOTE" success bold) ;; require notice
           ("DONE" success bold)
+          ("KILL" success bold)
+          ("CAPTURED" success bold)
+          ("MOVED" success bold)
           ("FIXME" error bold) ;; require immediate action
           ("BUG" error bold) ;; require immediate action
           )))

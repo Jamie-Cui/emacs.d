@@ -258,22 +258,60 @@ Org automatically include every `*.org' file under
   (when-let ((root (+org-project-current-root)))
     (+org-project-file-for-root root)))
 
+(defvar +org-project--capture-context-override nil
+  "Dynamic override for the next project capture context.")
+
+(defvar +org-project--capture-initial-override nil
+  "Dynamic override for project capture initial text before `org-capture' starts.")
+
+(defconst +org-project--capture-kinds '("task" "note")
+  "Supported project capture kinds.")
+
+(defun +org-project--prefer-candidate (preferred candidates)
+  "Return CANDIDATES with PREFERRED moved to the front when present."
+  (if (and preferred (member preferred candidates))
+      (cons preferred (delete preferred (copy-sequence candidates)))
+    candidates))
+
+(defun +org-project-root-for-slug (slug)
+  "Return the registered project root for SLUG, or nil."
+  (when-let ((root (car (rassoc slug +org-project-registry))))
+    (+org-project--normalize-root root)))
+
+(defun +org-project--context (slug &optional root)
+  "Return a project context plist for SLUG and optional ROOT."
+  (list :slug slug
+        :root root
+        :file (+org-project-file-for-slug slug)
+        :title (if root
+                   (file-name-nondirectory (directory-file-name root))
+                 slug)))
+
+(defun +org-project-select (&optional prompt require-match initial)
+  "Prompt for a project context.
+PROMPT overrides the minibuffer prompt.
+When REQUIRE-MATCH is non-nil, restrict selection to known project slugs.
+INITIAL seeds the default slug."
+  (let* ((current-root (+org-project-current-root))
+         (current-slug (and current-root
+                            (+org-project-slug-for-root current-root)))
+         (slugs (+org-project-known-slugs))
+         (default-slug (or initial current-slug))
+         (ordered-slugs (+org-project--prefer-candidate
+                         (or current-slug default-slug)
+                         slugs))
+         (prompt (or prompt "Project: "))
+         (slug (if ordered-slugs
+                   (completing-read prompt ordered-slugs nil require-match nil nil default-slug)
+                 (read-string prompt nil nil default-slug))))
+    (+org-project--context slug (+org-project-root-for-slug slug))))
+
 (defun +org-project-select-or-detect ()
   "Return a project context plist for capture or agent updates."
   (if-let* ((root (+org-project-current-root))
             (slug (+org-project-slug-for-root root)))
-      (list :slug slug
-            :root root
-            :file (+org-project-file-for-slug slug)
-            :title (file-name-nondirectory (directory-file-name root)))
-    (let* ((slugs (+org-project-known-slugs))
-           (slug (if slugs
-                     (completing-read "Project: " slugs nil t)
-                   (read-string "Project slug: "))))
-      (list :slug slug
-            :root nil
-            :file (+org-project-file-for-slug slug)
-            :title slug))))
+      (+org-project--context slug root)
+    (+org-project-select "Project: " t)))
 
 (defun +org-project--set-tags (tags)
   "Replace current heading tags with TAGS."
@@ -347,10 +385,11 @@ TITLE, ROOT and SLUG seed the initial metadata."
           (insert "#+filetags: :project:\n")
           (when root
             (insert (format "#+PROJECT_ROOT: %s\n" root))
-            (insert (format "#+MACHINE: %s\n" system-name)))
+            (insert (format "#+MACHINE: %s\n" (system-name))))
           (insert "\n"))
         (+org-project--ensure-current-plan)
         (+org-project--ensure-section "Inbox")
+        (+org-project--ensure-section "Note")
         (+org-project--ensure-section "Backlog")
         (+org-project--ensure-section "Log")
         (+org-project--ensure-section "Archive")
@@ -378,6 +417,34 @@ TITLE, ROOT and SLUG seed the initial metadata."
      (plist-get context :title)
      (plist-get context :root)
      (plist-get context :slug))))
+
+(defun +org-project-open-file ()
+  "Open the central project file for the current or selected project."
+  (interactive)
+  (find-file (+org-project-file-dwim)))
+
+(defun +org-project-consult-notes ()
+  "Open one of the known central project notes via Consult.
+Pin the current project's central file to the front when available."
+  (interactive)
+  (let* ((known-files (+org-project-known-files))
+         (current-file (+org-project-current-file))
+         (files (if (member current-file known-files)
+                    (cons current-file
+                          (cl-remove current-file known-files :test #'equal))
+                  known-files))
+         (candidates (mapcar #'abbreviate-file-name files)))
+    (unless candidates
+      (user-error "No project notes available"))
+    (find-file
+     (consult--read
+      candidates
+      :prompt "Project note: "
+      :sort nil
+      :require-match t
+      :category 'file
+      :state (consult--file-preview)
+      :history 'file-name-history))))
 
 (defun +org-project--todo-list-window-width ()
   "Return the body width of the window showing the current todo list buffer."
@@ -1100,13 +1167,18 @@ TODO keyword like `org-todo-list'."
       (+org-project--render-todo-list))
     (message "%s" (+org-project--todo-list-help-message))))
 
+(defun +org-project--goto-section-heading (title)
+  "Move point to the heading line for section TITLE."
+  (goto-char (+org-project--ensure-section title))
+  (org-back-to-heading t))
+
 (defun +org-project--goto-inbox ()
-  "Move point to the insertion location in the Inbox section."
-  (goto-char (+org-project--ensure-section "Inbox"))
-  (org-back-to-heading t)
-  (org-end-of-subtree t t)
-  (unless (bolp)
-    (insert "\n")))
+  "Move point to the Inbox heading for child capture insertion."
+  (+org-project--goto-section-heading "Inbox"))
+
+(defun +org-project--goto-note ()
+  "Move point to the Note heading for child capture insertion."
+  (+org-project--goto-section-heading "Note"))
 
 (defun +org-project--capture-entry-point ()
   "Return point at the current capture heading."
@@ -1140,20 +1212,39 @@ TODO keyword like `org-todo-list'."
                 (throw 'found t)))
             nil)))))
 
-(defun +org-project-capture-target ()
-  "Visit the right project org file and move point to Inbox."
-  (let* ((context (+org-project-select-or-detect))
+(defun +org-project--capture-target (kind goto-fn)
+  "Visit the right project org file for KIND and move point with GOTO-FN."
+  (let* ((context (or +org-project--capture-context-override
+                      (+org-project-select-or-detect)))
          (file (+org-project-ensure-file
                 (plist-get context :file)
                 (plist-get context :title)
                 (plist-get context :root)
                 (plist-get context :slug))))
     (org-capture-put :project-context context)
+    (org-capture-put :project-capture-kind kind)
     (set-buffer (find-file-noselect file))
     (widen)
-    (+org-project--goto-inbox)))
+    (funcall goto-fn)))
 
-(defun +org-project-capture-prepare-finalize ()
+(defun +org-project-task-capture-target ()
+  "Visit the right project org file and move point to Inbox."
+  (+org-project--capture-target 'task #'+org-project--goto-inbox))
+
+(defun +org-project-note-capture-target ()
+  "Visit the right project org file and move point to Note."
+  (+org-project--capture-target 'note #'+org-project--goto-note))
+
+(defun +org-project--put-capture-metadata (context)
+  "Write shared project capture metadata for CONTEXT at point."
+  (+org-project--set-property "PROJECT" (plist-get context :slug))
+  (+org-project--set-property "PROJECT_FILE" (plist-get context :file))
+  (when-let ((root (plist-get context :root)))
+    (+org-project--set-property "PROJECT_ROOT" root))
+  (+org-project--set-property "MACHINE" (system-name))
+  (+org-project--set-property "CREATED_AT" (+org-project--inactive-timestamp)))
+
+(defun +org-project-task-capture-prepare-finalize ()
   "Normalize a captured project task before finalization."
   (when-let* ((context (org-capture-get :project-context 'local))
               (point (+org-project--capture-entry-point)))
@@ -1162,15 +1253,148 @@ TODO keyword like `org-todo-list'."
       (let ((task-id (org-id-get-create)))
         (+org-project--ensure-tags +org-project--capture-tags)
         (+org-project--set-property "ORIGIN" "human-capture")
-        (+org-project--set-property "PROJECT" (plist-get context :slug))
-        (+org-project--set-property "PROJECT_FILE" (plist-get context :file))
-        (when-let ((root (plist-get context :root)))
-          (+org-project--set-property "PROJECT_ROOT" root))
-        (+org-project--set-property "MACHINE" system-name)
-        (+org-project--set-property "CREATED_AT" (+org-project--inactive-timestamp))
+        (+org-project--put-capture-metadata context)
         (+org-project--set-property "TASK_ID" task-id)
         (org-capture-put :project-task-id task-id)
         (org-capture-put :project-task-title (org-get-heading t t t t))))))
+
+(defun +org-project--note-heading-components ()
+  "Return the current note heading as (TIMESTAMP TITLE), or nil when it does not match."
+  (when-let ((heading (org-get-heading t t t t)))
+    (when (string-match
+           (rx string-start
+               (group "[" (+? (not (any "]"))) "]")
+               (* blank)
+               (group (* nonl))
+               string-end)
+           heading)
+      (list (match-string 1 heading)
+            (string-trim (match-string 2 heading))))))
+
+(defun +org-project--first-content-line (text)
+  "Return the first non-empty line from TEXT, or nil."
+  (cl-find-if (lambda (line)
+                (not (string-empty-p (string-trim line))))
+              (split-string text "\n" nil)))
+
+(defun +org-project--normalize-note-title (line)
+  "Normalize note title text from LINE."
+  (let ((title (replace-regexp-in-string (rx string-start (+ "*") (+ blank)) "" line)))
+    (string-trim title)))
+
+(defun +org-project--remove-first-content-line (text)
+  "Return TEXT without its first non-empty line."
+  (let ((removed nil))
+    (string-join
+     (cl-loop for line in (split-string text "\n" nil)
+              unless (and (not removed)
+                          (not (string-empty-p (string-trim line)))
+                          (prog1 t (setq removed t)))
+              collect line)
+     "\n")))
+
+(defun +org-project--capture-initial-text ()
+  "Return the current org-capture initial text."
+  (let ((initial (or +org-project--capture-initial-override
+                     (plist-get org-store-link-plist :initial)
+                     (org-capture-get :initial)
+                     "")))
+    (if (stringp initial)
+        (org-no-properties initial)
+      "")))
+
+(defun +org-project--active-region-text ()
+  "Return the current active region text, or nil."
+  (when (use-region-p)
+    (buffer-substring-no-properties (region-beginning) (region-end))))
+
+(defun +org-project--capture-initial-todo-heading ()
+  "Return the normalized first line when initial content starts with an Org TODO heading."
+  (when-let* ((first-line (+org-project--first-content-line
+                           (+org-project--capture-initial-text)))
+              (normalized (+org-project--normalize-note-title first-line)))
+    (when (with-temp-buffer
+            (org-mode)
+            (insert "* " normalized "\n")
+            (goto-char (point-min))
+            (org-back-to-heading t)
+            (org-get-todo-state))
+      normalized)))
+
+(defun +org-project-default-capture-kind ()
+  "Return the preferred project capture kind for the current initial content."
+  (if (+org-project--capture-initial-todo-heading) 'task 'note))
+
+(defun +org-project-task-capture-heading ()
+  "Return the rendered heading text for a captured project task."
+  (or (+org-project--capture-initial-todo-heading)
+      "TODO "))
+
+(defun +org-project-task-capture-body ()
+  "Return the rendered body text for a captured project task."
+  (let ((initial (+org-project--capture-initial-text)))
+    (if (+org-project--capture-initial-todo-heading)
+        (replace-regexp-in-string
+         (rx string-start (* (or blank "\n")))
+         ""
+         (+org-project--remove-first-content-line initial))
+      initial)))
+
+(defun +org-project--split-note-initial ()
+  "Return note capture initial content as (TITLE BODY)."
+  (let* ((initial (+org-project--capture-initial-text))
+         (first-line (+org-project--first-content-line initial))
+         (title (and first-line
+                     (+org-project--normalize-note-title first-line)))
+         (body (replace-regexp-in-string
+                (rx string-start (* (or blank "\n")))
+                ""
+                (+org-project--remove-first-content-line initial))))
+    (list (or title "")
+          (if (string-empty-p body) "" body))))
+
+(defun +org-project-note-capture-heading ()
+  "Return the rendered heading text for a captured project note."
+  (pcase-let ((`(,title ,_) (+org-project--split-note-initial)))
+    (if (string-empty-p title)
+        (+org-project--inactive-timestamp)
+      (format "%s %s" (+org-project--inactive-timestamp) title))))
+
+(defun +org-project-note-capture-body ()
+  "Return the rendered body text for a captured project note."
+  (pcase-let ((`(_ ,body) (+org-project--split-note-initial)))
+    body))
+
+(defun +org-project-note-capture-prepare-finalize ()
+  "Normalize a captured project note before finalization."
+  (when-let ((point (+org-project--capture-entry-point)))
+    (save-excursion
+      (goto-char point)
+      (pcase-let ((`(,timestamp ,title) (or (+org-project--note-heading-components)
+                                            (list nil nil))))
+        (when (and timestamp (string-empty-p title))
+          (let* ((body-beg (save-excursion
+                             (forward-line 1)
+                             (point)))
+                 (body-end (save-excursion
+                             (org-end-of-subtree t t)
+                             (point)))
+                 (body (buffer-substring-no-properties body-beg body-end))
+                 (first-line (+org-project--first-content-line body))
+                 (normalized-title (and first-line
+                                        (+org-project--normalize-note-title first-line))))
+            (when (and normalized-title
+                       (not (string-empty-p normalized-title)))
+              (org-edit-headline (concat timestamp " " normalized-title))
+              (delete-region body-beg body-end)
+              (let ((remaining (replace-regexp-in-string
+                                (rx string-start (* (or blank "\n")))
+                                ""
+                                (+org-project--remove-first-content-line body))))
+                (unless (string-empty-p remaining)
+                  (insert remaining)
+                  (unless (bolp)
+                    (insert "\n")))))))))))
 
 (defun +org-project--find-journal-day-heading (created)
   "Return a marker for the current journal day heading with CREATED property."
@@ -1216,7 +1440,7 @@ TODO keyword like `org-todo-list'."
           (org-end-of-subtree t t)
           (unless (bolp)
             (insert "\n"))
-          (insert (format "** CAPTURE [%s] %s\n:PROPERTIES:\n:TASK_ID: %s\n:PROJECT: %s\n:PROJECT_FILE: %s\n:AUDIT_STATUS: active\n:CREATED_AT: %s\n:END:\n%s"
+          (insert (format "** CAPTURED [%s] %s\n:PROPERTIES:\n:TASK_ID: %s\n:PROJECT: %s\n:PROJECT_FILE: %s\n:AUDIT_STATUS: active\n:CREATED_AT: %s\n:END:\n%s"
                           slug
                           task-title
                           task-id
@@ -1228,20 +1452,32 @@ TODO keyword like `org-todo-list'."
           (+org-project--set-tags (append +org-project--audit-base-tags '("active")))
           (+org-project--save-buffer-no-hooks))))))
 
-(defun +org-project-capture-after-finalize ()
-  "Finalize project capture side effects."
+(defun +org-project--save-captured-project-buffer (context)
+  "Save the project buffer associated with capture CONTEXT and return its file."
+  (when-let ((project-file (plist-get context :file)))
+    (with-current-buffer (find-file-noselect project-file)
+      (+org-project--save-buffer-no-hooks))
+    project-file))
+
+(defun +org-project-task-capture-after-finalize ()
+  "Finalize project task capture side effects."
   (when (and (not org-note-abort)
              (org-capture-get :project-context))
     (let* ((context (org-capture-get :project-context))
-           (project-file (plist-get context :file))
+           (project-file (+org-project--save-captured-project-buffer context))
            (task-id (org-capture-get :project-task-id))
            (task-title (or (org-capture-get :project-task-title) "Captured task")))
-      (when-let ((buf (get-file-buffer project-file)))
-        (with-current-buffer buf
-          (+org-project--save-buffer-no-hooks)))
-      (+org-project--refresh-id-locations (list project-file))
-      (when +org-capture-audit-log-enabled
+      (when project-file
+        (+org-project--refresh-id-locations (list project-file)))
+      (when (and +org-capture-audit-log-enabled task-id)
         (+org-project-log-capture context task-id task-title)))))
+
+(defun +org-project-note-capture-after-finalize ()
+  "Finalize project note capture side effects."
+  (when (and (not org-note-abort)
+             (org-capture-get :project-context))
+    (+org-project--save-captured-project-buffer
+     (org-capture-get :project-context))))
 
 (defun +org-project-audit-status-for-task-id (task-id &optional expected-file)
   "Return audit status symbol for TASK-ID.
@@ -1468,26 +1704,65 @@ REASON defaults to `manual-cleanup'."
         (+org-project--save-buffer-no-hooks))))
   project-file)
 
-(defun +org-project-capture ()
-  "Run the central project capture template."
+(defun +org-project-read-capture-kind (&optional prompt)
+  "Read a project capture kind using PROMPT."
+  (let* ((default-kind (+org-project-default-capture-kind))
+         (default-name (symbol-name default-kind))
+         (ordered-kinds (+org-project--prefer-candidate
+                         default-name
+                         +org-project--capture-kinds)))
+    (intern
+     (completing-read (or prompt "Project capture: ")
+                      ordered-kinds nil t nil nil default-name))))
+
+(defun +org-project--capture-template-key (kind)
+  "Return the org-capture template key for project capture KIND."
+  (pcase kind
+    ('task "pt")
+    ('note "pn")
+    (_ (user-error "Unsupported project capture kind: %S" kind))))
+
+(defun +org-project-capture (&optional context)
+  "Capture a project task or note using CONTEXT when provided."
   (interactive)
-  (org-capture nil "p"))
+  (let ((+org-project--capture-context-override context)
+        (+org-project--capture-initial-override (+org-project--active-region-text)))
+    (org-capture nil
+                 (+org-project--capture-template-key
+                  (+org-project-read-capture-kind)))))
+
+(defun +org-project-capture-select-project ()
+  "Capture a project task or note after manually selecting the project."
+  (interactive)
+  (+org-project-capture (+org-project-select "Project: " t)))
 
 (with-eval-after-load 'org-capture
   (setq org-capture-templates
         (cl-remove-if (lambda (template)
-                        (equal (car-safe template) "p"))
+                        (member (car-safe template) '("p" "pt" "pn")))
                       org-capture-templates))
-  (add-to-list 'org-capture-templates
-               '("p" "Project task" entry
-                 (function +org-project-capture-target)
-                 "** TODO %?\n"
-                 :empty-lines-before 1
-                 :empty-lines-after 1
-                 :no-save t
-                 :unnarrowed t
-                 :prepare-finalize +org-project-capture-prepare-finalize
-                 :after-finalize +org-project-capture-after-finalize)))
+  (setq org-capture-templates
+        (append
+         '(("p" "Project")
+           ("pt" "Project task" entry
+            (function +org-project-task-capture-target)
+            "** %(+org-project-task-capture-heading)%?\n%(+org-project-task-capture-body)"
+            :empty-lines-before 1
+            :empty-lines-after 1
+            :no-save t
+            :unnarrowed t
+            :prepare-finalize +org-project-task-capture-prepare-finalize
+            :after-finalize +org-project-task-capture-after-finalize)
+           ("pn" "Project note" entry
+            (function +org-project-note-capture-target)
+            "** %(+org-project-note-capture-heading)%?\n%(+org-project-note-capture-body)"
+            :empty-lines-before 1
+            :empty-lines-after 1
+            :no-save t
+            :unnarrowed t
+            :prepare-finalize +org-project-note-capture-prepare-finalize
+            :after-finalize +org-project-note-capture-after-finalize))
+         org-capture-templates)))
 
 (add-hook 'org-mode-hook #'+org-project--configure-project-buffer-h)
 (add-hook 'org-mode-hook #'+org-project--maybe-refresh-journal-audit-h)

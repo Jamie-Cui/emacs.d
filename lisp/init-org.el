@@ -174,8 +174,11 @@
                              "WAIT(w)"
                              "PROJ(p)"
                              "|"
-                             "DONE(d@)"
-                             "KILL(k@)")))
+                             "DONE(d@)" ;; done
+                             "KILL(k@)" ;; killed
+                             "CAPTURED(c@)" ;; captured elsewhere
+                             "MOVED(m@)" ;; moved elsewhere
+                             )))
 
 ;;; org-src
 (setopt org-src-fontify-natively t)

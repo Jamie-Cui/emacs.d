@@ -231,12 +231,13 @@
     "n" '(:ignore t :which-key "note")
     "na"      #'org-agenda-list
     "nA"      #'consult-org-agenda
-    "nc"      #'+org-project-capture
+    "nc"      #'+org-project-capture-select-project
     "nt"      #'org-project-todo-list
     "nj"      #'org-journal-new-entry
     "n@"      #'citar-insert-citation
+    "nl"      #'org-insert-link
     "ny"      #'org-store-link
-    "np"      #'org-insert-link
+    "np"      #'+org-project-consult-notes
     "nd"      #'deft
     "nq"      #'org-set-tags-command
     "nm" '(:ignore t :which-key "modify")
