@@ -57,9 +57,6 @@
 (defconst +org-project--capture-tags '("captured" "human")
   "Tags applied to human-captured project tasks.")
 
-(defconst +org-project--plan-tags '("agent" "ai")
-  "Tags applied to agent-generated plan content.")
-
 (defconst +org-project--audit-base-tags '("capture-log" "journal")
   "Base tags applied to journal capture audit entries.")
 
@@ -350,20 +347,6 @@ INITIAL seeds the default slug."
     (insert "\n"))
   (point-marker))
 
-(defun +org-project--ensure-current-plan ()
-  "Ensure the Current Plan subtree exists and return its marker."
-  (let ((marker (+org-project--find-top-heading "Current Plan")))
-    (unless marker
-      (setq marker
-            (+org-project--insert-top-heading
-             "* PROJ Current Plan :agent:ai:\n:PROPERTIES:\n:ORIGIN: agent\n:END:\nCurrent Status: not started\nNext Step: clarify scope\n")))
-    (goto-char marker)
-    (org-back-to-heading t)
-    (+org-project--ensure-tags +org-project--plan-tags)
-    (org-id-get-create)
-    (+org-project--set-property "ORIGIN" "agent")
-    marker))
-
 (defun +org-project--ensure-section (title)
   "Ensure a top-level section TITLE exists and return its marker."
   (or (+org-project--find-top-heading title)
@@ -387,10 +370,8 @@ TITLE, ROOT and SLUG seed the initial metadata."
             (insert (format "#+PROJECT_ROOT: %s\n" root))
             (insert (format "#+MACHINE: %s\n" (system-name))))
           (insert "\n"))
-        (+org-project--ensure-current-plan)
         (+org-project--ensure-section "Inbox")
         (+org-project--ensure-section "Note")
-        (+org-project--ensure-section "Backlog")
         (+org-project--ensure-section "Log")
         (+org-project--ensure-section "Archive")
         (+org-project--save-buffer-no-hooks)))
@@ -1305,8 +1286,8 @@ TODO keyword like `org-todo-list'."
 
 (defun +org-project--active-region-text ()
   "Return the current active region text, or nil."
-  (when (use-region-p)
-    (buffer-substring-no-properties (region-beginning) (region-end))))
+  (when (+region-active-p)
+    (buffer-substring-no-properties (+region-beginning) (+region-end))))
 
 (defun +org-project--capture-initial-todo-heading ()
   "Return the normalized first line when initial content starts with an Org TODO heading."
@@ -1653,37 +1634,6 @@ REASON defaults to `manual-cleanup'."
       (user-error "Only DONE or KILL tasks can be archived"))
     (+org-project-archive-task
      (if (equal state "DONE") "done" "killed"))))
-
-(defun +org-project-read-current-plan (&optional project-file)
-  "Return the Current Plan subtree text from PROJECT-FILE."
-  (let ((file (or project-file (+org-project-current-file))))
-    (unless file
-      (user-error "No current project file available"))
-    (with-current-buffer (find-file-noselect file)
-      (save-excursion
-        (widen)
-        (goto-char (or (+org-project--find-top-heading "Current Plan")
-                       (+org-project--ensure-current-plan)))
-        (buffer-substring-no-properties
-         (point)
-         (save-excursion
-           (forward-line 1)
-           (if (re-search-forward "^\\* " nil t)
-               (match-beginning 0)
-             (point-max))))))))
-
-(defun +org-project-upsert-current-plan (project-file body)
-  "Replace PROJECT-FILE Current Plan body with BODY."
-  (interactive "fProject file: \nsPlan body: ")
-  (let ((file (+org-project-ensure-file project-file)))
-    (with-current-buffer (find-file-noselect file)
-      (save-excursion
-        (widen)
-        (goto-char (or (+org-project--find-top-heading "Current Plan")
-                       (+org-project--ensure-current-plan)))
-        (+org-project--replace-subtree-body body)
-        (+org-project--save-buffer-no-hooks))))
-  project-file)
 
 (defun +org-project-append-log (project-file text)
   "Append TEXT to the Log section of PROJECT-FILE."

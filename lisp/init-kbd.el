@@ -230,7 +230,7 @@
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "na"      #'org-agenda-list
-    "nA"      #'consult-org-agenda
+    ;; "nA"      #'consult-org-agenda
     "nc"      #'+org-project-capture-select-project
     "nt"      #'org-project-todo-list
     "nj"      #'org-journal-new-entry
