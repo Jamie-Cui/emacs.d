@@ -347,11 +347,41 @@
               (setq-local revert-buffer-function
                           (lambda (&rest _) (deft-refresh)))))
 
+  (defcustom +deft/group-by-file-type t
+    "When non-nil, group Deft entries by file extension."
+    :type 'boolean
+    :group 'deft)
+
+  (defface +deft/file-type-header-face
+    '((t (:inherit (font-lock-keyword-face bold))))
+    "Face used for file type headings in the Deft browser."
+    :group 'deft)
+
+  (defvar +deft/current-file-type nil
+    "Current file type section while rendering the Deft browser.")
+
+  (defun +deft/file-type-key (file)
+    "Return normalized file extension for FILE."
+    (downcase (or (file-name-extension file) "")))
+
+  (defun +deft/file-type-label (type)
+    "Return display label for Deft file TYPE."
+    (if (equal type "")
+        "No extension"
+      (upcase type)))
+
+  (defun +deft/file-type-lessp (left right)
+    "Return non-nil when LEFT should sort before RIGHT."
+    (cond
+     ((equal left "") nil)
+     ((equal right "") t)
+     (t (string-lessp left right))))
+
   (defun +deft/title-with-type (orig-fn file)
-    "Append file extension to deft title."
+    "Append file extension to Deft title when entries are not grouped."
     (let ((title (funcall orig-fn file))
           (ext (file-name-extension file)))
-      (if ext
+      (if (and ext (not +deft/group-by-file-type))
           (concat (propertize (format "[%s] " ext) 'face 'shadow) title)
         title)))
   (advice-add #'deft-file-title :around #'+deft/title-with-type)
@@ -368,27 +398,66 @@
            '(change attribute-change)
            'deft-auto-refresh)))
 
-  ;; NOTE pin files to top
+  ;; NOTE pin files and optionally group them by file type
   (defcustom +deft/pinned-files nil
-    "List of pinned file paths shown at the top of the Deft browser."
+    "List of pinned file paths shown before unpinned files in Deft."
     :type '(repeat string)
     :group 'deft)
 
   (defconst +deft/pin-prefix "* "
     "Prefix string shown before pinned file titles.")
 
-  (defun +deft/sort-pin-a (files)
-    "Move pinned files to the front of FILES, preserving relative order."
+  (defun +deft/sort-files-a (files)
+    "Pin FILES first and optionally group them by file type."
     (let (pinned rest)
-      (dolist (f files)
-        (if (member f +deft/pinned-files)
-            (push f pinned)
-          (push f rest)))
-      (append (nreverse pinned) (nreverse rest))))
-  (advice-add #'deft-sort-files :filter-return #'+deft/sort-pin-a)
+      (dolist (file files)
+        (if (member file +deft/pinned-files)
+            (push file pinned)
+          (push file rest)))
+      (setq files (append (nreverse pinned) (nreverse rest)))
+      (if (not +deft/group-by-file-type)
+          files
+        (let ((known-types (mapcar #'downcase deft-extensions))
+              (buckets (make-hash-table :test 'equal))
+              seen-types ordered-types result)
+          (dolist (file files)
+            (let ((type (+deft/file-type-key file)))
+              (unless (member type seen-types)
+                (push type seen-types))
+              (puthash type (cons file (gethash type buckets)) buckets)))
+          (setq seen-types (nreverse seen-types))
+          (dolist (type known-types)
+            (when (member type seen-types)
+              (push type ordered-types)))
+          (dolist (type (sort (delq nil
+                                    (mapcar (lambda (type)
+                                              (unless (member type known-types)
+                                                type))
+                                            seen-types))
+                              #'+deft/file-type-lessp))
+            (push type ordered-types))
+          (dolist (type (nreverse ordered-types))
+            (setq result (nconc result (nreverse (gethash type buckets)))))
+          result))))
+  (advice-add #'deft-sort-files :filter-return #'+deft/sort-files-a)
 
-  (defun +deft/file-button-pin-a (orig-fn file)
-    "Show pin prefix for pinned files in Deft browser."
+  (defun +deft/reset-file-type-group-a (orig-fn &optional refresh)
+    "Reset file type grouping state before calling ORIG-FN with REFRESH."
+    (let ((+deft/current-file-type nil))
+      (funcall orig-fn refresh)))
+  (advice-add #'deft-buffer-setup :around #'+deft/reset-file-type-group-a)
+
+  (defun +deft/file-button-a (orig-fn file)
+    "Insert file type headers and pin prefixes before calling ORIG-FN on FILE."
+    (when (and file +deft/group-by-file-type)
+      (let ((type (+deft/file-type-key file)))
+        (unless (equal type +deft/current-file-type)
+          (when +deft/current-file-type
+            (insert "\n"))
+          (setq +deft/current-file-type type)
+          (insert (propertize (+deft/file-type-label type)
+                              'face '+deft/file-type-header-face))
+          (insert "\n"))))
     (if (member file +deft/pinned-files)
         (let ((deft-window-width (- deft-window-width
                                     (string-width +deft/pin-prefix)))
@@ -398,7 +467,7 @@
             (goto-char start)
             (insert +deft/pin-prefix)))
       (funcall orig-fn file)))
-  (advice-add #'deft-file-button :around #'+deft/file-button-pin-a)
+  (advice-add #'deft-file-button :around #'+deft/file-button-a)
 
   (defun +deft/toggle-pin ()
     "Toggle pinning of the file at point in the Deft browser."
