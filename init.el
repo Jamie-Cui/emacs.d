@@ -390,6 +390,8 @@ Returns DIR after ensuring it exists."
   :demand t
   :custom
   (magent-skill-directories (list (expand-file-name "skills" +emacs/repo-directory)))
+  (magent-by-pass-permission t)
+  (magent-ui-wrap-reasoning-in-think-block nil)
   :config
   (global-magent-mode 1)
 
