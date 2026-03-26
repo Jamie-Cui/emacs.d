@@ -198,8 +198,6 @@
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
     "oo"     #'crux-open-with
-    "ob"     #'citar-open
-    "oB"     #'ebib
     "oe"     #'elfeed
     "oE"     #'ielm ; elisp repl
     "og"     #'magit-status-quick
@@ -230,20 +228,17 @@
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "na"      #'org-agenda-list
-    ;; "nA"      #'consult-org-agenda
+    "n@"      #'citar-insert-citation
+    "nb"      #'citar-open
+    "nB"      #'ebib
     "nc"      #'+org-project-capture-select-project
     "nt"      #'org-project-todo-list
     "nj"      #'org-journal-new-entry
-    "n@"      #'citar-insert-citation
     "nl"      #'org-insert-link
     "ny"      #'org-store-link
     "np"      #'+org-project-consult-notes
     "nd"      #'deft
     "nq"      #'org-set-tags-command
-    "nm" '(:ignore t :which-key "modify")
-    "nmp"     #'org-priority
-    "nmP"     #'org-set-property
-    "nmt"     #'org-todo
     "nT" '(:ignore t :which-key "timer")
     "nTa"     #'org-timer-set-timer ; add timer
     "nT RET"  #'org-timer-pause-or-continue ; pause or continue
