@@ -237,7 +237,8 @@
     "nl"      #'org-insert-link
     "ny"      #'org-store-link
     "np"      #'+org-project-consult-notes
-    "nd"      #'deft
+    "nd"      #'org-deft-org
+    "nD"      #'org-deft-tex
     "nq"      #'org-set-tags-command
     "nT" '(:ignore t :which-key "timer")
     "nTa"     #'org-timer-set-timer ; add timer

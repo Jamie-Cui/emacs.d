@@ -333,9 +333,9 @@
   (deft-auto-save-interval -1.0)
   (deft-use-filter-string-for-filename nil)
   (deft-use-filename-as-title nil)
-  (deft-directory (+emacs/org-subdir "deft"))
-  (deft-ignore-file-regexp "^\\(?:\\.|$\\)")
-  (deft-extensions '("org" "tex"))
+  (deft-directory (+emacs/ensure-directory +emacs/org-root-dir))
+  (deft-ignore-file-regexp "^$")
+  (deft-extensions '("org"))
   :config
   (setq deft-strip-summary-regexp
 	    (concat "\\("
@@ -350,58 +350,226 @@
               (setq-local revert-buffer-function
                           (lambda (&rest _) (deft-refresh)))))
 
-  (defcustom +deft/group-by-file-type t
-    "When non-nil, group Deft entries by file extension."
+  (defcustom +deft/group-by-top-level-directory t
+    "When non-nil, group Deft entries by their top-level org-root directory."
     :type 'boolean
     :group 'deft)
 
-  (defface +deft/file-type-header-face
-    '((t (:inherit (font-lock-keyword-face bold))))
-    "Face used for file type headings in the Deft browser."
+  (defcustom +deft/group-order
+    '("journal" "roam" "deft" "projects" "external" "root")
+    "Preferred top-level directory order for Deft group headers."
+    :type '(repeat string)
     :group 'deft)
 
-  (defvar +deft/current-file-type nil
-    "Current file type section while rendering the Deft browser.")
+  (defface +deft/group-header-face
+    '((t (:inherit (font-lock-keyword-face bold))))
+    "Face used for group headings in the Deft browser."
+    :group 'deft)
 
-  (defun +deft/file-type-key (file)
-    "Return normalized file extension for FILE."
-    (downcase (or (file-name-extension file) "")))
+  (defvar-local +deft/current-group nil
+    "Current group section while rendering the Deft browser.")
 
-  (defun +deft/file-type-label (type)
-    "Return display label for Deft file TYPE."
-    (if (equal type "")
-        "No extension"
-      (upcase type)))
+  (defvar +deft/current-profile 'org
+    "Current Deft profile.")
 
-  (defun +deft/file-type-lessp (left right)
+  (defvar +deft/auto-refresh-watched-directory nil
+    "Directory currently watched by Deft auto refresh.")
+
+  (defconst +deft/profile-extensions
+    '((org . ("org"))
+      (tex . ("tex")))
+    "Mapping from Deft profile to file extensions.")
+
+  (defconst +deft/ignored-directory-names
+    '("img" "ltximg" "pdf" "scripts" "roam")
+    "Directory names excluded from unified Deft views.")
+
+  (defconst +deft/ignored-file-regexps
+    '("\\.sync-conflict-[^/]*\\.org\\'"
+      "/[^/]+-beorg\\.org\\'"
+      "/deft/archive/")
+    "Additional file path regexps excluded from unified Deft views.")
+
+  (defun +deft/org-root-directory ()
+    "Return the normalized org root directory for Deft."
+    (file-name-as-directory
+     (file-truename (+emacs/ensure-directory +emacs/org-root-dir))))
+
+  (defun +deft/hidden-path-regexp (&optional trailing)
+    "Return a regexp matching hidden paths.
+When TRAILING is non-nil, also require a trailing slash."
+    (concat "/\\.[^/]*"
+            (if trailing
+                "/"
+              "\\(?:/\\|\\'\\)")))
+
+  (defun +deft/ignored-directory-regexp ()
+    "Return a regexp matching directories excluded from Deft recursion."
+    (let ((named (regexp-opt +deft/ignored-directory-names)))
+      (concat "\\(?:"
+              (+deft/hidden-path-regexp nil)
+              "\\|/\\(?:" named "\\)\\'"
+              "\\|/deft/archive\\'\\)")))
+
+  (defun +deft/ignored-file-regexp ()
+    "Return a regexp matching files excluded from Deft views."
+    (let ((named (regexp-opt +deft/ignored-directory-names)))
+      (concat "\\(?:"
+              (+deft/hidden-path-regexp nil)
+              "\\|/\\(?:" named "\\)/"
+              "\\|"
+              (mapconcat #'identity +deft/ignored-file-regexps "\\|")
+              "\\)")))
+
+  (defun +deft/relative-file (file)
+    "Return FILE relative to `+deft/org-root-directory'."
+    (string-remove-prefix (+deft/org-root-directory)
+                          (file-truename file)))
+
+  (defun +deft/normalize-org-heading (heading)
+    "Normalize org HEADING text for Deft titles."
+    (let ((text (string-trim heading)))
+      (setq text
+            (replace-regexp-in-string
+             "[ \t]+:[[:alnum:]_@#%:]+:[ \t]*\\'" "" text))
+      (string-trim (deft-strip-title text))))
+
+  (defun +deft/parse-org-title (file contents)
+    "Parse a useful Deft title for org FILE from CONTENTS."
+    (with-temp-buffer
+      (insert contents)
+      (goto-char (point-min))
+      (let ((case-fold-search t)
+            title)
+        (when (re-search-forward "^#\\+title:[ \t]*\\(.+\\)$" nil t)
+          (setq title (string-trim (match-string-no-properties 1))))
+        (unless (and title (not (string-empty-p title)))
+          (goto-char (point-min))
+          (catch 'found
+            (while (not (eobp))
+              (cond
+               ((looking-at-p "^[ \t]*$")
+                (forward-line 1))
+               ((looking-at-p "^:PROPERTIES:[ \t]*$")
+                (if (re-search-forward "^:END:[ \t]*$" nil t)
+                    (forward-line 1)
+                  (goto-char (point-max))))
+               ((looking-at-p "^#\\+[[:alpha:]_]+:.*$")
+                (forward-line 1))
+               ((looking-at "^\\*+[ \t]+\\(.*\\)$")
+                (let ((heading (+deft/normalize-org-heading
+                                (match-string-no-properties 1))))
+                  (when (not (string-empty-p heading))
+                    (setq title heading)
+                    (throw 'found title)))
+                (forward-line 1))
+               (t
+                (let ((line (string-trim
+                             (deft-strip-title
+                              (buffer-substring-no-properties
+                               (line-beginning-position)
+                               (line-end-position))))))
+                  (if (string-empty-p line)
+                      (forward-line 1)
+                    (setq title line)
+                    (throw 'found title))))))))
+        (or title
+            (deft-base-filename file)))))
+
+  (defun +deft/parse-title-a (orig-fn file contents)
+    "Parse better titles for org FILE using CONTENTS, else delegate to ORIG-FN."
+    (if (string= (downcase (or (file-name-extension file) "")) "org")
+        (+deft/parse-org-title file contents)
+      (funcall orig-fn file contents)))
+  (advice-add #'deft-parse-title :around #'+deft/parse-title-a)
+
+  (defun +deft/group-key (file)
+    "Return FILE's top-level org-root directory key."
+    (let* ((relative (+deft/relative-file file))
+           (segments (split-string relative "/" t)))
+      (downcase
+       (or (car segments)
+           "root"))))
+
+  (defun +deft/group-label (group)
+    "Return display label for GROUP."
+    (upcase group))
+
+  (defun +deft/group-rank (group)
+    "Return sort rank for GROUP."
+    (or (cl-position group +deft/group-order :test #'string=)
+        (+ (length +deft/group-order) 100)))
+
+  (defun +deft/group-lessp (left right)
     "Return non-nil when LEFT should sort before RIGHT."
-    (cond
-     ((equal left "") nil)
-     ((equal right "") t)
-     (t (string-lessp left right))))
+    (let ((left-rank (+deft/group-rank left))
+          (right-rank (+deft/group-rank right)))
+      (if (/= left-rank right-rank)
+          (< left-rank right-rank)
+        (string-lessp left right))))
 
-  (defun +deft/title-with-type (orig-fn file)
-    "Append file extension to Deft title when entries are not grouped."
-    (let ((title (funcall orig-fn file))
-          (ext (file-name-extension file)))
-      (if (and ext (not +deft/group-by-file-type))
-          (concat (propertize (format "[%s] " ext) 'face 'shadow) title)
-        title)))
-  (advice-add #'deft-file-title :around #'+deft/title-with-type)
+  (defun +deft/pin-files-first (files)
+    "Return FILES with pinned files moved to the front."
+    (let (pinned rest)
+      (dolist (file files)
+        (if (member file +deft/pinned-files)
+            (push file pinned)
+          (push file rest)))
+      (append (nreverse pinned) (nreverse rest))))
+
+  (defun +deft/preferred-file-path (left right)
+    "Return the preferred Deft path between LEFT and RIGHT."
+    (let ((left-rel (+deft/relative-file left))
+          (right-rel (+deft/relative-file right)))
+      (cond
+       ((< (length left-rel) (length right-rel)) left)
+       ((> (length left-rel) (length right-rel)) right)
+       ((string-lessp left-rel right-rel) left)
+       (t right))))
+
+  (defun +deft/dedupe-files (files)
+    "Remove duplicate FILES that resolve to the same truename."
+    (let ((choices (make-hash-table :test #'equal))
+          ordered)
+      (dolist (file files)
+        (let* ((truth (file-truename file))
+               (existing (gethash truth choices)))
+          (unless existing
+            (push truth ordered))
+          (puthash truth
+                   (if existing
+                       (+deft/preferred-file-path existing file)
+                     file)
+                   choices)))
+      (mapcar (lambda (truth)
+                (gethash truth choices))
+              (nreverse ordered))))
 
   ;; NOTE enable auto refresh
   ;; see: https://github.com/jrblevin/deft/pull/62/files
   (defvar deft-auto-refresh-descriptor nil)
   (defun deft-auto-refresh (event)
     (deft-refresh))
-  (when (fboundp 'file-notify-add-watch)
-    (setq deft-auto-refresh-descriptor
-          (file-notify-add-watch
-           deft-directory
-           '(change attribute-change)
-           'deft-auto-refresh)))
 
-  ;; NOTE pin files and optionally group them by file type
+  (defun +deft/update-auto-refresh-watch ()
+    "Update the file notification watch for the current `deft-directory'."
+    (when (fboundp 'file-notify-add-watch)
+      (let ((directory (file-name-as-directory
+                        (expand-file-name deft-directory))))
+        (unless (equal directory +deft/auto-refresh-watched-directory)
+          (when deft-auto-refresh-descriptor
+            (ignore-errors
+              (file-notify-rm-watch deft-auto-refresh-descriptor)))
+          (setq deft-auto-refresh-descriptor
+                (file-notify-add-watch
+                 directory
+                 '(change attribute-change)
+                 'deft-auto-refresh))
+          (setq +deft/auto-refresh-watched-directory directory)))))
+
+  (+deft/update-auto-refresh-watch)
+
+  ;; NOTE pin files and optionally group them by source directory
   (defcustom +deft/pinned-files nil
     "List of pinned file paths shown before unpinned files in Deft."
     :type '(repeat string)
@@ -411,55 +579,48 @@
     "Prefix string shown before pinned file titles.")
 
   (defun +deft/sort-files-a (files)
-    "Pin FILES first and optionally group them by file type."
-    (let (pinned rest)
-      (dolist (file files)
-        (if (member file +deft/pinned-files)
-            (push file pinned)
-          (push file rest)))
-      (setq files (append (nreverse pinned) (nreverse rest)))
-      (if (not +deft/group-by-file-type)
-          files
-        (let ((known-types (mapcar #'downcase deft-extensions))
-              (buckets (make-hash-table :test 'equal))
-              seen-types ordered-types result)
-          (dolist (file files)
-            (let ((type (+deft/file-type-key file)))
-              (unless (member type seen-types)
-                (push type seen-types))
-              (puthash type (cons file (gethash type buckets)) buckets)))
-          (setq seen-types (nreverse seen-types))
-          (dolist (type known-types)
-            (when (member type seen-types)
-              (push type ordered-types)))
-          (dolist (type (sort (delq nil
-                                    (mapcar (lambda (type)
-                                              (unless (member type known-types)
-                                                type))
-                                            seen-types))
-                              #'+deft/file-type-lessp))
-            (push type ordered-types))
-          (dolist (type (nreverse ordered-types))
-            (setq result (nconc result (nreverse (gethash type buckets)))))
-          result))))
+    "Pin FILES first and optionally group them by top-level directory."
+    (setq files (+deft/dedupe-files files))
+    (if (not +deft/group-by-top-level-directory)
+        (+deft/pin-files-first files)
+      (let ((buckets (make-hash-table :test #'equal))
+            seen-groups
+            result)
+        (dolist (file files)
+          (let* ((group (+deft/group-key file))
+                 (bucket (or (gethash group buckets)
+                             (cons nil nil))))
+            (unless (member group seen-groups)
+              (push group seen-groups))
+            (if (member file +deft/pinned-files)
+                (setcar bucket (cons file (car bucket)))
+              (setcdr bucket (cons file (cdr bucket))))
+            (puthash group bucket buckets)))
+        (dolist (group (sort (nreverse seen-groups) #'+deft/group-lessp))
+          (let ((bucket (gethash group buckets)))
+            (setq result
+                  (nconc result
+                         (nreverse (car bucket))
+                         (nreverse (cdr bucket))))))
+        result)))
   (advice-add #'deft-sort-files :filter-return #'+deft/sort-files-a)
 
-  (defun +deft/reset-file-type-group-a (orig-fn &optional refresh)
-    "Reset file type grouping state before calling ORIG-FN with REFRESH."
-    (let ((+deft/current-file-type nil))
+  (defun +deft/reset-group-a (orig-fn &optional refresh)
+    "Reset group state before calling ORIG-FN with REFRESH."
+    (let ((+deft/current-group nil))
       (funcall orig-fn refresh)))
-  (advice-add #'deft-buffer-setup :around #'+deft/reset-file-type-group-a)
+  (advice-add #'deft-buffer-setup :around #'+deft/reset-group-a)
 
   (defun +deft/file-button-a (orig-fn file)
-    "Insert file type headers and pin prefixes before calling ORIG-FN on FILE."
-    (when (and file +deft/group-by-file-type)
-      (let ((type (+deft/file-type-key file)))
-        (unless (equal type +deft/current-file-type)
-          (when +deft/current-file-type
+    "Insert group headers and pin prefixes before calling ORIG-FN on FILE."
+    (when (and file +deft/group-by-top-level-directory)
+      (let ((group (+deft/group-key file)))
+        (unless (equal group +deft/current-group)
+          (when +deft/current-group
             (insert "\n"))
-          (setq +deft/current-file-type type)
-          (insert (propertize (+deft/file-type-label type)
-                              'face '+deft/file-type-header-face))
+          (setq +deft/current-group group)
+          (insert (propertize (+deft/group-label group)
+                              'face '+deft/group-header-face))
           (insert "\n"))))
     (if (member file +deft/pinned-files)
         (let ((deft-window-width (- deft-window-width
@@ -486,7 +647,47 @@
           (message "Pinned: %s" (file-name-nondirectory file)))
         (customize-save-variable '+deft/pinned-files +deft/pinned-files)
         (deft-refresh))))
-  (define-key deft-mode-map (kbd "C-c C-p") #'+deft/toggle-pin))
+  (define-key deft-mode-map (kbd "C-c C-p") #'+deft/toggle-pin)
+
+  (defun +deft/apply-profile (profile)
+    "Apply Deft PROFILE settings."
+    (setq +deft/current-profile profile
+          deft-directory (+deft/org-root-directory)
+          deft-recursive t
+          deft-default-extension (if (eq profile 'tex) "tex" "org")
+          deft-extensions (copy-sequence
+                           (or (alist-get profile +deft/profile-extensions)
+                               '("org")))
+          deft-recursive-ignore-dir-regexp (+deft/ignored-directory-regexp)
+          deft-ignore-file-regexp (+deft/ignored-file-regexp))
+    (+deft/update-auto-refresh-watch))
+
+  (defun +deft/update-mode-name ()
+    "Update `mode-name' for the current Deft profile."
+    (setq mode-name
+          (pcase +deft/current-profile
+            ('tex "Deft[tex]")
+            (_ "Deft[org]"))))
+
+  (add-hook 'deft-mode-hook #'+deft/update-mode-name)
+
+  (defun +deft/open-profile (profile)
+    "Open Deft with PROFILE."
+    (+deft/apply-profile profile)
+    (switch-to-buffer deft-buffer)
+    (deft-mode)
+    (+deft/update-mode-name)
+    (force-mode-line-update))
+
+  (defun org-deft-org ()
+    "Open the org-focused unified Deft view."
+    (interactive)
+    (+deft/open-profile 'org))
+
+  (defun org-deft-tex ()
+    "Open the tex-focused unified Deft view."
+    (interactive)
+    (+deft/open-profile 'tex)))
 
 (use-package org-roam
   :ensure t
