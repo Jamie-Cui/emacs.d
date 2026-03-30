@@ -467,10 +467,16 @@ When TRAILING is non-nil, also require a trailing slash."
 
   (defun +deft/ignored-file-regexp ()
     "Return a regexp matching files excluded from Deft views."
-    (let ((named (regexp-opt +deft/ignored-directory-names)))
+    (let ((named (regexp-opt +deft/ignored-directory-names))
+          (root-readme
+           (concat "\\`"
+                   (regexp-quote
+                    (expand-file-name "README.org" (+deft/org-root-directory)))
+                   "\\'")))
       (concat "\\(?:"
               (+deft/hidden-path-regexp nil)
               "\\|/\\(?:" named "\\)/"
+              "\\|" root-readme
               "\\|"
               (mapconcat #'identity +deft/ignored-file-regexps "\\|")
               "\\)")))
