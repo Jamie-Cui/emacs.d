@@ -9,7 +9,9 @@
 
   ;; GNU/Linux - ibus
   (when (eq system-type 'gnu/linux)
-    (sis-ism-lazyman-config "xkb:us::eng" "OTHER_INPUT_SOURCE" 'ibus))
+    ;; (sis-ism-lazyman-config "xkb:us::eng" "OTHER_INPUT_SOURCE" 'ibus)
+    (sis-ism-lazyman-config "2" "1" 'fcitx5)
+    )
 
   ;; Macos (auto-config, no extra effort needed)
   ;;
