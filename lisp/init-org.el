@@ -372,6 +372,14 @@
   (defvar +deft/current-profile 'org
     "Current Deft profile.")
 
+  (defcustom +deft/new-file-location "deft"
+    "Fallback directory used for newly created Deft files.
+When point is inside a Deft group, new files are created under that group's
+top-level directory instead. When relative, interpret this fallback directory
+under `+emacs/org-root-dir'."
+    :type 'string
+    :group 'deft)
+
   (defvar +deft/auto-refresh-watched-directory nil
     "Directory currently watched by Deft auto refresh.")
 
@@ -394,6 +402,52 @@
     "Return the normalized org root directory for Deft."
     (file-name-as-directory
      (file-truename (+emacs/ensure-directory +emacs/org-root-dir))))
+
+  (defun +deft/new-file-directory ()
+    "Return the normalized fallback directory for newly created Deft files."
+    (let ((directory (if (file-name-absolute-p +deft/new-file-location)
+                         +deft/new-file-location
+                       (expand-file-name +deft/new-file-location
+                                         (+deft/org-root-directory)))))
+      (file-name-as-directory
+       (file-truename (+emacs/ensure-directory directory)))))
+
+  (defun +deft/group-directory (group)
+    "Return the normalized directory backing GROUP."
+    (if (or (null group)
+            (string-empty-p group)
+            (string= group "root"))
+        (+deft/org-root-directory)
+      (file-name-as-directory
+       (file-truename
+        (+emacs/ensure-directory
+         (expand-file-name group (+deft/org-root-directory)))))))
+
+  (defun +deft/group-at-point ()
+    "Return the Deft group key at point, or nil when unavailable."
+    (when (derived-mode-p 'deft-mode)
+      (or (when-let ((file (deft-filename-at-point)))
+            (+deft/group-key file))
+          (let ((group (or (get-text-property (point) '+deft/group)
+                           (and (> (point) (point-min))
+                                (get-text-property (1- (point)) '+deft/group)))))
+            (or group
+                (save-excursion
+                  (catch 'found
+                    (while (> (point) (point-min))
+                      (forward-line -1)
+                      (setq group (or (get-text-property (point) '+deft/group)
+                                      (and (> (point) (point-min))
+                                           (get-text-property (1- (point))
+                                                              '+deft/group))))
+                      (when group
+                        (throw 'found group))))))))))
+
+  (defun +deft/current-new-file-directory ()
+    "Return the directory where a new Deft file should be created."
+    (if-let ((group (+deft/group-at-point)))
+        (+deft/group-directory group)
+      (+deft/new-file-directory)))
 
   (defun +deft/hidden-path-regexp (&optional trailing)
     "Return a regexp matching hidden paths.
@@ -482,6 +536,12 @@ When TRAILING is non-nil, also require a trailing slash."
         (+deft/parse-org-title file contents)
       (funcall orig-fn file contents)))
   (advice-add #'deft-parse-title :around #'+deft/parse-title-a)
+
+  (defun +deft/absolute-filename-a (orig-fn slug &optional extension)
+    "Create new Deft files in `+deft/new-file-directory'."
+    (let ((deft-directory (+deft/current-new-file-directory)))
+      (funcall orig-fn slug extension)))
+  (advice-add #'deft-absolute-filename :around #'+deft/absolute-filename-a)
 
   (defun +deft/group-key (file)
     "Return FILE's top-level org-root directory key."
@@ -619,9 +679,9 @@ When TRAILING is non-nil, also require a trailing slash."
           (when +deft/current-group
             (insert "\n"))
           (setq +deft/current-group group)
-          (insert (propertize (+deft/group-label group)
-                              'face '+deft/group-header-face))
-          (insert "\n"))))
+          (insert (propertize (concat (+deft/group-label group) "\n")
+                              'face '+deft/group-header-face
+                              '+deft/group group)))))
     (if (member file +deft/pinned-files)
         (let ((deft-window-width (- deft-window-width
                                     (string-width +deft/pin-prefix)))
