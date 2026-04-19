@@ -169,7 +169,7 @@ without opening Ebib first.  With prefix ARG, rotate the kill ring as
                  (format "[Ebib] Imported %s into %s"
                          imported-kind
                          (abbreviate-file-name (ebib-db-get-filename db)))))))
-  ))
+    ))
 
 (use-package pdf-tools
   :ensure t
@@ -258,7 +258,7 @@ Also simplifies create-note candidates to show only the note filename."
                                        (if (eq rtype 'create-note)
                                            (let* ((key  (substring-no-properties inner))
                                                   (name (when-let* (((fboundp 'citar-file--get-note-filename))
-                                                                      (path (citar-file--get-note-filename key)))
+                                                                    (path (citar-file--get-note-filename key)))
                                                           (file-name-nondirectory path)))
                                                   (name (or name key))
                                                   ;; Keep the hidden citekey prefix and outer resource
@@ -275,7 +275,7 @@ Also simplifies create-note candidates to show only the note filename."
                       (let* ((entry   (gethash key entry-cache))
                              (fields  (seq-remove (lambda (c) (string-prefix-p "=" (car c))) entry))
                              (max-len (apply #'max (length "key")
-                                            (mapcar (lambda (c) (length (car c))) fields)))
+                                             (mapcar (lambda (c) (length (car c))) fields)))
                              (fmt     (format "[%%-%ds] %%s" max-len))
                              (key-cand (propertize (format fmt "key" key)
                                                    'citar--resource 'copy-field))
@@ -394,5 +394,21 @@ is returned unchanged."
 ;; then, in you latex file, explicitly uses svg package, and let inkscape controls the font
 ;; \usepackage{svg}
 ;; \svgsetup{inkscapelatex=false}
+
+;; (use-package overleaf
+;;   :ensure t
+;;   :custom
+;;   (overleaf-use-nerdfont nil)
+;;   :config
+;;   ;; NOTE install this first
+;;   ;; https://github.com/mozilla/geckodriver/releases
+
+;;   ;; Example: load/save cookies from GPG encrypted file.
+;;   ;;          (remove the .gpg extension to save unencrypted)
+;;   (let ((cookie-file "~/.overleaf-cookies.gpg"))
+;;     (setq overleaf-save-cookies
+;;           (overleaf-save-cookies-to-file cookie-file))
+;;     (setq overleaf-cookies
+;;           (overleaf-read-cookies-from-file cookie-file))))
 
 (provide 'init-latex)

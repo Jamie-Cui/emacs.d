@@ -402,6 +402,23 @@ Returns DIR after ensuring it exists."
    "?"   #'magent-transient-menu
    ))
 
+(+use-package-when-dir-exists overleaf-project
+    (concat +emacs/repo-directory "/site-lisp/overleaf-project")
+  :demand t
+  :custom
+  (overleaf-use-nerdfont nil)
+  :config
+  ;; NOTE install this first
+  ;; https://github.com/mozilla/geckodriver/releases
+
+  ;; Example: load/save cookies from GPG encrypted file.
+  ;;          (remove the .gpg extension to save unencrypted)
+  (let ((cookie-file "~/.overleaf-cookies.gpg"))
+    (setq overleaf-save-cookies
+          (overleaf-save-cookies-to-file cookie-file))
+    (setq overleaf-cookies
+          (overleaf-read-cookies-from-file cookie-file))))
+
 ;; (+use-package-when-dir-exists edraw
 ;;     (concat +emacs/repo-directory "/site-lisp/el-easydraw")
 ;;   :after org

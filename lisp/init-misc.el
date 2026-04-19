@@ -594,4 +594,7 @@ On next startup Emacs will recompile everything from scratch."
             (restart-emacs))
         (user-error "eln-cache directory not found: %s" dir)))))
 
+;;; ediff
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
 (provide 'init-misc)
