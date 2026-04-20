@@ -413,7 +413,7 @@ Returns DIR after ensuring it exists."
 
   ;; Example: load/save cookies from GPG encrypted file.
   ;;          (remove the .gpg extension to save unencrypted)
-  (let ((cookie-file "~/.overleaf-cookies.gpg"))
+  (let ((cookie-file (concat user-emacs-directory "/.overleaf-cookies.gpg")))
     (setq overleaf-save-cookies
           (overleaf-save-cookies-to-file cookie-file))
     (setq overleaf-cookies

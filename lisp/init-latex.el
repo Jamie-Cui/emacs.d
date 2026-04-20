@@ -386,29 +386,4 @@ is returned unchanged."
                  (substring string 0 (1+ abort-char))
                string)))))
 
-;; NOTE if you are drawing svg through inkscpae
-;;
-;; first, use the following in dir-local if you want to svg in latex
-;; ((LaTeX-mode . ((TeX-command-extra-options . "-shell-escape"))))
-;;
-;; then, in you latex file, explicitly uses svg package, and let inkscape controls the font
-;; \usepackage{svg}
-;; \svgsetup{inkscapelatex=false}
-
-;; (use-package overleaf
-;;   :ensure t
-;;   :custom
-;;   (overleaf-use-nerdfont nil)
-;;   :config
-;;   ;; NOTE install this first
-;;   ;; https://github.com/mozilla/geckodriver/releases
-
-;;   ;; Example: load/save cookies from GPG encrypted file.
-;;   ;;          (remove the .gpg extension to save unencrypted)
-;;   (let ((cookie-file "~/.overleaf-cookies.gpg"))
-;;     (setq overleaf-save-cookies
-;;           (overleaf-save-cookies-to-file cookie-file))
-;;     (setq overleaf-cookies
-;;           (overleaf-read-cookies-from-file cookie-file))))
-
 (provide 'init-latex)
