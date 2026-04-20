@@ -102,6 +102,14 @@ Returns DIR after ensuring it exists."
 ;; Enable package
 (require 'package)
 
+;; Keep package archives explicit so local `site-lisp' packages can ensure
+;; their external archive dependencies on a fresh machine.
+;; (setq package-archives
+;;       '(("gnu" . "https://elpa.gnu.org/packages/")
+;;         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+;;         ("org" . "https://orgmode.org/elpa/")
+;;         ("melpa" . "https://melpa.org/packages/")))
+
 ;; disable check of signature
 (setq package-check-signature nil)
 
@@ -402,9 +410,21 @@ Returns DIR after ensuring it exists."
    "?"   #'magent-transient-menu
    ))
 
+;; Local packages loaded from `site-lisp' do not install `Package-Requires'.
+(use-package websocket
+  :ensure t
+  :defer t)
+
+(use-package webdriver
+  :ensure t
+  :defer t)
+
+(use-package plz
+  :ensure t
+  :defer t)
+
 (+use-package-when-dir-exists overleaf-project
     (concat +emacs/repo-directory "/site-lisp/overleaf-project")
-  :after plz
   :demand t
   :custom
   (overleaf-use-nerdfont nil)
