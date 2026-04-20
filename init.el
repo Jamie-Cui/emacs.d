@@ -404,6 +404,7 @@ Returns DIR after ensuring it exists."
 
 (+use-package-when-dir-exists overleaf-project
     (concat +emacs/repo-directory "/site-lisp/overleaf-project")
+  :after plz
   :demand t
   :custom
   (overleaf-use-nerdfont nil)
