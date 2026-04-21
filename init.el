@@ -431,7 +431,11 @@ Returns DIR after ensuring it exists."
   :demand t
   :custom
   (overleaf-use-nerdfont nil)
-  (overleaf-cookie-storage 'authinfo))
+  (overleaf-cookie-storage 'authinfo)
+  :config
+  (with-eval-after-load 'magit
+    (require 'overleaf-project-magit)
+    (overleaf-project-magit-setup)))
 
 ;; (+use-package-when-dir-exists edraw
 ;;     (concat +emacs/repo-directory "/site-lisp/el-easydraw")
