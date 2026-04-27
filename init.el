@@ -430,8 +430,7 @@ Returns DIR after ensuring it exists."
     (concat +emacs/repo-directory "/site-lisp/overleaf-project")
   :demand t
   :custom
-  (overleaf-use-nerdfont nil)
-  (overleaf-cookie-storage 'authinfo)
+  (overleaf-project-cookie-storage 'authinfo)
   :config
   (with-eval-after-load 'magit
     (require 'overleaf-project-magit)
