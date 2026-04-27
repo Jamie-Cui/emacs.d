@@ -539,10 +539,10 @@
   ;; Install magit-auto-commit
   (with-eval-after-load 'transient
     (transient-append-suffix 'magit-commit #'magit-commit-create
-      '("a" "Auto (but fixed) commit" (lambda (&optional args)
-                                        (interactive (list (magit-commit-arguments)))
-                                        (let ((message "chore: stale - work still in progress"))
-                                          (magit-commit-create (append args `("--message" ,message "--edit")))))))
+      '("W" "WIP commit" (lambda (&optional args)
+                           (interactive (list (magit-commit-arguments)))
+                           (let ((message "chore: stale - work still in progress"))
+                             (magit-commit-create (append args `("--message" ,message "--edit")))))))
     )
   )
 

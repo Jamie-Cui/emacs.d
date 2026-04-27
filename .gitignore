@@ -335,3 +335,4 @@ TSWLatexianTemp*
 #*Notes.bib
 *.elc
 /docs/superpowers/
+/.codex
