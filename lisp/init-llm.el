@@ -27,7 +27,22 @@
   :custom
   (agent-shell-show-welcome-message nil)
   (agent-shell-header-style 'text)
-  (agent-shell-show-config-icons nil))
+  (agent-shell-show-config-icons nil)
+  :config
+  (defun +agent-shell/sss-api-key ()
+    "Return the SSS API key used by Codex."
+    (or (getenv "SSS_API_KEY")
+        (user-error
+         "SSS_API_KEY is not available in Emacs; restart Emacs or run `exec-path-from-shell-copy-env'")))
+
+  (with-eval-after-load 'agent-shell-openai
+    (setq agent-shell-openai-authentication
+          (agent-shell-openai-make-authentication
+           :api-key #'+agent-shell/sss-api-key)
+          agent-shell-openai-codex-acp-command
+          '("codex-acp"
+            "-c" "model_provider=\"sss\""
+            "-c" "preferred_auth_method=\"apikey\""))))
 
 (use-package gptel
   :ensure t

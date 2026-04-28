@@ -135,6 +135,8 @@ Returns DIR after ensuring it exists."
 (unless (eq system-type 'windows-nt)
   (use-package exec-path-from-shell
     :ensure t
+    :custom
+    (exec-path-from-shell-variables '("PATH" "MANPATH" "SSS_API_KEY"))
     :config
     (exec-path-from-shell-initialize)))
 
