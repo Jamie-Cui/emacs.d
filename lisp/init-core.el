@@ -10,6 +10,52 @@
 ;; tramp-hlo
 ;; -----------------------------------------------------------
 
+(with-eval-after-load 'tramp
+  (unless (fboundp 'tramp-add-external-operation)
+    (defun +tramp-external-operation-handler-alist (backend)
+      "Return the file-name handler alist symbol for TRAMP BACKEND."
+      (intern (format "%s-file-name-handler-alist" backend)))
+
+    (defun +tramp-external-operation-handler (backend)
+      "Return the file-name handler symbol for TRAMP BACKEND."
+      (intern (format "%s-file-name-handler" backend)))
+
+    (defun +tramp-refresh-external-operation-handlers (backend)
+      "Refresh file-name handler operation metadata for TRAMP BACKEND."
+      (let* ((handler (+tramp-external-operation-handler backend))
+             (operations
+              (and (boundp (+tramp-external-operation-handler-alist backend))
+                   (mapcar #'car
+                           (symbol-value
+                            (+tramp-external-operation-handler-alist backend))))))
+        (put handler 'operations operations)
+        (put #'tramp-file-name-handler 'operations
+             (delete-dups
+              (append (get #'tramp-file-name-handler 'operations)
+                      operations)))))
+
+    (defun tramp-add-external-operation (operation handler backend)
+      "Register OPERATION with HANDLER for TRAMP BACKEND.
+This is a compatibility implementation for bundled TRAMP versions that
+pre-date the external-operation helper API."
+      (let ((handler-alist (+tramp-external-operation-handler-alist backend)))
+        (unless (boundp handler-alist)
+          (error "Unknown TRAMP handler alist: %s" handler-alist))
+        (set handler-alist
+             (cons (cons operation handler)
+                   (assq-delete-all operation (symbol-value handler-alist))))
+        (+tramp-refresh-external-operation-handlers backend)))
+
+    (defun tramp-remove-external-operation (operation backend)
+      "Remove OPERATION from TRAMP BACKEND.
+This is a compatibility implementation for bundled TRAMP versions that
+pre-date the external-operation helper API."
+      (let ((handler-alist (+tramp-external-operation-handler-alist backend)))
+        (when (boundp handler-alist)
+          (set handler-alist
+               (assq-delete-all operation (symbol-value handler-alist)))
+          (+tramp-refresh-external-operation-handlers backend))))))
+
 (use-package tramp-hlo
   :ensure t
   :config
