@@ -140,8 +140,10 @@
    "C-d"     #'evil-scroll-down
    ;; "C-i"     #'evil-jump-forward ; FIXME C-i is tab in tui
    ;; "C-o"     #'evil-jump-backward
-   "C-="     #'cnfonts-increase-fontsize
-   "C--"     #'cnfonts-decrease-fontsize
+   "C--"     #'text-scale-decrease ; buffer-local
+   "C-="     #'text-scale-increase ; buffer-local
+   "C-+"     #'cnfonts-increase-fontsize ; global
+   "C-_"     #'cnfonts-decrease-fontsize ; global
    )
 
   ;; ** Global Keybindings

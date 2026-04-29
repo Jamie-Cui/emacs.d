@@ -389,7 +389,7 @@ under `+emacs/org-root-dir'."
     "Mapping from Deft profile to file extensions.")
 
   (defconst +deft/ignored-directory-names
-    '("img" "ltximg" "pdf" "scripts" "roam")
+    '("img" "journal" "ltximg" "pdf" "scripts" "roam")
     "Directory names excluded from unified Deft views.")
 
   (defconst +deft/ignored-file-regexps
