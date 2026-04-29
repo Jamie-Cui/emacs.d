@@ -142,6 +142,7 @@
    ;; "C-o"     #'evil-jump-backward
    "C--"     #'text-scale-decrease ; buffer-local
    "C-="     #'text-scale-increase ; buffer-local
+   "C-0"     #'(lambda () (interactive) (text-scale-adjust 0))
    "C-+"     #'cnfonts-increase-fontsize ; global
    "C-_"     #'cnfonts-decrease-fontsize ; global
    )
