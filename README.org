@@ -12,6 +12,8 @@
 ░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓███████▓▒░
 #+end_src
 
+This repo is a personal GNU/Emacs configuration with two-level deferred loading, Evil mode, and gptel LLM integration. Targets Emacs 30.1+.
+
 ** What this config does?
 1. Use melpa only.
 2. Use emacs version 30.1.

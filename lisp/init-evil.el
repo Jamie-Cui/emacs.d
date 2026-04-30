@@ -49,6 +49,7 @@
 (use-package evil
   :ensure t
   :preface
+  (setq sentence-end-double-space nil) ; single space for sentence
   (setq evil-overriding-maps nil)
   (setq evil-want-keybinding nil)
   (setq evil-auto-indent nil)
@@ -63,7 +64,6 @@
   (setq-default evil-symbol-word-search t)
   (evil-set-undo-system 'undo-tree)
   (evil-mode 1)
-  (add-hook 'message-mode-hook 'evil-mode)
   ;; make sure org-agenda start with normal mode
   (evil-set-initial-state 'org-agenda-mode 'normal)
   ;; HACK: Fix joining commented lines with J (evil-join).
@@ -90,25 +90,22 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
                                     (or (search-forward comment-continue (line-end-position) t)
                                         beg)))))))
         (let* ((count (count-lines beg end))
-               (count (if (> count 1) (1- count) count))
-               (fixup-mark (make-marker)))
+               (count (if (> count 1) (1- count) count)))
           (uncomment-region (line-beginning-position 2)
                             (save-excursion
                               (goto-char cend)
                               (line-end-position 0)))
-          (unwind-protect
-              (dotimes (_ count)
-                (join-line 1)
-                (save-match-data
-                  (when (or (and comment-continue
-                                 (not (string-empty-p comment-continue))
-                                 (looking-at (concat "\\(\\s-*" (regexp-quote comment-continue) "\\) ")))
-                            (and comment-start-skip
-                                 (not (string-empty-p comment-start-skip))
-                                 (looking-at (concat "\\(\\s-*" comment-start-skip "\\)"))))
-                    (replace-match "" t nil nil 1)
-                    (just-one-space))))
-            (set-marker fixup-mark nil)))
+          (dotimes (_ count)
+            (join-line 1)
+            (save-match-data
+              (when (or (and comment-continue
+                             (not (string-empty-p comment-continue))
+                             (looking-at (concat "\\(\\s-*" (regexp-quote comment-continue) "\\) ")))
+                        (and comment-start-skip
+                             (not (string-empty-p comment-start-skip))
+                             (looking-at (concat "\\(\\s-*" comment-start-skip "\\)"))))
+                (replace-match "" t nil nil 1)
+                (just-one-space)))))
       ;; But revert to the default we're not in a comment, where
       ;; `fill-region-as-paragraph' is too greedy.
       (funcall fn beg end)))
@@ -118,8 +115,6 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
 (use-package evil-collection
   :ensure t
   :after (:and evil evil-mc)
-  :preface
-  (setq evil-want-keybinding nil)
   :custom
   (evil-collection-setup-minibuffer t)
   :config

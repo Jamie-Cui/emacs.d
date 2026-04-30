@@ -39,6 +39,11 @@
   (when (version< emacs-version minver)
     (error "Your Emacs is too old -- this config requires v%s or higher" minver)))
 
+;; Work around an Emacs 30.2 native-comp regression in built-in Org.
+(defvar native-comp-jit-compilation-deny-list nil)
+(dolist (regexp '(".*org-element.*" ".*org-macs.*"))
+  (add-to-list 'native-comp-jit-compilation-deny-list regexp))
+
 (defcustom +emacs/repo-directory (expand-file-name "~/.emacs.d")
   "Path to emacs.d folder"
   :type 'string
@@ -62,20 +67,27 @@
 (add-to-list 'load-path (expand-file-name "lisp" +emacs/repo-directory))
 
 ;;; -----------------------------------------------------------
-;;; DONE Setup folders
+;;; DONE Setup folders - Lazy Creation
 ;;; -----------------------------------------------------------
 
-;; Defer directory creation to after startup for faster init
-(defun +emacs/create-directories ()
-  "Create necessary directories for Emacs configuration."
-  (make-directory (concat +emacs/org-root-dir "/roam") t)
-  (make-directory (concat +emacs/org-root-dir "/journal") t)
-  (make-directory (concat +emacs/org-root-dir "/deft") t)
-  (when (and user-init-file (stringp user-init-file))
-    (make-directory (concat (file-name-directory user-init-file) "/bin") t)))
+;; Lazily create directories only when first accessed
+(defun +emacs/ensure-directory (dir)
+  "Lazily create DIR when first accessed.
+Returns DIR after ensuring it exists."
+  (make-directory dir t)
+  dir)
 
-;; Create directories after Emacs startup completes
-(add-hook 'emacs-startup-hook #'+emacs/create-directories)
+;; Helper for org subdirectories
+(defun +emacs/org-subdir (name)
+  "Return path to org subdirectory NAME, creating it if needed."
+  (+emacs/ensure-directory (concat +emacs/org-root-dir "/" name)))
+
+;; Bin directory helper
+(defun +emacs/bin-directory ()
+  "Return path to bin directory, creating it if needed."
+  (when (and user-init-file (stringp user-init-file))
+    (+emacs/ensure-directory
+     (concat (file-name-directory user-init-file) "/bin"))))
 
 ;;; -----------------------------------------------------------
 ;;; DONE Setup packages
@@ -89,6 +101,14 @@
 
 ;; Enable package
 (require 'package)
+
+;; Keep package archives explicit so local `site-lisp' packages can ensure
+;; their external archive dependencies on a fresh machine.
+;; (setq package-archives
+;;       '(("gnu" . "https://elpa.gnu.org/packages/")
+;;         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+;;         ("org" . "https://orgmode.org/elpa/")
+;;         ("melpa" . "https://melpa.org/packages/")))
 
 ;; disable check of signature
 (setq package-check-signature nil)
@@ -108,7 +128,6 @@
 ;;   (package-refresh-contents)
 ;;   (package-quickstart-refresh))
 
-
 ;; -----------------------------------------------------------
 ;; DONE Setup environment and compilation
 ;; -----------------------------------------------------------
@@ -116,6 +135,8 @@
 (unless (eq system-type 'windows-nt)
   (use-package exec-path-from-shell
     :ensure t
+    :custom
+    (exec-path-from-shell-variables '("PATH" "MANPATH" "SSS_API_KEY"))
     :config
     (exec-path-from-shell-initialize)))
 
@@ -328,6 +349,8 @@
                   ("https://planet.emacslife.com/atom.xml")
                   ;; Emacs China
                   ("https://emacs-china.org/latest.rss")
+                  ;; Linux Do
+                  ("https://linux.do/latest.rss")
                   ;; iacr
                   ("https://eprint.iacr.org/rss/rss.xml")
                   ;; Linux Security
@@ -336,8 +359,6 @@
                   ("http://lwn.net/headlines/rss")
                   ;; Feisty Duck's Security and Cryptography newsletter
                   ("https://www.feistyduck.com/newsletter/feed")
-                  ;; Fedora Magazine
-                  ("https://fedoramagazine.org/feed/")
                   ;; Hack News front page
                   ("https://hnrss.org/frontpage")
                   ;; 机器之心
@@ -358,3 +379,84 @@
   :config
   (elfeed-goodies/setup))
 
+(use-package spinner
+  :ensure t)
+
+(use-package telega
+  :ensure t
+  :config
+  (let* ((parts (split-string +emacs/proxy ":"))
+         (server (car parts))
+         (port (string-to-number (cadr parts))))
+    (setq telega-proxies
+          (list `(:server ,server
+                          :port ,port
+                          :enable t
+                          :type (:@type "proxyTypeSocks5"))))))
+
+(+use-package-when-dir-exists magent
+    (concat +emacs/repo-directory "/site-lisp/magent")
+  :after gptel spinner
+  :demand t
+  :custom
+  (magent-skill-directories (list (expand-file-name "skills" +emacs/repo-directory)))
+  (magent-by-pass-permission t)
+  ;; (magent-ui-wrap-reasoning-in-think-block nil)
+  :config
+  (global-magent-mode 1)
+
+  ;; keybindings that should not be overriden
+  (general-define-key
+   :keymaps 'magent-output-mode-map
+   :states '(normal visual motion)
+   "?"   #'magent-transient-menu
+   ))
+
+;; Local packages loaded from `site-lisp' do not install `Package-Requires'.
+(use-package websocket
+  :ensure t
+  :defer t)
+
+(use-package webdriver
+  :ensure t
+  :defer t)
+
+(use-package plz
+  :ensure t
+  :defer t)
+
+;; NOTE install this first
+;; https://github.com/mozilla/geckodriver/releases
+;; cargo install geckodriver
+(+use-package-when-dir-exists overleaf-project
+    (concat +emacs/repo-directory "/site-lisp/overleaf-project")
+  :demand t
+  :custom
+  (overleaf-project-cookie-storage 'authinfo)
+  :config
+  (with-eval-after-load 'magit
+    (require 'overleaf-project-magit)
+    (overleaf-project-magit-setup)))
+
+;; (+use-package-when-dir-exists edraw
+;;     (concat +emacs/repo-directory "/site-lisp/el-easydraw")
+;;   :after org
+;;   :demand t
+;;   :config
+;;   (require 'edraw-org)
+;;   (edraw-org-setup-default)
+;;   (edraw-org-setup-exporter)
+
+;;   ;; keybindings that should not be overriden
+;;   (general-define-key
+;;    :keymaps 'edraw-editor-map
+;;    "<backspace>"   #'edraw-editor-delete-selected
+;;    )
+;;   )
+
+;; HACK
+(auto-compression-mode 0)
+(auto-compression-mode 1)
+
+;; start emacs server
+(server-start)

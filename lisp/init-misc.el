@@ -9,7 +9,7 @@
 ;; Optional configurations for fine-tuning
 (setq pixel-dead-time 0) ; Never revert to line-based scrolling behavior
 (setq pixel-resolution-fine-flag t) ; Scroll by actual pixels
-(setq mouse-wheel-scroll-amount '(3)) ; Distance to scroll per mouse wheel event
+(setq mouse-wheel-scroll-amount '(1)) ; Distance to scroll per mouse wheel event
 (setq mouse-wheel-progressive-speed nil) ; Disable progressive speed if it feels too fast
 
 ;; (setq tramp-verbose 6)
@@ -22,8 +22,6 @@
 ;; Supress warnings about file
 (setopt warning-suppress-log-types '((files)))
 
-;; Set Lexical Binding Globally
-(setq lexical-binding t)
 (setq byte-compile-warnings '(not lexical))
 
 ;; make minimal margin
@@ -35,16 +33,6 @@
 ;; Emacs 30 and newer: Disable Ispell completion function.
 ;; Try `cape-dict' as an alternative.
 (setopt text-mode-ispell-word-completion nil)
-
-;; stop makding ~ files!
-(setq make-backup-files nil)
-
-;; stop makding #...# files!
-(setq create-lockfiles nil)
-
-;; if use backup, put it in .emacs.d/backup
-(setopt backup-directory-alist (list (cons "." (concat user-emacs-directory "backup/")))
-        tramp-backup-directory-alist backup-directory-alist)
 
 ;; Don't generate backups or lockfiles. While auto-save maintains a copy so long
 ;; as a buffer is unsaved, backups create copies once, when the file is first
@@ -136,7 +124,7 @@
                 imenu-list-minor-mode-hook
                 imenu-list-major-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode -1))))
-(setq-default display-line-numbers-type 't)
+(setq-default display-line-numbers-type 'visual)
 
 ;; use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
@@ -259,14 +247,11 @@
 ;; see: https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
 (setopt tramp-allow-unsafe-temporary-files t ; do not warn me, please
         remote-file-name-inhibit-locks t
-        tramp-use-scp-direct-remote-copying t
-        remote-file-name-inhibit-auto-save-visited t)
+        tramp-use-scp-direct-remote-copying t)
 
 (connection-local-set-profile-variables
  'remote-direct-async-process
  '((tramp-direct-async-process . t)))
-
-(setopt tramp-auto-save-directory (concat user-emacs-directory "tramp-autosave/"))
 
 (connection-local-set-profiles
  '(:application tramp :protocol "scp")
@@ -451,10 +436,11 @@
   (eshell-printn (format "[git] https_proxy : %s" (+eshell/format-shell-command "git config --global --get https.proxy"))))
 
 ;; HACK redefine eshell/clear function using advice
-(defadvice eshell/clear (around clear-buffer activate)
+(defun +eshell/clear-buffer-a (&rest _)
   "Clear the eshell buffer by erasing its contents."
   (let ((inhibit-read-only t))
     (erase-buffer)))
+(advice-add #'eshell/clear :override #'+eshell/clear-buffer-a)
 
 ;; ------------------------------------------------------------------
 ;; TTY Configuration
@@ -507,21 +493,35 @@
 (setopt mode-line-end-spaces nil)
 (setopt mode-line-front-space nil)
 
+;; turn on size in bytes indicator on modeline
+;; (size-indication-mode 1)
+
+(defun +modeline/project-buffer-name ()
+  "Return the current buffer name relative to the project root."
+  (if-let* ((file buffer-file-name)
+            (project (project-current nil (file-name-directory file)))
+            (root (project-root project))
+            (name (or (project-name project)
+                      (file-name-nondirectory
+                       (directory-file-name root))))
+            (relative (file-relative-name file root)))
+      (concat name "/" relative)
+    (buffer-name)))
+
+(defun +modeline/buffer-identification ()
+  "Return the propertized current buffer identifier for the mode line."
+  (propertize (+modeline/project-buffer-name)
+              'face 'mode-line-buffer-id
+              'help-echo "Buffer name\nmouse-1: Previous buffer\nmouse-3: Next buffer"
+              'mouse-face 'mode-line-highlight
+              'local-map mode-line-buffer-identification-keymap))
+
 ;; mode-line format
 (setopt mode-line-format
         (list
          "%e"
          'mode-line-front-space
-         '(:eval (format-mode-line
-                  (propertized-buffer-identification "%b")))
-         ;; '(:eval (format-mode-line
-         ;;          (propertized-buffer-identification
-         ;;           (or (when-let* ((buffer-file-truename buffer-file-truename)
-         ;;                           (project (cdr-safe (project-current)))
-         ;;                           (project-parent (file-name-directory (directory-file-name (expand-file-name project)))))
-         ;;                 (concat (file-relative-name (file-name-directory buffer-file-truename) project-parent)
-         ;;                         (file-name-nondirectory buffer-file-truename)))
-         ;;               "%b"))))
+         '(:eval (+modeline/buffer-identification))
          "   "
          'mode-line-position
          "   "
@@ -529,22 +529,15 @@
                      (format " (Sel: %d)" (abs (- (point) (mark)))) ""))
          'mode-line-format-right-align
          'mode-line-misc-info
-         " "
-         ;; '(:eval
-         ;;   (propertize
-         ;;    (if (tramp-tramp-file-p buffer-file-name)
-         ;;        (format "[%s:%s]"
-         ;;                (tramp-file-name-method (tramp-dissect-file-name buffer-file-name))
-         ;;                (persp-current-name))
-         ;;      (format "[%s]" (persp-current-name)))
-         ;;    'face 'font-lock-keyword-face))
-         " "
+         "   "
+         '(:eval (format "%.1fk" (/ (count-lines (point-min) (point-max)) 1000.0)))
+         "   "
          'mode-name
          " (+"
          '(:eval (format "%d" (length local-minor-modes)))
          ")"
          'mode-line-end-spaces
-         " "
+         "   "
          )
         )
 
@@ -574,8 +567,9 @@
 (defun +copy-buffer-file-name ()
   "Copy the current buffer file name to clipboard."
   (interactive)
-  (kill-new (buffer-file-name))
-  (message "Copied: %s" (buffer-file-name)))
+  (let ((name (buffer-file-name)))
+    (kill-new name)
+    (message "Copied: %s" name)))
 
 (setopt duplicate-line-final-position 1) ; move point to the first newline
 
@@ -585,5 +579,22 @@
 ;; enable narrow-to-region function without asking
 ;; see: https://www.gnu.org/software/emacs/manual/html_node/elisp/Disabling-Commands.html
 (put 'narrow-to-region 'disabled nil)
+
+(defun +emacs/clear-native-compile-cache ()
+  "Delete all native-compiled .eln files and kill Emacs.
+On next startup Emacs will recompile everything from scratch."
+  (interactive)
+  (when (yes-or-no-p "Delete all .eln files in eln-cache and restart Emacs? ")
+    (let ((dir (expand-file-name "eln-cache" user-emacs-directory)))
+      (if (file-directory-p dir)
+          (progn
+            (delete-directory dir t)
+            (message "Deleted %s — restarting Emacs..." dir)
+            (sit-for 1)
+            (restart-emacs))
+        (user-error "eln-cache directory not found: %s" dir)))))
+
+;;; ediff
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 (provide 'init-misc)

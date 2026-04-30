@@ -33,8 +33,8 @@
 (use-package vertico-posframe
   :ensure t
   :after vertico
-  :custom
-  (vertico-posframe-border-width 5)
+  ;; :custom
+  ;; (vertico-posframe-border-width 5)
   ;; make posframe transparent
   ;; (vertico-posframe-parameters '((alpha . 0.9)))
   :config
@@ -62,7 +62,7 @@
 
 (use-package corfu-terminal
   :ensure t
-  :defer t
+  :after corfu
   :config
   (when (version< emacs-version "31")
     (corfu-terminal-mode +1)))
@@ -96,15 +96,28 @@
   :ensure t
   :custom
   (consult-preview-max-count 17)
+  :config
   (consult-customize
    consult-ripgrep consult-git-grep consult-grep consult-man
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
+   consult-source-bookmark consult-source-file-register
+   consult-source-recent-file consult-source-project-recent-file
    :preview-key '(:debounce 1 any))
-  :config
+  (require 'consult-imenu)
   (setq xref-show-xrefs-function       #'consult-xref
-        xref-show-definitions-function #'consult-xref))
+        xref-show-definitions-function #'consult-xref)
+  ;; config python imenu
+  (add-to-list 'consult-imenu-config
+               '(python-mode
+                 :toplevel "Function"
+                 :types
+                 ((?f "Function" font-lock-function-name-face)
+                  (?m "Method" font-lock-function-name-face)
+                  (?c "Class" font-lock-property-use-face)
+                  (?M "Module" font-lock-builtin-face)
+                  (?F "Field" font-lock-regexp-face)
+                  (?v "Variable" font-lock-constant-face))))
+  )
 
 ;; -----------------------------------------------------------
 ;; Custom Functions

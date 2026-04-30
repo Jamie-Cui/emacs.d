@@ -6,11 +6,6 @@
 (require 'init-evil)
 
 ;; Named functions for disabled keybindings (better debugging/profiling)
-(defun +kbd/disabled-M-d ()
-  "Placeholder for disabled M-d binding."
-  (interactive)
-  (message "M-d is disabled!"))
-
 (defun +kbd/disabled-M-u ()
   "Placeholder for disabled M-u binding."
   (interactive)
@@ -25,11 +20,6 @@
   "Placeholder for disabled M-Q binding (reserved for lock screen)."
   (interactive)
   (message "M-Q is disabled!"))
-
-(defun +kbd/disabled-M-h ()
-  "Placeholder for disabled M-h binding."
-  (interactive)
-  (message "M-h is disabled!"))
 
 (defun +kbd/disabled-M-k ()
   "Placeholder for disabled M-k binding."
@@ -117,17 +107,12 @@
    :keymaps 'override
    "M-RET"   #'completion-at-point ;; FIXME org-mode should not use that
    "C-M-<return>" #'completion-at-point ; alternative
-   ;; less-frequent commands
-   "M-y"     #'yas-expand
-   "M-n"     #'narrow-to-region
-   "M-w"     #'widen
-   "M-p"     #'+compile-with-no-preset ; just like vscode
-   "M-P"     #'+compile-with-comint ; just like vscode
    ;; more-frequent commands
-   "M-b"     #'consult-buffer ; jump to buffers quickly
-   "M-e"     #'evil-avy-goto-char-timer ; quick find edit (point)?
+   "M-y"     #'yas-expand
+   "M-p"     #'+compile-with-no-preset ; just like vscode
+   "M-w"     #'evil-avy-goto-char-timer ; quick find edit (point)?
    "M-i"     #'consult-imenu
-   "M-m"     #'evil-multiedit-match-symbol-and-next  ; match
+   "M-d"     #'evil-multiedit-match-symbol-and-next  ; dup
    ;; mac-like binding
    "M-f"     #'consult-line ; search like mac
    "M-a"     #'mark-whole-buffer ; select like mac
@@ -136,7 +121,6 @@
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-v"     #'evil-paste-after ; paste like mac
    ;; disabled
-   "M-d"     #'+kbd/disabled-M-d
    "M-u"     #'+kbd/disabled-M-u
    "M-q"     #'+kbd/disabled-M-q ; reserved for kill app
    "M-Q"     #'+kbd/disabled-M-Q ; reserved for lock screen
@@ -156,20 +140,24 @@
    "C-d"     #'evil-scroll-down
    ;; "C-i"     #'evil-jump-forward ; FIXME C-i is tab in tui
    ;; "C-o"     #'evil-jump-backward
-   "C-="     #'cnfonts-increase-fontsize
-   "C--"     #'cnfonts-decrease-fontsize
+   "C--"     #'text-scale-decrease ; buffer-local
+   "C-="     #'text-scale-increase ; buffer-local
+   "C-0"     #'(lambda () (interactive) (text-scale-adjust 0))
+   "C-+"     #'cnfonts-increase-fontsize ; global
+   "C-_"     #'cnfonts-decrease-fontsize ; global
    )
 
   ;; ** Global Keybindings
   (+my-leader-def
     :states '(normal visual motion)
     :keymaps 'override ; prevent from being override
-    ;; most-frequency keys
-    ;; "RET"    #'dashboard-open
+    ;; application keys
+    "A"      #'agent-shell ;; A -> Agent Shell
+    "D"      #'docker
     "G"      #'gptel  ;; G -> Gptel
-    "A"      #'agent-shell ;; A -> Agent
-    "X"      #'scratch-buffer ; popup
-    "M"      #'popwin:messages ; popup
+    "M"      #'magent-dwim ;; M -> Magent
+    "T"      #'telega ;; T -> Telegram
+    ;; most-frequency keys
     "."      #'find-file
     "<"      #'consult-buffer
     ","      #'consult-project-buffer
@@ -191,10 +179,11 @@
     "ww"     #'other-window
     "wx"     #'evil-window-exchange
     "wd"     #'delete-window
+    "wr"     #'balance-windows
     "ws"     #'+evil/window-split-and-follow
     "wv"     #'+evil/window-vsplit-and-follow
     "wm"     #'delete-other-windows
-    "wr"     #'redraw-display
+    "wR"     #'redraw-display
     ;; buffer-related key bindings
     "b" '(:ignore t :which-key "buffer")
     "ba"     #'evil-buffer-new
@@ -209,13 +198,9 @@
     "jj"     #'consult-bookmark
     "ja"     #'bookmark-set
     "jx"     #'bookmark-delete
-    ;; docker-related key bindings
-    ;; I do not use that very often
-    "D"      #'docker
     ;; open-related key bindings
     "o" '(:ignore t :which-key "open")
-    "ob"     #'citar-open ; open/find bib
-    "oB"     #'ebib ; edit bib
+    "oo"     #'crux-open-with
     "oe"     #'elfeed
     "oE"     #'ielm ; elisp repl
     "og"     #'magit-status-quick
@@ -225,6 +210,8 @@
     "oD"     #'+os-explorer/dwim
     "ot"     #'+eshell/new
     "oT"     #'+eat/new
+    "ox"     #'scratch-buffer
+    "om"     #'popwin:messages
     ;; project-related key bindings
     "p" '(:ignore t :which-key "project")
     "pp"     #'projectile-switch-project
@@ -244,30 +231,22 @@
     ;; note functions
     "n" '(:ignore t :which-key "note")
     "na"      #'org-agenda-list
-    "nA"      #'consult-org-agenda
-    "nt"      #'org-todo-list
-    "nc"      #'org-gtd-capture ; capture
-    "ni"      #'org-gtd-process-inbox ; process
-    "ne"      #'org-gtd-engage ; engage (do-things)
-    "nl" '(:ignore t :which-key "list")
-    "nln"     #'org-gtd-show-all-next ; list next
-    "nlw"     #'org-gtd-reflect-someday-maybe ; list wait
-    "nlc"     #'org-gtd-reflect-completed-items ; list complete
-    "nls"     #'org-gtd-reflect-stuck-projects ; list stuck
     "n@"      #'citar-insert-citation
+    "nb"      #'citar-open
+    "nB"      #'ebib
+    "nc"      #'+org-project-capture-select-project
+    "nt"      #'org-project-todo-list
+    "nj"      #'org-journal-new-entry
+    "nl"      #'org-insert-link
     "ny"      #'org-store-link
-    "np"      #'org-insert-link
-    "nd"      #'deft
+    "np"      #'+org-project-consult-notes
+    "nd"      #'org-deft-org
+    "nD"      #'org-deft-tex
     "nq"      #'org-set-tags-command
-    "nm" '(:ignore t :which-key "modify")
-    "nmp"     #'org-priority
-    "nmP"     #'org-set-property
-    "nmt"     #'org-todo
     "nT" '(:ignore t :which-key "timer")
     "nTa"     #'org-timer-set-timer ; add timer
     "nT RET"  #'org-timer-pause-or-continue ; pause or continue
     "nTd"     #'org-timer-stop ; delete timer
-    "nj"      #'org-journal-new-entry
     "nr" '(:ignore t :which-key "org-roam")
     "nra"     #'org-roam-alias-add
     "nrf"     #'org-roam-node-find
@@ -276,11 +255,9 @@
     "nrq"     #'org-roam-tag-add
     "nrc"     #'org-roam-db-clear-all
     "nx" '(:ignore t :which-key "xenops")
-    "nx RET"  #'xenops-dwim
-    "nxe"     #'xenops-reveal-at-point
-    "nxy"     #'xenops-copy-at-point
-    "nxr"     #'xenops-regenerate-at-point
-    "nxR"     #'xenops-regenerate
+    "nxe"     #'xenops-reveal ; edit
+    "nxy"     #'xenops-copy-at-point ; yank
+    "nxr"     #'xenops-regenerate ; regenerate
     ;; help functions
     "h" '(:ignore t :which-key "help")
     "h RET"  #'helpful-at-point
@@ -299,6 +276,7 @@
     "qr"     #'restart-emacs
     ;; toggles
     "t" '(:ignore t :which-key "toggle")
+    "td"     #'toggle-debug-on-error
     "tb"     #'magit-blame-addition
     "tf"     #'toggle-frame-maximized
     "tF"     #'toggle-frame-fullscreen
@@ -353,6 +331,24 @@
    :states 'normal ;; all modes
    "q"       #'org-agenda-quit ;; make it behaves the same as wgrep-mode map
    )
+
+  ;; org-project-todo-list
+  (general-define-key
+   :keymaps 'org-project-todo-list-mode-map
+   :states 'normal
+   "RET"     #'org-project-todo-list-visit
+   "i"       #'org-project-todo-list-edit-action-item
+   "o"       #'org-project-todo-list-open-original-file
+   "q"       #'quit-window)
+
+  (general-define-key
+   :keymaps 'org-project-todo-list-mode-map
+   :states '(normal insert)
+   "C-c C-a" #'org-project-todo-list-archive
+   "C-c C-c" #'org-project-todo-list-commit-edit
+   "C-c C-k" #'org-project-todo-list-cancel-edit
+   "C-c C-q" #'org-project-todo-list-set-tags
+   "C-c C-t" #'org-project-todo-list-toggle-state)
 
   ;; smerge-mode
   (general-define-key

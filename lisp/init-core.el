@@ -10,6 +10,52 @@
 ;; tramp-hlo
 ;; -----------------------------------------------------------
 
+(with-eval-after-load 'tramp
+  (unless (fboundp 'tramp-add-external-operation)
+    (defun +tramp-external-operation-handler-alist (backend)
+      "Return the file-name handler alist symbol for TRAMP BACKEND."
+      (intern (format "%s-file-name-handler-alist" backend)))
+
+    (defun +tramp-external-operation-handler (backend)
+      "Return the file-name handler symbol for TRAMP BACKEND."
+      (intern (format "%s-file-name-handler" backend)))
+
+    (defun +tramp-refresh-external-operation-handlers (backend)
+      "Refresh file-name handler operation metadata for TRAMP BACKEND."
+      (let* ((handler (+tramp-external-operation-handler backend))
+             (operations
+              (and (boundp (+tramp-external-operation-handler-alist backend))
+                   (mapcar #'car
+                           (symbol-value
+                            (+tramp-external-operation-handler-alist backend))))))
+        (put handler 'operations operations)
+        (put #'tramp-file-name-handler 'operations
+             (delete-dups
+              (append (get #'tramp-file-name-handler 'operations)
+                      operations)))))
+
+    (defun tramp-add-external-operation (operation handler backend)
+      "Register OPERATION with HANDLER for TRAMP BACKEND.
+This is a compatibility implementation for bundled TRAMP versions that
+pre-date the external-operation helper API."
+      (let ((handler-alist (+tramp-external-operation-handler-alist backend)))
+        (unless (boundp handler-alist)
+          (error "Unknown TRAMP handler alist: %s" handler-alist))
+        (set handler-alist
+             (cons (cons operation handler)
+                   (assq-delete-all operation (symbol-value handler-alist))))
+        (+tramp-refresh-external-operation-handlers backend)))
+
+    (defun tramp-remove-external-operation (operation backend)
+      "Remove OPERATION from TRAMP BACKEND.
+This is a compatibility implementation for bundled TRAMP versions that
+pre-date the external-operation helper API."
+      (let ((handler-alist (+tramp-external-operation-handler-alist backend)))
+        (when (boundp handler-alist)
+          (set handler-alist
+               (assq-delete-all operation (symbol-value handler-alist)))
+          (+tramp-refresh-external-operation-handlers backend))))))
+
 (use-package tramp-hlo
   :ensure t
   :config
@@ -101,8 +147,13 @@
           ("REVIEW" warning bold) ;; I've write something uncertain, double check this
           ("HACK" warning bold) ;; This is a temp/ugly fix, and should have other solutions, fix it if possible
           ("DEPRECATED" warning bold) ;; require notice
+          ("WAIT" warning bold) ;; require notice
+          ("PROJ" warning bold) ;; require notice
           ("NOTE" success bold) ;; require notice
           ("DONE" success bold)
+          ("KILL" success bold)
+          ("CAPTURED" success bold)
+          ("MOVED" success bold)
           ("FIXME" error bold) ;; require immediate action
           ("BUG" error bold) ;; require immediate action
           )))
@@ -157,8 +208,6 @@
     (add-to-list 'yas-snippet-dirs my-yas-dir))
   ;; start mode globally
   (yas-global-mode 1)
-  ;; reload all snippets
-  (yas-reload-all)
   )
 
 (use-package yasnippet-snippets
@@ -315,28 +364,29 @@
   ;; default setup for harper-ls
   ;; see: https://writewithharper.com/docs/integrations/emacs
   (setq-default eglot-workspace-configuration
-                '(:harper-ls (:userDictPath ""
-                                            :workspaceDictPath ""
-                                            :fileDictPath ""
-                                            :linters (:SpellCheck t
-                                                                  :SpelledNumbers :json-false
-                                                                  :AnA t
-                                                                  :SentenceCapitalization t
-                                                                  :UnclosedQuotes t
-                                                                  :WrongQuotes :json-false
-                                                                  :LongSentences t
-                                                                  :RepeatedWords t
-                                                                  :Spaces :json-false ;; no space!
-                                                                  :Matcher t
-                                                                  :CorrectNumberSuffix t)
-                                            :codeActions (:ForceStable :json-false)
-                                            :markdown (:IgnoreLinkTitle :json-false)
-                                            :diagnosticSeverity "hint"
-                                            :isolateEnglish :json-false
-                                            :dialect "American"
-                                            :maxFileLength 120000
-                                            :ignoredLintsPath ""
-                                            :excludePatterns [])))
+                '(:harper-ls
+                  (:userDictPath ""
+                                 :workspaceDictPath ""
+                                 :fileDictPath ""
+                                 :linters (:SpellCheck t
+                                                       :SpelledNumbers :json-false
+                                                       :AnA t
+                                                       :SentenceCapitalization t
+                                                       :UnclosedQuotes t
+                                                       :WrongQuotes :json-false
+                                                       :LongSentences t
+                                                       :RepeatedWords t
+                                                       :Spaces :json-false ;; no space!
+                                                       :Matcher t
+                                                       :CorrectNumberSuffix t)
+                                 :codeActions (:ForceStable :json-false)
+                                 :markdown (:IgnoreLinkTitle :json-false)
+                                 :diagnosticSeverity "hint"
+                                 :isolateEnglish :json-false
+                                 :dialect "American"
+                                 :maxFileLength 120000
+                                 :ignoredLintsPath ""
+                                 :excludePatterns [])))
   )
 
 (use-package eldoc-box
@@ -459,9 +509,8 @@
 ;; eat
 ;; helpful
 ;; popwin
-;; eaf
 ;; envrc
-;; treesit-fold
+;; crux
 ;; -----------------------------------------------------------
 
 (use-package docker
@@ -481,9 +530,9 @@
   (dashboard-startup-banner 4) ; 4 means using 4.txt
   (dashboard-set-file-icons nil)
   (dashboard-items '(
-                     (agenda . 5)
+                     ;; (agenda . 5)
                      (recents  . 5)
-                     ;; (projects  . 5)
+                     (projects  . 5)
                      (bookmarks . 5)
                      ))
   (dashboard-projects-backend 'projectile)
@@ -501,8 +550,8 @@
   (+dashboard/install-banners)
 
   ;; To disable shortcut "jump" indicators for each section, set
-  (setq dashboard-after-initialize-hook (lambda() (dashboard-open)))
-  (setq initial-buffer-choice (lambda() (dashboard-open))))
+  (add-hook 'dashboard-after-initialize-hook (lambda () (dashboard-open)))
+  (setq initial-buffer-choice (lambda () (dashboard-open))))
 
 (use-package magit
   :ensure t
@@ -536,10 +585,10 @@
   ;; Install magit-auto-commit
   (with-eval-after-load 'transient
     (transient-append-suffix 'magit-commit #'magit-commit-create
-      '("a" "Auto (but fixed) commit" (lambda (&optional args)
-                                        (interactive (list (magit-commit-arguments)))
-                                        (let ((message "chore: stale - work still in progress"))
-                                          (magit-commit-create (append args `("--message" ,message "--edit")))))))
+      '("W" "WIP commit" (lambda (&optional args)
+                           (interactive (list (magit-commit-arguments)))
+                           (let ((message "chore: stale - work still in progress"))
+                             (magit-commit-create (append args `("--message" ,message "--edit")))))))
     )
   )
 
@@ -560,11 +609,6 @@
     (interactive)
     (let ((current-prefix-arg ""))
       (call-interactively 'eat)))
-
-  (general-define-key
-   :states 'normal
-   :keymaps 'eat-mode-map
-   "p"   #'eat-yank)
   )
 
 (use-package helpful
@@ -577,28 +621,20 @@
   (popwin:special-display-config
    '(
      ;; emacs-builtin
-     ("*xref*" :position bottom :position bottom :stick t :dedicated t)
+     ("*xref*" :position bottom :stick t :dedicated t)
      ("*Messages*" :position bottom :stick t :dedicated t)
-     ("*scratch*" :position bottom :stick t :dedicated t)
      ;; help
-     ("*Multiple Choice Help*" :position bottom :position bottom :stick t :dedicated t)
+     ("*Multiple Choice Help*" :position bottom :stick t :dedicated t)
      (help-mode :position bottom :stick t :dedicated t)
      (helpful-mode :position bottom :stick t :dedicated t)
      ;; flycheck
      ("*Flycheck errors*" :position bottom :stick t :dedicated t)
      ;; llm-related
      ("*LLM response*" :position bottom :stick t :dedicated t)
-     ;; ((lambda (b) ; predicate for gptel buffer
-     ;;    ;; NOTE: buffer check is required (#450)
-     ;;    (and-let* ((buf (get-buffer (or (car-safe b) b))))
-     ;;      (buffer-local-value 'gptel-mode buf)))
-     ;; :position bottom :stick t :tail t :dedicated t)
-     ;; (agent-shell-mode :position bottom :stick t :dedicated t)
      ;; org-related
-     ("*Org Agenda*" :position bottom :position bottom :stick t :dedicated t)
-     ("*Org Select*" :position bottom :position bottom :stick t :dedicated t)
-     ("CAPTURE-inbox.org" :position bottom :position bottom :stick t :dedicated t)
-     (org-gtd-clarify-mode :position bottom :position bottom :stick t :dedicated t)
+     ("*Org Select*" :position bottom :stick t :dedicated t)
+     ("CAPTURE-inbox.org" :position bottom :stick t :dedicated t)
+     (org-gtd-clarify-mode :position bottom :stick t :dedicated t)
      ;; (compilation-mode :position bottom :position bottom :stick t :dedicated t)
      ;; (comint-mode :position bottom :position bottom :stick t :dedicated t)
      ;; ("^\\*eshell\\*.*" :regexp t :position bottom :stick t :dedicated t)
@@ -616,5 +652,8 @@
   :custom
   (envrc-remote t)
   :hook (after-init . envrc-global-mode))
+
+(use-package crux
+  :ensure t)
 
 (provide 'init-core)
