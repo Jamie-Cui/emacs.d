@@ -802,6 +802,26 @@ When TRAILING is non-nil, also require a trailing slash."
   (setq xenops-math-latex-process-alist org-preview-latex-process-alist)
   (add-hook 'org-mode-hook #'xenops-mode)
   (setq xenops-math-latex-process 'xdvisvgm) ; HACK or, ximagemagick
+  (defun fn/xenops-math-display-image-set-svg-foreground (element &rest _)
+    "Use SVG's standard initial foreground for Xenops math images."
+    (let ((beg (plist-get element :begin))
+          (end (plist-get element :end)))
+      (when (and beg end)
+        (dolist (ov (overlays-in beg end))
+          (let ((display (overlay-get ov 'display)))
+            (when (and (eq (overlay-get ov 'xenops-overlay-type) 'xenops-overlay)
+                       (consp display)
+                       (eq (car display) 'image)
+                       (eq (plist-get (cdr display) :type) 'svg))
+              (overlay-put
+               ov 'display
+               (cons 'image
+                     (plist-put (copy-sequence (cdr display))
+                                :foreground "black")))))))))
+  (unless (advice-member-p #'fn/xenops-math-display-image-set-svg-foreground
+                           'xenops-math-display-image)
+    (advice-add 'xenops-math-display-image
+                :after #'fn/xenops-math-display-image-set-svg-foreground))
   (defun fn/xenops-src-parse-at-point ()
     (-if-let*
         ((element (xenops-parse-element-at-point 'src))
