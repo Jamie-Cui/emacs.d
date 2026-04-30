@@ -143,8 +143,9 @@
    "C--"     #'text-scale-decrease ; buffer-local
    "C-="     #'text-scale-increase ; buffer-local
    "C-0"     #'(lambda () (interactive) (text-scale-adjust 0))
-   "C-+"     #'cnfonts-increase-fontsize ; global
-   "C-_"     #'cnfonts-decrease-fontsize ; global
+   "C-M--"   #'cnfonts-increase-fontsize ; global
+   "C-M-="   #'cnfonts-decrease-fontsize ; global
+   "C-M-0"   #'cnfonts-reset-fontsize ; global
    )
 
   ;; ** Global Keybindings
