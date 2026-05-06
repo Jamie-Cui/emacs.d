@@ -207,6 +207,11 @@ Returns DIR after ensuring it exists."
   :config
   (keyfreq-autosave-mode 1))
 
+(use-package flycheck-rust
+  :ensure t
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
 ;;; -----------------------------------------------------------
 ;;; DONE flycheck-google-cpplint
 ;;; -----------------------------------------------------------
