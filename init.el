@@ -166,6 +166,7 @@ Returns DIR after ensuring it exists."
 ;; Advanced features
 (require 'init-llm)
 (require 'init-org)
+;; (require 'init-email)
 
 ;; LaTeX support (GUI only)
 (when (display-graphic-p)
@@ -206,6 +207,11 @@ Returns DIR after ensuring it exists."
   :hook (after-init . keyfreq-mode)
   :config
   (keyfreq-autosave-mode 1))
+
+(use-package flycheck-rust
+  :ensure t
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 ;;; -----------------------------------------------------------
 ;;; DONE flycheck-google-cpplint
@@ -394,15 +400,33 @@ Returns DIR after ensuring it exists."
                           :enable t
                           :type (:@type "proxyTypeSocks5"))))))
 
-(+use-package-when-dir-exists magent
-    (concat +emacs/repo-directory "/site-lisp/magent")
+(use-package magent
+  :vc (:url "https://github.com/Jamie-Cui/magent" :rev "master")
+  :ensure t
   :after gptel spinner
   :demand t
   :custom
   (magent-skill-directories (list (expand-file-name "skills" +emacs/repo-directory)))
   (magent-by-pass-permission t)
   ;; (magent-ui-wrap-reasoning-in-think-block nil)
+  :init
+  (let ((had-evil-define-key (fboundp 'evil-define-key))
+        (evil-define-key-function (and (fboundp 'evil-define-key)
+                                       (symbol-function 'evil-define-key))))
+    (unwind-protect
+        (progn
+          (when (and (macrop 'evil-define-key)
+                     (fboundp 'evil-define-key*))
+            (fset 'evil-define-key
+                  (lambda (state keymap key def &rest bindings)
+                    (apply #'evil-define-key*
+                           state keymap key def bindings))))
+          (require 'magent))
+      (if had-evil-define-key
+          (fset 'evil-define-key evil-define-key-function)
+        (fmakunbound 'evil-define-key))))
   :config
+  (require 'magent-config)
   (global-magent-mode 1)
 
   ;; keybindings that should not be overriden
@@ -428,18 +452,19 @@ Returns DIR after ensuring it exists."
 ;; NOTE install this first
 ;; https://github.com/mozilla/geckodriver/releases
 ;; cargo install geckodriver
-(+use-package-when-dir-exists overleaf-project
-    (concat +emacs/repo-directory "/site-lisp/overleaf-project")
+(use-package overleaf-project
+  :vc (:url "https://github.com/Jamie-Cui/overleaf-project" :rev "main")
+  :ensure t
   :demand t
   :custom
   (overleaf-project-cookie-storage 'authinfo)
   :config
   (with-eval-after-load 'magit
-    (require 'overleaf-project-magit)
-    (overleaf-project-magit-setup)))
+    (when (require 'overleaf-project-magit nil t)
+      (overleaf-project-magit-setup))))
 
-;; (+use-package-when-dir-exists edraw
-;;     (concat +emacs/repo-directory "/site-lisp/el-easydraw")
+;; (use-package edraw
+;;   :vc (:url "https://github.com/misohena/el-easydraw.git")
 ;;   :after org
 ;;   :demand t
 ;;   :config
