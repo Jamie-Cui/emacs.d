@@ -351,6 +351,8 @@ Returns DIR after ensuring it exists."
   (elfeed-enclosure-default-dir (concat user-emacs-directory "elfeed/enclosure/"))
   (elfeed-search-filter "") ; startup with no filter
   (elfeed-feeds '(
+                  ;; my paper feeds
+                  ("https://jamie-cui.github.io/paper-feeds/feed.xml")
                   ;; Emacs life
                   ("https://planet.emacslife.com/atom.xml")
                   ;; Emacs China

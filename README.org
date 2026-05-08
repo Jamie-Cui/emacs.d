@@ -57,7 +57,7 @@ wget -c https://github.com/emacs-mirror/emacs/archive/refs/heads/scratch/tty-chi
 # (alt) configure terminal emacs
 ./configure --with-native-compilation --with-tree-sitter --with-gnutls --without-x-toolkit --without-xpm --without-gif --without-tiff --with-sqlite3
 # (alt) configure gui emacs
-./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-x-toolkit
+./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-x-toolkit --with-pgtk
 # compile
 sudo make install
 #+end_src
