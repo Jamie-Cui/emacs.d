@@ -412,6 +412,7 @@ Returns DIR after ensuring it exists."
   (magent-by-pass-permission t)
   ;; (magent-ui-wrap-reasoning-in-think-block nil)
   :init
+  (require 'magit)
   (let ((had-evil-define-key (fboundp 'evil-define-key))
         (evil-define-key-function (and (fboundp 'evil-define-key)
                                        (symbol-function 'evil-define-key))))
