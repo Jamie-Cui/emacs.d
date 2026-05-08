@@ -1,0 +1,439 @@
+#+title: Emacs + Outlook.com 个人帐号邮件配置
+#+startup: showall
+
+* 目标
+
+这份文档只针对 Microsoft 个人帐号，例如 =@outlook.com=、=@hotmail.com=、
+=@live.com=，以及挂在 Microsoft 个人帐号上的别名。
+
+最后的结构是：
+
+#+begin_src text
+收信：Outlook.com -> mbsync -> ~/.maildir/outlook -> mu/mu4e -> Emacs
+发信：Emacs/mu4e -> msmtp -> Outlook.com SMTP
+认证：mbsync/msmtp -> refresh-token -> Microsoft OAuth2
+#+end_src
+
+这里最重要的一点是：不要把 Microsoft 密码写进任何配置文件。Microsoft
+个人帐号现在应该走 OAuth2/Modern Auth。=mbsync= 和 =msmtp= 需要的不是
+帐号密码，而是一个短期 access token。
+
+* 你需要准备的帐号信息
+
+后面的配置里会出现这些占位符：
+
+- =YOUR_EMAIL=：你的完整 Microsoft 邮箱地址，例如 =name@outlook.com=。
+- =YOUR_NAME=：发信时显示的名字。
+- =YOUR_CLIENT_ID=：你在 Microsoft Entra / Azure Portal 里注册出来的
+  Application client ID。
+
+把示例里的这三个值替换成你自己的值。
+
+* 需要安装的额外依赖
+
+必须安装：
+
+- =isync=：提供 =mbsync=，负责把 Outlook.com 的 IMAP 邮件同步到本地。
+- =msmtp=：负责从 Emacs 发邮件。
+- =mu= / =mu4e=：=mu= 负责索引本地 Maildir，=mu4e= 是 Emacs 里的邮件界面。
+- =python3= 和 =pipx=：用来安装 OAuth token helper。
+- =m365auth=：推荐的 Microsoft OAuth token helper，提供 =get-token= 和
+  =refresh-token= 命令。
+
+可选但推荐：
+
+- Linux 图形桌面：=gnome-keyring= / =libsecret=，让 =m365auth= 把 refresh
+  token 放进系统 keyring。
+- macOS：系统自带 Keychain，一般不需要额外装。
+- =gpg=：如果你不用 =m365auth=，而改用 =mutt_oauth2.py=，就需要 GPG
+  加密 token 文件。
+
+安装示例：
+
+#+begin_src bash
+# Fedora
+sudo dnf install isync msmtp maildir-utils python3 python3-pip pipx gnome-keyring libsecret
+pipx ensurepath
+pipx install m365auth
+
+# Ubuntu / Debian
+sudo apt install isync msmtp maildir-utils mu4e python3 python3-pip pipx gnome-keyring libsecret-tools
+pipx ensurepath
+pipx install m365auth
+
+# macOS
+brew install isync msmtp mu pipx
+pipx ensurepath
+pipx install m365auth
+#+end_src
+
+安装后确认这些命令存在：
+
+#+begin_src bash
+mbsync --version
+msmtp --version
+mu --version
+refresh-token --help
+#+end_src
+
+如果 =mu4e= 在 Emacs 里找不到，通常是 =mu= 的 Emacs lisp 路径没有进
+=load-path=。本仓库的 =lisp/init-email.el= 已经尝试加入常见路径：
+
+- =/usr/share/emacs/site-lisp/mu4e=
+- =/usr/local/share/emacs/site-lisp/mu4e=
+- =/opt/homebrew/share/emacs/site-lisp/mu/mu4e=
+- =/usr/local/share/emacs/site-lisp/mu/mu4e=
+
+* 打开 Outlook.com 的 IMAP
+
+登录 Outlook.com 网页版，然后打开：
+
+#+begin_src text
+Settings -> Mail -> Forwarding and IMAP -> Let devices and apps use IMAP
+#+end_src
+
+如果网页界面是中文，大概是：
+
+#+begin_src text
+设置 -> 邮件 -> 转发和 IMAP -> 允许设备和应用使用 IMAP
+#+end_src
+
+Outlook.com 个人帐号使用这些服务器：
+
+#+begin_src text
+IMAP: outlook.office365.com
+Port: 993
+Encryption: SSL/TLS
+Auth: OAuth2 / XOAUTH2
+
+SMTP: smtp-mail.outlook.com
+Port: 587
+Encryption: STARTTLS
+Auth: OAuth2 / XOAUTH2
+#+end_src
+
+* 注册 Microsoft OAuth 应用
+
+=m365auth= 需要一个 =ClientId=。这是 Microsoft 的要求：OAuth 应用要先在
+Microsoft Entra / Azure Portal 注册。
+
+1. 打开 Azure Portal 的 App registrations：
+   https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade
+2. 点 =New registration=。
+3. =Name= 写一个自己能认出来的名字，例如 =Emacs Mail=。
+4. =Supported account types= 选择支持个人 Microsoft 帐号的选项。通常选择：
+   =Accounts in any organizational directory and personal Microsoft accounts=。
+   如果界面里有 =Personal Microsoft accounts only=，也可以选这个。
+5. =Redirect URI= 选择 =Web=，地址写：
+
+   #+begin_src text
+   https://localhost:7598
+   #+end_src
+
+6. 创建后，在 =Overview= 页面复制 =Application (client) ID=。这个值就是
+   =YOUR_CLIENT_ID=。
+
+如果 Portal 要你配置 API permissions，添加 delegated permissions：
+
+- =https://outlook.office.com/IMAP.AccessAsUser.All=
+- =https://outlook.office.com/SMTP.Send=
+
+=m365auth= 的 =mail= profile 也会主动请求这两个 scope。=offline_access=
+也需要一起请求，因为它让工具拿到 refresh token，以后可以自动刷新 access
+token，不用每小时重新登录。
+
+* 配置 m365auth
+
+先让 =m365auth= 生成默认配置：
+
+#+begin_src bash
+get-token --profile mail
+#+end_src
+
+第一次运行可能会提示缺少 =ClientId=，并生成配置文件。编辑它：
+
+#+begin_src bash
+$EDITOR ~/.config/m365auth/config.py
+#+end_src
+
+至少确认里面有这些内容：
+
+#+begin_src python
+ClientId = "YOUR_CLIENT_ID"
+Authority = "https://login.microsoftonline.com/common"
+
+Profiles = {
+    "mail": {
+        "scopes": [
+            "offline_access",
+            "https://outlook.office.com/IMAP.AccessAsUser.All",
+            "https://outlook.office.com/SMTP.Send",
+        ],
+    },
+}
+#+end_src
+
+保存后重新登录：
+
+#+begin_src bash
+get-token --profile mail
+#+end_src
+
+它会打开浏览器。用你的 Microsoft 个人帐号登录，也就是 =YOUR_EMAIL= 对应的
+帐号。登录成功后，refresh token 会放到系统 keyring 或 =m365auth= 的本地
+fallback 存储里。
+
+确认 token helper 能输出 access token：
+
+#+begin_src bash
+refresh-token --profile mail
+#+end_src
+
+如果输出一长串 token，就说明 OAuth 这一步好了。
+
+* 配置 mbsync 收信
+
+创建本地 Maildir 目录：
+
+#+begin_src bash
+mkdir -p ~/.maildir/outlook
+chmod 700 ~/.maildir ~/.maildir/outlook
+#+end_src
+
+写入 =~/.mbsyncrc=：
+
+#+begin_src conf
+IMAPAccount outlook
+Host outlook.office365.com
+Port 993
+User YOUR_EMAIL
+PassCmd "refresh-token --profile mail"
+AuthMechs XOAUTH2
+TLSType IMAPS
+PipelineDepth 1
+
+IMAPStore outlook-remote
+Account outlook
+
+MaildirStore outlook-local
+SubFolders Verbatim
+Path ~/.maildir/outlook/
+Inbox ~/.maildir/outlook/INBOX
+
+Channel outlook
+Far :outlook-remote:
+Near :outlook-local:
+Patterns *
+Create Near
+SyncState *
+#+end_src
+
+设置权限：
+
+#+begin_src bash
+chmod 600 ~/.mbsyncrc
+#+end_src
+
+先只列出远端文件夹：
+
+#+begin_src bash
+mbsync -l outlook
+#+end_src
+
+然后开始同步：
+
+#+begin_src bash
+mbsync outlook
+#+end_src
+
+如果同步成功，会在 =~/.maildir/outlook= 下看到 =INBOX=、=Sent Items=、
+=Deleted Items=、=Archive= 等目录。实际目录名以 =mbsync -l outlook= 输出为准。
+如果你的帐号显示的目录名不是英文，后面 Emacs 的文件夹变量也要一起改。
+
+* 配置 msmtp 发信
+
+写入 =~/.msmtprc=：
+
+#+begin_src conf
+defaults
+tls on
+tls_starttls on
+logfile ~/.maildir/msmtp.log
+
+account outlook
+host smtp-mail.outlook.com
+port 587
+auth xoauth2
+from YOUR_EMAIL
+user YOUR_EMAIL
+passwordeval "refresh-token --profile mail"
+
+account default : outlook
+#+end_src
+
+设置权限：
+
+#+begin_src bash
+chmod 600 ~/.msmtprc
+#+end_src
+
+测试发一封邮件给自己：
+
+#+begin_src bash
+printf 'Subject: msmtp test\n\nhello from msmtp\n' | msmtp --debug --from=YOUR_EMAIL YOUR_EMAIL
+#+end_src
+
+如果 =smtp-mail.outlook.com= 发信失败，可以试一下把 host 改成：
+
+#+begin_src conf
+host smtp.office365.com
+#+end_src
+
+Outlook.com 官方个人帐号文档写的是 =smtp-mail.outlook.com=，但一些 OAuth 工具和
+Microsoft 365 示例会使用 =smtp.office365.com=。
+
+* 初始化 mu 索引
+
+第一次同步成功后运行：
+
+#+begin_src bash
+mu init --maildir ~/.maildir --my-address YOUR_EMAIL
+mu index
+#+end_src
+
+以后 =mu4e= 会通过 =mbsync outlook= 更新邮件，并让 =mu= 重新索引。
+
+* 配置 Emacs 帐号信息
+
+本仓库已经新增 =lisp/init-email.el=，并在 =init.el= 里加载它。你只需要在
+真正加载本仓库配置之前设置邮箱地址和名字。
+
+如果你的 =~/.emacs.d/init.el= 是这种形式：
+
+#+begin_src elisp
+(defvar +emacs/repo-directory "~/Desktop/emacs.d")
+(load (concat +emacs/repo-directory "/init.el"))
+#+end_src
+
+改成：
+
+#+begin_src elisp
+(setq +email/outlook-address "YOUR_EMAIL"
+      +email/outlook-full-name "YOUR_NAME")
+
+(defvar +emacs/repo-directory "~/Desktop/emacs.d")
+(load (concat +emacs/repo-directory "/init.el"))
+#+end_src
+
+也可以不用 Emacs Lisp 变量，改用环境变量：
+
+#+begin_src bash
+export OUTLOOK_EMAIL=YOUR_EMAIL
+export OUTLOOK_FULL_NAME="YOUR_NAME"
+#+end_src
+
+然后重新启动 Emacs。
+
+* 在 Emacs 里使用
+
+启动 Emacs 后：
+
+#+begin_src text
+M-x mu4e
+#+end_src
+
+本仓库还给 =SPC E= 绑定了 =mu4e=。
+
+常见操作：
+
+- 打开 mu4e 后按 =U= 更新邮件。
+- 写邮件用 =C= 或 =M-x mu4e-compose-new=。
+- 发送邮件会调用 =msmtp=。
+- 移动、归档、删除邮件后，再更新一次，会通过 =mbsync= 同步回 Outlook.com。
+
+* 如果文件夹名不一样
+
+=lisp/init-email.el= 默认按 Outlook.com 常见英文文件夹配置：
+
+#+begin_src elisp
+(+email/outlook-drafts-folder-name . "Drafts")
+(+email/outlook-sent-folder-name . "Sent Items")
+(+email/outlook-trash-folder-name . "Deleted Items")
+(+email/outlook-refile-folder-name . "Archive")
+#+end_src
+
+如果 =mbsync -l outlook= 输出的是别的名字，在加载本仓库配置前覆盖这些变量：
+
+#+begin_src elisp
+(setq +email/outlook-address "YOUR_EMAIL"
+      +email/outlook-full-name "YOUR_NAME"
+      +email/outlook-sent-folder-name "Sent"
+      +email/outlook-trash-folder-name "Deleted"
+      +email/outlook-refile-folder-name "Archive")
+#+end_src
+
+* 常见问题
+
+** =refresh-token --profile mail= 报错
+
+先重新跑：
+
+#+begin_src bash
+get-token --profile mail
+#+end_src
+
+确认你登录的是 =YOUR_EMAIL= 对应的 Microsoft 个人帐号，而不是另一个浏览器里
+已经登录的工作帐号。
+
+** =mbsync= 说认证失败
+
+检查：
+
+- Outlook.com 网页里 IMAP 是否已打开。
+- =~/.mbsyncrc= 里的 =User= 是否是完整邮箱地址。
+- =PassCmd "refresh-token --profile mail"= 单独运行是否能输出 token。
+- Microsoft App 的 scope 是否包含 =IMAP.AccessAsUser.All=。
+
+** =msmtp= 发信认证失败
+
+检查：
+
+- =~/.msmtprc= 里 =auth xoauth2= 是否存在。
+- =passwordeval= 是否能输出 token。
+- Microsoft App 的 scope 是否包含 =SMTP.Send=。
+- 尝试在 =smtp-mail.outlook.com= 和 =smtp.office365.com= 之间切换。
+
+** 发出去的邮件重复出现在已发送
+
+本仓库默认设置了：
+
+#+begin_src elisp
+(mu4e-sent-messages-behavior 'delete)
+#+end_src
+
+意思是发信后让 Outlook.com 自己保存已发送邮件，mu4e 不再本地额外存一份。
+如果你发现网页 Outlook 里没有已发送邮件，再把这个变量改掉。
+
+** 删除邮件不会真的删除
+
+=mbsync= 默认不会自动 expunge，这是比较保守的行为。确认配置稳定后，如果你希望
+本地删除能更直接地反映到远端，可以在 =Channel outlook= 里加：
+
+#+begin_src conf
+Expunge Both
+#+end_src
+
+加之前建议先备份重要邮件，或者先只用默认配置跑一段时间。
+
+* 参考
+
+- Microsoft Outlook.com IMAP/SMTP settings:
+  https://support.microsoft.com/en-gb/office/pop-imap-and-smtp-settings-for-outlook-com-d088b986-291d-42b8-9564-9c414e2aa040
+- Microsoft OAuth for IMAP/POP/SMTP:
+  https://learn.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth
+- mbsync manual:
+  https://isync.sourceforge.io/mbsync.html
+- msmtp manual:
+  https://marlam.de/msmtp/msmtp.html
+- m365auth:
+  https://pypi.org/project/m365auth/

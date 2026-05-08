@@ -86,8 +86,9 @@
   :config
   (defconst my-leader "SPC")
 
-  (general-create-definer +my-leader-def
-    :prefix my-leader)
+  (defun +my-leader-def (&rest args)
+    "Define key bindings under `my-leader' with `general-define-key'."
+    (apply #'general-define-key :prefix my-leader args))
 
   ;; HACK Separate TAB and C-i in GUI emacs
   ;; FIXME the following code breaks citar-insert-citation when

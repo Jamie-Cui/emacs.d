@@ -339,17 +339,21 @@ has no direct `citar--resource', so we look it up via `multi-category'."
 
 ;; utility function
 (defun +latex/isolate-sentence ()
-  "Replace '. ' with '.\n%\n' in the selected region, similar to Vim's :'<,'>s/\. /.\n%\n/g."
+  "Insert a TeX comment line between sentences in the selected region."
   (interactive)
   (if (use-region-p)
       (let ((start (region-beginning))
-            (end (region-end)))
+            (end (copy-marker (region-end) t)))
         (save-excursion
           (goto-char start)
-          (while (search-forward ". " end t)
-            (replace-match ".\n%\n" nil t))))
-    (message "No region selected!"))
-  (message "Replacement done!"))
+          (while (re-search-forward "\\.\\(?:[ \t]+\\|\n\\)" end t)
+            (unless (save-excursion
+                      (skip-chars-forward " \t")
+                      (looking-at-p "%"))
+              (replace-match ".\n%\n" nil t))))
+        (set-marker end nil)
+        (message "Replacement done!"))
+    (message "No region selected!")))
 
 ;; Configure uniquification (appends a/b/c for duplicates)
 (setopt bibtex-autokey-name-case-convert-function #'upcase)
