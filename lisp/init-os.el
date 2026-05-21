@@ -2,43 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package sis
+(use-package rime
   :ensure t
-  :config
-  (setq sis-auto-refresh-seconds nil)
-
-  ;; GNU/Linux - ibus
-  (when (eq system-type 'gnu/linux)
-    ;; (sis-ism-lazyman-config "xkb:us::eng" "OTHER_INPUT_SOURCE" 'ibus)
-    (sis-ism-lazyman-config "2" "1" 'fcitx5)
-    )
-
-  ;; Macos (auto-config, no extra effort needed)
-  ;;
-  ;; brew tap laishulu/homebrew
-  ;; brew install macism
-  ;;
-  (when (eq system-type 'darwin)
-    (sis-ism-lazyman-config
-     "com.apple.keylayout.ABC"
-     "com.apple.inputmethod.SCIM.ITABC")
-
-    ;; fix macos display issue
-    (setq frame-resize-pixelwise t)
-    )
-
-  ;; windows (auto-config, no extra effort needed)
-  ;; (when (eq system-type 'windows-nt))
-
-  ;; enable the /cursor color/ mode
-  ;; (sis-global-cursor-color-mode t)
-  ;; enable the /respect/ mode
-  (sis-global-respect-mode t)
-  ;; enable the /context/ mode for all buffers
-  ;; (sis-global-context-mode t)
-  ;; enable the /inline english/ mode for all buffers
-  ;; (sis-global-inline-mode t)
-  )
+  :if (eq system-type 'gnu/linux)
+  :custom
+  (default-input-method "rime")
+  (rime-user-data-dir "~/opt/dotfiles/rime"))
 
 ;;; --------------------------------------
 ;;; Darwin (MacOs)

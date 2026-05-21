@@ -56,10 +56,14 @@ wget -c https://github.com/emacs-mirror/emacs/archive/refs/heads/scratch/tty-chi
 ./autogen.sh
 # (opt) configure terminal emacs
 ./configure --with-native-compilation --with-tree-sitter --with-gnutls --without-x-toolkit --without-xpm --without-gif --without-tiff --with-sqlite3 --without-pop --without-mailutils
-# (opt) configure gui emacs with tiling window manager
-./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-x-toolkit --without-pop --without-mailutils
+# (opt) configure gui emacs with tiling window manager (WARNING: fcitx will not be avaliable inside emacs)
+./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-pop --without-mailutils --without-x-toolkit
+# (opt) configure gui emacs with gtk3 x toolkit
+./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-pop --without-mailutils --with-x-toolkit=gtk3
+# (opt) configure gui emacs with lucid x toolkit
+./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-pop --without-mailutils --with-x-toolkit=lucid
 # (TODO) MacOS?
-./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-pop --without-mailutils
+./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-pop --without-mailutils --with-x-toolkit
 # compile
 sudo make install
 #+end_src

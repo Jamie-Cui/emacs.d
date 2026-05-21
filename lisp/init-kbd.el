@@ -108,6 +108,8 @@
    :keymaps 'override
    "M-RET"   #'completion-at-point ;; FIXME org-mode should not use that
    "C-M-<return>" #'completion-at-point ; alternative
+   ;; HACK change default toggle input method (this may has conflict with system-wide kbd)
+   "C-SPC"   #'toggle-input-method ; alternative
    ;; more-frequent commands
    "M-y"     #'yas-expand
    "M-p"     #'+compile-with-no-preset ; just like vscode
@@ -151,166 +153,166 @@
 
   ;; ** Global Keybindings
   (+my-leader-def
-    :states '(normal visual motion)
-    :keymaps 'override ; prevent from being override
-    ;; application keys
-    "A"      #'agent-shell ;; A -> Agent Shell
-    "D"      #'docker
-    "G"      #'gptel  ;; G -> Gptel
-    "M"      #'magent-dwim ;; M -> Magent
-    "T"      #'telega ;; T -> Telegram
-    ;; most-frequency keys
-    "."      #'find-file
-    "<"      #'consult-buffer
-    ","      #'consult-project-buffer
-    "/"      #'+vertico/project-search
-    "TAB"    #'evil-switch-to-windows-last-buffer
-    "SPC"    #'projectile-find-file
-    ;; action-related key bindings
-    "a" '(:ignore t :which-key "actions")
-    "a RET"  #'embark-dwim
-    "aa"     #'embark-act
-    "ay"     #'embark-org-copy-link-target
-    "aY"     #'embark-org-copy-link-description
-    ;; window-related key bindings
-    "w" '(:ignore t :which-key "window")
-    "wh"     #'evil-window-left
-    "wj"     #'evil-window-down
-    "wk"     #'evil-window-up
-    "wl"     #'evil-window-right
-    "ww"     #'other-window
-    "wx"     #'evil-window-exchange
-    "wd"     #'delete-window
-    "wr"     #'balance-windows
-    "ws"     #'+evil/window-split-and-follow
-    "wv"     #'+evil/window-vsplit-and-follow
-    "wm"     #'delete-other-windows
-    "wR"     #'redraw-display
-    ;; buffer-related key bindings
-    "b" '(:ignore t :which-key "buffer")
-    "ba"     #'evil-buffer-new
-    "bn"     #'evil-buffer-new ; alias
-    "bd"     #'kill-current-buffer
-    "bs"     #'save-buffer
-    "bS"     #'+save-all-buffers
-    "by"     #'+copy-buffer-file-name
-    "br"     #'+kbd/revert-buffer-no-confirm
-    "j" '(:ignore t :which-key "jump (bookmark)")
-    "j RET"  #'consult-bookmark
-    "jj"     #'consult-bookmark
-    "ja"     #'bookmark-set
-    "jx"     #'bookmark-delete
-    ;; open-related key bindings
-    "o" '(:ignore t :which-key "open")
-    "oo"     #'crux-open-with
-    "oe"     #'elfeed
-    "oE"     #'ielm ; elisp repl
-    "og"     #'magit-status-quick
-    "op"     #'dired-sidebar-toggle-sidebar
-    "oP"     #'proced
-    "od"     #'dired-jump
-    "oD"     #'+os-explorer/dwim
-    "ot"     #'+eshell/new
-    "oT"     #'+eat/new
-    "ox"     #'scratch-buffer
-    "om"     #'popwin:messages
-    ;; project-related key bindings
-    "p" '(:ignore t :which-key "project")
-    "pp"     #'projectile-switch-project
-    "pq"     #'+kbd/persp-kill-current
-    "pa"     #'projectile-add-known-project
-    "px"     #'projectile-remove-known-project
-    "pg"     #'projectile-cleanup-known-projects
-    "pi"     #'projectile-invalidate-cache
-    "pc"     #'projectile-compile-project
-    "pC"     #'projectile-configure-project
-    "pd"     #'projectile-remove-known-project
-    "pD"     #'projectile-run-gdb
-    "pf"     #'+vertico/project-search
-    "po"     #'ff-find-related-file
-    "pr"     #'projectile-run-project
-    "pt"     #'projectile-test-project
-    ;; note functions
-    "n" '(:ignore t :which-key "note")
-    "na"      #'org-agenda-list
-    "n@"      #'citar-insert-citation
-    "nb"      #'citar-open
-    "nB"      #'ebib
-    "nc"      #'+org-project-capture-select-project
-    "nt"      #'org-project-todo-list
-    "nj"      #'org-journal-new-entry
-    "nl"      #'org-insert-link
-    "ny"      #'org-store-link
-    "np"      #'+org-project-consult-notes
-    "nd"      #'org-deft-org
-    "nD"      #'org-deft-tex
-    "nq"      #'org-set-tags-command
-    "nT" '(:ignore t :which-key "timer")
-    "nTa"     #'org-timer-set-timer ; add timer
-    "nT RET"  #'org-timer-pause-or-continue ; pause or continue
-    "nTd"     #'org-timer-stop ; delete timer
-    "nr" '(:ignore t :which-key "org-roam")
-    "nra"     #'org-roam-alias-add
-    "nrf"     #'org-roam-node-find
-    "nri"     #'org-roam-node-insert
-    "nrs"     #'org-roam-db-sync
-    "nrq"     #'org-roam-tag-add
-    "nrc"     #'org-roam-db-clear-all
-    "nx" '(:ignore t :which-key "xenops")
-    "nxe"     #'xenops-reveal ; edit
-    "nxy"     #'xenops-copy-at-point ; yank
-    "nxr"     #'xenops-regenerate ; regenerate
-    ;; help functions
-    "h" '(:ignore t :which-key "help")
-    "h RET"  #'helpful-at-point
-    "hf"     #'helpful-callable
-    "hF"     #'helpful-function
-    "hk"     #'helpful-key
-    "hv"     #'helpful-variable
-    "hm"     #'describe-mode
-    "hp" '(:ignore t :which-key "profiler")
-    "hps"    #'profiler-start
-    "hpk"    #'profiler-stop
-    "hpr"    #'profiler-report
-    ;; quit emacs
-    "q" '(:ignore t :which-key "quit")
-    "qq"     #'save-buffers-kill-terminal
-    "qr"     #'restart-emacs
-    ;; toggles
-    "t" '(:ignore t :which-key "toggle")
-    "td"     #'toggle-debug-on-error
-    "tb"     #'magit-blame-addition
-    "tf"     #'toggle-frame-maximized
-    "tF"     #'toggle-frame-fullscreen
-    "tt"     #'toggle-truncate-lines
-    "tn"     #'display-line-numbers-mode
-    "ta"     #'+treesit-auto/toggle
-    "tm"     #'org-toggle-inline-images
-    ;; code (lsp/tags)
-    "c" '(:ignore t :which-key "code")
-    "c RET"  #'eglot
-    "cx"     #'list-flycheck-errors
-    "ca"     #'eglot-code-actions
-    "cr"     #'eglot-rename
-    "ci"     #'eglot-inlay-hints-mode
-    "cf"     #'eglot-format-buffer
-    "ct"     #'citre-update-this-tags-file
-    "cj"     #'consult-eglot-symbols
-    "cl"     #'eglot-list-connections
-    "cq"     #'eglot-shutdown
-    ;; find
-    "f" '(:ignore t :which-key "find")
-    "fr"     #'consult-recent-file ; find recent file (globally)
-    "fb"     #'consult-buffer
-    "fB"     #'consult-bookmark ; find recent file (globally)
-    "ff"     #'consult-fd ; find file (in this directory)
-    "fF"     #'consult-locate ; find file (system wide)
-    "fm"     #'consult-man
-    "fM"     #'consult-woman
-    "fh"     #'consult-history ; find history
-    "fp"     #'+kbd/find-private-config ; find private emacs config
-    "fP"     #'+kbd/find-user-emacs-config ; find private emacs config in .emacs.d
-    )
+   :states '(normal visual motion)
+   :keymaps 'override ; prevent from being override
+   ;; application keys
+   "A"      #'agent-shell ;; A -> Agent Shell
+   "D"      #'docker
+   "G"      #'gptel  ;; G -> Gptel
+   "M"      #'magent-dwim ;; M -> Magent
+   "T"      #'telega ;; T -> Telegram
+   ;; most-frequency keys
+   "."      #'find-file
+   "<"      #'consult-buffer
+   ","      #'consult-project-buffer
+   "/"      #'+vertico/project-search
+   "TAB"    #'evil-switch-to-windows-last-buffer
+   "SPC"    #'projectile-find-file
+   ;; action-related key bindings
+   "a" '(:ignore t :which-key "actions")
+   "a RET"  #'embark-dwim
+   "aa"     #'embark-act
+   "ay"     #'embark-org-copy-link-target
+   "aY"     #'embark-org-copy-link-description
+   ;; window-related key bindings
+   "w" '(:ignore t :which-key "window")
+   "wh"     #'evil-window-left
+   "wj"     #'evil-window-down
+   "wk"     #'evil-window-up
+   "wl"     #'evil-window-right
+   "ww"     #'other-window
+   "wx"     #'evil-window-exchange
+   "wd"     #'delete-window
+   "wr"     #'balance-windows
+   "ws"     #'+evil/window-split-and-follow
+   "wv"     #'+evil/window-vsplit-and-follow
+   "wm"     #'delete-other-windows
+   "wR"     #'redraw-display
+   ;; buffer-related key bindings
+   "b" '(:ignore t :which-key "buffer")
+   "ba"     #'evil-buffer-new
+   "bn"     #'evil-buffer-new ; alias
+   "bd"     #'kill-current-buffer
+   "bs"     #'save-buffer
+   "bS"     #'+save-all-buffers
+   "by"     #'+copy-buffer-file-name
+   "br"     #'+kbd/revert-buffer-no-confirm
+   "j" '(:ignore t :which-key "jump (bookmark)")
+   "j RET"  #'consult-bookmark
+   "jj"     #'consult-bookmark
+   "ja"     #'bookmark-set
+   "jx"     #'bookmark-delete
+   ;; open-related key bindings
+   "o" '(:ignore t :which-key "open")
+   "oo"     #'crux-open-with
+   "oe"     #'elfeed
+   "oE"     #'ielm ; elisp repl
+   "og"     #'magit-status-quick
+   "op"     #'dired-sidebar-toggle-sidebar
+   "oP"     #'proced
+   "od"     #'dired-jump
+   "oD"     #'+os-explorer/dwim
+   "ot"     #'+eshell/new
+   "oT"     #'+eat/new
+   "ox"     #'scratch-buffer
+   "om"     #'popwin:messages
+   ;; project-related key bindings
+   "p" '(:ignore t :which-key "project")
+   "pp"     #'projectile-switch-project
+   "pq"     #'+kbd/persp-kill-current
+   "pa"     #'projectile-add-known-project
+   "px"     #'projectile-remove-known-project
+   "pg"     #'projectile-cleanup-known-projects
+   "pi"     #'projectile-invalidate-cache
+   "pc"     #'projectile-compile-project
+   "pC"     #'projectile-configure-project
+   "pd"     #'projectile-remove-known-project
+   "pD"     #'projectile-run-gdb
+   "pf"     #'+vertico/project-search
+   "po"     #'ff-find-related-file
+   "pr"     #'projectile-run-project
+   "pt"     #'projectile-test-project
+   ;; note functions
+   "n" '(:ignore t :which-key "note")
+   "na"      #'org-agenda-list
+   "n@"      #'citar-insert-citation
+   "nb"      #'citar-open
+   "nB"      #'ebib
+   "nc"      #'+org-project-capture-select-project
+   "nt"      #'org-project-todo-list
+   "nj"      #'org-journal-new-entry
+   "nl"      #'org-insert-link
+   "ny"      #'org-store-link
+   "np"      #'+org-project-consult-notes
+   "nd"      #'org-deft-org
+   "nD"      #'org-deft-tex
+   "nq"      #'org-set-tags-command
+   "nT" '(:ignore t :which-key "timer")
+   "nTa"     #'org-timer-set-timer ; add timer
+   "nT RET"  #'org-timer-pause-or-continue ; pause or continue
+   "nTd"     #'org-timer-stop ; delete timer
+   "nr" '(:ignore t :which-key "org-roam")
+   "nra"     #'org-roam-alias-add
+   "nrf"     #'org-roam-node-find
+   "nri"     #'org-roam-node-insert
+   "nrs"     #'org-roam-db-sync
+   "nrq"     #'org-roam-tag-add
+   "nrc"     #'org-roam-db-clear-all
+   "nx" '(:ignore t :which-key "xenops")
+   "nxe"     #'xenops-reveal ; edit
+   "nxy"     #'xenops-copy-at-point ; yank
+   "nxr"     #'xenops-regenerate ; regenerate
+   ;; help functions
+   "h" '(:ignore t :which-key "help")
+   "h RET"  #'helpful-at-point
+   "hf"     #'helpful-callable
+   "hF"     #'helpful-function
+   "hk"     #'helpful-key
+   "hv"     #'helpful-variable
+   "hm"     #'describe-mode
+   "hp" '(:ignore t :which-key "profiler")
+   "hps"    #'profiler-start
+   "hpk"    #'profiler-stop
+   "hpr"    #'profiler-report
+   ;; quit emacs
+   "q" '(:ignore t :which-key "quit")
+   "qq"     #'save-buffers-kill-terminal
+   "qr"     #'restart-emacs
+   ;; toggles
+   "t" '(:ignore t :which-key "toggle")
+   "td"     #'toggle-debug-on-error
+   "tb"     #'magit-blame-addition
+   "tf"     #'toggle-frame-maximized
+   "tF"     #'toggle-frame-fullscreen
+   "tt"     #'toggle-truncate-lines
+   "tn"     #'display-line-numbers-mode
+   "ta"     #'+treesit-auto/toggle
+   "tm"     #'org-toggle-inline-images
+   ;; code (lsp/tags)
+   "c" '(:ignore t :which-key "code")
+   "c RET"  #'eglot
+   "cx"     #'list-flycheck-errors
+   "ca"     #'eglot-code-actions
+   "cr"     #'eglot-rename
+   "ci"     #'eglot-inlay-hints-mode
+   "cf"     #'eglot-format-buffer
+   "ct"     #'citre-update-this-tags-file
+   "cj"     #'consult-eglot-symbols
+   "cl"     #'eglot-list-connections
+   "cq"     #'eglot-shutdown
+   ;; find
+   "f" '(:ignore t :which-key "find")
+   "fr"     #'consult-recent-file ; find recent file (globally)
+   "fb"     #'consult-buffer
+   "fB"     #'consult-bookmark ; find recent file (globally)
+   "ff"     #'consult-fd ; find file (in this directory)
+   "fF"     #'consult-locate ; find file (system wide)
+   "fm"     #'consult-man
+   "fM"     #'consult-woman
+   "fh"     #'consult-history ; find history
+   "fp"     #'+kbd/find-private-config ; find private emacs config
+   "fP"     #'+kbd/find-user-emacs-config ; find private emacs config in .emacs.d
+   )
 
   ;; occur mode
   (general-define-key
