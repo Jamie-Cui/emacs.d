@@ -63,9 +63,9 @@
 (use-package corfu-terminal
   :ensure t
   :after corfu
+  :if (version< emacs-version "31")
   :config
-  (when (version< emacs-version "31")
-    (corfu-terminal-mode +1)))
+  (corfu-terminal-mode +1))
 
 ;; -----------------------------------------------------------
 ;; Orderless - Fuzzy matching

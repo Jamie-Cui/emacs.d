@@ -54,10 +54,12 @@ wget -c https://github.com/emacs-mirror/emacs/archive/refs/heads/scratch/tty-chi
 
 # unzip and enter emacs folder
 ./autogen.sh
-# (alt) configure terminal emacs
-./configure --with-native-compilation --with-tree-sitter --with-gnutls --without-x-toolkit --without-xpm --without-gif --without-tiff --with-sqlite3
-# (alt) configure gui emacs
-./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --with-x-toolkit=gtk3 --with-x --with-cairo
+# (opt) configure terminal emacs
+./configure --with-native-compilation --with-tree-sitter --with-gnutls --without-x-toolkit --without-xpm --without-gif --without-tiff --with-sqlite3 --without-pop --without-mailutils
+# (opt) configure gui emacs with tiling window manager
+./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-x-toolkit --without-pop --without-mailutils
+# (TODO) MacOS?
+./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-pop --without-mailutils
 # compile
 sudo make install
 #+end_src
