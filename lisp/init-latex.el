@@ -186,6 +186,7 @@ without opening Ebib first.  With prefix ARG, rotate the kill ring as
   ;; Enable SyncTeX
   (setq TeX-source-correlate-mode t)
   (setq TeX-source-correlate-start-server t)
+  (setq pdf-sync-forward-display-action nil)
 
   ;; Set PDF-Tools as the default viewer
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
