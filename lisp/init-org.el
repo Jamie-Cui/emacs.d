@@ -803,7 +803,7 @@ When TRAILING is non-nil, also require a trailing slash."
   (setq xenops-math-latex-process 'xdvisvgm) ; HACK or, ximagemagick
   (defvar fn/xenops-math-image-reference-font-size 14.0
     "Cnfonts English font size matched by `fn/xenops-math-image-reference-scale-factor'.")
-  (defvar fn/xenops-math-image-reference-scale-factor 1.2
+  (defvar fn/xenops-math-image-reference-scale-factor 0.8
     "Xenops image scale that visually matches `fn/xenops-math-image-reference-font-size'.")
   (defun fn/xenops-math-current-cnfonts-size (&optional fontsizes-list)
     "Return current cnfonts English font size from FONTSIZES-LIST or active profile."
