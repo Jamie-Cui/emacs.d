@@ -62,9 +62,11 @@ wget -c https://github.com/emacs-mirror/emacs/archive/refs/heads/scratch/tty-chi
 ./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-pop --without-mailutils --with-x-toolkit=gtk3
 # (opt) configure gui emacs with lucid x toolkit
 ./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-pop --without-mailutils --with-x-toolkit=lucid
-# (TODO) MacOS?
+# (opt) configure gui emacs with default x toolkit (for MacOS)
 ./configure --with-native-compilation --with-tree-sitter --with-sqlite3 --with-rsvg --without-pop --without-mailutils --with-x-toolkit
 # compile
+make -j
+# install
 sudo make install
 #+end_src
 

@@ -7,7 +7,8 @@
   :if (eq system-type 'gnu/linux)
   :custom
   (default-input-method "rime")
-  (rime-user-data-dir "~/opt/dotfiles/rime"))
+  (rime-user-data-dir "~/opt/dotfiles/rime")
+  (rime-show-candidate 'posframe))
 
 ;;; --------------------------------------
 ;;; Darwin (MacOs)
