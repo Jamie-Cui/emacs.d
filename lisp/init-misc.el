@@ -4,8 +4,12 @@
 
 (require 'init-utils)
 
+;; fix frame display issues
+(setq frame-resize-pixelwise t)
+
 ;; smooth scrolling
 (pixel-scroll-mode +1)
+
 ;; Optional configurations for fine-tuning
 (setq pixel-dead-time 0) ; Never revert to line-based scrolling behavior
 (setq pixel-resolution-fine-flag t) ; Scroll by actual pixels
@@ -463,7 +467,6 @@
 
   (xterm-mouse-mode 1)
   (setq x-stretch-cursor t)
-  (setq frame-resize-pixelwise t)
 
   ;; Disable eldoc in terminal
   (eldoc-mode -1))
