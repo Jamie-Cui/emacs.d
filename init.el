@@ -347,8 +347,8 @@ Returns DIR after ensuring it exists."
 (use-package elfeed
   :ensure t
   :custom
-  (elfeed-db-directory (concat user-emacs-directory "elfeed/db/"))
-  (elfeed-enclosure-default-dir (concat user-emacs-directory "elfeed/enclosure/"))
+  (elfeed-db-directory (expand-file-name "elfeed/db/" user-emacs-directory))
+  (elfeed-enclosure-default-dir (expand-file-name "elfeed/enclosure/" user-emacs-directory))
   (elfeed-search-filter "") ; startup with no filter
   (elfeed-feeds '(
                   ;; ------ Security ------
@@ -381,12 +381,15 @@ Returns DIR after ensuring it exists."
                   ("https://plink.anyfeeder.com/weixin/almosthuman2014")
                   ;; 新智元
                   ("https://plink.anyfeeder.com/weixin/AI_era")
-                  )))
+                  ))
+  :config
+  (elfeed-db-ensure))
 
 (use-package elfeed-goodies
   :ensure t
   :after elfeed
   :config
+  (elfeed-db-ensure)
   (elfeed-goodies/setup))
 
 (use-package spinner
