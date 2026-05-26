@@ -39,9 +39,22 @@
   (+persp/show-name-in-echo))
 
 (defun +kbd/revert-buffer-no-confirm ()
-  "Revert buffer without confirmation."
+  "Revert buffer without confirmation when the buffer is revertible."
   (interactive)
-  (revert-buffer t t))
+  (condition-case err
+      (revert-buffer t t)
+    (error
+     (if (equal (cadr err) "Buffer does not seem to be associated with any file")
+         (user-error "Buffer is not associated with a file")
+       (signal (car err) (cdr err))))))
+
+(defun +kbd/magit-status-quick ()
+  "Show Magit status quickly, prompting outside Git repositories."
+  (interactive)
+  (condition-case nil
+      (call-interactively #'magit-status-quick)
+    (magit-outside-git-repo
+     (call-interactively #'magit-status))))
 
 (defun +kbd/persp-kill-current ()
   "Kill the current perspective."
@@ -207,7 +220,7 @@
    "oo"     #'crux-open-with
    "oe"     #'elfeed
    "oE"     #'ielm ; elisp repl
-   "og"     #'magit-status-quick
+   "og"     #'+kbd/magit-status-quick
    "op"     #'dired-sidebar-toggle-sidebar
    "oP"     #'proced
    "od"     #'dired-jump
