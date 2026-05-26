@@ -354,7 +354,9 @@ Returns DIR after ensuring it exists."
                   ;;
                   ;; ------ Security ------
                   ;; crypto paper feeds
-                  ("https://jamie-cui.github.io/paper-feeds/feed.xml")
+                  ;; ("https://jamie-cui.github.io/paper-feeds/feed.xml")
+                  ("https://jamie-cui.github.io/paper-feeds/feed-arxiv.xml")
+                  ("https://jamie-cui.github.io/paper-feeds/feed-iacr.xml")
                   ;; iacr paper
                   ("https://eprint.iacr.org/rss/rss.xml")
                   ;; Linux Security
