@@ -351,34 +351,36 @@ Returns DIR after ensuring it exists."
   (elfeed-enclosure-default-dir (concat user-emacs-directory "elfeed/enclosure/"))
   (elfeed-search-filter "") ; startup with no filter
   (elfeed-feeds '(
-                  ;; my paper feeds
+                  ;; ------ Security ------
+                  ;; crypto paper feeds
                   ("https://jamie-cui.github.io/paper-feeds/feed.xml")
-                  ;; Emacs life
-                  ("https://planet.emacslife.com/atom.xml")
-                  ;; Emacs China
-                  ("https://emacs-china.org/latest.rss")
-                  ;; Linux Do
-                  ("https://linux.do/latest.rss")
                   ;; iacr
                   ("https://eprint.iacr.org/rss/rss.xml")
                   ;; Linux Security
                   ("https://linuxsecurity.com/linuxsecurity_hybrid.xml")
-                  ;; LWN
-                  ("http://lwn.net/headlines/rss")
                   ;; Feisty Duck's Security and Cryptography newsletter
                   ("https://www.feistyduck.com/newsletter/feed")
+                  ;; ------ General ------
+                  ;; null program
+                  ("https://nullprogram.com/feed/")
+                  ;; Linux Do
+                  ("https://linux.do/latest.rss")
+                  ;; LWN
+                  ("http://lwn.net/headlines/rss")
                   ;; Hack News front page
                   ("https://hnrss.org/frontpage")
+                  ;; 架构师之路
+                  ("https://plink.anyfeeder.com/weixin/gh_10a6b96351a9")
+                  ;; ------ Emacs ------
+                  ;; Emacs life
+                  ("https://planet.emacslife.com/atom.xml")
+                  ;; Emacs China
+                  ("https://emacs-china.org/latest.rss")
+                  ;; ------ AI ------
                   ;; 机器之心
                   ("https://plink.anyfeeder.com/weixin/almosthuman2014")
                   ;; 新智元
                   ("https://plink.anyfeeder.com/weixin/AI_era")
-                  ;; 架构师之路
-                  ("https://plink.anyfeeder.com/weixin/gh_10a6b96351a9")
-                  ;; 棱镜
-                  ("https://plink.anyfeeder.com/weixin/lengjing_qqfinance")
-                  ;; 求是网
-                  ("https://plink.anyfeeder.com/qstheory")
                   )))
 
 (use-package elfeed-goodies
