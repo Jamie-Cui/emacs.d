@@ -361,6 +361,8 @@ Returns DIR after ensuring it exists."
                   ("https://linuxsecurity.com/linuxsecurity_hybrid.xml")
                   ;; Feisty Duck's Security and Cryptography newsletter
                   ("https://www.feistyduck.com/newsletter/feed")
+                  ;; crypto stack exchange
+                  ("https://crypto.meta.stackexchange.com/feeds")
                   ;;
                   ;; ------ General ------
                   ;; null program
