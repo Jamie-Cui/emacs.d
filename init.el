@@ -351,31 +351,38 @@ Returns DIR after ensuring it exists."
   (elfeed-enclosure-default-dir (expand-file-name "elfeed/enclosure/" user-emacs-directory))
   (elfeed-search-filter "") ; startup with no filter
   (elfeed-feeds '(
+                  ;;
                   ;; ------ Security ------
                   ;; crypto paper feeds
                   ("https://jamie-cui.github.io/paper-feeds/feed.xml")
-                  ;; iacr
+                  ;; iacr paper
                   ("https://eprint.iacr.org/rss/rss.xml")
                   ;; Linux Security
                   ("https://linuxsecurity.com/linuxsecurity_hybrid.xml")
                   ;; Feisty Duck's Security and Cryptography newsletter
                   ("https://www.feistyduck.com/newsletter/feed")
+                  ;;
                   ;; ------ General ------
                   ;; null program
                   ("https://nullprogram.com/feed/")
                   ;; Linux Do
-                  ("https://linux.do/latest.rss")
-                  ;; LWN
+                  ("https://linux.do/top.rss")
+                  ;; Linux Weekly News
                   ("http://lwn.net/headlines/rss")
                   ;; Hack News front page
                   ("https://hnrss.org/frontpage")
                   ;; 架构师之路
                   ("https://plink.anyfeeder.com/weixin/gh_10a6b96351a9")
+                  ;;
+                  ;; ------ Theory of CS ------
+                  ("https://theory.report/rss20.xml")
+                  ;;
                   ;; ------ Emacs ------
                   ;; Emacs life
                   ("https://planet.emacslife.com/atom.xml")
                   ;; Emacs China
                   ("https://emacs-china.org/latest.rss")
+                  ;;
                   ;; ------ AI ------
                   ;; 机器之心
                   ("https://plink.anyfeeder.com/weixin/almosthuman2014")
@@ -390,7 +397,11 @@ Returns DIR after ensuring it exists."
   :after elfeed
   :config
   (elfeed-db-ensure)
-  (elfeed-goodies/setup))
+  (elfeed-goodies/setup)
+  ;; Keep elfeed-goodies' entry rendering, but use the current window
+  ;; instead of its popwin split-pane view.
+  (setq elfeed-show-entry-switch #'switch-to-buffer
+        elfeed-show-entry-delete #'elfeed-kill-buffer))
 
 (use-package spinner
   :ensure t)
