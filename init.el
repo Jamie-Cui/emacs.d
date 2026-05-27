@@ -400,9 +400,6 @@ Returns DIR after ensuring it exists."
   (setq elfeed-show-entry-switch #'switch-to-buffer
         elfeed-show-entry-delete #'elfeed-kill-buffer))
 
-(use-package spinner
-  :ensure t)
-
 (use-package telega
   :ensure t
   :config
@@ -414,56 +411,6 @@ Returns DIR after ensuring it exists."
                           :port ,port
                           :enable t
                           :type (:@type "proxyTypeSocks5"))))))
-
-(use-package magent
-  :vc (:url "https://github.com/Jamie-Cui/magent" :rev "master")
-  :ensure t
-  :after gptel spinner
-  :demand t
-  :custom
-  (magent-skill-directories (list (expand-file-name "skills" +emacs/repo-directory)))
-  (magent-by-pass-permission t)
-  ;; (magent-ui-wrap-reasoning-in-think-block nil)
-  :init
-  (require 'magit)
-  (let ((had-evil-define-key (fboundp 'evil-define-key))
-        (evil-define-key-function (and (fboundp 'evil-define-key)
-                                       (symbol-function 'evil-define-key))))
-    (unwind-protect
-        (progn
-          (when (and (macrop 'evil-define-key)
-                     (fboundp 'evil-define-key*))
-            (fset 'evil-define-key
-                  (lambda (state keymap key def &rest bindings)
-                    (apply #'evil-define-key*
-                           state keymap key def bindings))))
-          (require 'magent))
-      (if had-evil-define-key
-          (fset 'evil-define-key evil-define-key-function)
-        (fmakunbound 'evil-define-key))))
-  :config
-  (require 'magent-config)
-  (global-magent-mode 1)
-
-  ;; keybindings that should not be overriden
-  (general-define-key
-   :keymaps 'magent-output-mode-map
-   :states '(normal visual motion)
-   "?"   #'magent-transient-menu
-   ))
-
-;; Local packages loaded from `site-lisp' do not install `Package-Requires'.
-(use-package websocket
-  :ensure t
-  :defer t)
-
-(use-package webdriver
-  :ensure t
-  :defer t)
-
-(use-package plz
-  :ensure t
-  :defer t)
 
 ;; NOTE install this first
 ;; https://github.com/mozilla/geckodriver/releases

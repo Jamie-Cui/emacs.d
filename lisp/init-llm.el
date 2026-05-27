@@ -175,7 +175,44 @@ functionality, allowing you to diff/ediff/merge the changes."
       (let ((gptel--rewrite-directive +gptel/beautify-plantuml-directive))
         (gptel--suffix-rewrite)))))
 
-(with-eval-after-load 'magent-magit
+(use-package magent
+  :vc (:url "https://github.com/Jamie-Cui/magent" :rev "master")
+  :ensure t
+  :after gptel spinner
+  :demand t
+  :custom
+  (magent-skill-directories (list (expand-file-name "skills" +emacs/repo-directory)))
+  (magent-by-pass-permission t)
+  ;; (magent-ui-wrap-reasoning-in-think-block nil)
+  :init
+  (require 'magit)
+  (let ((had-evil-define-key (fboundp 'evil-define-key))
+        (evil-define-key-function (and (fboundp 'evil-define-key)
+                                       (symbol-function 'evil-define-key))))
+    (unwind-protect
+        (progn
+          (when (and (macrop 'evil-define-key)
+                     (fboundp 'evil-define-key*))
+            (fset 'evil-define-key
+                  (lambda (state keymap key def &rest bindings)
+                    (apply #'evil-define-key*
+                           state keymap key def bindings))))
+          (require 'magent))
+      (if had-evil-define-key
+          (fset 'evil-define-key evil-define-key-function)
+        (fmakunbound 'evil-define-key))))
+  :config
+  (require 'magent-config)
+  (global-magent-mode 1)
+
+  ;; keybindings that should not be overriden
+  (general-define-key
+   :keymaps 'magent-output-mode-map
+   :states '(normal visual motion)
+   "?"   #'magent-transient-menu
+   )
+
+  (require 'magent-magit)
   (setopt magent-magit-model 'qwen-plus)
   (setopt magent-magit-commit-prompt
           (concat
