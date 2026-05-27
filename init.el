@@ -366,8 +366,8 @@ Returns DIR after ensuring it exists."
                   ("https://linux.do/top.rss")
                   ;; Linux Weekly News
                   ("http://lwn.net/headlines/rss")
-                  ;; Hack News front page
-                  ("https://hnrss.org/frontpage")
+                  ;; Hacker News Best for top vote getters from the past few days
+                  ("https://hnrss.org/best")
                   ;; 架构师之路
                   ("https://plink.anyfeeder.com/weixin/gh_10a6b96351a9")
                   ;;

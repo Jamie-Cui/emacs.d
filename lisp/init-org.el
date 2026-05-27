@@ -9,6 +9,8 @@
 (add-to-list 'load-path (expand-file-name "site-lisp" +emacs/repo-directory))
 (setq +org-project-root-dir +emacs/org-root-dir)
 (require 'org-project)
+(require 'dashboard-org-project)
+(dashboard-org-project-setup)
 
 ;; Emacs 30.2 can native-compile this helper incorrectly and then call
 ;; `org-element-with-disabled-cache' like a function while dashboard renders

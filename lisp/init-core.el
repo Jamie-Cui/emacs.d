@@ -531,6 +531,8 @@ pre-date the external-operation helper API."
   (dashboard-set-file-icons nil)
   (dashboard-items '(
                      ;; (agenda . 5)
+                     (org-project . 5)
+                     (elfeed . 5)
                      (recents  . 5)
                      (projects  . 5)
                      (bookmarks . 5)
@@ -549,9 +551,71 @@ pre-date the external-operation helper API."
       (copy-directory my-banners-dir dashboard-banners-directory nil nil t)))
   (+dashboard/install-banners)
 
+  (defun +dashboard/window ()
+    "Return a visible dashboard window."
+    (get-buffer-window dashboard-buffer-name t))
+
+  (defun +dashboard/current-position (&optional window)
+    "Return a logical dashboard position for WINDOW or the current point."
+    (let ((point (if window (window-point window) (point))))
+      (save-excursion
+        (goto-char point)
+        (let ((section (ignore-errors (dashboard--current-section))))
+          (list :line (line-number-at-pos nil t)
+                :column (current-column)
+                :section section
+                :section-line (when section
+                                (dashboard--current-index section point)))))))
+
+  (defun +dashboard/restore-position (position &optional window)
+    "Restore dashboard point from POSITION after the buffer is refreshed."
+    (let ((line (max 1 (or (plist-get position :line) 1)))
+          (column (or (plist-get position :column) 0))
+          (section (plist-get position :section))
+          (section-line (plist-get position :section-line)))
+      (cond
+       ((and section section-line)
+        (unless (ignore-errors
+                  (dashboard--goto-section section)
+                  (forward-line section-line)
+                  t)
+          (goto-char (point-min))
+          (forward-line (1- line))))
+       (t
+        (goto-char (point-min))
+        (forward-line (1- line))))
+      (move-to-column column)
+      (when (window-live-p window)
+        (set-window-point window (point))
+        (with-selected-window window
+          (recenter)))))
+
+  (defun +dashboard/open-keep-position-a (fn &rest args)
+    "Run FN with ARGS while preserving point in an existing dashboard buffer."
+    (let* ((window (+dashboard/window))
+           (buffer (and (window-live-p window) (window-buffer window)))
+           (keep-position-p (and buffer
+                                 (eq (buffer-local-value 'major-mode buffer)
+                                     'dashboard-mode)))
+           (position (when keep-position-p
+                       (with-current-buffer buffer
+                         (+dashboard/current-position window)))))
+      (prog1 (apply fn args)
+        (when (and keep-position-p (buffer-live-p buffer))
+          (with-current-buffer buffer
+            (+dashboard/restore-position position window))))))
+  (advice-add 'dashboard-open :around #'+dashboard/open-keep-position-a)
+
   ;; To disable shortcut "jump" indicators for each section, set
   (add-hook 'dashboard-after-initialize-hook (lambda () (dashboard-open)))
   (setq initial-buffer-choice (lambda () (dashboard-open))))
+
+(use-package dashboard-elfeed
+  :after dashboard
+  :demand t
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
+  :config
+  (dashboard-elfeed-setup))
 
 (use-package magit
   :ensure t
