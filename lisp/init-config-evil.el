@@ -1,7 +1,53 @@
-;;; init-evil.el --- evil mode configuration -*- lexical-binding: t -*-
+;;; init-config-evil.el --- evil mode configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Vim emulation setup using evil mode with related extensions
 ;;; Code:
+
+(require 'subr-x)
+
+(defvar-local +evil--syntax-ppss-memo-last-point nil)
+(defvar-local +evil--syntax-ppss-memo-last-result nil)
+
+(defun +evil--syntax-ppss-memo-reset-h (&rest _ignored)
+  "Reset evil syntax memoization after buffer changes."
+  (setq +evil--syntax-ppss-memo-last-point nil
+        +evil--syntax-ppss-memo-last-result nil))
+
+(defun +evil--syntax-ppss (&optional p)
+  "Memoize the last `syntax-ppss' result for P."
+  (let ((p (or p (point)))
+        (mem-p +evil--syntax-ppss-memo-last-point))
+    (if (and (eq p (nth 0 mem-p))
+             (eq (point-min) (nth 1 mem-p))
+             (eq (point-max) (nth 2 mem-p)))
+        +evil--syntax-ppss-memo-last-result
+      (unless +evil--syntax-ppss-memo-last-point
+        (add-hook 'before-change-functions
+                  #'+evil--syntax-ppss-memo-reset-h t t))
+      (setq +evil--syntax-ppss-memo-last-point
+            (list p (point-min) (point-max))
+            +evil--syntax-ppss-memo-last-result
+            (syntax-ppss p)))))
+
+(defun +evil--point-in-comment-p (&optional pt)
+  "Return non-nil if PT, or point, is in a comment."
+  (let ((pt (or pt (point))))
+    (ignore-errors
+      (save-excursion
+        (unless (nth 3 (+evil--syntax-ppss pt))
+          (or (nth 4 (+evil--syntax-ppss pt))
+              (and (< pt (point-max))
+                   (memq (char-syntax (char-after pt)) '(?< ?>))
+                   (not (eq (char-after pt) ?\n)))
+              (when-let* ((s (car (syntax-after pt))))
+                (or (and (/= 0 (logand (ash 1 16) s))
+                         (nth 4 (syntax-ppss (+ pt 2))))
+                    (and (/= 0 (logand (ash 1 17) s))
+                         (nth 4 (syntax-ppss (+ pt 1))))
+                    (and (/= 0 (logand (ash 1 18) s))
+                         (nth 4 (syntax-ppss (- pt 1))))
+                    (and (/= 0 (logand (ash 1 19) s))
+                         (nth 4 (syntax-ppss (- pt 2))))))))))))
 
 ;; -----------------------------------------------------------
 ;; DONE evil
@@ -78,14 +124,14 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
               (cend (save-excursion (goto-char end) (line-end-position)))
               (cbeg (save-excursion
                       (goto-char beg)
-                      (and (+point-in-comment-p
+                      (and (+evil--point-in-comment-p
                             (save-excursion
                               (goto-char (line-beginning-position 2))
                               (skip-syntax-forward " \t")
                               (point)))
                            (or (comment-search-backward (line-beginning-position) t)
                                (comment-search-forward  (line-end-position) t)
-                               (and (+point-in-comment-p beg)
+                               (and (+evil--point-in-comment-p beg)
                                     (stringp comment-continue)
                                     (or (search-forward comment-continue (line-end-position) t)
                                         beg)))))))
@@ -276,4 +322,4 @@ If `evil-vsplit-window-right' is non-nil, the new window isn't focused."
     (call-interactively 'evil-append) ;; append
     ))
 
-(provide 'init-evil)
+(provide 'init-config-evil)

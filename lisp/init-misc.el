@@ -2,8 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-utils)
-
 ;; fix frame display issues
 (setq frame-resize-pixelwise t)
 
@@ -66,14 +64,6 @@
                     ;; Prefix tramp autosaves to prevent conflicts with local ones
                     (concat auto-save-list-file-prefix "tramp-\\2") t)
               (list ".*" auto-save-list-file-prefix t)))
-
-(setopt enable-remote-dir-locals t)
-(setopt tramp-use-file-attributes nil)
-(setopt remote-file-name-inhibit-cache nil)
-(setopt remote-file-name-inhibit-auto-save t)
-(setopt remote-file-name-inhibit-auto-save-visited t)
-
-(setq vc-ignore-dir-regexp (format "%s\\|%s" vc-ignore-dir-regexp tramp-file-name-regexp))
 
 ;; disable electric-indent-mode, forever
 (electric-indent-mode -1)
@@ -240,211 +230,10 @@
 ;; emacs minibufer completion
 (setopt minibuffer-completion-auto-choose nil)
 
-;; ------------------------------------------------------------------
-;; Remote Configuration
-;; ------------------------------------------------------------------
+(require 'init-config-tramp)
 
-;; compress warning at start-up
-;; (setopt warning-minimum-level :emergency)
-
-;; Imporove tramp speed
-;; see: https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
-(setopt tramp-allow-unsafe-temporary-files t ; do not warn me, please
-        remote-file-name-inhibit-locks t
-        tramp-use-scp-direct-remote-copying t)
-
-(connection-local-set-profile-variables
- 'remote-direct-async-process
- '((tramp-direct-async-process . t)))
-
-(connection-local-set-profiles
- '(:application tramp :protocol "scp")
- 'remote-direct-async-process)
-
-(with-eval-after-load 'tramp
-  (with-eval-after-load 'compile
-    (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
-
-;; forgot why I add this ...
-(setopt tramp-pipe-stty-settings "")
-
-;; this improves magit efficiency
-(unless (featurep :system 'windows)
-  (setopt tramp-default-method "ssh")) ; faster than the default scp
-
-;; allow asyn in tramp
-(setopt tramp-async-enabled t)
-
-;;
-;;; Memoization
-
-;; PERF: Calls over TRAMP are expensive, so reduce the number of calls by more
-;;   aggressively caching some common data. Inspired by
-;;   https://coredumped.dev/2025/06/18/making-tramp-go-brrrr.
-(defun +tramp--memoize (key cache fn &rest args)
-  "Memoize a value if the key is a remote path."
-  (if (and key (file-remote-p key))
-      (if-let* ((current (assoc key (symbol-value cache))))
-          (cdr current)
-        (let ((current (apply fn args)))
-          (set cache (cons (cons key current) (symbol-value cache)))
-          current))
-    (apply fn args)))
-
-;;;###package magit
-(defvar +tramp--magit-toplevel-cache nil)
-(defun +tramp--memoized-magit-toplevel-a (orig &optional directory)
-  (+tramp--memoize (or directory default-directory)
-                   '+tramp--magit-toplevel-cache orig directory))
-
-(advice-add #'magit-toplevel :around #'+tramp--memoized-magit-toplevel-a)
-
-;;;###package project
-(defvar +tramp--project-current-cache nil)
-(defun +tramp--memoized-project-current (fn &optional prompt directory)
-  (+tramp--memoize (or directory
-                       project-current-directory-override
-                       default-directory)
-                   '+tramp--project-current-cache fn prompt directory))
-
-(advice-add #'project-current :around #'+tramp--memoized-project-current)
-
-;;;###package vc-git
-(defvar +tramp--vc-git-root-cache nil)
-(defun +tramp--memoized-vc-git-root-a (fn file)
-  (let ((value
-         (+tramp--memoize (file-name-directory file)
-                          '+tramp--vc-git-root-cache fn file)))
-    ;; sometimes vc-git-root returns nil even when there is a root there
-    (unless (cdar +tramp--vc-git-root-cache)
-      (setq +tramp--vc-git-root-cache (cdr +tramp--vc-git-root-cache)))
-    value))
-
-(advice-add #'vc-git-root :around #'+tramp--memoized-vc-git-root-a)
-
-;; ------------------------------------------------------------------
-;; Eshell Configuration
-;; ------------------------------------------------------------------
-
-(defun +shell/zsh ()
-  "Call /bin/zsh in shell mode"
-  (interactive)
-  (let ((explicit-shell-file-name "/bin/zsh") )
-    (shell)))
-
-(defun +shell/bash ()
-  "Call /bin/bash in shell mode"
-  (interactive)
-  (let ((explicit-shell-file-name "/bin/bash") )
-    (shell)))
-
-(defun +shell/sh ()
-  "Call /bin/sh in shell mode"
-  (interactive)
-  (let ((explicit-shell-file-name "/bin/sh") )
-    (shell)))
-
-(setopt eshell-scroll-show-maximum-output nil
-        eshell-highlight-prompt nil
-        eshell-destroy-buffer-when-process-dies t)
-
-(setopt eshell-scroll-to-bottom-on-input 'all
-        eshell-scroll-to-bottom-on-output 'all
-        eshell-kill-processes-on-exit t
-        eshell-hist-ignoredups t
-        eshell-input-filter (lambda (input) (not (string-match-p "\\`\\s-+" input)))
-        eshell-glob-case-insensitive t
-        eshell-error-if-no-glob t)
-
-(setopt eshell-prompt-function
-        (lambda nil
-          (let* ((cwd (abbreviate-file-name (eshell/pwd))))
-            (concat (propertize
-                     ;; the above line
-                     (format "%s [%s]"
-                             (propertize (user-login-name) 'font-lock-face 'font-lock-comment-face)
-                             (propertize cwd 'font-lock-face 'font-lock-constant-face)
-                             )
-                     'read-only t
-                     'front-sticky   '(font-lock-face read-only)
-                     'rear-nonsticky '(font-lock-face read-only))
-                    ;; input line
-                    " $ "
-                    ))))
-
-(setopt eshell-banner-message
-        '(format "%s %s\n"
-                 (propertize (format " %s " (string-trim (buffer-name)))
-                             'face 'mode-line-highlight)
-                 (propertize (current-time-string)
-                             'face 'font-lock-keyword-face)))
-
-;; always get a new eshell
-(defun +eshell/new ()
-  (interactive)
-  (let ((current-prefix-arg ""))
-    (call-interactively 'eshell)))
-
-;; (defun +eshell/project-new ()
-;;   (interactive)
-;;   (let ((current-prefix-arg (1+ (cl-position (persp-current-name) (persp-names) :test 'equal))))
-;;     (call-interactively 'eshell)))
-
-(defun +eshell/set-proxy (proxy)
-  "Set proxy environment variables and git proxy configuration."
-  ;; Set environment variables
-  (setenv "http_proxy" proxy)
-  (setenv "https_proxy" proxy)
-  (setenv "ftp_proxy" proxy)
-  (setenv "HTTP_PROXY" proxy)
-  (setenv "HTTPS_PROXY" proxy)
-  (setenv "FTP_PROXY" proxy)
-
-  ;; Set git proxy configuration
-  (if proxy
-      (progn (shell-command (format "git config --global http.proxy %s" proxy))
-             (shell-command (format "git config --global https.proxy %s" proxy)))
-    (progn (shell-command (format "git config --global --unset http.proxy"))
-           (shell-command (format "git config --global --unset https.proxy")))))
-
-(defun eshell/set-proxy ()
-  "Set proxy environment variables and git proxy configuration."
-  (interactive)
-  (let ((my-proxy +emacs/proxy)) ; HACK this requires MY_PROXY to be set in system-wide
-    (when my-proxy
-      ;; Set proxy
-      (+eshell/set-proxy my-proxy)
-      ;; Show proxy settings
-      (eshell/show-proxy))))
-
-(defun eshell/unset-proxy ()
-  "Set proxy environment variables and git proxy configuration."
-  (interactive)
-  (+eshell/set-proxy nil)
-  ;; Show proxy settings
-  (eshell/show-proxy))
-
-(defun +eshell/format-shell-command (command)
-  (let* ((str
-          (replace-regexp-in-string "\n$" ""
-                                    (shell-command-to-string command))))
-    (if (string-empty-p str) nil str)))
-
-(defun eshell/show-proxy ()
-  "Display current proxy settings."
-  (interactive)
-  (eshell-printn (format "[env] http_proxy  : %s" (getenv "http_proxy")))
-  (eshell-printn (format "[env] https_proxy : %s" (getenv "https_proxy")))
-  (eshell-printn (format "[env] ftp_proxy   : %s" (getenv "ftp_proxy")))
-  (eshell-printn (format "[git] http_proxy  : %s" (+eshell/format-shell-command "git config --global --get http.proxy")))
-  (eshell-printn (format "[git] https_proxy : %s" (+eshell/format-shell-command "git config --global --get https.proxy"))))
-
-;; HACK redefine eshell/clear function using advice
-(defun +eshell/clear-buffer-a (&rest _)
-  "Clear the eshell buffer by erasing its contents."
-  (let ((inhibit-read-only t))
-    (erase-buffer)))
-(advice-add #'eshell/clear :override #'+eshell/clear-buffer-a)
+(setq +eshell/proxy +emacs/proxy)
+(require 'init-config-eshell)
 
 ;; ------------------------------------------------------------------
 ;; TTY Configuration
@@ -573,6 +362,20 @@
   (let ((name (buffer-file-name)))
     (kill-new name)
     (message "Copied: %s" name)))
+
+(defun +wc/non-ascii (&optional start end)
+  "Count lines, non-ASCII characters, and characters in region or buffer."
+  (interactive)
+  (let ((start (if mark-active (region-beginning) (point-min)))
+        (end (if mark-active (region-end) (point-max))))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region start end)
+        (goto-char start)
+        (message "lines: %3d non ascii words: %3d chars: %3d"
+                 (count-lines start end)
+                 (count-matches "[^[:ascii:]]")
+                 (- end start))))))
 
 (setopt duplicate-line-final-position 1) ; move point to the first newline
 

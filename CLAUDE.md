@@ -25,15 +25,13 @@ All modules are loaded immediately via `require`. Individual packages within mod
 
 ```
 init.el
-  ├─ init-utils       (must be first — provides macros and utilities used by all other modules)
-  ├─ init-evil         (uses +point-in-comment-p from init-utils without explicit require)
-  ├─ init-kbd          (requires init-evil; defines +my-leader-def used later in init.el)
+  ├─ init-kbd          (requires init-config-evil; defines +my-leader-def used later in init.el)
   ├─ init-completion   (no explicit requires)
-  ├─ init-core         (requires init-evil; references init-kbd functions via deferred #' symbols)
-  ├─ init-misc         (requires init-utils)
+  ├─ init-core         (requires init-config-evil; references init-kbd functions via deferred #' symbols)
+  ├─ init-misc         (no explicit requires)
   ├─ init-os           (no explicit requires)
   ├─ init-llm          (no explicit requires)
-  ├─ init-org          (requires init-utils)
+  ├─ init-org          (requires org-project from site-lisp)
   └─ init-latex        (requires init-org; GUI only, guarded by display-graphic-p)
 
   Inline in init.el after modules:
@@ -55,7 +53,7 @@ init.el
 | Directory | Purpose |
 |-----------|---------|
 | `lisp/` | Core module files (`init-*.el`) |
-| `site-lisp/` | Local packages: persp-projectile, org-remoteimg, org-imgtog, consult-citre, agent-review |
+| `site-lisp/` | Local packages: org-project, persp-projectile, org-remoteimg, org-imgtog, consult-citre, agent-review |
 | `site-lisp/magent/` | AI coding agent (has own `CLAUDE.md` and `Makefile`) |
 | `site-lisp/el-easydraw/` | SVG drawing editor for org-mode (optional, loaded conditionally) |
 | `agents/` | gptel-agent tool configurations (org-mode files with MCP tool definitions) |
@@ -99,19 +97,7 @@ Custom functions/variables use `+module/name` prefix (e.g., `+evil/smart-insert`
 
 **Name suffixes have meaning:**
 - `-a` suffix = **advice** function (e.g., `+evil-join-a`, `+evil/window-split-a`)
-- `-h` suffix = **hook** function (e.g., `+enable-delete-trailing-whitespace-h`)
-
-### The `+use-package-when-dir-exists` Macro (init-utils.el)
-
-Compile-time conditional `use-package` wrapper. Evaluates the directory path at macro-expansion time and silently omits the entire `use-package` form if the directory doesn't exist. Used at the bottom of `init.el` to conditionally load `magent` and `edraw` from `site-lisp/`:
-
-```elisp
-(+use-package-when-dir-exists magent
-    (concat +emacs/repo-directory "/site-lisp/magent/lisp")
-  :after gptel
-  :demand t
-  ...)
-```
+- `-h` suffix = **hook** function
 
 ### Keybinding System (init-kbd.el)
 
@@ -136,26 +122,9 @@ Override keybindings (`:keymaps 'override`) are used for bindings that must not 
 
 Remote path operations are memoized via `+tramp--memoize` to avoid repeated slow calls. Applied as advice around `magit-toplevel`, `project-current`, and `vc-git-root`.
 
-### Evil Mode is Foundational
-
-The entire keybinding system assumes evil states. Many utility functions are evil-aware:
-- `+region-active-p` checks both `use-region-p` and `evil-visual-state-p`
-- `+region-beginning`/`+region-end` use evil visual markers
-- `+backward-kill-to-bol-and-indent` delegates to `evil-delete` when available
-
 ## Module Reference
 
-### init-utils.el
-Foundation module. Key utilities used across the codebase:
-- `+syntax-ppss`: Memoized `syntax-ppss` with auto-reset on buffer changes
-- `+point-in-comment-p`, `+point-in-string-p`, `+point-in-string-or-comment-p`: Syntax state detection
-- `+thing-at-point-or-region`: Smart text grabber (tries selection → thing-at-point → xref → prompt)
-- `+bol-bot-eot-eol`: Computes four positions per line (BOL, beginning-of-text, end-of-text before comments, EOL)
-- `+backward-to-bol-or-indent`, `+forward-to-last-non-comment-or-eol`: Smart Home/End cycling
-- `+dumb-indent`/`+dumb-dedent`: Literal space insertion respecting `tab-width` alignment
-- `+use-package-when-dir-exists`: Conditional package loading macro (see above)
-
-### init-evil.el
+### init-config-evil.el
 - `+evil/smart-insert`: Context-aware insert (used as advice in init-org.el and init-latex.el)
 - `+evil-join-a`: Advice that removes comment delimiters when joining commented lines
 - `+evil/window-split-a`/`+evil/window-vsplit-a`: Fix window focus history after splits

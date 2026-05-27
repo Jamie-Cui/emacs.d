@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-evil)
+(require 'init-config-evil)
 
 ;; -----------------------------------------------------------
 ;; DONE Tramp

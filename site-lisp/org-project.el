@@ -1,7 +1,32 @@
-;;; init-org-project.el --- central project org workflow -*- lexical-binding: t -*-
+;;; org-project.el --- central project org workflow -*- lexical-binding: t -*-
+
+;; Copyright (C) 2026 Jamie Cui - MIT License
+;; Author: Jamie Cui <jamie.cui@outlook.com>
+;; Description: Project utilities for org-mode
+;; Package-Requires: ((emacs "30.1"))
+
+;; Permission is hereby granted, free of charge, to any person obtaining a copy
+;; of this software and associated documentation files (the "Software"), to deal
+;; in the Software without restriction, including without limitation the rights
+;; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+;; copies of the Software, and to permit persons to whom the Software is
+;; furnished to do so, subject to the following conditions:
+;;
+;; The above copyright notice and this permission notice shall be included in all
+;; copies or substantial portions of the Software.
+;;
+;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+;; SOFTWARE.
+
 ;;; Commentary:
-;;; Helpers for central project task capture, journal audit logs, and
-;;; project-local archive handling.
+
+;;; Helpers for central project task capture, journal audit logs, and project-local archive handling.
+
 ;;; Code:
 
 (require 'cl-lib)
@@ -21,7 +46,50 @@
   "Central project org workflow."
   :group 'org)
 
-(defcustom +org-projects-dir (+emacs/org-subdir "projects")
+(defcustom +org-project-root-dir
+  (expand-file-name "~/opt/org-root")
+  "Root directory for central project org data."
+  :type 'directory
+  :group '+org-project)
+
+(defun +org-project--ensure-directory (dir)
+  "Ensure DIR exists and return it."
+  (make-directory dir t)
+  dir)
+
+(defun +org-project--org-subdir (name)
+  "Return project org root subdirectory NAME, creating it when needed."
+  (+org-project--ensure-directory
+   (expand-file-name name +org-project-root-dir)))
+
+(defun +org-project--region-active-p ()
+  "Return non-nil when the region or Evil visual selection is active."
+  (or (use-region-p)
+      (and (bound-and-true-p evil-local-mode)
+           (fboundp 'evil-visual-state-p)
+           (evil-visual-state-p))))
+
+(defun +org-project--region-beginning ()
+  "Return the active region beginning, including Evil visual selections."
+  (or (and (bound-and-true-p evil-local-mode)
+           (fboundp 'evil-visual-state-p)
+           (evil-visual-state-p)
+           (boundp 'evil-visual-beginning)
+           (markerp evil-visual-beginning)
+           (marker-position evil-visual-beginning))
+      (region-beginning)))
+
+(defun +org-project--region-end ()
+  "Return the active region end, including Evil visual selections."
+  (or (and (bound-and-true-p evil-local-mode)
+           (fboundp 'evil-visual-state-p)
+           (evil-visual-state-p)
+           (boundp 'evil-visual-end)
+           (markerp evil-visual-end)
+           (marker-position evil-visual-end))
+      (region-end)))
+
+(defcustom +org-projects-dir (+org-project--org-subdir "projects")
   "Directory containing central project org files."
   :type 'directory
   :group '+org-project)
@@ -198,7 +266,7 @@ Org automatically include every `*.org' file under
   (interactive)
   (when (boundp 'org-agenda-files)
     (let* ((project-dir (+org-project--normalize-path
-                         (+emacs/ensure-directory +org-projects-dir)))
+                         (+org-project--ensure-directory +org-projects-dir)))
            (known-paths (delq nil
                               (mapcar #'+org-project--normalize-path
                                       org-agenda-files))))
@@ -243,7 +311,8 @@ Org automatically include every `*.org' file under
 
 (defun +org-project-file-for-slug (slug)
   "Return the project org file path for SLUG."
-  (expand-file-name (concat slug ".org") (+emacs/ensure-directory +org-projects-dir)))
+  (expand-file-name (concat slug ".org")
+                    (+org-project--ensure-directory +org-projects-dir)))
 
 (defun +org-project-file-for-root (root)
   "Return the project org file path for ROOT."
@@ -382,7 +451,7 @@ TITLE, ROOT and SLUG seed the initial metadata."
   (let* ((expanded (expand-file-name file))
          (resolved-slug (or slug (file-name-base expanded)))
          (resolved-title (or title resolved-slug)))
-    (+emacs/ensure-directory (file-name-directory expanded))
+    (+org-project--ensure-directory (file-name-directory expanded))
     (unless (and (file-exists-p expanded)
                  (> (file-attribute-size (file-attributes expanded)) 0))
       (+org-project--ensure-project-buffer expanded resolved-title root resolved-slug))
@@ -1286,8 +1355,10 @@ TODO keyword like `org-todo-list'."
 
 (defun +org-project--active-region-text ()
   "Return the current active region text, or nil."
-  (when (+region-active-p)
-    (buffer-substring-no-properties (+region-beginning) (+region-end))))
+  (when (+org-project--region-active-p)
+    (buffer-substring-no-properties
+     (+org-project--region-beginning)
+     (+org-project--region-end))))
 
 (defun +org-project--capture-initial-todo-heading ()
   "Return the normalized first line when initial content starts with an Org TODO heading."
@@ -1721,5 +1792,5 @@ REASON defaults to `manual-cleanup'."
 (with-eval-after-load 'org-agenda
   (+org-project-sync-agenda-files))
 
-(provide 'init-org-project)
-;;; init-org-project.el ends here
+(provide 'org-project)
+;;; org-project.el ends here

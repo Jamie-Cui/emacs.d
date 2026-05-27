@@ -3,7 +3,7 @@
 ;;; Keybindings setup using general.el with leader key system
 ;;; Code:
 
-(require 'init-evil)
+(require 'init-config-evil)
 
 ;; Named functions for disabled keybindings (better debugging/profiling)
 (defun +kbd/disabled-M-u ()

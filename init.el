@@ -148,17 +148,11 @@ Returns DIR after ensuring it exists."
 ;; DONE Load modules
 ;; -----------------------------------------------------------
 
-;; Core utilities (must be loaded first)
-(require 'init-utils)
-
 ;; Essential modules (immediate load)
-(require 'init-evil)
 (require 'init-kbd)
 (require 'init-completion)
 
 ;; Core functionality (immediate load)
-;; NOTE: Original with-eval-after-load 'init-utils was a no-op since init-utils
-;; was already loaded above. Keeping immediate load for reliability.
 (require 'init-core)
 (require 'init-misc)
 (require 'init-os)
@@ -166,7 +160,6 @@ Returns DIR after ensuring it exists."
 ;; Advanced features
 (require 'init-llm)
 (require 'init-org)
-;; (require 'init-email)
 
 ;; LaTeX support (GUI only)
 (when (display-graphic-p)
