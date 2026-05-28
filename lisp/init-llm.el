@@ -7,7 +7,7 @@
 ;;
 ;; agent-shell
 ;; gptel
-;; magent-magit
+;; magit-gptel
 ;; -----------------------------------------------------------
 
 (use-package gptel-agent
@@ -143,6 +143,25 @@
 
 (add-hook 'gptel-post-response-functions #'+gptel/remove-headings)
 
+(use-package magit-gptel
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
+  :after (gptel magit)
+  :demand t
+  :custom
+  (magit-gptel-model 'qwen-plus)
+  :config
+  (setopt magit-gptel-commit-prompt
+          (concat
+           magit-gptel-commit-prompt
+           "\n\nAdditional hard requirements for this setup:\n"
+           "- The first line MUST fit within 50 characters, counting all spaces and punctuation\n"
+           "- The first line MUST already be a single line before any editor wrapping or filling\n"
+           "- If needed, abbreviate aggressively and drop secondary details to satisfy the limit\n"
+           "- If your first attempt is longer than 50 characters, rewrite it until it is 50 characters or shorter\n"
+           "- The body MAY be longer, but only after one blank line following the first line\n"
+           "- Return plain text only\n"
+           "- Never use markdown, code fences, or labels such as ```commit\n")))
+
 ;; -----------------------------------------------------------
 ;; PlantUML Beautification (using gptel-rewrite)
 ;; -----------------------------------------------------------
@@ -194,7 +213,6 @@ functionality, allowing you to diff/ediff/merge the changes."
   (magent-by-pass-permission t)
   ;; (magent-ui-wrap-reasoning-in-think-block nil)
   :init
-  (require 'magit)
   (let ((had-evil-define-key (fboundp 'evil-define-key))
         (evil-define-key-function (and (fboundp 'evil-define-key)
                                        (symbol-function 'evil-define-key))))
@@ -219,20 +237,6 @@ functionality, allowing you to diff/ediff/merge the changes."
    :keymaps 'magent-output-mode-map
    :states '(normal visual motion)
    "?"   #'magent-transient-menu
-   )
-
-  (require 'magent-magit)
-  (setopt magent-magit-model 'qwen-plus)
-  (setopt magent-magit-commit-prompt
-          (concat
-           magent-magit-commit-prompt
-           "\n\nAdditional hard requirements for this setup:\n"
-           "- The first line MUST fit within 50 characters, counting all spaces and punctuation\n"
-           "- The first line MUST already be a single line before any editor wrapping or filling\n"
-           "- If needed, abbreviate aggressively and drop secondary details to satisfy the limit\n"
-           "- If your first attempt is longer than 50 characters, rewrite it until it is 50 characters or shorter\n"
-           "- The body MAY be longer, but only after one blank line following the first line\n"
-           "- Return plain text only\n"
-           "- Never use markdown, code fences, or labels such as ```commit\n")))
+   ))
 
 (provide 'init-llm)
