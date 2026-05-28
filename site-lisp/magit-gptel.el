@@ -693,11 +693,11 @@ When SILENT is non-nil, do not emit an extra status message."
     (magit-gptel--install-transient
      'magit-commit
      #'magit-commit-create
-     `(,magit-gptel-commit-transient-key "AI Draft" magit-gptel-commit-create))
+     `(,magit-gptel-commit-transient-key "Generate Commit (gptel)" magit-gptel-commit-create))
     (magit-gptel--install-transient
      'magit-diff
      #'magit-stash-show
-     `(,magit-gptel-diff-transient-key "AI Explain" magit-gptel-diff-explain))
+     `(,magit-gptel-diff-transient-key "Explain (gptel)" magit-gptel-diff-explain))
     (setq magit-gptel--installed t)))
 
 (when magit-gptel-auto-install

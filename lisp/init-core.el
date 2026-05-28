@@ -649,10 +649,10 @@ pre-date the external-operation helper API."
   ;; Install magit-auto-commit
   (with-eval-after-load 'transient
     (transient-append-suffix 'magit-commit #'magit-commit-create
-      '("W" "WIP commit" (lambda (&optional args)
-                           (interactive (list (magit-commit-arguments)))
-                           (let ((message "chore: stale - work still in progress"))
-                             (magit-commit-create (append args `("--message" ,message "--edit")))))))
+      '("W" "Commit with WIP" (lambda (&optional args)
+                                (interactive (list (magit-commit-arguments)))
+                                (let ((message "chore: stale - work still in progress"))
+                                  (magit-commit-create (append args `("--message" ,message "--edit")))))))
     )
   )
 
