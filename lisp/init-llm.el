@@ -25,6 +25,11 @@
 (use-package agent-shell
   :ensure t
   :custom
+  (agent-shell-display-action
+   '((display-buffer-reuse-window
+      display-buffer-use-some-window
+      display-buffer-pop-up-window)
+     (inhibit-same-window . t)))
   (agent-shell-show-welcome-message nil)
   (agent-shell-header-style 'text)
   (agent-shell-show-config-icons nil)
@@ -57,8 +62,12 @@
               ("C-c C-c" . #'gptel-send)
               ("C-c RET" . #'gptel-menu))
   :config
-  ;; use smae window to display gptel buffer
-  (setq gptel-display-buffer-action '(display-buffer-same-window))
+  ;; Display gptel buffers outside the current window.
+  (setq gptel-display-buffer-action
+        '((display-buffer-reuse-window
+           display-buffer-use-some-window
+           display-buffer-pop-up-window)
+          (inhibit-same-window . t)))
 
   ;; register gemini backend
   (gptel-make-gemini "Gemini"
