@@ -165,6 +165,7 @@ Returns DIR after ensuring it exists."
 (when (display-graphic-p)
   (require 'init-latex))
 
+;; Emacs package for lean
 (use-package nael
   :ensure t
   :defer t
