@@ -321,7 +321,8 @@
   :custom
   (plantuml-jar-path
    (concat (file-name-directory user-init-file) "plantuml.jar"))
-  (org-plantuml-jar-path plantuml-jar-path)
+  (org-plantuml-jar-path
+   (concat (file-name-directory user-init-file) "plantuml.jar"))
   :config
   (setq plantuml-default-exec-mode 'executable)
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
