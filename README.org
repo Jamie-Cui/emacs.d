@@ -74,12 +74,6 @@ MacOS: libgccjit failed to compile and run? see: https://github.com/d12frosted/h
 
 Have tree-sitter problem? see: [[https://www.reddit.com/r/emacs/comments/1e57kzy/a_solution_for_getting_emacs_to_compile_with/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button][link]]. Or download tree-sitter pre-built binaries [[https://github.com/emacs-tree-sitter/tree-sitter-langs][here]].
 
-** Setup ~$HOME/.emacs.d/init.el~
-#+begin_src elisp
-(defvar +emacs/repo-directory "~/Desktop/emacs.d")
-(load (concat +emacs/repo-directory "/init.el"))
-#+end_src
-
 ** C/C++ Dev Tools
 
 - clangd, clang-format, clang-tidy
@@ -108,36 +102,4 @@ cd ctags
 ./configure --prefix=$HOME/.local
 make
 make install
-#+end_src
-
-** Others
-
-#+begin_src bash
-alias et='tmux attach -t emacs-session || tmux new -s emacs-session "emacs -nw"'
-#+end_src
-
-** Sync between different machine?
-
-Try: https://syncthing.net/
-
-#+begin_src bash
-sudo dnf install -y syncthing # fedora
-brew install syncthing # macos
-#+end_src
-
-For ios, see: https://github.com/pixelspark/sushitrain?tab=readme-ov-file
-(WARNING: this app may not be avaliable in your country)
-
-Start sync daemon at user level:
-#+begin_src bash :results verbatim :dir ~
-systemctl --user start syncthing.service
-systemctl --user status syncthing.service
-#+end_src
-
-** Upgrade cluade code and acp
-
-#+begin_src bash
-curl -fsSL https://claude.ai/install.sh | bash
-npm install -g @anthropic-ai/claude-code # deprecated
-npm install -g @zed-industries/claude-code-acp
 #+end_src
