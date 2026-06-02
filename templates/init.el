@@ -29,7 +29,6 @@
       '(
         ("gnu"   . "http://elpa.gnu.org/packages/")
         ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-        ("org"   . "http://orgmode.org/elpa/")
         ("melpa" . "http://melpa.org/packages/")
         ))
 

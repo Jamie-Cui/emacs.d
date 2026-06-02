@@ -139,7 +139,7 @@
 (setopt org-indirect-buffer-display 'current-window)
 
 (setopt org-startup-indented t)
-(setopt org-startup-folded 'nofold)
+(setopt org-startup-folded nil)
 (setopt org-startup-with-inline-images t)
 (setopt org-startup-with-latex-preview nil)
 

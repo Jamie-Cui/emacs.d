@@ -96,8 +96,9 @@ Returns DIR after ensuring it exists."
 ;; Load cl-lib first (required by package-quickstart)
 (require 'cl-lib)
 
-;; Emacs 30+: Use package-quickstart for faster startup
-(setopt package-quickstart t)
+;; Disable package quickstart.  The generated quickstart file is loaded before
+;; the user init file, so it cannot rely on setup done below in this file.
+(setopt package-quickstart nil)
 
 ;; Enable package
 (require 'package)

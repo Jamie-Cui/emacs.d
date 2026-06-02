@@ -106,6 +106,13 @@
   (setq evil-disable-insert-state-bindings nil)
   :config
   (defalias #'forward-evil-word #'forward-evil-symbol)
+  ;; FIXME why upgrading evil breaks cursor drawing?
+  (setq evil-default-cursor 'box
+        evil-motion-state-cursor 'box
+        evil-visual-state-cursor 'box
+        evil-normal-state-cursor 'box
+        evil-insert-state-cursor 'bar
+        evil-emacs-state-cursor 'hbar)
   ;; make evil-search-word look for symbol rather than word boundaries
   (setq-default evil-symbol-word-search t)
   (evil-set-undo-system 'undo-tree)
@@ -242,13 +249,7 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   :after evil
   :if (not window-system) ;; do not load on gui
   :config
-  (evil-terminal-cursor-changer-activate) ; or (etcc-on)
-  (setq evil-motion-state-cursor 'box)  ; █
-  (setq evil-visual-state-cursor 'box)  ; █
-  (setq evil-normal-state-cursor 'box)  ; █
-  (setq evil-insert-state-cursor 'bar)  ; ⎸
-  (setq evil-emacs-state-cursor  'hbar) ; _
-  )
+  (evil-terminal-cursor-changer-activate)) ; or (etcc-on)
 
 ;;;###autoload
 (evil-define-command +evil/window-split-a (&optional count file)
