@@ -39,6 +39,23 @@
                 "\\)"))
   (setq deft-default-extension "org")
 
+  (set-face-attribute 'deft-title-face nil
+                      :inherit 'font-lock-function-name-face
+                      :weight 'regular
+                      :slant 'normal)
+  (set-face-attribute 'deft-summary-face nil
+                      :inherit 'font-lock-comment-face
+                      :weight 'regular
+                      :slant 'normal)
+  (set-face-attribute 'deft-time-face nil
+                      :inherit 'font-lock-variable-name-face
+                      :weight 'regular
+                      :slant 'normal)
+  (set-face-attribute 'deft-separator-face nil
+                      :inherit 'font-lock-comment-delimiter-face
+                      :weight 'regular
+                      :slant 'normal)
+
   (add-hook 'deft-mode-hook
             (lambda ()
               (setq-local revert-buffer-function
