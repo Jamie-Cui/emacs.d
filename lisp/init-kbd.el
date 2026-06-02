@@ -221,8 +221,7 @@
    "oe"     #'elfeed
    "oE"     #'ielm ; elisp repl
    "og"     #'+kbd/magit-status-quick
-   "op"     #'dired-sidebar-toggle-sidebar
-   "oP"     #'proced
+   "op"     #'proced
    "od"     #'dired-jump
    "oD"     #'+os-explorer/dwim
    "ot"     #'+eshell/new

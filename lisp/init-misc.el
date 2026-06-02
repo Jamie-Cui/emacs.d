@@ -226,6 +226,9 @@
 (setopt proced-enable-color-flag t)
 (setopt proced-format 'short)
 (setopt proced-auto-update-interval 1)
+(add-hook 'proced-post-display-hook
+          (lambda ()
+            (setq-local truncate-lines t)))
 
 ;; emacs minibufer completion
 (setopt minibuffer-completion-auto-choose nil)

@@ -230,7 +230,9 @@ functionality, allowing you to diff/ediff/merge the changes."
         (fmakunbound 'evil-define-key))))
   :config
   (require 'magent-config)
+  (require 'magent-evil)
   (global-magent-mode 1)
+  (magent-evil-mode 1)
 
   ;; keybindings that should not be overriden
   (general-define-key
