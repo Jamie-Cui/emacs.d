@@ -382,8 +382,8 @@
 
 (setopt duplicate-line-final-position 1) ; move point to the first newline
 
-;; treesit font level set to 2
-(setopt treesit-font-lock-level 2)
+;; Use full tree-sitter fontification by default.
+(setopt treesit-font-lock-level 4)
 
 ;; enable narrow-to-region function without asking
 ;; see: https://www.gnu.org/software/emacs/manual/html_node/elisp/Disabling-Commands.html
