@@ -127,6 +127,7 @@
    "M-y"     #'yas-expand
    "M-p"     #'+compile-with-no-preset ; just like vscode
    "M-w"     #'evil-avy-goto-char-timer ; quick find edit (point)?
+   "M-n"     #'narrow-to-region ; when done, M-x Widen
    "M-i"     #'consult-imenu
    "M-d"     #'evil-multiedit-match-symbol-and-next  ; dup
    ;; mac-like binding
