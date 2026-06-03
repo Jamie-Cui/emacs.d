@@ -442,6 +442,10 @@ pre-date the external-operation helper API."
   ;; see: https://github.com/syl20bnr/spacemacs/issues/11381#issuecomment-481239700
   ;; (defadvice projectile-project-root (around ignore-remote first activate)
   ;;   (unless (file-remote-p default-directory) ad-do-it))
+  ;; Projectile 2.10 auto-adds project type manifests such as CMakeLists.txt to
+  ;; the bottom-up root markers during load, so enforce this after registration.
+  (setopt projectile-project-root-files-bottom-up '(".git"))
+  (projectile-discard-root-cache)
   (projectile-mode +1)
 
   ;; see: https://metaredux.com/posts/2025/02/03/projectile-introduces-significant-caching-improvements.html

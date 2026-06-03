@@ -44,6 +44,12 @@
 (dolist (regexp '(".*org-element.*" ".*org-macs.*"))
   (add-to-list 'native-comp-jit-compilation-deny-list regexp))
 
+;; Org 9.8.5 bytecode can call this version check as a runtime function under
+;; Emacs 31 snapshots, although Org defines it as a macro.
+(with-eval-after-load 'org-macs
+  (when (macrop 'org-assert-version)
+    (defalias 'org-assert-version #'ignore)))
+
 (defcustom +emacs/repo-directory (expand-file-name "~/.emacs.d")
   "Path to emacs.d folder"
   :type 'string
