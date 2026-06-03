@@ -170,6 +170,7 @@ Adapted from https://github.com/emacs-evil/evil/issues/606"
   :after (:and evil evil-mc)
   :custom
   (evil-collection-setup-minibuffer t)
+  (evil-collection-repl-submit-state 'insert)
   :config
   ;; make sure the follwing key bindings always work
   (evil-collection-init)

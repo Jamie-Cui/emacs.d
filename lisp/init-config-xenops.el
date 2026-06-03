@@ -6,6 +6,72 @@
 (require 'org-element)
 (require 'subr-x)
 
+(declare-function smartparens-mode "smartparens")
+(declare-function xenops-math-parse-inline-element-at-point "xenops-math")
+
+(defvar-local fn/xenops-math-smartparens-suspended nil
+  "Non-nil when Smartparens is suspended while editing inline math.")
+
+(defvar-local fn/xenops-math-inline-editing-begin nil
+  "Beginning of the Xenops inline math element currently being edited.")
+
+(defun fn/xenops-math-inline-editing-element ()
+  "Return the Xenops inline math element being edited at point."
+  (and (bound-and-true-p xenops-mode)
+       (fboundp 'xenops-math-parse-inline-element-at-point)
+       (ignore-errors
+         (when-let* ((element (xenops-math-parse-inline-element-at-point))
+                     (begin-content (plist-get element :begin-content))
+                     (end-content (plist-get element :end-content)))
+           (when (and (eq (plist-get element :type) 'inline-math)
+                      (<= begin-content (point) end-content))
+             element)))))
+
+(defun fn/xenops-math-inline-editing-p ()
+  "Return non-nil when point is inside a Xenops inline math element."
+  (not (null (fn/xenops-math-inline-editing-element))))
+
+(defun fn/xenops-math-sync-smartparens-h ()
+  "Suspend Smartparens while editing Xenops inline math."
+  (when (fboundp 'smartparens-mode)
+    (if-let* ((element (fn/xenops-math-inline-editing-element)))
+        (progn
+          (setq fn/xenops-math-inline-editing-begin
+                (plist-get element :begin))
+          (when (bound-and-true-p smartparens-mode)
+            (setq fn/xenops-math-smartparens-suspended t)
+            (smartparens-mode -1)))
+      (setq fn/xenops-math-inline-editing-begin nil)
+      (when fn/xenops-math-smartparens-suspended
+        (setq fn/xenops-math-smartparens-suspended nil)
+        (smartparens-mode 1)))))
+
+(defun fn/xenops-math-restore-smartparens-h ()
+  "Restore Smartparens if inline math editing suspended it."
+  (when (and fn/xenops-math-smartparens-suspended
+             (fboundp 'smartparens-mode))
+    (setq fn/xenops-math-smartparens-suspended nil)
+    (smartparens-mode 1)))
+
+(defun fn/xenops-math-ignore-repeated-reveal-a (orig-fn window oldpos event-type)
+  "Avoid repeated Xenops reveal while editing the same inline math element."
+  (if (and (eq event-type 'entered)
+           fn/xenops-math-inline-editing-begin
+           (when-let* ((element (fn/xenops-math-inline-editing-element)))
+             (= (plist-get element :begin)
+                fn/xenops-math-inline-editing-begin)))
+      nil
+    (funcall orig-fn window oldpos event-type)))
+
+(defun fn/xenops-math-setup-smartparens-suspension-h ()
+  "Install buffer-local Smartparens suspension for Xenops inline math."
+  (add-hook 'pre-command-hook #'fn/xenops-math-sync-smartparens-h nil t)
+  (add-hook 'post-command-hook #'fn/xenops-math-sync-smartparens-h nil t)
+  (add-hook 'change-major-mode-hook
+            #'fn/xenops-math-restore-smartparens-h nil t)
+  (add-hook 'kill-buffer-hook
+            #'fn/xenops-math-restore-smartparens-h nil t))
+
 (use-package xenops
   :ensure t
   :if (and window-system (not (eq system-type 'windows-nt))) ;; do not load xenops on terminal emacs or windows nt
@@ -99,6 +165,15 @@ Return non-nil when the scale changed."
                            'xenops-math-display-image)
     (advice-add 'xenops-math-display-image
                 :after #'fn/xenops-math-display-image-set-svg-foreground))
+  (add-hook 'org-mode-hook #'fn/xenops-math-setup-smartparens-suspension-h)
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (when (derived-mode-p 'org-mode)
+        (fn/xenops-math-setup-smartparens-suspension-h))))
+  (unless (advice-member-p #'fn/xenops-math-ignore-repeated-reveal-a
+                           'xenops-math-handle-element-transgression)
+    (advice-add 'xenops-math-handle-element-transgression
+                :around #'fn/xenops-math-ignore-repeated-reveal-a))
   (defun fn/xenops-src-parse-at-point ()
     (-if-let*
         ((element (xenops-parse-element-at-point 'src))
