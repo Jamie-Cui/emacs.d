@@ -34,6 +34,11 @@
   (agent-shell-header-style 'text)
   (agent-shell-show-config-icons nil)
   :config
+
+  ;; HACK from https://github.com/xenodium/agent-shell#evil
+  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
+  (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input)
+
   (defun +agent-shell/sss-api-key ()
     "Return the SSS API key used by Codex."
     (or (getenv "SSS_API_KEY")

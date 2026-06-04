@@ -404,6 +404,10 @@ pre-date the external-operation helper API."
   :after eglot
   :if window-system ;; do not load eldoc-box on termial emacs
   :config
+  (add-hook 'eldoc-box-buffer-setup-hook
+            (lambda (_orig-buffer)
+              (setq-local cursor-type nil
+                          cursor-in-non-selected-windows nil)))
   (add-hook 'eldoc-mode-hook #'eldoc-box-hover-at-point-mode))
 
 ;; -----------------------------------------------------------
