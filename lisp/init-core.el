@@ -249,6 +249,16 @@ pre-date the external-operation helper API."
 (use-package wgrep
   :ensure t)
 
+(defun +evil/fix-path-separator-syntax-h ()
+  "Treat path separators as punctuation in output buffers."
+  (set-syntax-table (copy-syntax-table (syntax-table)))
+  (modify-syntax-entry ?/ "."))
+
+(dolist (hook '(grep-mode-hook
+                compilation-mode-hook
+                comint-mode-hook))
+  (add-hook hook #'+evil/fix-path-separator-syntax-h))
+
 (use-package iedit
   :ensure t
   :init
