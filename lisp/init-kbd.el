@@ -170,11 +170,11 @@
    :states '(normal visual motion)
    :keymaps 'override ; prevent from being override
    ;; application keys
-   "A"      #'agent-shell ;; A -> Agent Shell
+   ;; "A"      #'agent-shell ;; A -> Agent Shell
+   ;; "G"      #'gptel  ;; G -> Gptel
    "D"      #'docker
-   "G"      #'gptel  ;; G -> Gptel
-   "M"      #'magent-dwim ;; M -> Magent
-   "T"      #'telega ;; T -> Telegram
+   "A"      #'magent-dwim ;; A -> mAgent
+   ;; "T"      #'telega ;; T -> Telegram
    ;; most-frequency keys
    "."      #'find-file
    "<"      #'consult-buffer
