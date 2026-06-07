@@ -715,6 +715,7 @@ pre-date the external-operation helper API."
      ("*LLM response*" :position bottom :stick t :dedicated t)
      ;; org-related
      ("*Org Select*" :position bottom :stick t :dedicated t)
+     ("*Org Attach*" :position bottom :stick t :dedicated t)
      ("CAPTURE-inbox.org" :position bottom :stick t :dedicated t)
      (org-gtd-clarify-mode :position bottom :stick t :dedicated t)
      ;; (compilation-mode :position bottom :position bottom :stick t :dedicated t)

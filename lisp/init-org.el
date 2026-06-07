@@ -12,6 +12,10 @@
 (require 'dashboard-org-project)
 (dashboard-org-project-setup)
 
+;; archive to same file
+(setopt org-archive-location "::* Archive")
+(define-key org-mode-map (kbd "C-c C-a") #'org-archive-subtree)
+
 ;; Emacs 30.2 can native-compile this helper incorrectly and then call
 ;; `org-element-with-disabled-cache' like a function while dashboard renders
 ;; agenda items.
