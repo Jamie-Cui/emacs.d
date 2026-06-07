@@ -199,6 +199,46 @@ Returns DIR after ensuring it exists."
   :ensure t
   :defer t)
 
+;; Work around Gruvbox's stale Gnus face inheritance on Emacs 31.
+
+(defconst +emacs/gruvbox-themes
+  '(gruvbox
+    gruvbox-dark-hard
+    gruvbox-dark-medium
+    gruvbox-dark-soft
+    gruvbox-light-hard
+    gruvbox-light-medium
+    gruvbox-light-soft)
+  "Gruvbox theme variants that share the same Gnus face definitions.")
+
+(defun +emacs/replace-symbol-in-tree (tree from to)
+  "Return TREE with every occurrence of symbol FROM replaced by TO."
+  (cond
+   ((eq tree from) to)
+   ((consp tree)
+    (cons (+emacs/replace-symbol-in-tree (car tree) from to)
+          (+emacs/replace-symbol-in-tree (cdr tree) from to)))
+   (t tree)))
+
+(defun +emacs/fix-gruvbox-gnus-face-cycle-a (args)
+  "Fix Gruvbox's stale Gnus face inheritance in `custom-theme-set-faces' ARGS."
+  (let ((theme (car args)))
+    (if (memq theme +emacs/gruvbox-themes)
+        (cons theme
+              (mapcar
+               (lambda (face-spec)
+                 (if (eq (car-safe face-spec) 'gnus-group-news-low-empty)
+                     (+emacs/replace-symbol-in-tree
+                      face-spec
+                      'gnus-group-news-low
+                      'gnus-group-mail-1-empty)
+                   face-spec))
+               (cdr args)))
+      args)))
+
+(advice-add 'custom-theme-set-faces
+            :filter-args #'+emacs/fix-gruvbox-gnus-face-cycle-a)
+
 (use-package speed-type
   :ensure t
   :defer t)
