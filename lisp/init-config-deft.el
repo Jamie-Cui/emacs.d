@@ -16,6 +16,42 @@
   (make-directory dir t)
   dir)
 
+(defun +deft/use-default-font-h ()
+  "Keep the Deft browser on the configured default font."
+  (when (fboundp '+deft/apply-browser-faces)
+    (+deft/apply-browser-faces))
+  (setq-local buffer-face-mode-face 'default)
+  (setq-local truncate-lines t)
+  (when (bound-and-true-p buffer-face-mode)
+    (buffer-face-mode -1)))
+
+(defun +deft/default-font-family ()
+  "Return the current default face family, or nil when unset."
+  (let ((family (face-attribute 'default :family nil t)))
+    (when (stringp family)
+      family)))
+
+(defun +deft/set-browser-face (face inherit)
+  "Make FACE inherit colors from INHERIT while using the default font."
+  (apply #'set-face-attribute
+         face nil
+         `(,@(when-let* ((family (+deft/default-font-family)))
+               (list :family family))
+           :inherit ,(append (ensure-list inherit) '(default))
+           :weight regular
+           :slant normal)))
+
+(defun +deft/apply-browser-faces ()
+  "Apply faces for the Deft browser."
+  (+deft/set-browser-face 'deft-title-face 'font-lock-function-name-face)
+  (+deft/set-browser-face 'deft-summary-face 'font-lock-comment-face)
+  (+deft/set-browser-face 'deft-time-face 'font-lock-variable-name-face)
+  (+deft/set-browser-face 'deft-separator-face
+                          'font-lock-comment-delimiter-face)
+  (when (facep '+deft/group-header-face)
+    (+deft/set-browser-face '+deft/group-header-face
+                            '(font-lock-keyword-face bold))))
+
 (use-package deft
   :ensure t
   :after general
@@ -39,23 +75,7 @@
                 "\\)"))
   (setq deft-default-extension "org")
 
-  (set-face-attribute 'deft-title-face nil
-                      :inherit 'font-lock-function-name-face
-                      :weight 'regular
-                      :slant 'normal)
-  (set-face-attribute 'deft-summary-face nil
-                      :inherit 'font-lock-comment-face
-                      :weight 'regular
-                      :slant 'normal)
-  (set-face-attribute 'deft-time-face nil
-                      :inherit 'font-lock-variable-name-face
-                      :weight 'regular
-                      :slant 'normal)
-  (set-face-attribute 'deft-separator-face nil
-                      :inherit 'font-lock-comment-delimiter-face
-                      :weight 'regular
-                      :slant 'normal)
-
+  (add-hook 'deft-mode-hook #'+deft/use-default-font-h)
   (add-hook 'deft-mode-hook
             (lambda ()
               (setq-local revert-buffer-function
@@ -73,9 +93,10 @@
     :group 'deft)
 
   (defface +deft/group-header-face
-    '((t (:inherit (font-lock-keyword-face bold))))
+    '((t (:inherit (font-lock-keyword-face bold default))))
     "Face used for group headings in the Deft browser."
     :group 'deft)
+  (+deft/apply-browser-faces)
 
   (defvar-local +deft/current-group nil
     "Current group section while rendering the Deft browser.")
@@ -137,7 +158,7 @@ under `+deft/org-root-dir'."
   (defun +deft/group-at-point ()
     "Return the Deft group key at point, or nil when unavailable."
     (when (derived-mode-p 'deft-mode)
-      (or (when-let ((file (deft-filename-at-point)))
+      (or (when-let* ((file (deft-filename-at-point)))
             (+deft/group-key file))
           (let ((group (or (get-text-property (point) '+deft/group)
                            (and (> (point) (point-min))
@@ -156,7 +177,7 @@ under `+deft/org-root-dir'."
 
   (defun +deft/current-new-file-directory ()
     "Return the directory where a new Deft file should be created."
-    (if-let ((group (+deft/group-at-point)))
+    (if-let* ((group (+deft/group-at-point)))
         (+deft/group-directory group)
       (+deft/new-file-directory)))
 
@@ -325,7 +346,7 @@ When TRAILING is non-nil, also require a trailing slash."
   ;; NOTE enable auto refresh
   ;; see: https://github.com/jrblevin/deft/pull/62/files
   (defvar deft-auto-refresh-descriptor nil)
-  (defun deft-auto-refresh (event)
+  (defun deft-auto-refresh (_event)
     (deft-refresh))
 
   (defun +deft/update-auto-refresh-watch ()
@@ -384,12 +405,13 @@ When TRAILING is non-nil, also require a trailing slash."
 
   (defun +deft/reset-group-a (orig-fn &optional refresh)
     "Reset group state before calling ORIG-FN with REFRESH."
+    (+deft/use-default-font-h)
     (let ((+deft/current-group nil))
       (funcall orig-fn refresh)))
   (advice-add #'deft-buffer-setup :around #'+deft/reset-group-a)
 
-  (defun +deft/file-button-a (orig-fn file)
-    "Insert group headers and pin prefixes before calling ORIG-FN on FILE."
+  (defun +deft/file-button-a (_orig-fn file)
+    "Insert a Deft browser row for FILE with robust time-column alignment."
     (when (and file +deft/group-by-top-level-directory)
       (let ((group (+deft/group-key file)))
         (unless (equal group +deft/current-group)
@@ -399,15 +421,41 @@ When TRAILING is non-nil, also require a trailing slash."
           (insert (propertize (concat (+deft/group-label group) "\n")
                               'face '+deft/group-header-face
                               '+deft/group group)))))
-    (if (member file +deft/pinned-files)
-        (let ((deft-window-width (- deft-window-width
-                                    (string-width +deft/pin-prefix)))
-              (start (point)))
-          (funcall orig-fn file)
-          (save-excursion
-            (goto-char start)
-            (insert +deft/pin-prefix)))
-      (funcall orig-fn file)))
+    (when file
+      (let* ((pin-prefix (if (member file +deft/pinned-files)
+                             +deft/pin-prefix
+                           ""))
+             (full-title (concat pin-prefix
+                                 (or (deft-file-title file)
+                                     deft-empty-file-title)))
+             (summary (deft-file-summary file))
+             (mtime (when deft-time-format
+                      (format-time-string deft-time-format
+                                          (deft-file-mtime file))))
+             (mtime-width (deft-string-width mtime))
+             (line-width (max 0 (- deft-window-width
+                                    mtime-width
+                                    (if mtime 1 0))))
+             (title-width (min line-width (deft-string-width full-title)))
+             (title (truncate-string-to-width full-title title-width))
+             (summary-width
+              (max 0
+                   (min (deft-string-width summary)
+                        (- line-width
+                           title-width
+                           (deft-string-width deft-separator))))))
+        (insert-text-button title
+                            'type 'deft-button
+                            'tag file)
+        (when (> summary-width 0)
+          (insert (propertize deft-separator 'face 'deft-separator-face))
+          (insert (propertize (truncate-string-to-width summary summary-width)
+                              'face 'deft-summary-face)))
+        (when mtime
+          (while (< (current-column) line-width)
+            (insert " "))
+          (insert (propertize mtime 'face 'deft-time-face)))
+        (insert "\n"))))
   (advice-add #'deft-file-button :around #'+deft/file-button-a)
 
   (defun +deft/toggle-pin ()
