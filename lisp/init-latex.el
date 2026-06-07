@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'init-org)
+(require 'cl-lib)
 (require 'reftex)
 
 ;; -----------------------------------------------------------
@@ -39,16 +40,24 @@
   (setq pdf-sync-forward-display-action nil)
 
   ;; Set PDF-Tools as the default viewer
+  (defun +latex/pdf-tools-sync-view ()
+    "View the current TeX PDF with PDF Tools.
+
+Suppress the noisy SyncTeX message shown when point is on a source
+line, such as a preamble line, that has no corresponding PDF location."
+    (let ((message-function (symbol-function 'message)))
+      (cl-letf (((symbol-function 'message)
+                 (lambda (format-string &rest args)
+                   (let ((text (and (stringp format-string)
+                                    (apply #'format-message format-string args))))
+                     (unless (and text
+                                  (string= text "epdfinfo: Destination not found"))
+                       (apply message-function format-string args))))))
+        (TeX-pdf-tools-sync-view))))
+
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
         TeX-view-program-list
-        '(("PDF Tools" TeX-pdf-tools-sync-view)))
-
-  ;; Define forward search function
-  (defun TeX-pdf-tools-sync-view ()
-    (require 'pdf-sync)
-    (let ((pdf-file (expand-file-name (TeX-master-file "pdf")))
-          (line (line-number-at-pos)))
-      (pdf-sync-forward-search line)))
+        '(("PDF Tools" +latex/pdf-tools-sync-view)))
 
   ;; Enable Inverse Search in PDFs
   (setq pdf-sync-backward-search-method 'generic
