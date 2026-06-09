@@ -35,24 +35,37 @@
   (agent-shell-show-config-icons nil)
   :config
 
-  ;; HACK from https://github.com/xenodium/agent-shell#evil
-  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
-  (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input)
-
-  (defun +agent-shell/sss-api-key ()
-    "Return the SSS API key used by Codex."
-    (or (getenv "SSS_API_KEY")
-        (user-error
-         "SSS_API_KEY is not available in Emacs; restart Emacs or run `exec-path-from-shell-copy-env'")))
-
+  ;; HACK using +emacs/proxy for codex-acp
   (with-eval-after-load 'agent-shell-openai
-    (setq agent-shell-openai-authentication
-          (agent-shell-openai-make-authentication
-           :api-key #'+agent-shell/sss-api-key)
-          agent-shell-openai-codex-acp-command
-          '("codex-acp"
-            "-c" "model_provider=\"sss\""
-            "-c" "preferred_auth_method=\"apikey\""))))
+    (let ((proxy (concat "http://" +emacs/proxy)))
+      (setq agent-shell-openai-codex-environment
+            (list
+             (format "http_proxy=%s" proxy)
+             (format "https_proxy=%s" proxy)
+             (format "HTTP_PROXY=%s" proxy)
+             (format "HTTPS_PROXY=%s" proxy)
+             (format "all_proxy=%s" proxy)
+             (format "ALL_PROXY=%s" proxy)
+             "no_proxy=localhost,127.0.0.1,::1"
+             "NO_PROXY=localhost,127.0.0.1,::1"))))
+
+  ;; HACK using sssaicode api key
+
+  ;; (defun +agent-shell/sss-api-key ()
+  ;;   "Return the SSS API key used by Codex."
+  ;;   (or (getenv "SSS_API_KEY")
+  ;;       (user-error
+  ;;        "SSS_API_KEY is not available in Emacs; restart Emacs or run `exec-path-from-shell-copy-env'")))
+
+  ;; (with-eval-after-load 'agent-shell-openai
+  ;;   (setq agent-shell-openai-authentication
+  ;;         (agent-shell-openai-make-authentication
+  ;;          :api-key #'+agent-shell/sss-api-key)
+  ;;         agent-shell-openai-codex-acp-command
+  ;;         '("codex-acp"
+  ;;           "-c" "model_provider=\"sss\""
+  ;;           "-c" "preferred_auth_method=\"apikey\"")))
+  )
 
 (use-package gptel
   :ensure t
