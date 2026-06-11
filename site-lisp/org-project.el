@@ -108,7 +108,7 @@
   :group '+org-project)
 
 (defcustom +org-project-done-journal-log-enabled t
-  "When non-nil, log completed project tasks to the current journal day."
+  "When non-nil, log completed project task states to the current journal day."
   :type 'boolean
   :group '+org-project)
 
@@ -144,7 +144,7 @@
   "Base tags applied to journal task completion entries.")
 
 (defconst +org-project--done-log-property "DONE_JOURNAL_LOGGED_AT"
-  "Property used to avoid duplicate task completion journal entries.")
+  "Property used to avoid duplicate terminal-state journal entries.")
 
 (defconst org-project-todo-list-buffer-name "*Org Project TODO List*"
   "Buffer name used by `org-project-todo-list'.")
@@ -1517,11 +1517,16 @@ TODO keyword like `org-todo-list'."
           (+org-project--set-tags (append +org-project--audit-base-tags '("active")))
           (+org-project--save-buffer-no-hooks))))))
 
-(defun +org-project--done-log-entry-body (source-id project-file previous-state)
-  "Return journal body text for completed SOURCE-ID from PROJECT-FILE.
-PREVIOUS-STATE is the task state before completion, or nil."
-  (let ((lines (list (format "- task completed: [[id:%s][open project task]]"
-                             source-id))))
+(defun +org-project--done-log-entry-body (source-id project-file final-state
+                                                    previous-state)
+  "Return journal body text for SOURCE-ID completed in FINAL-STATE.
+PROJECT-FILE is the source file.  PREVIOUS-STATE is the task state before
+completion, or nil."
+  (let ((lines (list (if (equal final-state "DONE")
+                         (format "- task completed: [[id:%s][open project task]]"
+                                 source-id)
+                       (format "- task marked %s: [[id:%s][open project task]]"
+                               final-state source-id)))))
     (when (and (stringp previous-state)
                (not (string-empty-p previous-state)))
       (setq lines (append lines (list (format "- previous state: %s"
@@ -1532,8 +1537,9 @@ PREVIOUS-STATE is the task state before completion, or nil."
     (concat (string-join lines "\n") "\n")))
 
 (defun +org-project--log-done-to-journal (source-id task-title project project-file
-                                                  done-at previous-state time)
-  "Write a journal entry for a completed project task.
+                                                  final-state done-at
+                                                  previous-state time)
+  "Write a journal entry for a project task completed in FINAL-STATE.
 SOURCE-ID links to the task.  TASK-TITLE, PROJECT and PROJECT-FILE describe the
 source task.  DONE-AT is the inactive timestamp string, PREVIOUS-STATE is the
 task state before completion, and TIME selects the journal day."
@@ -1556,7 +1562,8 @@ task state before completion, and TIME selects the journal day."
           (org-end-of-subtree t t)
           (unless (bolp)
             (insert "\n"))
-          (insert (format "** DONE [%s] %s\n:PROPERTIES:\n:SOURCE_ID: %s\n:PROJECT: %s\n:PROJECT_FILE: %s\n%s:DONE_AT: %s\n:END:\n%s"
+          (insert (format "** %s [%s] %s\n:PROPERTIES:\n:SOURCE_ID: %s\n:PROJECT: %s\n:PROJECT_FILE: %s\n%s:DONE_AT: %s\n:END:\n%s"
+                          final-state
                           project
                           task-title
                           source-id
@@ -1565,16 +1572,17 @@ task state before completion, and TIME selects the journal day."
                           previous-property
                           done-at
                           (+org-project--done-log-entry-body
-                           source-id project-file previous-state)))
+                           source-id project-file final-state previous-state)))
           (org-back-to-heading t)
           (+org-project--set-tags (append +org-project--done-log-base-tags
-                                          '("done")))
+                                          (list (+org-project--slugify
+                                                 final-state))))
           (+org-project--save-buffer-no-hooks))))))
 
 (defun +org-project-log-done-to-journal-h ()
-  "Log central project tasks to `org-journal' when they become DONE."
+  "Log central project tasks to `org-journal' when they reach a done state."
   (when (and +org-project-done-journal-log-enabled
-             (equal (bound-and-true-p org-state) "DONE")
+             (member (bound-and-true-p org-state) org-done-keywords)
              (+org-project-file-p)
              (not (+org-project-journal-file-p)))
     (condition-case err
@@ -1591,12 +1599,14 @@ task state before completion, and TIME selects the journal day."
                    (task-title (or (org-get-heading t t t t)
                                    "Completed task"))
                    (source-id (org-id-get-create))
+                   (final-state (bound-and-true-p org-state))
                    (previous-state (bound-and-true-p org-last-state)))
               (+org-project--log-done-to-journal
-               source-id task-title project project-file done-at previous-state time)
+               source-id task-title project project-file final-state done-at
+               previous-state time)
               (+org-project--set-property +org-project--done-log-property done-at))))
       (error
-       (message "org-project: failed to write DONE journal entry: %s"
+       (message "org-project: failed to write done-state journal entry: %s"
                 (error-message-string err))))))
 
 (defun +org-project--save-captured-project-buffer (context)
