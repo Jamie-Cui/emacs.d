@@ -318,7 +318,10 @@
    "fr"     #'consult-recent-file ; find recent file (globally)
    "fb"     #'consult-buffer
    "fB"     #'consult-bookmark ; find recent file (globally)
-   "ff"     #'consult-fd ; find file (in this directory)
+   ;; FIXME consult-fd is a better alternative, but it seems consult-fd only finds the
+   ;; project files, which does not make sense to me here. Since when I called
+   ;; consult-find/consult-fd, I want to find files that resides outside of the repo
+   "ff"     #'consult-find ; find file (in this directory),
    "fF"     #'consult-locate ; find file (system wide)
    "fm"     #'consult-man
    "fM"     #'consult-woman

@@ -537,6 +537,7 @@ Returns DIR after ensuring it exists."
   :ensure t
   :demand t
   :custom
+  (overleaf-project-auth-backend 'firefox-cookies)
   (overleaf-project-cookie-storage 'authinfo)
   :config
   (with-eval-after-load 'magit
