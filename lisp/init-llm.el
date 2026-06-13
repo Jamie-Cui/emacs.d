@@ -49,6 +49,19 @@
              "no_proxy=localhost,127.0.0.1,::1"
              "NO_PROXY=localhost,127.0.0.1,::1"))))
 
+  (with-eval-after-load 'agent-shell-anthropic
+    (let ((proxy (concat "http://" +emacs/proxy)))
+      (setq agent-shell-anthropic-claude-environment
+            (list
+             (format "http_proxy=%s" proxy)
+             (format "https_proxy=%s" proxy)
+             (format "HTTP_PROXY=%s" proxy)
+             (format "HTTPS_PROXY=%s" proxy)
+             (format "all_proxy=%s" proxy)
+             (format "ALL_PROXY=%s" proxy)
+             "no_proxy=localhost,127.0.0.1,::1"
+             "NO_PROXY=localhost,127.0.0.1,::1"))))
+
   ;; HACK using sssaicode api key
 
   ;; (defun +agent-shell/sss-api-key ()

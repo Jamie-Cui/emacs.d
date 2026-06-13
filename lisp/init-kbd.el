@@ -70,8 +70,9 @@
   "Find private emacs config in user-emacs-directory."
   (interactive)
   (when (not (projectile-project-p user-emacs-directory))
-    (dired-create-empty-file (concat user-emacs-directory projectile-dirconfig-file))
-    (projectile-add-known-project user-emacs-directory))
+    (magit-call-git "init" (magit-convert-filename-for-git
+                            (expand-file-name user-emacs-directory)))
+    (projectile-discover-projects-in-directory user-emacs-directory))
   (projectile-switch-project-by-name user-emacs-directory))
 
 (use-package which-key
