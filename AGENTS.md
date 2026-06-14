@@ -1,35 +1,35 @@
-# Repository Guidelines
+# AGENTS.md
 
-## Project Structure & Module Organization
+This file provides guidance to the AI agent when working with code in this repository.
 
-This repository is a GNU Emacs 30.1+ configuration. `templates/init.el` is the user-facing bootstrap copied by `make init`; it sets `+emacs/repo-directory` and loads the root `init.el`. The root `init.el` handles startup tuning, package setup, and module loading.
+## Bootstrap & Loading Chain
 
-Core modules live in `lisp/` as `init-*.el` and `init-config-*.el`. Local packages and helper libraries live in `site-lisp/`. YASnippet templates are grouped by mode in `snippets/`, font profiles are in `cnfonts/`, gptel-agent org files are in `agents/`, and miscellaneous templates are in `templates/`.
+- `templates/init.el` is the user-facing bootstrap copied to `~/.emacs.d/init.el` by `make init`. It sets `+emacs/repo-directory` and loads the root `init.el`.
+- The root `init.el` is the main entry point: startup tuning, package setup, then explicit `(require 'init-*)` calls to load modules from `lisp/`.
+- Adding a new module requires adding a `(require 'init-foo)` in the root `init.el`.
+- `lisp/init-config-*.el` files are sub-modules loaded by their parent `init-*.el` modules, not directly by the root `init.el`.
 
-## Build, Test, and Development Commands
+## Build Commands
 
-- `make help`: list available maintenance targets.
-- `make init`: install `templates/init.el` to `~/.emacs.d/init.el` and point it at this checkout.
-- `make run`: start Emacs with this configuration.
-- `make debug`: start Emacs with `--debug-init` for startup failures.
-- `make clean`: remove generated `.elc`, `.eln`, and archive files.
-- `make download`: refresh package metadata and install configured packages in batch mode.
-- `make elpa` / `make standalone`: build package or full standalone archives.
+- `make init` — install `templates/init.el` to `~/.emacs.d/init.el` and point it at this checkout.
+- `make debug` — run Emacs with `--debug-init` for startup failures.
+- Most Makefile targets (`clean`, `elpa`, `standalone`) operate on `$HOME/.emacs.d`, not the repo directory.
+- Focused startup check: `emacs -q --load /path/to/repo/init.el --debug-init`.
 
-For a focused startup check, run `emacs -q --load /path/to/this/init.el --debug-init`.
+## Coding Conventions
 
-## Coding Style & Naming Conventions
+- All Elisp files use lexical binding: `;;; file.el --- summary -*- lexical-binding: t -*-`.
+- Use `use-package` for external packages. Keep local reusable code in `site-lisp/`.
+- Custom functions and variables use `+module/name` prefix (e.g., `+emacs/proxy`, `+emacs/repo-directory`).
+- Advice helpers use `-a` suffix; hook helpers use `-h` suffix.
+- Targets Emacs 30.1+.
 
-All Elisp files should use lexical binding, usually via `;;; file.el --- summary -*- lexical-binding: t -*-`. Prefer `use-package` for external packages and keep local reusable code in `site-lisp/`. Custom functions and variables use the `+module/name` prefix, for example `+emacs/proxy`. Advice helpers use `-a` suffixes and hook helpers use `-h` suffixes. Keep comments short and only where they clarify non-obvious behavior.
+## Commits
 
-## Testing Guidelines
+Conventional Commit style with scope: `feat(magit): ...`, `fix(org): ...`, `refactor(llm): ...`, `chore: ...`. Imperative, scoped subjects.
 
-There is no dedicated repository-wide test suite yet. Validate changes by byte-compiling the touched Elisp file when practical and by running `make debug` for startup-impacting edits. For local packages, add ERT tests if behavior becomes complex or shared; name tests after the feature or function under test.
+## Gotchas
 
-## Commit & Pull Request Guidelines
-
-Recent history mostly follows concise Conventional Commit style, such as `feat(magit): ...`, `fix(org): ...`, `refactor(llm): ...`, and `chore: ...`. Use that pattern when possible and keep subjects imperative and scoped. Pull requests should describe the user-visible behavior, list manual validation commands, and include screenshots only for UI-facing changes such as dashboard, font, or display tweaks.
-
-## Security & Configuration Tips
-
-Do not commit secrets, auth tokens, private org data, or machine-specific paths beyond documented defaults. Keep proxy and local directory customizations in the installed user init file rather than hard-coding them into shared modules.
+- `site-lisp/` contains local custom/forked packages (e.g., `org-project.el`, `magit-gptel.el`, `dashboard-elfeed.el`), not third-party ELPA packages.
+- User-customizable settings (`+emacs/proxy`, `+emacs/org-root-dir`) belong in `templates/init.el` or the installed `~/.emacs.d/init.el`, not hard-coded in shared modules.
+- Do not commit secrets, auth tokens, private org data, or machine-specific paths.

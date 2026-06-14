@@ -112,7 +112,10 @@
       :endpoint "/chat/completions"
       :stream t
       :key (auth-source-pick-first-password :host "aliyun")
-      :models '((qwen3.7-max :request-params (:enable_thinking t))))))
+      :models '(
+                qwen3.7-plus
+                (qwen3.7-max :request-params (:enable_thinking t))
+                ))))
 
 (defvar +gptel/sssaicode
   (gptel-make-openai "SssAiCode"
@@ -174,7 +177,7 @@
   :after (gptel magit)
   :demand t
   :custom
-  (magit-gptel-model 'qwen-plus)
+  (magit-gptel-model 'qwen3.7-max)
   :config
   (setopt magit-gptel-commit-prompt
           (concat

@@ -188,6 +188,9 @@ is always kept ahead of the patch."
 (defvar-local magit-gptel--generated-message nil
   "Last commit message inserted by `magit-gptel'.")
 
+(defvar magit-gptel--commit-wait-generation 0
+  "Monotonic counter used to invalidate stale commit-buffer wait timers.")
+
 (defun magit-gptel--next-request-id ()
   "Return a fresh Magit GPTel request id."
   (format "magit-gptel-%06d" (cl-incf magit-gptel--request-counter)))
@@ -319,18 +322,22 @@ is always kept ahead of the patch."
               (equal (magit-toplevel) repo-root)))))
    (buffer-list)))
 
-(defun magit-gptel--wait-for-commit-buffer (repo-root callback &optional remaining)
+(defun magit-gptel--wait-for-commit-buffer (repo-root callback)
   "Call CALLBACK with the commit buffer for REPO-ROOT once it exists.
-REMAINING tracks how many seconds remain before timing out."
-  (let ((remaining (or remaining magit-gptel-commit-buffer-wait-seconds)))
-    (if-let* ((buffer (magit-gptel--find-commit-buffer repo-root)))
-        (funcall callback buffer)
-      (if (<= remaining 0)
-          (message "magit-gptel: Timed out waiting for commit buffer in %s"
-                   repo-root)
-        (run-at-time 0.05 nil
-                     #'magit-gptel--wait-for-commit-buffer
-                     repo-root callback (- remaining 0.05))))))
+Uses a generation counter to invalidate stale timers when this function
+is called again before a previous wait has completed."
+  (let ((gen (cl-incf magit-gptel--commit-wait-generation)))
+    (cl-labels
+        ((recurse (remaining)
+           (if-let* ((buffer (magit-gptel--find-commit-buffer repo-root)))
+               (when (= gen magit-gptel--commit-wait-generation)
+                 (funcall callback buffer))
+             (if (<= remaining 0)
+                 (when (= gen magit-gptel--commit-wait-generation)
+                   (message "magit-gptel: Timed out waiting for commit buffer in %s"
+                            repo-root))
+               (run-at-time 0.05 nil #'recurse (- remaining 0.05))))))
+      (recurse magit-gptel-commit-buffer-wait-seconds))))
 
 (defun magit-gptel--request-for-buffer (&optional buffer)
   "Return the active request owned by BUFFER."
@@ -543,32 +550,40 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
 
 (defun magit-gptel--dispatch-request (request prompt system-prompt)
   "Send PROMPT for REQUEST with SYSTEM-PROMPT through an isolated gptel buffer."
-  (let ((request-buffer (generate-new-buffer " *magit-gptel-request*")))
+  (let* ((request-buffer (generate-new-buffer " *magit-gptel-request*"))
+         (model (magit-gptel--default-model))
+         (orig-request-params (copy-sequence
+                               (get model :request-params))))
     (setf (magit-gptel-request-request-buffer request) request-buffer
           (magit-gptel-request-status request) 'running)
     (magit-gptel--register-request request)
-    (condition-case err
-        (with-current-buffer request-buffer
-          (let ((gptel-backend (magit-gptel--default-backend))
-                (gptel-model (magit-gptel--default-model))
-                (gptel-use-context nil)
-                (gptel-context nil)
-                (gptel-use-tools nil)
-                (gptel-tools nil)
-                (gptel-track-response nil)
-                (gptel-prompt-transform-functions nil)
-                (gptel-include-reasoning nil))
-            (gptel-request
-                prompt
-              :buffer request-buffer
-              :system system-prompt
-              :stream nil
-              :callback (lambda (response info)
-                          (magit-gptel--handle-response
-                           request response info)))))
-      (error
-       (magit-gptel--cleanup-request request)
-       (signal (car err) (cdr err))))
+    (put model :request-params
+         (plist-put (get model :request-params)
+                    :enable_thinking :json-false))
+    (unwind-protect
+        (condition-case err
+            (with-current-buffer request-buffer
+              (let ((gptel-backend (magit-gptel--default-backend))
+                    (gptel-model model)
+                    (gptel-use-context nil)
+                    (gptel-context nil)
+                    (gptel-use-tools nil)
+                    (gptel-tools nil)
+                    (gptel-track-response nil)
+                    (gptel-prompt-transform-functions nil)
+                    (gptel-include-reasoning nil))
+                (gptel-request
+                    prompt
+                  :buffer request-buffer
+                  :system system-prompt
+                  :stream nil
+                  :callback (lambda (response info)
+                              (magit-gptel--handle-response
+                               request response info)))))
+          (error
+           (magit-gptel--cleanup-request request)
+           (signal (car err) (cdr err))))
+      (put model :request-params orig-request-params))
     request))
 
 (defun magit-gptel--cancel-request (request &optional silent)

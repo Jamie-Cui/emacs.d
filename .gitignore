@@ -338,3 +338,4 @@ TSWLatexianTemp*
 *.elc
 /docs/superpowers/
 /.codex
+/.qoder/
