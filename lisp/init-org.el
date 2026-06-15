@@ -258,19 +258,6 @@
 (dolist (target '(evil-org-open-below evil-org-open-above org-indent-region org-indent-line))
   (advice-add target :around #'+org-fix-window-excursions-a))
 
-;; HACK Face specs fed directly to `org-todo-keyword-faces' don't respect
-;;      underlying faces like the `org-todo' face does, so we define our own
-;;      intermediary faces that extend from org-todo.
-(with-no-warnings
-  (custom-declare-face '+org-todo-active
-                       '((t (:inherit (bold font-lock-constant-face org-todo)))) "")
-  (custom-declare-face '+org-todo-project
-                       '((t (:inherit (bold font-lock-doc-face org-todo)))) "")
-  (custom-declare-face '+org-todo-onhold
-                       '((t (:inherit (bold warning org-todo)))) "")
-  (custom-declare-face
-   '+org-todo-cancel  '((t (:inherit (bold error org-todo)))) ""))
-
 ;; -----------------------------------------------------------
 ;; DONE org
 ;;

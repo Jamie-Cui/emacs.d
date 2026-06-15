@@ -358,6 +358,49 @@
          (current-prefix-arg '(4)))
     (call-interactively 'compile)))
 
+(defun +copy-ref-dwim ()
+  "Copy the current file location and text at point to the kill ring.
+
+When a region is active, copy the file with the selected line range.
+Otherwise, copy the current line."
+  (interactive)
+  (let* ((file (or buffer-file-name
+                   (user-error "Buffer is not associated with a file")))
+         (has-region (use-region-p))
+         (beg (if has-region (region-beginning) (line-beginning-position)))
+         (raw-end (if has-region (region-end) (line-end-position)))
+         (end (if (> raw-end beg) (1- raw-end) raw-end))
+         (start-line (line-number-at-pos beg t))
+         (end-line (line-number-at-pos end t))
+         (line-range
+          (format "%s:%d-%d" file start-line end-line))
+         (content
+          (if (= start-line end-line)
+              (let ((content-end (if (and (> raw-end beg)
+                                          (eq (char-before raw-end) ?\n))
+                                     (1- raw-end)
+                                   raw-end)))
+                (buffer-substring-no-properties beg content-end))
+            (save-excursion
+              (goto-char (point-min))
+              (forward-line (1- start-line))
+              (let ((line start-line)
+                    lines)
+                (while (<= line end-line)
+                  (push (format "   %d: %s"
+                                line
+                                (buffer-substring-no-properties
+                                 (line-beginning-position)
+                                 (line-end-position)))
+                        lines)
+                  (forward-line 1)
+                  (setq line (1+ line)))
+                (mapconcat #'identity (nreverse lines) "\n")))))
+         (text (format "%s\n\n%s" line-range content)))
+    (kill-new text)
+    (setq deactivate-mark t)
+    (message "Yanked: %s" line-range)))
+
 ;; copy buffer file name
 (defun +copy-buffer-file-name ()
   "Copy the current buffer file name to clipboard."

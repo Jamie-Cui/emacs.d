@@ -203,6 +203,10 @@
    "wv"     #'+evil/window-vsplit-and-follow
    "wm"     #'delete-other-windows
    "wR"     #'redraw-display
+   ;; yank-related key bindings
+   "y" '(:ignore t :which-key "yank")
+   "yf"     #'+copy-buffer-file-name ; copy file name
+   "ya"     #'+copy-ref-dwim ; copy dwim
    ;; buffer-related key bindings
    "b" '(:ignore t :which-key "buffer")
    "ba"     #'evil-buffer-new
@@ -210,7 +214,6 @@
    "bd"     #'kill-current-buffer
    "bs"     #'save-buffer
    "bS"     #'+save-all-buffers
-   "by"     #'+copy-buffer-file-name
    "br"     #'+kbd/revert-buffer-no-confirm
    "j" '(:ignore t :which-key "jump (bookmark)")
    "j RET"  #'consult-bookmark
@@ -274,7 +277,7 @@
    "nrc"     #'org-roam-db-clear-all
    "nx" '(:ignore t :which-key "xenops")
    "nxe"     #'xenops-reveal ; edit
-   "nxy"     #'xenops-copy-at-point ; yank
+   "nxc"     #'xenops-copy-at-point ; yank
    "nxr"     #'xenops-regenerate ; regenerate
    ;; help functions
    "h" '(:ignore t :which-key "help")
@@ -376,12 +379,6 @@
   (general-define-key
    :keymaps 'smerge-mode-map
    "C-c C-c"     #'smerge-keep-current)
-
-  ;; eat-mode
-  (general-define-key
-   :states 'normal
-   :keymaps 'eat-mode-map
-   "p"   #'eat-yank)
   )
 
 (provide 'init-kbd)
