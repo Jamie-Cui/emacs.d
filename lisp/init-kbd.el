@@ -292,6 +292,7 @@
    "q" '(:ignore t :which-key "quit")
    "qq"     #'save-buffers-kill-terminal
    "qr"     #'restart-emacs
+   "qc"     #'+emacs/clear-native-compile-cache
    ;; toggles
    "t" '(:ignore t :which-key "toggle")
    "td"     #'toggle-debug-on-error

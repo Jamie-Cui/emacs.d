@@ -532,17 +532,17 @@ Returns DIR after ensuring it exists."
 ;; NOTE install this first
 ;; https://github.com/mozilla/geckodriver/releases
 ;; cargo install geckodriver
-(use-package overleaf-project
-  :vc (:url "https://github.com/Jamie-Cui/overleaf-project" :rev "main")
+(use-package git-overleaf
+  :vc (:url "https://github.com/Jamie-Cui/git-overleaf" :rev "main")
   :ensure t
   :demand t
   :custom
-  (overleaf-project-auth-backend 'firefox-cookies)
-  (overleaf-project-cookie-storage 'authinfo)
+  (git-overleaf-auth-backend 'firefox-cookies)
+  (git-overleaf-cookie-storage 'authinfo)
   :config
   (with-eval-after-load 'magit
-    (when (require 'overleaf-project-magit nil t)
-      (overleaf-project-magit-setup))))
+    (when (require 'git-overleaf-magit nil t)
+      (git-overleaf-magit-setup))))
 
 ;; (use-package edraw
 ;;   :vc (:url "https://github.com/misohena/el-easydraw.git")
