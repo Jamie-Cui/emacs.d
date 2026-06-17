@@ -352,7 +352,12 @@ pre-date the external-operation helper API."
   :config
   (setq eglot-ignored-server-capabilities '(:documentHighlightProvider ; no highlight
                                             :semanticTokensProvider))
+  (setq eglot-watch-files-outside-project-root nil)
   (setq eglot-confirm-server-initiated-edits nil)
+
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode)
+                 . ("uvx" "--from" "pyright" "pyright-langserver" "--stdio")))
 
   (add-to-list 'eglot-server-programs
                '(text-mode . ("harper-ls" "--stdio"))) ;; add harper-ls
