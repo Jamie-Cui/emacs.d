@@ -1486,6 +1486,12 @@ TODO keyword like `org-todo-list'."
                          ""))))
     (_ "- task removed from project file after capture\n")))
 
+(defun +org-project--message-text (text)
+  "Return TEXT stripped of text properties for user-facing messages."
+  (if (stringp text)
+      (substring-no-properties text)
+    text))
+
 (defun +org-project-log-capture (context source-id task-title)
   "Write a journal audit entry for a captured project task."
   (require 'org-journal)
@@ -1515,7 +1521,10 @@ TODO keyword like `org-todo-list'."
                           (+org-project--audit-entry-body 'active source-id)))
           (org-back-to-heading t)
           (+org-project--set-tags (append +org-project--audit-base-tags '("active")))
-          (+org-project--save-buffer-no-hooks))))))
+          (+org-project--save-buffer-no-hooks)
+          (message "org-project: wrote CAPTURED journal entry for %s to %s"
+                   (+org-project--message-text task-title)
+                   (abbreviate-file-name entry-path)))))))
 
 (defun +org-project--done-log-entry-body (source-id project-file final-state
                                                     previous-state)
@@ -1577,7 +1586,11 @@ task state before completion, and TIME selects the journal day."
           (+org-project--set-tags (append +org-project--done-log-base-tags
                                           (list (+org-project--slugify
                                                  final-state))))
-          (+org-project--save-buffer-no-hooks))))))
+          (+org-project--save-buffer-no-hooks)
+          (message "org-project: wrote %s journal entry for %s to %s"
+                   final-state
+                   (+org-project--message-text task-title)
+                   (abbreviate-file-name entry-path)))))))
 
 (defun +org-project-log-done-to-journal-h ()
   "Log central project tasks to `org-journal' when they reach a done state."
