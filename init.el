@@ -533,7 +533,7 @@ Returns DIR after ensuring it exists."
 ;; https://github.com/mozilla/geckodriver/releases
 ;; cargo install geckodriver
 (use-package git-overleaf
-  :vc (:url "https://github.com/Jamie-Cui/git-overleaf" :rev "main")
+  :vc (:url "https://github.com/Jamie-Cui/git-overleaf.el" :rev "main")
   :ensure t
   :demand t
   :custom
