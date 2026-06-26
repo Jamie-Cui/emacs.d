@@ -176,6 +176,9 @@
 (defvar-local org-project-todo-list--render-width nil
   "Last window width used to render `org-project-todo-list'.")
 
+(defvar-local org-project-todo-list--rendering nil
+  "Non-nil while `org-project-todo-list' is rendering.")
+
 (defface org-project-todo-list-project-face
   '((t (:inherit font-lock-doc-face)))
   "Face used for the project column."
@@ -726,9 +729,25 @@ Optional FILTER limits the result to matching TODO keywords."
       "agent")
      (t ""))))
 
+(defun +org-project--scan-buffer-for-file (file)
+  "Return a buffer for scanning FILE without interactive stale-file prompts.
+
+When FILE is already visited and its on-disk contents changed, silently revert
+the buffer so refreshes reflect disk changes without prompting."
+  (let* ((expanded (expand-file-name file))
+         (buffer (find-buffer-visiting expanded)))
+    (if (buffer-live-p buffer)
+        (progn
+          (with-current-buffer buffer
+            (when (and buffer-file-name
+                       (not (verify-visited-file-modtime buffer)))
+              (revert-buffer t t t)))
+          buffer)
+      (find-file-noselect expanded t))))
+
 (defun +org-project--collect-file-action-items (file &optional filter bucket)
   "Collect leaf action items from FILE matching FILTER in BUCKET."
-  (let ((buffer (find-file-noselect file))
+  (let ((buffer (+org-project--scan-buffer-for-file file))
         items)
     (with-current-buffer buffer
       (unless (derived-mode-p 'org-mode)
@@ -867,6 +886,8 @@ When OTHER-WINDOW is non-nil, display it in another window."
   (when (derived-mode-p 'org-project-todo-list-mode)
     (let ((width (+org-project--todo-list-window-width)))
       (unless (or org-project-todo-list--edit-marker
+                  org-project-todo-list--rendering
+                  (active-minibuffer-window)
                   (equal width org-project-todo-list--render-width))
         (+org-project--render-todo-list)))))
 
@@ -1161,16 +1182,18 @@ With optional ARG, pass it through as `current-prefix-arg'."
 
 (defun +org-project--render-todo-list (&optional _ignore-auto _noconfirm)
   "Render the current `org-project-todo-list' buffer."
-  (let ((inhibit-read-only t))
-    (setq tabulated-list-format (+org-project--todo-list-format))
-    (setq tabulated-list-entries (+org-project--todo-list-entries))
-    (setq-local org-project-todo-list--render-width
-                (+org-project--todo-list-window-width))
-    (tabulated-list-init-header)
-    (setq-local org-project-todo-list--header-columns header-line-format)
-    (+org-project--update-header-line)
-    (tabulated-list-print t)
-    (setq buffer-read-only t)))
+  (unless org-project-todo-list--rendering
+    (let ((org-project-todo-list--rendering t)
+          (inhibit-read-only t))
+      (setq tabulated-list-format (+org-project--todo-list-format))
+      (setq tabulated-list-entries (+org-project--todo-list-entries))
+      (setq-local org-project-todo-list--render-width
+                  (+org-project--todo-list-window-width))
+      (tabulated-list-init-header)
+      (setq-local org-project-todo-list--header-columns header-line-format)
+      (+org-project--update-header-line)
+      (tabulated-list-print t)
+      (setq buffer-read-only t))))
 
 (defun org-project-todo-list-refresh ()
   "Refresh the current `org-project-todo-list' buffer."
