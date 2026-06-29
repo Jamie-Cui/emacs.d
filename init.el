@@ -517,23 +517,34 @@ Returns DIR after ensuring it exists."
   (setq elfeed-show-entry-switch #'switch-to-buffer
         elfeed-show-entry-delete #'elfeed-kill-buffer))
 
-(use-package telega
-  :ensure t
-  :config
-  (let* ((parts (split-string +emacs/proxy ":"))
-         (server (car parts))
-         (port (string-to-number (cadr parts))))
-    (setq telega-proxies
-          (list `(:server ,server
-                          :port ,port
-                          :enable t
-                          :type (:@type "proxyTypeSocks5"))))))
+;; (use-package telega
+;;   :ensure t
+;;   :config
+;;   (let* ((parts (split-string +emacs/proxy ":"))
+;;          (server (car parts))
+;;          (port (string-to-number (cadr parts))))
+;;     (setq telega-proxies
+;;           (list `(:server ,server
+;;                           :port ,port
+;;                           :enable t
+;;                           :type (:@type "proxyTypeSocks5"))))))
+
+;; (setq package-vc-allow-build-commands t)
+;; (use-package reader
+;;   ;; The upstream `all' target regenerates reader-autoloads.el without
+;;   ;; package.el's load-path prelude, so only build the native module here.
+;;   :preface
+;;   (add-to-list 'load-path (expand-file-name "reader" package-user-dir))
+;;   :vc (:url "https://github.com/Jamie-Cui/emacs-reader"
+;;             :rev "master"
+;;             :make "render-core.so"))
 
 ;; NOTE install this first
 ;; https://github.com/mozilla/geckodriver/releases
 ;; cargo install geckodriver
 (use-package git-overleaf
-  :vc (:url "https://github.com/Jamie-Cui/git-overleaf.el" :rev "main")
+  :vc (:url "https://github.com/Jamie-Cui/git-overleaf.el"
+            :rev "main")
   :ensure t
   :demand t
   :custom
