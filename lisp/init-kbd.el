@@ -5,6 +5,10 @@
 
 (require 'init-config-evil)
 
+(declare-function cnfonts-mouse-wheel "cnfonts")
+(declare-function pdf-view-enlarge "pdf-view")
+(declare-function pdf-view-shrink "pdf-view")
+
 ;; Named functions for disabled keybindings (better debugging/profiling)
 (defun +kbd/disabled-M-u ()
   "Placeholder for disabled M-u binding."
@@ -47,6 +51,49 @@
      (if (equal (cadr err) "Buffer does not seem to be associated with any file")
          (user-error "Buffer is not associated with a file")
        (signal (car err) (cdr err))))))
+
+(defun +kbd/text-scale-decrease-dwim ()
+  "Decrease buffer text scale, or shrink the PDF view in PDF buffers."
+  (interactive)
+  (if (and (derived-mode-p 'pdf-view-mode)
+           (fboundp 'pdf-view-shrink))
+      (call-interactively #'pdf-view-shrink)
+    (call-interactively #'text-scale-decrease)))
+
+(defun +kbd/text-scale-increase-dwim ()
+  "Increase buffer text scale, or enlarge the PDF view in PDF buffers."
+  (interactive)
+  (if (and (derived-mode-p 'pdf-view-mode)
+           (fboundp 'pdf-view-enlarge))
+      (call-interactively #'pdf-view-enlarge)
+    (call-interactively #'text-scale-increase)))
+
+(defun +kbd/mouse-event-window (event)
+  "Return the window from mouse EVENT, or nil when unavailable."
+  (let* ((start (ignore-errors (event-start event)))
+         (window (and (consp start) (posn-window start))))
+    (and (windowp window) window)))
+
+(defun +kbd/cnfonts-mouse-wheel-dwim (event)
+  "Use mouse wheel EVENT to zoom PDFs or resize fonts via cnfonts."
+  (interactive (list last-input-event))
+  (let* ((window (or (+kbd/mouse-event-window event)
+                     (selected-window)))
+         (buffer (window-buffer window))
+         (type (event-basic-type event)))
+    (if (and (buffer-live-p buffer)
+             (with-current-buffer buffer
+               (derived-mode-p 'pdf-view-mode))
+             (memq type '(wheel-up wheel-down mouse-4 mouse-5))
+             (fboundp 'pdf-view-enlarge)
+             (fboundp 'pdf-view-shrink))
+        (with-selected-window window
+          (pcase type
+            ((or 'wheel-up 'mouse-4)
+             (call-interactively #'pdf-view-enlarge))
+            ((or 'wheel-down 'mouse-5)
+             (call-interactively #'pdf-view-shrink))))
+      (cnfonts-mouse-wheel event))))
 
 (defun +kbd/magit-status-quick ()
   "Show Magit status quickly, prompting outside Git repositories."
@@ -158,9 +205,13 @@
    "C-d"     #'evil-scroll-down
    ;; "C-i"     #'evil-jump-forward ; FIXME C-i is tab in tui
    ;; "C-o"     #'evil-jump-backward
-   "C--"     #'text-scale-decrease ; buffer-local
-   "C-="     #'text-scale-increase ; buffer-local
+   "C--"     #'+kbd/text-scale-decrease-dwim ; buffer-local
+   "C-="     #'+kbd/text-scale-increase-dwim ; buffer-local
    "C-0"     #'(lambda () (interactive) (text-scale-adjust 0))
+   "C-<wheel-up>" #'+kbd/cnfonts-mouse-wheel-dwim
+   "C-<wheel-down>" #'+kbd/cnfonts-mouse-wheel-dwim
+   "C-<mouse-4>" #'+kbd/cnfonts-mouse-wheel-dwim
+   "C-<mouse-5>" #'+kbd/cnfonts-mouse-wheel-dwim
    "C-M--"   #'cnfonts-decrease-fontsize ; global
    "C-M-="   #'cnfonts-increase-fontsize ; global
    "C-M-0"   #'cnfonts-reset-fontsize ; global
@@ -295,7 +346,7 @@
    "q" '(:ignore t :which-key "quit")
    "qq"     #'save-buffers-kill-terminal
    "qr"     #'restart-emacs
-   "qc"     #'+emacs/clear-native-compile-cache
+   "qR"     #'+emacs/clear-native-compile-cache
    ;; toggles
    "t" '(:ignore t :which-key "toggle")
    "td"     #'toggle-debug-on-error

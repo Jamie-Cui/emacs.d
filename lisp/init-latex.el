@@ -22,17 +22,34 @@
 (setq +ebib/org-root-dir +emacs/org-root-dir)
 (require 'init-config-ebib)
 
+(defun +pdf-tools/roll-setup ()
+  (pdf-view-roll-minor-mode 1)
+  (setq-local mouse-wheel-scroll-amount '(5 ((shift) . 1)))
+  (setq-local mouse-wheel-progressive-speed nil)
+  (setq-local mwheel-coalesce-scroll-events t))
+
 (use-package pdf-tools
   :ensure t
   :if (not (eq system-type 'windows-nt))
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :magic ("%PDF" . pdf-view-mode)
+  :hook
+  (pdf-view-mode . +pdf-tools/roll-setup)
+  :custom
+  (pdf-view-use-scaling nil)
   :init
   (pdf-tools-install)
   :config
   ;; pdf-tools have the buffer refresh after compilation
   (add-hook 'TeX-after-compilation-finished-functions
             #'TeX-revert-document-buffer)
+
+  (general-define-key
+   :keymaps 'pdf-view-mode-map
+   :states '(normal visual motion)
+   "-" #'ignore
+   "=" #'ignore
+   )
 
   ;; Enable SyncTeX
   (setq TeX-source-correlate-mode t)
