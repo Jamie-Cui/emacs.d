@@ -12,12 +12,23 @@
 (declare-function pdf-view-image-size "pdf-view")
 (declare-function pdf-view-redisplay "pdf-view")
 (declare-function pdf-view-shrink "pdf-view")
+(declare-function pdf-view-scroll-down-or-previous-page "pdf-view")
+(declare-function pdf-view-scroll-up-or-next-page "pdf-view")
 (declare-function text-scale-pinch "face-remap")
 
 (defvar pdf-view-display-size)
 
 (defvar-local +kbd/pdf-pinch-start-display-size nil
   "PDF display scale at the beginning of the current pinch gesture.")
+
+(defvar +kbd/pdf-pinch-redisplay-delay 0.05
+  "Minimum seconds between PDF redisplays during a pinch gesture.")
+
+(defvar-local +kbd/pdf-pinch-redisplay-timer nil
+  "Pending timer used to coalesce PDF pinch redisplays.")
+
+(defvar-local +kbd/pdf-pinch-last-redisplay-time 0.0
+  "Last time a PDF pinch redisplay was performed in this buffer.")
 
 ;; Named functions for disabled keybindings (better debugging/profiling)
 (defun +kbd/disabled-M-u ()
@@ -78,6 +89,28 @@
       (call-interactively #'pdf-view-enlarge)
     (call-interactively #'text-scale-increase)))
 
+(defun +kbd/pdf-command-remap (command)
+  "Return COMMAND's active remapping, or COMMAND itself."
+  (or (command-remapping command) command))
+
+(defun +kbd/evil-scroll-up-dwim ()
+  "Scroll like `evil-scroll-up', using PDF-specific scrolling in PDF buffers."
+  (interactive)
+  (if (and (derived-mode-p 'pdf-view-mode)
+           (fboundp 'pdf-view-scroll-down-or-previous-page))
+      (call-interactively
+       (+kbd/pdf-command-remap #'pdf-view-scroll-down-or-previous-page))
+    (call-interactively #'evil-scroll-up)))
+
+(defun +kbd/evil-scroll-down-dwim ()
+  "Scroll like `evil-scroll-down', using PDF-specific scrolling in PDF buffers."
+  (interactive)
+  (if (and (derived-mode-p 'pdf-view-mode)
+           (fboundp 'pdf-view-scroll-up-or-next-page))
+      (call-interactively
+       (+kbd/pdf-command-remap #'pdf-view-scroll-up-or-next-page))
+    (call-interactively #'evil-scroll-down)))
+
 (defun +kbd/mouse-event-window (event)
   "Return the window from mouse EVENT, or nil when unavailable."
   (let* ((start (or (ignore-errors (event-start event))
@@ -100,6 +133,28 @@
     (/ (float (car size))
        (float (car pagesize)))))
 
+(defun +kbd/pdf-pinch-redisplay (buffer)
+  "Redisplay PDF BUFFER after a pinch zoom update."
+  (when (buffer-live-p buffer)
+    (with-current-buffer buffer
+      (setq +kbd/pdf-pinch-redisplay-timer nil
+            +kbd/pdf-pinch-last-redisplay-time (float-time))
+      (when (derived-mode-p 'pdf-view-mode)
+        (pdf-view-redisplay t)))))
+
+(defun +kbd/pdf-pinch-queue-redisplay ()
+  "Redisplay the current PDF buffer, coalescing rapid pinch events."
+  (let* ((now (float-time))
+         (delay (- +kbd/pdf-pinch-redisplay-delay
+                   (- now +kbd/pdf-pinch-last-redisplay-time))))
+    (if (<= delay 0)
+        (+kbd/pdf-pinch-redisplay (current-buffer))
+      (unless (timerp +kbd/pdf-pinch-redisplay-timer)
+        (setq +kbd/pdf-pinch-redisplay-timer
+              (run-at-time delay nil
+                           #'+kbd/pdf-pinch-redisplay
+                           (current-buffer)))))))
+
 (defun +kbd/pdf-pinch (event)
   "Zoom the current PDF according to pinch EVENT."
   (let ((scale (nth 4 event))
@@ -119,7 +174,7 @@
               (+kbd/pdf-current-display-scale (selected-window))))
       (setq pdf-view-display-size
             (* +kbd/pdf-pinch-start-display-size scale))
-      (pdf-view-redisplay t))))
+      (+kbd/pdf-pinch-queue-redisplay))))
 
 (defun +kbd/pinch-dwim (event)
   "Use touchpad zoom EVENT to zoom PDFs or resize text in normal buffers."
@@ -279,8 +334,8 @@
    ;; "C-b"     #'backward-char ; native
    ;; "C-w"     #'evil-delete-backward-word ; native
    ;; vim binding
-   "C-u"     #'evil-scroll-up
-   "C-d"     #'evil-scroll-down
+   "C-u"     #'+kbd/evil-scroll-up-dwim
+   "C-d"     #'+kbd/evil-scroll-down-dwim
    ;; "C-i"     #'evil-jump-forward ; FIXME C-i is tab in tui
    ;; "C-o"     #'evil-jump-backward
    "C--"     #'+kbd/text-scale-decrease-dwim ; buffer-local
