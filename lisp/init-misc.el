@@ -7,6 +7,8 @@
 
 ;; smooth scrolling
 (pixel-scroll-mode +1)
+(when (fboundp 'pixel-scroll-precision-mode)
+  (pixel-scroll-precision-mode +1))
 
 ;; Optional configurations for fine-tuning
 (setq pixel-dead-time 0) ; Never revert to line-based scrolling behavior

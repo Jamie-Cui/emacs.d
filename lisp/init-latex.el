@@ -23,10 +23,14 @@
 (require 'init-config-ebib)
 
 (defun +pdf-tools/roll-setup ()
+  "Enable continuous PDF scrolling with trackpad-friendly wheel handling."
   (pdf-view-roll-minor-mode 1)
   (setq-local mouse-wheel-scroll-amount '(5 ((shift) . 1)))
   (setq-local mouse-wheel-progressive-speed nil)
-  (setq-local mwheel-coalesce-scroll-events t))
+  (when (local-variable-p 'pixel-scroll-precision-mode)
+    (kill-local-variable 'pixel-scroll-precision-mode))
+  (when (boundp 'mwheel-coalesce-scroll-events)
+    (setq-local mwheel-coalesce-scroll-events nil)))
 
 (use-package pdf-tools
   :ensure t

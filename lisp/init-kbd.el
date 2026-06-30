@@ -6,8 +6,18 @@
 (require 'init-config-evil)
 
 (declare-function cnfonts-mouse-wheel "cnfonts")
+(declare-function image-mode-window-get "image-mode")
+(declare-function pdf-cache-pagesize "pdf-cache")
 (declare-function pdf-view-enlarge "pdf-view")
+(declare-function pdf-view-image-size "pdf-view")
+(declare-function pdf-view-redisplay "pdf-view")
 (declare-function pdf-view-shrink "pdf-view")
+(declare-function text-scale-pinch "face-remap")
+
+(defvar pdf-view-display-size)
+
+(defvar-local +kbd/pdf-pinch-start-display-size nil
+  "PDF display scale at the beginning of the current pinch gesture.")
 
 ;; Named functions for disabled keybindings (better debugging/profiling)
 (defun +kbd/disabled-M-u ()
@@ -70,9 +80,77 @@
 
 (defun +kbd/mouse-event-window (event)
   "Return the window from mouse EVENT, or nil when unavailable."
-  (let* ((start (ignore-errors (event-start event)))
+  (let* ((start (or (ignore-errors (event-start event))
+                    (and (consp event) (nth 1 event))))
          (window (and (consp start) (posn-window start))))
     (and (windowp window) window)))
+
+(defun +kbd/pdf-current-page (&optional window)
+  "Return WINDOW's current PDF page, or 1 when it is unavailable."
+  (let ((page (ignore-errors
+                (image-mode-window-get 'page window))))
+    (if (integerp page) page 1)))
+
+(defun +kbd/pdf-current-display-scale (&optional window)
+  "Return the current PDF display scale for WINDOW."
+  (let* ((window (or window (selected-window)))
+         (page (+kbd/pdf-current-page window))
+         (size (pdf-view-image-size nil window page))
+         (pagesize (pdf-cache-pagesize page)))
+    (/ (float (car size))
+       (float (car pagesize)))))
+
+(defun +kbd/pdf-pinch (event)
+  "Zoom the current PDF according to pinch EVENT."
+  (let ((scale (nth 4 event))
+        (dx (nth 2 event))
+        (dy (nth 3 event))
+        (angle (nth 5 event)))
+    (when (and (numberp scale)
+               (> scale 0))
+      (when (or (not (numberp +kbd/pdf-pinch-start-display-size))
+                (and (numberp dx)
+                     (numberp dy)
+                     (numberp angle)
+                     (zerop dx)
+                     (zerop dy)
+                     (zerop angle)))
+        (setq +kbd/pdf-pinch-start-display-size
+              (+kbd/pdf-current-display-scale (selected-window))))
+      (setq pdf-view-display-size
+            (* +kbd/pdf-pinch-start-display-size scale))
+      (pdf-view-redisplay t))))
+
+(defun +kbd/pinch-dwim (event)
+  "Use touchpad zoom EVENT to zoom PDFs or resize text in normal buffers."
+  (interactive "e")
+  (let* ((window (or (+kbd/mouse-event-window event)
+                     (selected-window)))
+         (buffer (window-buffer window))
+         (type (event-basic-type event)))
+    (if (and (buffer-live-p buffer)
+             (with-current-buffer buffer
+               (derived-mode-p 'pdf-view-mode))
+             (fboundp 'pdf-view-image-size)
+             (fboundp 'pdf-cache-pagesize)
+             (fboundp 'pdf-view-redisplay)
+             (fboundp 'pdf-view-enlarge)
+             (fboundp 'pdf-view-shrink))
+        (with-selected-window window
+          (pcase type
+            ('pinch
+             (+kbd/pdf-pinch event))
+            ('magnify-up
+             (call-interactively #'pdf-view-enlarge))
+            ('magnify-down
+             (call-interactively #'pdf-view-shrink))))
+      (pcase type
+        ('pinch
+         (text-scale-pinch event))
+        ('magnify-up
+         (call-interactively #'text-scale-increase))
+        ('magnify-down
+         (call-interactively #'text-scale-decrease))))))
 
 (defun +kbd/cnfonts-mouse-wheel-dwim (event)
   "Use mouse wheel EVENT to zoom PDFs or resize fonts via cnfonts."
@@ -212,6 +290,9 @@
    "C-<wheel-down>" #'+kbd/cnfonts-mouse-wheel-dwim
    "C-<mouse-4>" #'+kbd/cnfonts-mouse-wheel-dwim
    "C-<mouse-5>" #'+kbd/cnfonts-mouse-wheel-dwim
+   "<pinch>" #'+kbd/pinch-dwim
+   "<magnify-up>" #'+kbd/pinch-dwim
+   "<magnify-down>" #'+kbd/pinch-dwim
    "C-M--"   #'cnfonts-decrease-fontsize ; global
    "C-M-="   #'cnfonts-increase-fontsize ; global
    "C-M-0"   #'cnfonts-reset-fontsize ; global
