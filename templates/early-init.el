@@ -7,6 +7,9 @@
 ;; Path to the configuration repository (filled in by `make init').
 (setq +emacs/repo-directory "@REPO_DIRECTORY@")
 
+;; Uncomment to request undecorated GUI frames before the first frame is made.
+;; (add-to-list 'default-frame-alist '(undecorated . t))
+
 (load (expand-file-name "early-init.el" +emacs/repo-directory))
 
 ;;; early-init.el ends here
