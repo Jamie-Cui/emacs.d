@@ -1,18 +1,9 @@
-;;; init-completion.el --- completion framework configuration -*- lexical-binding: t -*-
+;;; completion.el --- minibuffer and in-buffer completion -*- lexical-binding: t -*-
 ;;; Commentary:
-;;
-;; Configure modern completion framework, including:
-;; - Vertico: Vertical completion UI
-;; - Corfu: In-text completion
-;; - Consult: Enhanced search and navigation
-;; - Orderless: Fuzzy matching
-;; - Marginalia: Completion candidate annotations
-;;
-;; Dependencies:
-;; - ripgrep (rg): For consult-ripgrep
-;;
-
+;; Minibuffer and in-buffer completion: vertico, corfu, consult, orderless,
+;; marginalia and embark.
 ;;; Code:
+
 
 ;; -----------------------------------------------------------
 ;; Vertico - Vertical completion UI
@@ -124,7 +115,7 @@
 ;; -----------------------------------------------------------
 
 ;;;###autoload
-(cl-defun +vertico/file-search
+(cl-defun +completion/file-search
     (&key query in all-files (recursive t) prompt args)
   "Conduct a file search using ripgrep.
 
@@ -182,11 +173,48 @@
     (consult--grep prompt #'consult--ripgrep-make-builder directory query)))
 
 ;;;###autoload
-(defun +vertico/project-search (&optional arg initial-query directory)
+(defun +completion/project-search (&optional arg initial-query directory)
   "Performs a live project search from the project root using ripgrep.
 If ARG (universal argument), include all files, even hidden or compressed ones,
 in the search."
   (interactive "P")
-  (+vertico/file-search :query initial-query :in directory :all-files arg))
+  (+completion/file-search :query initial-query :in directory :all-files arg))
+
+(use-package embark
+  :ensure t
+  :bind
+  (("C-;" . embark-act))
+  :init
+  ;; Replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+  ;;
+  ;; Show the Embark target at point via Eldoc. You may adjust the
+  ;; Eldoc strategy, if you want to see the documentation from
+  ;; multiple providers. Beware that using this can be a little
+  ;; jarring since the message shown in the minibuffer can be more
+  ;; than one line, causing the modeline to move up and down:
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+  :custom
+  (embark-help-key "?")
+  ;; (embark-prompter 'embark-completing-read-prompter)
+  :config
+  (setq embark-indicators
+        '(embark-minimal-indicator  ; default is embark-mixed-indicator
+          embark-highlight-indicator
+          embark-isearch-highlight-indicator))
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+(use-package embark-consult
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+(setopt minibuffer-completion-auto-choose nil)
+
 
 (provide 'init-completion)
+;;; completion.el ends here

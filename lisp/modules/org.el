@@ -1,16 +1,13 @@
-;;; init-org.el --- org support -*- lexical-binding: t -*-
+;;; org.el --- Org mode core -*- lexical-binding: t -*-
 ;;; Commentary:
+;; Org mode core: base settings, babel, export, plantuml, org-download and
+;; org-appear.
 ;;; Code:
+
 
 (require 'org)
 (require 'org-agenda)
 (require 'org-element)
-
-(add-to-list 'load-path (expand-file-name "site-lisp" +emacs/repo-directory))
-(setq +org-project-root-dir +emacs/org-root-dir)
-(require 'org-project)
-(require 'dashboard-org-project)
-(dashboard-org-project-setup)
 
 ;; archive to same file
 (setopt org-archive-location "::* Archive")
@@ -46,53 +43,6 @@
   (defalias 'org-element--get-category
     #'+org--org-element-get-category-interpreted))
 
-;; -----------------------------------------------------------
-;; DONE hack: filter out sync-conflict and *-beorg
-;; -----------------------------------------------------------
-
-(defgroup +org-agenda nil
-  "Local agenda hygiene helpers."
-  :group 'org)
-
-(defcustom +org-agenda-ignored-file-regexps
-  '("\\.sync-conflict-[^/]*\\.org\\'"
-    "/[^/]+-beorg\\.org\\'")
-  "Regexps for agenda files that should be ignored locally."
-  :type '(repeat string)
-  :group '+org-agenda)
-
-(defun +org-agenda-ignored-file-p (file)
-  "Return non-nil when FILE should be excluded from `org-agenda-files'."
-  (when (stringp file)
-    (let ((path (expand-file-name file))
-          ignored)
-      (dolist (regexp +org-agenda-ignored-file-regexps ignored)
-        (when (string-match-p regexp path)
-          (setq ignored t))))))
-
-(defun +org-agenda-prune-files (&optional files)
-  "Remove ignored entries from FILES or `org-agenda-files'."
-  (interactive)
-  (let* ((targets (or files org-agenda-files))
-         (normalized (delete-dups
-                      (delq nil
-                            (mapcar (lambda (file)
-                                      (when (stringp file)
-                                        (expand-file-name file)))
-                                    (copy-sequence targets)))))
-         (filtered (delq nil
-                         (mapcar (lambda (file)
-                                   (unless (+org-agenda-ignored-file-p file)
-                                     file))
-                                 normalized))))
-    (when (or (null files)
-              (called-interactively-p 'interactive))
-      (setq org-agenda-files filtered))
-    filtered))
-
-(defun +org-agenda--prune-after-journal-update (&rest _)
-  "Keep generated journal side files out of `org-agenda-files'."
-  (+org-agenda-prune-files))
 
 ;; -----------------------------------------------------------
 ;; DONE org: the built-in package
@@ -258,38 +208,6 @@
 (dolist (target '(evil-org-open-below evil-org-open-above org-indent-region org-indent-line))
   (advice-add target :around #'+org-fix-window-excursions-a))
 
-;; -----------------------------------------------------------
-;; DONE org
-;;
-;; org-journal
-;; org-download
-;; ob-http
-;; plantuml-mode
-;; deft
-;; org-roam
-;; org-appear
-;; xenops
-;; engrave-faces
-;; -----------------------------------------------------------
-
-(use-package org-journal
-  :ensure t
-  :custom
-  (org-journal-dir (concat +emacs/org-root-dir "/journal"))
-  (org-journal-find-file-fn 'find-file)
-  (org-journal-file-format "%Y%m%d.org")
-  (org-journal-file-type 'monthly)
-  (org-journal-carryover-items "TODO=\"TODO\"|TODO=\"WAIT\"|TODO=\"PROJ\"")
-  (org-journal-enable-agenda-integration t)
-  :config
-  (setq org-element-use-cache nil)
-  (add-to-list 'org-agenda-files org-journal-dir)
-  (+org-project-sync-agenda-files)
-  (+org-agenda-prune-files)
-  (advice-add 'org-journal--update-org-agenda-files
-              :after
-              #'+org-agenda--prune-after-journal-update))
-
 (use-package org-download
   :ensure t
   :config
@@ -306,50 +224,23 @@
 (use-package ob-http
   :ensure t)
 
+(defun +org/plantuml-jar-path ()
+  "Return the machine-local PlantUML jar path."
+  (expand-file-name
+   "plantuml.jar"
+   (file-name-directory
+    (or user-init-file
+        (expand-file-name "init.el" user-emacs-directory)))))
+
 (use-package plantuml-mode
   :ensure t
   :after org
   :custom
-  (plantuml-jar-path
-   (concat (file-name-directory user-init-file) "plantuml.jar"))
-  (org-plantuml-jar-path
-   (concat (file-name-directory user-init-file) "plantuml.jar"))
+  (plantuml-jar-path (+org/plantuml-jar-path))
+  (org-plantuml-jar-path (+org/plantuml-jar-path))
   :config
   (setq plantuml-default-exec-mode 'executable)
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
-
-(setq +deft/org-root-dir +emacs/org-root-dir)
-(require 'init-config-deft)
-
-(use-package org-roam
-  :ensure t
-  :after evil
-  :custom
-  (org-roam-directory (+emacs/org-subdir "roam"))
-  :config
-  ;; 例如改成只用时间戳：
-  (setq org-roam-capture-templates
-        '(("d" "default" plain "%?"
-           :target (file+head "%<%Y-%m-%dt%H%M>.org" "#+title: ${title}\n")
-           :unnarrowed t)))
-
-  ;; If you're using a vertical completion framework, you might want
-  ;; a more informative completion interface
-  (setq org-roam-node-display-template
-        (format "${title:50}%s"
-                (propertize "${tags:10}" 'face 'org-tag)))
-  (require 'org-roam-db)
-  (org-roam-db-autosync-mode +1)
-  ;; If using org-roam-protocol
-  (require 'org-roam-protocol)
-
-  ;; NOTE Make org-roam case insensitve
-  ;; from: https://emacs.stackexchange.com/a/77296
-  (defun +org-roam/case-insensitive-org-roam-node-read (orig-fn &rest args)
-    (let ((completion-ignore-case t))
-      (apply orig-fn args)))
-  (advice-add 'org-roam-node-read :around #'+org-roam/case-insensitive-org-roam-node-read)
-  (advice-add 'org-roam-node-insert :before #'+evil/smart-insert))
 
 (use-package org-appear
   :ensure t
@@ -358,11 +249,27 @@
   :config
   (add-hook 'org-mode-hook 'org-appear-mode))
 
-(require 'init-config-xenops)
 
-(use-package engrave-faces
-  :ensure t)
 
-(require 'init-config-consult)
+;; ---------------------------------------------------------------------------
+;; Reference: commented-out org drawing package (kept for future use).
+;; ---------------------------------------------------------------------------
+
+;; (use-package edraw
+;;   :vc (:url "https://github.com/misohena/el-easydraw.git")
+;;   :after org
+;;   :demand t
+;;   :config
+;;   (require 'edraw-org)
+;;   (edraw-org-setup-default)
+;;   (edraw-org-setup-exporter)
+
+;;   ;; keybindings that should not be overriden
+;;   (general-define-key
+;;    :keymaps 'edraw-editor-map
+;;    "<backspace>"   #'edraw-editor-delete-selected
+;;    )
+;;   )
 
 (provide 'init-org)
+;;; org.el ends here

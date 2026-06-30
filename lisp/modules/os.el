@@ -1,6 +1,17 @@
-;;; init-os.el --- different os tweaks -*- lexical-binding: t -*-
+;;; os.el --- operating-system specific tweaks -*- lexical-binding: t -*-
 ;;; Commentary:
+;; Operating-system specific tweaks (Linux/macOS/Windows/WSL) and shell
+;; environment import.
 ;;; Code:
+
+
+(unless (eq system-type 'windows-nt)
+  (use-package exec-path-from-shell
+    :ensure t
+    :custom
+    (exec-path-from-shell-variables '("PATH" "MANPATH" "SSS_API_KEY"))
+    :config
+    (exec-path-from-shell-initialize)))
 
 (use-package rime
   :ensure t
@@ -101,7 +112,7 @@
 ;;; Utilities work for all systems
 ;;; --------------------------------------
 
-(defun +os-explorer/dwim ()
+(defun +os/explorer-dwim ()
   "Open Windows Explorer to current file or folder.w"
   (interactive)
   (require 'dired)
@@ -121,4 +132,6 @@
       (start-process "finder" nil "open" "-R" target-file))
      (t (message "Unimplemented!")))))
 
+
 (provide 'init-os)
+;;; os.el ends here

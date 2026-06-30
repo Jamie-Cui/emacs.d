@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Restructured the configuration into a three-layer architecture: a real
+  `early-init.el`, a manifest-only `init.el`, a `lisp/core/` layer, and
+  per-domain modules under `lisp/modules/` (with language modules in
+  `lisp/modules/lang/`). Modules load via `+emacs/load-modules`; `keys` loads
+  last. Old `lisp/init-*.el` entry files were removed (no compatibility shims).
+
+### Added
+- `early-init.el` and `templates/early-init.el`; `make init` now installs both
+  bootstrap files using an `@REPO_DIRECTORY@` placeholder and no longer
+  overwrites existing files.
+- `make init-force` to reinstall the bootstrap files.
+- `make smoke` (offline startup test of both startup chains) and `make compile`
+  (byte-compile to a temp dir).
+- `+emacs/disabled-modules` to skip modules (including `lang/*` submodules).
+
 ## [0.1.0] - 2025-11-19
 
 ### Added

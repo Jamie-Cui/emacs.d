@@ -1,60 +1,36 @@
-;;; -*- lexical-binding: t; -*-
+;;; init.el --- Machine-local init -*- lexical-binding: t -*-
+;;; Commentary:
+;; Installed to ~/.emacs.d/init.el by `make init'.  Put machine-local and
+;; user-tunable settings here; shared configuration lives in the repository.
+;;; Code:
 
-;;; ------------------------
-;;; REVIEW configure constants
-;;; ------------------------
+;; Path to the configuration repository (filled in by `make init').
+(setq +emacs/repo-directory "@REPO_DIRECTORY@")
 
-;; (setopt +emacs/repo-directory (expand-file-name "~/emacs.d"))
-;; (setopt +emacs/org-root-dir (expand-file-name "~/opt/org-root"))
-;; (setopt +emacs/proxy "127.0.0.1:10808")
+;; User-tunable defaults (uncomment and edit as needed).
+;; (setq +emacs/org-root-dir (expand-file-name "~/opt/org-root"))
+;; (setq +emacs/proxy "127.0.0.1:10808")
+;; (setq +emacs/disabled-modules '("llm" "lang/lean"))
 
-;; NOTE if you are using magic keyboard
+;; If you use an Apple keyboard, map the Super key to Meta.
 (setq x-super-keysym 'meta)
 
-;;; ----------------------------
-;;; REVIEW package urls
-;;; ----------------------------
-
-;; use tuna mirros
+;; Package archives.  Switch to a mirror if the official hosts are slow.
+(require 'package)
+(setq package-archives
+      '(("gnu"    . "https://elpa.gnu.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa"  . "https://melpa.org/packages/")))
+;; TUNA mirror:
 ;; (setq package-archives
 ;;       '(("gnu"    . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
 ;;         ("nongnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-;;         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-;;         ))
+;;         ("melpa"  . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 
-(require 'package)
+;; Load the shared configuration.
+(load (expand-file-name "init.el" +emacs/repo-directory))
 
-;; use official
-(setq package-archives
-      '(
-        ("gnu"   . "http://elpa.gnu.org/packages/")
-        ("nongnu"   . "http://elpa.nongnu.org/nongnu/")
-        ("melpa" . "http://melpa.org/packages/")
-        ))
-
-;;; ----------------------------
-;;; REVIEW use undecorated frame
-;;; ----------------------------
-
-;; (add-to-list 'default-frame-alist '(undecorated . t))
-
-;;; ----------------------------
-;;; REVIEW setup proxy
-;;; ----------------------------
-
-;; (setq url-proxy-services
-;;    '(("no_proxy" . "^\\(localhost\\|10\\..*\\|192\\.168\\..*\\)")
-;;      ("http" . "proxy.com:8080")
-;;      ("https" . "proxy.com:8080")))
-
-;;; ----------------------------
-;;; DONE load all packages
-;;; ----------------------------
-
-(load (concat +emacs/repo-directory "/init.el"))
-
-;;; ----------------------------
-;;; DONE load theme
-;;; ----------------------------
-
+;; Theme (loaded after the configuration installs the theme packages).
 (load-theme 'zenburn t)
+
+;;; init.el ends here

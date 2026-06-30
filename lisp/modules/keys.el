@@ -1,69 +1,45 @@
-;;; init-kbd.el --- keybindings configuration -*- lexical-binding: t -*-
+;;; keys.el --- keybindings and leader map -*- lexical-binding: t -*-
 ;;; Commentary:
-;;; Keybindings setup using general.el with leader key system
+;; which-key, general.el and the SPC leader map.  Loaded last so that
+;; commands provided by other modules are defined before being bound.
 ;;; Code:
 
-(require 'init-config-evil)
-
-(declare-function cnfonts-mouse-wheel "cnfonts")
-(declare-function image-mode-window-get "image-mode")
-(declare-function pdf-cache-pagesize "pdf-cache")
-(declare-function pdf-view-enlarge "pdf-view")
-(declare-function pdf-view-image-size "pdf-view")
-(declare-function pdf-view-redisplay "pdf-view")
-(declare-function pdf-view-shrink "pdf-view")
-(declare-function pdf-view-scroll-down-or-previous-page "pdf-view")
-(declare-function pdf-view-scroll-up-or-next-page "pdf-view")
-(declare-function text-scale-pinch "face-remap")
-
-(defvar pdf-view-display-size)
-
-(defvar-local +kbd/pdf-pinch-start-display-size nil
-  "PDF display scale at the beginning of the current pinch gesture.")
-
-(defvar +kbd/pdf-pinch-redisplay-delay 0.05
-  "Minimum seconds between PDF redisplays during a pinch gesture.")
-
-(defvar-local +kbd/pdf-pinch-redisplay-timer nil
-  "Pending timer used to coalesce PDF pinch redisplays.")
-
-(defvar-local +kbd/pdf-pinch-last-redisplay-time 0.0
-  "Last time a PDF pinch redisplay was performed in this buffer.")
+(require 'init-input)
 
 ;; Named functions for disabled keybindings (better debugging/profiling)
-(defun +kbd/disabled-M-u ()
+(defun +keys/disabled-M-u ()
   "Placeholder for disabled M-u binding."
   (interactive)
   (message "M-u is disabled!"))
 
-(defun +kbd/disabled-M-q ()
+(defun +keys/disabled-M-q ()
   "Placeholder for disabled M-q binding (reserved for kill app)."
   (interactive)
   (message "M-q is disabled!"))
 
-(defun +kbd/disabled-M-Q ()
+(defun +keys/disabled-M-Q ()
   "Placeholder for disabled M-Q binding (reserved for lock screen)."
   (interactive)
   (message "M-Q is disabled!"))
 
-(defun +kbd/disabled-M-k ()
+(defun +keys/disabled-M-k ()
   "Placeholder for disabled M-k binding."
   (interactive)
   (message "M-k is disabled!"))
 
-(defun +kbd/persp-prev-and-show ()
+(defun +keys/persp-prev-and-show ()
   "Switch to previous perspective and show name."
   (interactive)
   (persp-prev)
-  (+persp/show-name-in-echo))
+  (+project/show-name-in-echo))
 
-(defun +kbd/persp-next-and-show ()
+(defun +keys/persp-next-and-show ()
   "Switch to next perspective and show name."
   (interactive)
   (persp-next)
-  (+persp/show-name-in-echo))
+  (+project/show-name-in-echo))
 
-(defun +kbd/revert-buffer-no-confirm ()
+(defun +keys/revert-buffer-no-confirm ()
   "Revert buffer without confirmation when the buffer is revertible."
   (interactive)
   (condition-case err
@@ -73,162 +49,7 @@
          (user-error "Buffer is not associated with a file")
        (signal (car err) (cdr err))))))
 
-(defun +kbd/text-scale-decrease-dwim ()
-  "Decrease buffer text scale, or shrink the PDF view in PDF buffers."
-  (interactive)
-  (if (and (derived-mode-p 'pdf-view-mode)
-           (fboundp 'pdf-view-shrink))
-      (call-interactively #'pdf-view-shrink)
-    (call-interactively #'text-scale-decrease)))
-
-(defun +kbd/text-scale-increase-dwim ()
-  "Increase buffer text scale, or enlarge the PDF view in PDF buffers."
-  (interactive)
-  (if (and (derived-mode-p 'pdf-view-mode)
-           (fboundp 'pdf-view-enlarge))
-      (call-interactively #'pdf-view-enlarge)
-    (call-interactively #'text-scale-increase)))
-
-(defun +kbd/pdf-command-remap (command)
-  "Return COMMAND's active remapping, or COMMAND itself."
-  (or (command-remapping command) command))
-
-(defun +kbd/evil-scroll-up-dwim ()
-  "Scroll like `evil-scroll-up', using PDF-specific scrolling in PDF buffers."
-  (interactive)
-  (if (and (derived-mode-p 'pdf-view-mode)
-           (fboundp 'pdf-view-scroll-down-or-previous-page))
-      (call-interactively
-       (+kbd/pdf-command-remap #'pdf-view-scroll-down-or-previous-page))
-    (call-interactively #'evil-scroll-up)))
-
-(defun +kbd/evil-scroll-down-dwim ()
-  "Scroll like `evil-scroll-down', using PDF-specific scrolling in PDF buffers."
-  (interactive)
-  (if (and (derived-mode-p 'pdf-view-mode)
-           (fboundp 'pdf-view-scroll-up-or-next-page))
-      (call-interactively
-       (+kbd/pdf-command-remap #'pdf-view-scroll-up-or-next-page))
-    (call-interactively #'evil-scroll-down)))
-
-(defun +kbd/mouse-event-window (event)
-  "Return the window from mouse EVENT, or nil when unavailable."
-  (let* ((start (or (ignore-errors (event-start event))
-                    (and (consp event) (nth 1 event))))
-         (window (and (consp start) (posn-window start))))
-    (and (windowp window) window)))
-
-(defun +kbd/pdf-current-page (&optional window)
-  "Return WINDOW's current PDF page, or 1 when it is unavailable."
-  (let ((page (ignore-errors
-                (image-mode-window-get 'page window))))
-    (if (integerp page) page 1)))
-
-(defun +kbd/pdf-current-display-scale (&optional window)
-  "Return the current PDF display scale for WINDOW."
-  (let* ((window (or window (selected-window)))
-         (page (+kbd/pdf-current-page window))
-         (size (pdf-view-image-size nil window page))
-         (pagesize (pdf-cache-pagesize page)))
-    (/ (float (car size))
-       (float (car pagesize)))))
-
-(defun +kbd/pdf-pinch-redisplay (buffer)
-  "Redisplay PDF BUFFER after a pinch zoom update."
-  (when (buffer-live-p buffer)
-    (with-current-buffer buffer
-      (setq +kbd/pdf-pinch-redisplay-timer nil
-            +kbd/pdf-pinch-last-redisplay-time (float-time))
-      (when (derived-mode-p 'pdf-view-mode)
-        (pdf-view-redisplay t)))))
-
-(defun +kbd/pdf-pinch-queue-redisplay ()
-  "Redisplay the current PDF buffer, coalescing rapid pinch events."
-  (let* ((now (float-time))
-         (delay (- +kbd/pdf-pinch-redisplay-delay
-                   (- now +kbd/pdf-pinch-last-redisplay-time))))
-    (if (<= delay 0)
-        (+kbd/pdf-pinch-redisplay (current-buffer))
-      (unless (timerp +kbd/pdf-pinch-redisplay-timer)
-        (setq +kbd/pdf-pinch-redisplay-timer
-              (run-at-time delay nil
-                           #'+kbd/pdf-pinch-redisplay
-                           (current-buffer)))))))
-
-(defun +kbd/pdf-pinch (event)
-  "Zoom the current PDF according to pinch EVENT."
-  (let ((scale (nth 4 event))
-        (dx (nth 2 event))
-        (dy (nth 3 event))
-        (angle (nth 5 event)))
-    (when (and (numberp scale)
-               (> scale 0))
-      (when (or (not (numberp +kbd/pdf-pinch-start-display-size))
-                (and (numberp dx)
-                     (numberp dy)
-                     (numberp angle)
-                     (zerop dx)
-                     (zerop dy)
-                     (zerop angle)))
-        (setq +kbd/pdf-pinch-start-display-size
-              (+kbd/pdf-current-display-scale (selected-window))))
-      (setq pdf-view-display-size
-            (* +kbd/pdf-pinch-start-display-size scale))
-      (+kbd/pdf-pinch-queue-redisplay))))
-
-(defun +kbd/pinch-dwim (event)
-  "Use touchpad zoom EVENT to zoom PDFs or resize text in normal buffers."
-  (interactive "e")
-  (let* ((window (or (+kbd/mouse-event-window event)
-                     (selected-window)))
-         (buffer (window-buffer window))
-         (type (event-basic-type event)))
-    (if (and (buffer-live-p buffer)
-             (with-current-buffer buffer
-               (derived-mode-p 'pdf-view-mode))
-             (fboundp 'pdf-view-image-size)
-             (fboundp 'pdf-cache-pagesize)
-             (fboundp 'pdf-view-redisplay)
-             (fboundp 'pdf-view-enlarge)
-             (fboundp 'pdf-view-shrink))
-        (with-selected-window window
-          (pcase type
-            ('pinch
-             (+kbd/pdf-pinch event))
-            ('magnify-up
-             (call-interactively #'pdf-view-enlarge))
-            ('magnify-down
-             (call-interactively #'pdf-view-shrink))))
-      (pcase type
-        ('pinch
-         (text-scale-pinch event))
-        ('magnify-up
-         (call-interactively #'text-scale-increase))
-        ('magnify-down
-         (call-interactively #'text-scale-decrease))))))
-
-(defun +kbd/cnfonts-mouse-wheel-dwim (event)
-  "Use mouse wheel EVENT to zoom PDFs or resize fonts via cnfonts."
-  (interactive (list last-input-event))
-  (let* ((window (or (+kbd/mouse-event-window event)
-                     (selected-window)))
-         (buffer (window-buffer window))
-         (type (event-basic-type event)))
-    (if (and (buffer-live-p buffer)
-             (with-current-buffer buffer
-               (derived-mode-p 'pdf-view-mode))
-             (memq type '(wheel-up wheel-down mouse-4 mouse-5))
-             (fboundp 'pdf-view-enlarge)
-             (fboundp 'pdf-view-shrink))
-        (with-selected-window window
-          (pcase type
-            ((or 'wheel-up 'mouse-4)
-             (call-interactively #'pdf-view-enlarge))
-            ((or 'wheel-down 'mouse-5)
-             (call-interactively #'pdf-view-shrink))))
-      (cnfonts-mouse-wheel event))))
-
-(defun +kbd/magit-status-quick ()
+(defun +keys/magit-status-quick ()
   "Show Magit status quickly, prompting outside Git repositories."
   (interactive)
   (condition-case nil
@@ -236,17 +57,17 @@
     (magit-outside-git-repo
      (call-interactively #'magit-status))))
 
-(defun +kbd/persp-kill-current ()
+(defun +keys/persp-kill-current ()
   "Kill the current perspective."
   (interactive)
   (persp-kill (persp-current-name)))
 
-(defun +kbd/find-private-config ()
+(defun +keys/find-private-config ()
   "Find private emacs config."
   (interactive)
   (projectile-switch-project-by-name +emacs/repo-directory))
 
-(defun +kbd/find-user-emacs-config ()
+(defun +keys/find-user-emacs-config ()
   "Find private emacs config in user-emacs-directory."
   (interactive)
   (when (not (projectile-project-p user-emacs-directory))
@@ -306,7 +127,7 @@
    "C-SPC"   #'toggle-input-method ; alternative
    ;; more-frequent commands
    "M-y"     #'yas-expand
-   "M-p"     #'+compile-with-no-preset ; just like vscode
+   "M-p"     #'+prog/compile-with-no-preset ; just like vscode
    "M-w"     #'evil-avy-goto-char-timer ; quick find edit (point)?
    "M-n"     #'narrow-to-region ; when done, M-x Widen
    "M-i"     #'consult-imenu
@@ -319,12 +140,12 @@
    "M-/"     #'evilnc-comment-or-uncomment-lines
    "M-v"     #'evil-paste-after ; paste like mac
    ;; disabled
-   "M-u"     #'+kbd/disabled-M-u
-   "M-q"     #'+kbd/disabled-M-q ; reserved for kill app
-   "M-Q"     #'+kbd/disabled-M-Q ; reserved for lock screen
-   "M-k"     #'+kbd/disabled-M-k
-   "C-h"     #'+kbd/persp-prev-and-show
-   "C-l"     #'+kbd/persp-next-and-show
+   "M-u"     #'+keys/disabled-M-u
+   "M-q"     #'+keys/disabled-M-q ; reserved for kill app
+   "M-Q"     #'+keys/disabled-M-Q ; reserved for lock screen
+   "M-k"     #'+keys/disabled-M-k
+   "C-h"     #'+keys/persp-prev-and-show
+   "C-l"     #'+keys/persp-next-and-show
    ;; emacs binding
    ;; NOTE those bindings are set to global since most of time, mac and terminal adopts those bindings
    "C-a"     #'evil-first-non-blank ; like "^" in vim
@@ -334,20 +155,20 @@
    ;; "C-b"     #'backward-char ; native
    ;; "C-w"     #'evil-delete-backward-word ; native
    ;; vim binding
-   "C-u"     #'+kbd/evil-scroll-up-dwim
-   "C-d"     #'+kbd/evil-scroll-down-dwim
+   "C-u"     #'+input/evil-scroll-up-dwim
+   "C-d"     #'+input/evil-scroll-down-dwim
    ;; "C-i"     #'evil-jump-forward ; FIXME C-i is tab in tui
    ;; "C-o"     #'evil-jump-backward
-   "C--"     #'+kbd/text-scale-decrease-dwim ; buffer-local
-   "C-="     #'+kbd/text-scale-increase-dwim ; buffer-local
+   "C--"     #'+input/text-scale-decrease-dwim ; buffer-local
+   "C-="     #'+input/text-scale-increase-dwim ; buffer-local
    "C-0"     #'(lambda () (interactive) (text-scale-adjust 0))
-   "C-<wheel-up>" #'+kbd/cnfonts-mouse-wheel-dwim
-   "C-<wheel-down>" #'+kbd/cnfonts-mouse-wheel-dwim
-   "C-<mouse-4>" #'+kbd/cnfonts-mouse-wheel-dwim
-   "C-<mouse-5>" #'+kbd/cnfonts-mouse-wheel-dwim
-   "<pinch>" #'+kbd/pinch-dwim
-   "<magnify-up>" #'+kbd/pinch-dwim
-   "<magnify-down>" #'+kbd/pinch-dwim
+   "C-<wheel-up>" #'+input/cnfonts-mouse-wheel-dwim
+   "C-<wheel-down>" #'+input/cnfonts-mouse-wheel-dwim
+   "C-<mouse-4>" #'+input/cnfonts-mouse-wheel-dwim
+   "C-<mouse-5>" #'+input/cnfonts-mouse-wheel-dwim
+   "<pinch>" #'+input/pinch-dwim
+   "<magnify-up>" #'+input/pinch-dwim
+   "<magnify-down>" #'+input/pinch-dwim
    "C-M--"   #'cnfonts-decrease-fontsize ; global
    "C-M-="   #'cnfonts-increase-fontsize ; global
    "C-M-0"   #'cnfonts-reset-fontsize ; global
@@ -367,7 +188,7 @@
    "."      #'find-file
    "<"      #'consult-buffer
    ","      #'consult-project-buffer
-   "/"      #'+vertico/project-search
+   "/"      #'+completion/project-search
    "TAB"    #'evil-switch-to-windows-last-buffer
    "SPC"    #'projectile-find-file
    ;; action-related key bindings
@@ -392,16 +213,16 @@
    "wR"     #'redraw-display
    ;; yank-related key bindings
    "y" '(:ignore t :which-key "yank")
-   "yf"     #'+copy-buffer-file-name ; copy file name
-   "ya"     #'+copy-ref-dwim ; copy dwim
+   "yf"     #'+editor/copy-buffer-file-name ; copy file name
+   "ya"     #'+editor/copy-ref-dwim ; copy dwim
    ;; buffer-related key bindings
    "b" '(:ignore t :which-key "buffer")
    "ba"     #'evil-buffer-new
    "bn"     #'evil-buffer-new ; alias
    "bd"     #'kill-current-buffer
    "bs"     #'save-buffer
-   "bS"     #'+save-all-buffers
-   "br"     #'+kbd/revert-buffer-no-confirm
+   "bS"     #'+editor/save-all-buffers
+   "br"     #'+keys/revert-buffer-no-confirm
    "j" '(:ignore t :which-key "jump (bookmark)")
    "j RET"  #'consult-bookmark
    "jj"     #'consult-bookmark
@@ -414,10 +235,10 @@
    "oE"     #'ielm ; elisp repl
    "ob"     #'citar-open
    "oB"     #'ebib
-   "og"     #'+kbd/magit-status-quick
+   "og"     #'+keys/magit-status-quick
    "op"     #'proced
    "od"     #'dired-jump
-   "oD"     #'+os-explorer/dwim
+   "oD"     #'+os/explorer-dwim
    "ot"     #'+eshell/new
    "oT"     #'+eat/new
    "ox"     #'scratch-buffer
@@ -425,7 +246,7 @@
    ;; project-related key bindings
    "p" '(:ignore t :which-key "project")
    "pp"     #'projectile-switch-project
-   "pq"     #'+kbd/persp-kill-current
+   "pq"     #'+keys/persp-kill-current
    "pa"     #'projectile-add-known-project
    "px"     #'projectile-remove-known-project
    "pg"     #'projectile-cleanup-known-projects
@@ -434,7 +255,7 @@
    "pC"     #'projectile-configure-project
    "pd"     #'projectile-remove-known-project
    "pD"     #'projectile-run-gdb
-   "pf"     #'+vertico/project-search
+   "pf"     #'+completion/project-search
    "po"     #'ff-find-related-file
    "pr"     #'projectile-run-project
    "pt"     #'projectile-test-project
@@ -491,7 +312,7 @@
    "tF"     #'toggle-frame-fullscreen
    "tt"     #'toggle-truncate-lines
    "tn"     #'display-line-numbers-mode
-   "ta"     #'+treesit-auto/toggle
+   "ta"     #'+prog/treesit-auto-toggle
    "tm"     #'org-toggle-inline-images
    ;; code (lsp/tags)
    "c" '(:ignore t :which-key "code")
@@ -518,8 +339,8 @@
    "fm"     #'consult-man
    "fM"     #'consult-woman
    "fh"     #'consult-history ; find history
-   "fp"     #'+kbd/find-private-config ; find private emacs config
-   "fP"     #'+kbd/find-user-emacs-config ; find private emacs config in .emacs.d
+   "fp"     #'+keys/find-private-config ; find private emacs config
+   "fP"     #'+keys/find-user-emacs-config ; find private emacs config in .emacs.d
    )
 
   ;; occur mode
@@ -568,4 +389,5 @@
    "C-c C-c"     #'smerge-keep-current)
   )
 
-(provide 'init-kbd)
+(provide 'init-keys)
+;;; keys.el ends here

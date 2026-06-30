@@ -1,6 +1,8 @@
-;;; init-llm.el --- core functionality support -*- lexical-binding: t -*-
+;;; llm.el --- LLM and agent integrations -*- lexical-binding: t -*-
 ;;; Commentary:
+;; LLM and agent integrations: gptel, agent-shell, magent and magit-gptel.
 ;;; Code:
+
 
 ;; -----------------------------------------------------------
 ;; DONE llm
@@ -106,7 +108,7 @@
     :stream t)
 
   ;; register aliyun backend
-  (defvar +gptel/aliyun
+  (defvar +llm/aliyun
     (gptel-make-deepseek "Aliyun"
       :host "dashscope.aliyuncs.com/compatible-mode/v1"
       :endpoint "/chat/completions"
@@ -117,7 +119,7 @@
                 (qwen3.7-max :request-params (:enable_thinking t))
                 ))))
 
-(defvar +gptel/sssaicode
+(defvar +llm/sssaicode
   (gptel-make-openai "SssAiCode"
     :host "https://codex1.sssaicode.com/api/v1"
     :endpoint "/chat/completions"
@@ -126,7 +128,7 @@
     :models '(gpt-5.4)))
 
 ;; register zhipu backend
-(defvar +gptel/zhipu
+(defvar +llm/zhipu
   (gptel-make-deepseek "Zhipu"
     :host "open.bigmodel.cn/api/coding/paas/v4"
     :endpoint "/chat/completions"
@@ -147,7 +149,7 @@
 ;;     :models '(qwen2.5-coder:latest)))
 
 ;; set default values
-(setopt gptel-backend +gptel/aliyun)
+(setopt gptel-backend +llm/aliyun)
 (setopt gptel-model 'qwen3.7-max)
 
 ;; set context
@@ -158,7 +160,7 @@
 (add-hook 'gptel-mode-hook
           (lambda () (insert "* Default Context\n=@Jamie=")))
 
-(defun +gptel/remove-headings (beg end)
+(defun +llm/remove-headings (beg end)
   (when (derived-mode-p 'org-mode)
     (save-excursion
       (goto-char beg)
@@ -170,7 +172,7 @@
         (skip-chars-backward " \t\r")
         (insert-and-inherit "*")))))
 
-(add-hook 'gptel-post-response-functions #'+gptel/remove-headings)
+(add-hook 'gptel-post-response-functions #'+llm/remove-headings)
 
 (use-package magit-gptel
   :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
@@ -195,11 +197,11 @@
 ;; PlantUML Beautification (using gptel-rewrite)
 ;; -----------------------------------------------------------
 
-(defvar +gptel/beautify-plantuml-directive
+(defvar +llm/beautify-plantuml-directive
   "You are a PlantUML expert. Beautify and improve the PlantUML diagram while preserving its semantic meaning. Improve layout, add appropriate styling/colors, organize elements logically, add skinparams for professional appearance. Return ONLY the improved PlantUML code without any explanations or markdown formatting."
   "Rewrite directive for PlantUML beautification.")
 
-(defun gptel-beautify-plantuml ()
+(defun +llm/beautify-plantuml ()
   "Beautify PlantUML source block at point using gptel-rewrite.
 This selects the PlantUML code region and invokes gptel's rewrite
 functionality, allowing you to diff/ediff/merge the changes."
@@ -229,7 +231,7 @@ functionality, allowing you to diff/ediff/merge the changes."
       ;; 4. Set region and invoke gptel-rewrite
       (goto-char code-start)
       (push-mark code-end t t)
-      (let ((gptel--rewrite-directive +gptel/beautify-plantuml-directive))
+      (let ((gptel--rewrite-directive +llm/beautify-plantuml-directive))
         (gptel--suffix-rewrite)))))
 
 (use-package magent
@@ -270,4 +272,6 @@ functionality, allowing you to diff/ediff/merge the changes."
    "?"   #'magent-transient-menu
    ))
 
+
 (provide 'init-llm)
+;;; llm.el ends here

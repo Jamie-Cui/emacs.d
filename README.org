@@ -21,6 +21,51 @@ This repo is a personal GNU/Emacs configuration with two-level deferred loading,
 4. Use Plantuml for uml drawing: [[https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar][download]].
 5. Use emacs build-in tree-sitter.
 
+* Architecture
+
+The configuration loads in three layers:
+
+1. *Bootstrap*. ~early-init.el~ runs first (GC tuning, ~package-enable-at-startup~,
+   early UI chrome). The repo ~init.el~ is a manifest: it loads the core layer,
+   then the feature modules via ~+emacs/load-modules~.
+2. *Core* (~lisp/core/~). Foundational mechanics, loaded with ~require~ in a fixed
+   order: ~core-vars~ (user variables, ~+emacs~ group), ~core-paths~ (load paths and
+   directory helpers), ~core-startup~ (version gate, startup restore, proxy,
+   workarounds, server), ~core-package~ (package.el + use-package), ~core-loader~
+   (the module loader), ~core-util~ (cross-cutting commands).
+3. *Modules* (~lisp/modules/~). One file per capability domain, each providing a
+   feature named ~init-<module>~. Language packages live in ~lisp/modules/lang/~,
+   loaded by path-like names such as ~lang/cmake~.
+
+Modules load in manifest order; ~keys~ loads last so every command it binds is
+already defined. Set ~+emacs/disabled-modules~ (in your installed ~init.el~) to a
+list of module names to skip, e.g. ~'("llm" "lang/lean")~.
+
+** Module boundaries
+
+| Module                 | Responsibility                                            |
+|------------------------+-----------------------------------------------------------|
+| ~os~                     | OS-specific tweaks (Linux/macOS/Windows/WSL), shell env   |
+| ~ui~                     | frames, fonts, cnfonts, modeline, dashboard, themes, TTY  |
+| ~editor~                 | editing defaults, smartparens, yasnippet, text commands   |
+| ~completion~             | vertico/corfu/consult/orderless/marginalia, embark        |
+| ~files~                  | dired, tramp, eshell, eat, backups, auto-save, proced     |
+| ~project~                | projectile, perspective, envrc                            |
+| ~vc~                     | magit, diff-hl                                            |
+| ~prog~                   | eglot, flycheck, citre, compilation, treesit              |
+| ~lang/*~                 | per-language config (cmake, bazel, markdown, lean, ...)   |
+| ~org~                    | Org core, babel, export, plantuml                         |
+| ~notes~                  | org-project, journal, roam, deft, agenda hygiene          |
+| ~bibliography~           | citar, ebib, bibtex                                       |
+| ~latex~                  | auctex, pdf-tools, xenops, git-overleaf (GUI)             |
+| ~reading~                | elfeed                                                    |
+| ~llm~                    | gptel, agent-shell, magent, magit-gptel                   |
+| ~input~                  | PDF/text zoom, pinch and mouse-wheel handlers             |
+| ~keys~                   | which-key, general.el, the SPC leader map (loaded last)   |
+
+Local and forked packages live in ~site-lisp/~ and keep their own ~init-config-*~
+helper files in ~lisp/~.
+
 * Getting started
 
 Ubuntu:
@@ -28,6 +73,24 @@ Ubuntu:
 #+begin_src bash :results verbatim :dir ~
 curl -sSL https://gist.githubusercontent.com/Jamie-Cui/e0c613bad06e17f34be591efb7615896/raw/00e86159e15191698f038d2be4367358f46fa66c/install-emacs-and-deps.sh | bash
 #+end_src
+
+** Install
+
+#+begin_src bash
+# Install the bootstrap files into ~/.emacs.d (existing files are kept).
+make init
+# Overwrite existing ~/.emacs.d/{init,early-init}.el instead:
+make init-force
+#+end_src
+
+~make init~ installs ~templates/early-init.el~ and ~templates/init.el~, substituting
+this checkout's path for the ~@REPO_DIRECTORY@~ placeholder. Machine-local
+settings (proxy, org root, theme, package archives) belong in the installed
+~~/.emacs.d/init.el~.
+
+Useful checks: ~make smoke~ (offline startup test of both chains) and
+~make compile~ (byte-compile core + modules to a temp dir).
+
 
 ** Prerequisite
 - gcc toolchain (gcc, g++, cmake, makefile, autotools, ...): compile environment
