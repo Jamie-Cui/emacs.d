@@ -21,6 +21,22 @@
   (rime-user-data-dir "~/opt/dotfiles/rime")
   (rime-show-candidate 'posframe))
 
+;; Stop respecting the system input method (fcitx) on PGTK.
+;;
+;; A PGTK build (Linux Wayland/X11) forwards keys to GtkIMContext, which hands
+;; them to the system IME.  That bypasses Emacs's own `current-input-method' /
+;; `evil-input-method', so packages that toggle the input method (rime above,
+;; magent-evil's post-submit reset) cannot take effect.  Disabling GtkIMContext
+;; lets Emacs own input again, driven by `rime'.
+;;
+;; PGTK-only: `pgtk-use-im-context' does not exist on the macOS (ns) build or in
+;; the terminal, so guard on both the frame type and the function.  The macOS
+;; equivalent, if ever needed, goes in the Darwin section below.
+(when (and (eq system-type 'gnu/linux)
+           (eq window-system 'pgtk)
+           (fboundp 'pgtk-use-im-context))
+  (pgtk-use-im-context nil))
+
 ;;; --------------------------------------
 ;;; Darwin (MacOs)
 ;;; --------------------------------------
@@ -30,6 +46,19 @@
   ;; (add-to-list 'default-frame-alist '(undecorated . t))
   ;; Fix, macos dired permission
   (setq insert-directory-program "gls" dired-use-ls-dired t)
+
+  ;; --- Input method (placeholder) ---------------------------------------
+  ;; macOS uses the NS (Cocoa) build, which talks to the system IME through
+  ;; NSTextInputClient.  There is NO `pgtk-use-im-context' equivalent here and
+  ;; no official switch to make Emacs stop respecting the system input method.
+  ;; If you want Emacs-owned input on macOS, the practical route is:
+  ;;   1. Install rime for macOS and set `default-input-method' to "rime"
+  ;;      (rime has a macOS backend; the LADDER config differs from Linux).
+  ;;   2. Keep the system IME in ASCII/English while Emacs is focused.  On the
+  ;;      `emacs-mac' (Yamamoto) build, `mac-auto-ascii-mode' forces the system
+  ;;      IME back to Roman input; the stock `ns' build has no such helper.
+  ;; Left unimplemented on purpose — fill in once the macOS box is set up.
+  ;; (when (fboundp 'mac-auto-ascii-mode) (mac-auto-ascii-mode 1))
 
   ;; site-lisp
   (use-package ultra-scroll
