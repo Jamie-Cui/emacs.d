@@ -37,6 +37,12 @@
   (agent-shell-show-config-icons nil)
   :config
 
+  ;; Register Magent for direct `M-x agent-shell' before the Magent
+  ;; `use-package' block runs.  That block is gated by `:after', so putting
+  ;; this only in Magent's `:config' makes the agent-shell selector miss it.
+  (when (require 'magent-agent-shell nil t)
+    (magent-agent-shell-ensure-config))
+
   ;; HACK using +emacs/proxy for codex-acp
   (with-eval-after-load 'agent-shell-openai
     (let ((proxy (concat "http://" +emacs/proxy)))

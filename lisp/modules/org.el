@@ -8,6 +8,7 @@
 (require 'org)
 (require 'org-agenda)
 (require 'org-element)
+(require 'ob-plantuml)
 
 ;; archive to same file
 (setopt org-archive-location "::* Archive")
@@ -176,6 +177,17 @@
 ;;; org-babel
 (setopt org-confirm-babel-evaluate nil) ; do not confirm, just run
 
+(defun +org/plantuml-jar-path ()
+  "Return the machine-local PlantUML jar path."
+  (expand-file-name
+   "plantuml.jar"
+   (file-name-directory
+    (or user-init-file
+        (expand-file-name "init.el" user-emacs-directory)))))
+
+(setopt org-plantuml-jar-path (+org/plantuml-jar-path)
+        org-plantuml-exec-mode 'jar)
+
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((C . t) ; c, c++, and D
@@ -183,6 +195,55 @@
    (latex . t)
    (plantuml . t)
    ))
+
+(defun +org/plantuml-src-block-bounds-at-point ()
+  "Return textual bounds of the PlantUML source block at point."
+  (save-excursion
+    (let ((case-fold-search t)
+          (pos (point))
+          beg end)
+      (when (re-search-backward
+             "^[ \t]*#\\+begin_src[ \t]+plantuml\\(?:[ \t].*\\)?$"
+             nil t)
+        (setq beg (match-beginning 0)
+              end (save-excursion
+                    (when (re-search-forward "^[ \t]*#\\+end_src" nil t)
+                      (line-end-position))))
+        (when (and end (<= beg pos) (<= pos end))
+          (cons beg end))))))
+
+(defun +org/plantuml-clear-src-syntax-table-properties (beg end)
+  "Remove syntax-table properties from PlantUML source block text."
+  (with-silent-modifications
+    (remove-text-properties beg end '(syntax-table nil))))
+
+(defun +org/plantuml-clear-src-syntax-table-at-point ()
+  "Remove syntax-table properties from the PlantUML source block at point."
+  (when (derived-mode-p 'org-mode)
+    (let ((bounds (+org/plantuml-src-block-bounds-at-point)))
+      (when bounds
+        (+org/plantuml-clear-src-syntax-table-properties
+         (car bounds) (cdr bounds))))))
+
+(defun +org/plantuml-clear-src-syntax-table-after-fontify-a (lang start end)
+  "Keep PlantUML native fontification from confusing Babel parsing."
+  (when (string-equal lang "plantuml")
+    (+org/plantuml-clear-src-syntax-table-properties start end)))
+
+(unless (advice-member-p #'+org/plantuml-clear-src-syntax-table-after-fontify-a
+                         'org-src-font-lock-fontify-block)
+  (advice-add 'org-src-font-lock-fontify-block
+              :after #'+org/plantuml-clear-src-syntax-table-after-fontify-a))
+
+(defun +org/plantuml-clear-src-syntax-table-before-babel-a (fn &rest args)
+  "Clean PlantUML syntax-table properties before Babel reads block info."
+  (+org/plantuml-clear-src-syntax-table-at-point)
+  (apply fn args))
+
+(unless (advice-member-p #'+org/plantuml-clear-src-syntax-table-before-babel-a
+                         'org-babel-get-src-block-info)
+  (advice-add 'org-babel-get-src-block-info
+              :around #'+org/plantuml-clear-src-syntax-table-before-babel-a))
 
 ;; HACK from doom-emacs
 (defun +org-fix-newline-and-indent-in-src-blocks-a
@@ -224,14 +285,6 @@
 (use-package ob-http
   :ensure t)
 
-(defun +org/plantuml-jar-path ()
-  "Return the machine-local PlantUML jar path."
-  (expand-file-name
-   "plantuml.jar"
-   (file-name-directory
-    (or user-init-file
-        (expand-file-name "init.el" user-emacs-directory)))))
-
 (use-package plantuml-mode
   :ensure t
   :after org
@@ -239,7 +292,7 @@
   (plantuml-jar-path (+org/plantuml-jar-path))
   (org-plantuml-jar-path (+org/plantuml-jar-path))
   :config
-  (setq plantuml-default-exec-mode 'executable)
+  (setq plantuml-default-exec-mode 'jar)
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
 
 (use-package org-appear
