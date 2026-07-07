@@ -268,6 +268,7 @@ functionality, allowing you to diff/ediff/merge the changes."
   :config
   (require 'magent-config)
   (require 'magent-evil)
+  (magent-agent-shell-ensure-config)
   (global-magent-mode 1)
   (magent-evil-mode 1)
 

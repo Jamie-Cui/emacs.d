@@ -469,8 +469,9 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
         (let ((baseline (or (magit-gptel-request-baseline-text request) ""))
               (current (or (git-commit-buffer-message) "")))
           (cond
-           ((not (equal magit-gptel--active-request-id
-                        (magit-gptel-request-id request)))
+           ((and magit-gptel--active-request-id
+                 (not (equal magit-gptel--active-request-id
+                             (magit-gptel-request-id request))))
             (magit-gptel--show-commit-preview
              request message "A newer request now owns this buffer"))
            ((not (string= baseline current))
