@@ -129,6 +129,15 @@ is never inserted into the commit buffer."
   :type 'boolean
   :group 'magit-gptel)
 
+(defcustom magit-gptel-request-params nil
+  "Extra request parameters for Magit GPTel requests.
+
+These parameters are merged into a request-local copy of `magit-gptel-model',
+so they do not mutate global gptel model state.  Values here take precedence
+over model-specific `:request-params'."
+  :type 'plist
+  :group 'magit-gptel)
+
 (defcustom magit-gptel-commit-buffer-wait-seconds 2.0
   "How long `magit-gptel-commit-create' waits for the commit buffer."
   :type 'number
@@ -219,6 +228,28 @@ is never inserted into the commit buffer."
   "Return the model to use for this request."
   (or magit-gptel-model
       (default-value 'gptel-model)))
+
+(defun magit-gptel--merge-plists (&rest plists)
+  "Merge PLISTS into a new plist, with later values taking precedence."
+  (let (result)
+    (dolist (plist plists)
+      (let ((tail plist))
+        (while tail
+          (setq result (plist-put result (pop tail) (pop tail))))))
+    result))
+
+(defun magit-gptel--model-for-request ()
+  "Return the model object to use for an isolated Magit GPTel request."
+  (let ((model (magit-gptel--default-model)))
+    (if (and magit-gptel-request-params (symbolp model))
+        (let ((copy (make-symbol (symbol-name model))))
+          (setplist copy (copy-sequence (symbol-plist model)))
+          (put copy :request-params
+               (magit-gptel--merge-plists
+                (copy-sequence (get model :request-params))
+                magit-gptel-request-params))
+          copy)
+      model)))
 
 (defun magit-gptel--repo-root (&optional buffer)
   "Return repository root for BUFFER or the current buffer."
@@ -681,7 +712,7 @@ text, so `magit-gptel--finalize-request' owns the terminal decision."
 (defun magit-gptel--dispatch-request (request prompt system-prompt)
   "Send PROMPT for REQUEST with SYSTEM-PROMPT through an isolated gptel buffer."
   (let* ((request-buffer (generate-new-buffer " *magit-gptel-request*"))
-         (model (magit-gptel--default-model)))
+         (model (magit-gptel--model-for-request)))
     (setf (magit-gptel-request-request-buffer request) request-buffer
           (magit-gptel-request-status request) 'running)
     (magit-gptel--register-request request)

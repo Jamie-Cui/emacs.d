@@ -192,6 +192,7 @@
     :after (gptel magit)
     :demand t
     :config
+    (setopt magit-gptel-request-params '(:enable_thinking :json-false))
     (setopt magit-gptel-commit-prompt
             (concat
              magit-gptel-commit-prompt
