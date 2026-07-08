@@ -25,6 +25,7 @@
 (require 'cl-lib)
 (require 'subr-x)
 (require 'gptel)
+(require 'gptel-request)
 (require 'magit)
 (require 'git-commit)
 (require 'transient)
@@ -32,6 +33,7 @@
 (declare-function gptel-magit-install "gptel-magit")
 (declare-function gptel-magit-commit-generate "gptel-magit")
 (declare-function gptel-magit-diff-explain "gptel-magit")
+(declare-function gptel-fsm-info "gptel-request")
 (declare-function markdown-view-mode "markdown-mode")
 (declare-function gfm-view-mode "markdown-mode")
 
@@ -117,6 +119,16 @@ is always kept ahead of the patch."
   :type 'integer
   :group 'magit-gptel)
 
+(defcustom magit-gptel-commit-reasoning-fallback t
+  "Whether to recover commit subjects from reasoning-only responses.
+
+Some providers expose reasoning as a separate gptel callback and may omit
+normal response text.  When this option is non-nil, commit generation can scan
+that reasoning text for a Conventional Commit subject.  The full reasoning text
+is never inserted into the commit buffer."
+  :type 'boolean
+  :group 'magit-gptel)
+
 (defcustom magit-gptel-commit-buffer-wait-seconds 2.0
   "How long `magit-gptel-commit-create' waits for the commit buffer."
   :type 'number
@@ -170,6 +182,9 @@ is always kept ahead of the patch."
   snapshot
   baseline-text
   baseline-tick
+  response-chunks
+  reasoning-chunks
+  unsupported-response
   status
   applied-callback)
 
@@ -426,6 +441,29 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
         (string-join (butlast (cdr lines)) "\n")
       trimmed)))
 
+(defconst magit-gptel--commit-subject-search-regexp
+  (concat "\\(?:build\\|chore\\|ci\\|docs\\|feat\\|fix\\|perf\\|"
+          "refactor\\|style\\|test\\)"
+          "\\(?:([^)\n\"`]+)\\)?: [^\"`\n]+")
+  "Regexp matching a Conventional Commit subject inside a line.")
+
+(defconst magit-gptel--commit-subject-line-regexp
+  (concat "\\`" magit-gptel--commit-subject-search-regexp "\\'")
+  "Regexp matching a full Conventional Commit subject line.")
+
+(defun magit-gptel--commit-subject-line-p (line)
+  "Return non-nil when LINE is a Conventional Commit subject."
+  (string-match-p magit-gptel--commit-subject-line-regexp
+                  (string-trim line)))
+
+(defun magit-gptel--extract-commit-subject (text)
+  "Extract the last Conventional Commit subject found in TEXT."
+  (let (subject)
+    (dolist (line (split-string text "\n"))
+      (when (string-match magit-gptel--commit-subject-search-regexp line)
+        (setq subject (string-trim (match-string 0 line)))))
+    subject))
+
 (defun magit-gptel--normalize-commit-message (text)
   "Normalize model TEXT into a plain commit message string."
   (let* ((unfenced (magit-gptel--unwrap-code-fence text))
@@ -433,11 +471,43 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
          (lines (split-string trimmed "\n"))
          (lines (if (and lines
                          (string-match-p
-                          "\\`\\(?:Suggested \\)?Commit message:?\\'"
-                          (string-trim (car lines))))
+                         "\\`\\(?:Suggested \\)?Commit message:?\\'"
+                         (string-trim (car lines))))
                     (cdr lines)
                   lines)))
-    (string-trim-right (string-join lines "\n"))))
+    (let ((message (string-trim-right (string-join lines "\n"))))
+      (if (or (string-empty-p message)
+              (magit-gptel--commit-subject-line-p
+               (car (split-string message "\n"))))
+          message
+        (or (magit-gptel--extract-commit-subject message)
+            message)))))
+
+(defun magit-gptel--reasoning-response-p (response)
+  "Return non-nil when RESPONSE is a gptel reasoning callback value."
+  (and (consp response)
+       (eq (car response) 'reasoning)))
+
+(defun magit-gptel--join-chunks (chunks)
+  "Join CHUNKS recorded in reverse arrival order."
+  (apply #'concat (nreverse (copy-sequence chunks))))
+
+(defun magit-gptel--response-text (request)
+  "Return accumulated final response text for REQUEST."
+  (magit-gptel--join-chunks
+   (magit-gptel-request-response-chunks request)))
+
+(defun magit-gptel--reasoning-text (request)
+  "Return accumulated reasoning text for REQUEST."
+  (magit-gptel--join-chunks
+   (magit-gptel-request-reasoning-chunks request)))
+
+(defun magit-gptel--reasoning-fallback-text (request)
+  "Return a safe fallback text extracted from REQUEST reasoning."
+  (when (and magit-gptel-commit-reasoning-fallback
+             (eq (magit-gptel-request-kind request) 'commit-message))
+    (magit-gptel--extract-commit-subject
+     (magit-gptel--reasoning-text request))))
 
 (defun magit-gptel--commit-message-region ()
   "Return the region containing the editable commit message body."
@@ -516,75 +586,129 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
      t)
     (message "magit-gptel: Diff explanation ready")))
 
-(defun magit-gptel--handle-response (request response info)
-  "Handle gptel RESPONSE/INFO for REQUEST."
+(defun magit-gptel--handle-response (request response _info)
+  "Record one gptel RESPONSE event for REQUEST.
+
+This callback intentionally does not apply or clean up the request.  gptel can
+emit provider-specific intermediate events such as reasoning before the final
+text, so `magit-gptel--finalize-request' owns the terminal decision."
+  (cond
+   ((stringp response)
+    (push response (magit-gptel-request-response-chunks request)))
+   ((magit-gptel--reasoning-response-p response)
+    (when (stringp (cdr response))
+      (push (cdr response)
+            (magit-gptel-request-reasoning-chunks request))))
+   ((eq response 'abort)
+    (setf (magit-gptel-request-status request) 'cancelled))
+   ((or (null response) (eq response t))
+    nil)
+   (t
+    (setf (magit-gptel-request-unsupported-response request)
+          response))))
+
+(defun magit-gptel--no-final-response-message (request info)
+  "Return a diagnostic for REQUEST when gptel produced no final text."
+  (string-join
+   (list
+    "magit-gptel received no final response text."
+    ""
+    (if (string-empty-p (magit-gptel--reasoning-text request))
+        "The provider completed without a text response."
+      "The provider returned reasoning content but no normal response text.")
+    ""
+    "For commit generation, magit-gptel can recover a Conventional Commit"
+    "subject from reasoning-only responses when one is present.  Otherwise use"
+    "a model or backend setting that returns normal response content."
+    ""
+    (format "Repository: %s" (magit-gptel-request-repo-root request))
+    (format "Request: %s" (magit-gptel-request-id request))
+    (format "Status: %s" (magit-gptel--request-error-string info)))
+   "\n"))
+
+(defun magit-gptel--finalize-request (request info)
+  "Finalize REQUEST after gptel reaches a terminal state."
   (unwind-protect
       (cond
        ((eq (magit-gptel-request-status request) 'cancelled)
-        nil)
-       ((stringp response)
-        (setf (magit-gptel-request-status request) 'completed)
-        (condition-case err
-            (funcall (magit-gptel-request-applied-callback request)
-                     request response info)
-          (error
-           (magit-gptel--display-text-buffer
-            magit-gptel-preview-buffer-name
-            (format "magit-gptel failed to apply a response: %s"
-                    (error-message-string err))))))
-       ((eq response 'abort)
-        (setf (magit-gptel-request-status request) 'cancelled)
         (message "magit-gptel: Request cancelled"))
-       ((null response)
+       ((plist-get info :error)
         (setf (magit-gptel-request-status request) 'failed)
         (magit-gptel--display-text-buffer
          magit-gptel-preview-buffer-name
          (format "magit-gptel request failed.\n\n%s"
                  (magit-gptel--request-error-string info))))
-       (t
+       ((magit-gptel-request-unsupported-response request)
         (setf (magit-gptel-request-status request) 'failed)
         (magit-gptel--display-text-buffer
          magit-gptel-preview-buffer-name
          (format "magit-gptel received an unsupported gptel response:\n\n%s"
-                 response))))
+                 (magit-gptel-request-unsupported-response request))))
+       (t
+        (let ((response (or (and-let* ((text (magit-gptel--response-text request))
+                                       ((not (string-empty-p text))))
+                              text)
+                            (magit-gptel--reasoning-fallback-text request))))
+          (if (not response)
+              (progn
+                (setf (magit-gptel-request-status request) 'failed)
+                (magit-gptel--display-text-buffer
+                 magit-gptel-preview-buffer-name
+                 (magit-gptel--no-final-response-message request info)))
+            (setf (magit-gptel-request-status request) 'completed)
+            (condition-case err
+                (funcall (magit-gptel-request-applied-callback request)
+                         request response info)
+              (error
+               (setf (magit-gptel-request-status request) 'failed)
+               (magit-gptel--display-text-buffer
+                magit-gptel-preview-buffer-name
+                (format "magit-gptel failed to apply a response: %s"
+                        (error-message-string err)))))))))
     (magit-gptel--cleanup-request request)))
+
+(defun magit-gptel--install-finalizer (fsm request)
+  "Install REQUEST finalization into gptel FSM's post handlers."
+  (let* ((info (gptel-fsm-info fsm))
+         (post (plist-get info :post)))
+    (plist-put info :post
+               (append post
+                       (list (lambda (terminal-info)
+                               (magit-gptel--finalize-request
+                                request terminal-info))))))
+  fsm)
 
 (defun magit-gptel--dispatch-request (request prompt system-prompt)
   "Send PROMPT for REQUEST with SYSTEM-PROMPT through an isolated gptel buffer."
   (let* ((request-buffer (generate-new-buffer " *magit-gptel-request*"))
-         (model (magit-gptel--default-model))
-         (orig-request-params (copy-sequence
-                               (get model :request-params))))
+         (model (magit-gptel--default-model)))
     (setf (magit-gptel-request-request-buffer request) request-buffer
           (magit-gptel-request-status request) 'running)
     (magit-gptel--register-request request)
-    (put model :request-params
-         (plist-put (get model :request-params)
-                    :enable_thinking :json-false))
-    (unwind-protect
-        (condition-case err
-            (with-current-buffer request-buffer
-              (let ((gptel-backend (magit-gptel--default-backend))
-                    (gptel-model model)
-                    (gptel-use-context nil)
-                    (gptel-context nil)
-                    (gptel-use-tools nil)
-                    (gptel-tools nil)
-                    (gptel-track-response nil)
-                    (gptel-prompt-transform-functions nil)
-                    (gptel-include-reasoning nil))
-                (gptel-request
-                    prompt
-                  :buffer request-buffer
-                  :system system-prompt
-                  :stream nil
-                  :callback (lambda (response info)
-                              (magit-gptel--handle-response
-                               request response info)))))
-          (error
-           (magit-gptel--cleanup-request request)
-           (signal (car err) (cdr err))))
-      (put model :request-params orig-request-params))
+    (condition-case err
+        (with-current-buffer request-buffer
+          (let ((gptel-backend (magit-gptel--default-backend))
+                (gptel-model model)
+                (gptel-use-context nil)
+                (gptel-context nil)
+                (gptel-use-tools nil)
+                (gptel-tools nil)
+                (gptel-track-response nil)
+                (gptel-prompt-transform-functions nil)
+                (gptel-include-reasoning nil))
+            (magit-gptel--install-finalizer
+             (gptel-request
+                 prompt
+               :buffer request-buffer
+               :system system-prompt
+               :stream nil
+               :callback (lambda (response info)
+                           (magit-gptel--handle-response
+                            request response info)))
+             request)))
+      (error
+       (magit-gptel--cleanup-request request)
+       (signal (car err) (cdr err))))
     request))
 
 (defun magit-gptel--cancel-request (request &optional silent)
