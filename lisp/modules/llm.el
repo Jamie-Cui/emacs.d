@@ -43,6 +43,19 @@
   (when (require 'magent-agent-shell nil t)
     (magent-agent-shell-ensure-config))
 
+  (defun +agent-shell/bind-return-in-action-keymap-a (map)
+    "Bind GUI <return> in agent-shell action keymaps."
+    (when (keymapp map)
+      (when-let* ((action (lookup-key map (kbd "RET"))))
+        (define-key map (kbd "<return>") action)))
+    map)
+
+  (with-eval-after-load 'agent-shell-ui
+    (advice-remove 'agent-shell-ui-make-action-keymap
+                   #'+agent-shell/bind-return-in-action-keymap-a)
+    (advice-add 'agent-shell-ui-make-action-keymap
+                :filter-return #'+agent-shell/bind-return-in-action-keymap-a))
+
   ;; HACK using +emacs/proxy for codex-acp
   (with-eval-after-load 'agent-shell-openai
     (let ((proxy (concat "http://" +emacs/proxy)))
