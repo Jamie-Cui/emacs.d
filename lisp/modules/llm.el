@@ -108,10 +108,17 @@
            display-buffer-pop-up-window)
           (inhibit-same-window . t)))
 
+  ;; register deepseek backend
+  (defvar +llm/deepseek
+    (gptel-make-deepseek "DeepSeek"
+      :key (auth-source-pick-first-password :host "deepseek")
+      :stream t))
+
   ;; register gemini backend
-  (gptel-make-gemini "Gemini"
-    :key (auth-source-pick-first-password :host "gemini")
-    :stream t)
+  (defvar +llm/gemini
+    (gptel-make-gemini "Gemini"
+      :key (auth-source-pick-first-password :host "gemini")
+      :stream t))
 
   ;; register aliyun backend
   (defvar +llm/aliyun
@@ -123,122 +130,121 @@
       :models '(
                 qwen3.7-plus
                 (qwen3.7-max :request-params (:enable_thinking t))
-                ))))
+                )))
 
-(defvar +llm/sssaicode
-  (gptel-make-openai "SssAiCode"
-    :host "https://codex1.sssaicode.com/api/v1"
-    :endpoint "/chat/completions"
-    :stream t
-    :key (auth-source-pick-first-password :host "sssaicode")
-    :models '(gpt-5.4)))
+  (defvar +llm/sssaicode
+    (gptel-make-openai "SssAiCode"
+      :host "https://codex1.sssaicode.com/api/v1"
+      :endpoint "/chat/completions"
+      :stream t
+      :key (auth-source-pick-first-password :host "sssaicode")
+      :models '(gpt-5.4)))
 
-;; register zhipu backend
-(defvar +llm/zhipu
-  (gptel-make-deepseek "Zhipu"
-    :host "open.bigmodel.cn/api/coding/paas/v4"
-    :endpoint "/chat/completions"
-    :stream t
-    :key (auth-source-pick-first-password :host "zhipu")
-    :models '(glm-4.7)))
+  ;; register zhipu backend
+  (defvar +llm/zhipu
+    (gptel-make-deepseek "Zhipu"
+      :host "open.bigmodel.cn/api/coding/paas/v4"
+      :endpoint "/chat/completions"
+      :stream t
+      :key (auth-source-pick-first-password :host "zhipu")
+      :models '(glm-4.7)))
 
-;; register local backend
-;; NOTE to make ollama work through LAN, on its server
-;; see: https://github.com/ollama/ollama/blob/main/docs/faq.md
-;; (defvar +gptel/local-backend
-;;   (gptel-make-openai "OpenWebUI"
-;;     :host "localhost:8080"
-;;     :protocol "http"
-;;     :endpoint "/api/chat/completions"
-;;     :stream t
-;;     :key "sk-02bdf77754894f87b8988711c7d15b67"
-;;     :models '(qwen2.5-coder:latest)))
+  ;; register local backend
+  ;; NOTE to make ollama work through LAN, on its server
+  ;; see: https://github.com/ollama/ollama/blob/main/docs/faq.md
+  ;; (defvar +gptel/local-backend
+  ;;   (gptel-make-openai "OpenWebUI"
+  ;;     :host "localhost:8080"
+  ;;     :protocol "http"
+  ;;     :endpoint "/api/chat/completions"
+  ;;     :stream t
+  ;;     :key "sk-02bdf77754894f87b8988711c7d15b67"
+  ;;     :models '(qwen2.5-coder:latest)))
 
-;; set default values
-(setopt gptel-backend +llm/aliyun)
-(setopt gptel-model 'qwen3.7-max)
+  ;; set default values
+  (setopt gptel-backend +llm/deepseek)
+  (setopt gptel-model 'deepseek-v4-pro)
 
-;; set context
-(setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
-(setf (alist-get 'org-mode gptel-response-prefix-alist) "=@AI=\n")
+  ;; set context
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "=@Jamie=\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "=@AI=\n")
 
-;; set hook
-(add-hook 'gptel-mode-hook
-          (lambda () (insert "* Default Context\n=@Jamie=")))
+  ;; set hook
+  (add-hook 'gptel-mode-hook
+            (lambda () (insert "* Default Context\n=@Jamie=")))
 
-(defun +llm/remove-headings (beg end)
-  (when (derived-mode-p 'org-mode)
-    (save-excursion
-      (goto-char beg)
-      (while (re-search-forward org-heading-regexp end t)
-        (forward-line 0)
-        (delete-char (1+ (length (match-string 1))))
-        (insert-and-inherit "*")
-        (end-of-line)
-        (skip-chars-backward " \t\r")
-        (insert-and-inherit "*")))))
+  (defun +llm/remove-headings (beg end)
+    (when (derived-mode-p 'org-mode)
+      (save-excursion
+        (goto-char beg)
+        (while (re-search-forward org-heading-regexp end t)
+          (forward-line 0)
+          (delete-char (1+ (length (match-string 1))))
+          (insert-and-inherit "*")
+          (end-of-line)
+          (skip-chars-backward " \t\r")
+          (insert-and-inherit "*")))))
 
-(add-hook 'gptel-post-response-functions #'+llm/remove-headings)
+  (add-hook 'gptel-post-response-functions #'+llm/remove-headings)
 
-(use-package magit-gptel
-  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
-  :after (gptel magit)
-  :demand t
-  :custom
-  (magit-gptel-model 'qwen3.7-max)
-  :config
-  (setopt magit-gptel-commit-prompt
-          (concat
-           magit-gptel-commit-prompt
-           "\n\nAdditional hard requirements for this setup:\n"
-           "- The first line MUST fit within 50 characters, counting all spaces and punctuation\n"
-           "- The first line MUST already be a single line before any editor wrapping or filling\n"
-           "- If needed, abbreviate aggressively and drop secondary details to satisfy the limit\n"
-           "- If your first attempt is longer than 50 characters, rewrite it until it is 50 characters or shorter\n"
-           "- The body MAY be longer, but only after one blank line following the first line\n"
-           "- Return plain text only\n"
-           "- Never use markdown, code fences, or labels such as ```commit\n")))
+  (use-package magit-gptel
+    :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
+    :after (gptel magit)
+    :demand t
+    :config
+    (setopt magit-gptel-commit-prompt
+            (concat
+             magit-gptel-commit-prompt
+             "\n\nAdditional hard requirements for this setup:\n"
+             "- The first line MUST fit within 50 characters, counting all spaces and punctuation\n"
+             "- The first line MUST already be a single line before any editor wrapping or filling\n"
+             "- If needed, abbreviate aggressively and drop secondary details to satisfy the limit\n"
+             "- If your first attempt is longer than 50 characters, rewrite it until it is 50 characters or shorter\n"
+             "- The body MAY be longer, but only after one blank line following the first line\n"
+             "- Return plain text only\n"
+             "- Never use markdown, code fences, or labels such as ```commit\n")))
 
-;; -----------------------------------------------------------
-;; PlantUML Beautification (using gptel-rewrite)
-;; -----------------------------------------------------------
+  ;; -----------------------------------------------------------
+  ;; PlantUML Beautification (using gptel-rewrite)
+  ;; -----------------------------------------------------------
 
-(defvar +llm/beautify-plantuml-directive
-  "You are a PlantUML expert. Beautify and improve the PlantUML diagram while preserving its semantic meaning. Improve layout, add appropriate styling/colors, organize elements logically, add skinparams for professional appearance. Return ONLY the improved PlantUML code without any explanations or markdown formatting."
-  "Rewrite directive for PlantUML beautification.")
+  (defvar +llm/beautify-plantuml-directive
+    "You are a PlantUML expert. Beautify and improve the PlantUML diagram while preserving its semantic meaning. Improve layout, add appropriate styling/colors, organize elements logically, add skinparams for professional appearance. Return ONLY the improved PlantUML code without any explanations or markdown formatting."
+    "Rewrite directive for PlantUML beautification.")
 
-(defun +llm/beautify-plantuml ()
-  "Beautify PlantUML source block at point using gptel-rewrite.
+  (defun +llm/beautify-plantuml ()
+    "Beautify PlantUML source block at point using gptel-rewrite.
 This selects the PlantUML code region and invokes gptel's rewrite
 functionality, allowing you to diff/ediff/merge the changes."
-  (interactive)
-  (require 'gptel-rewrite)
-  ;; 1. Validate we're in org-mode
-  (unless (derived-mode-p 'org-mode)
-    (user-error "Not in org-mode"))
+    (interactive)
+    (require 'gptel-rewrite)
+    ;; 1. Validate we're in org-mode
+    (unless (derived-mode-p 'org-mode)
+      (user-error "Not in org-mode"))
 
-  ;; 2. Validate we're in a PlantUML source block
-  (let* ((info (org-babel-get-src-block-info))
-         (lang (car info)))
-    (unless info
-      (user-error "Not in a source block"))
-    (unless (string= lang "plantuml")
-      (user-error "Not in a PlantUML block (current: %s)" lang))
+    ;; 2. Validate we're in a PlantUML source block
+    (let* ((info (org-babel-get-src-block-info))
+           (lang (car info)))
+      (unless info
+        (user-error "Not in a source block"))
+      (unless (string= lang "plantuml")
+        (user-error "Not in a PlantUML block (current: %s)" lang))
 
-    ;; 3. Select the code region
-    (let ((code-start (save-excursion
+      ;; 3. Select the code region
+      (let ((code-start (save-excursion
+                          (org-babel-goto-src-block-head)
+                          (forward-line 1)
+                          (point)))
+            (code-end (save-excursion
                         (org-babel-goto-src-block-head)
-                        (forward-line 1)
-                        (point)))
-          (code-end (save-excursion
-                      (org-babel-goto-src-block-head)
-                      (re-search-forward "^[ \t]*#\\+end_src")
-                      (match-beginning 0))))
-      ;; 4. Set region and invoke gptel-rewrite
-      (goto-char code-start)
-      (push-mark code-end t t)
-      (let ((gptel--rewrite-directive +llm/beautify-plantuml-directive))
-        (gptel--suffix-rewrite)))))
+                        (re-search-forward "^[ \t]*#\\+end_src")
+                        (match-beginning 0))))
+        ;; 4. Set region and invoke gptel-rewrite
+        (goto-char code-start)
+        (push-mark code-end t t)
+        (let ((gptel--rewrite-directive +llm/beautify-plantuml-directive))
+          (gptel--suffix-rewrite)))))
+  )
 
 (use-package magent
   :vc (:url "https://github.com/Jamie-Cui/magent" :rev "master")
