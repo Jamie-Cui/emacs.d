@@ -1,6 +1,7 @@
 ;;; llm.el --- LLM and agent integrations -*- lexical-binding: t -*-
 ;;; Commentary:
-;; LLM and agent integrations: gptel, agent-shell, magent and magit-gptel.
+;; LLM and agent integrations: agent-switch, gptel, agent-shell, magent and
+;; magit-gptel.
 ;;; Code:
 
 (require 'map)
@@ -110,10 +111,16 @@
 ;; -----------------------------------------------------------
 ;; DONE llm
 ;;
+;; agent-switch
 ;; agent-shell
 ;; gptel
 ;; magit-gptel
 ;; -----------------------------------------------------------
+
+(use-package agent-switch
+  :vc (:url "https://github.com/Jamie-Cui/agent-switch.el" :rev "main")
+  :ensure t
+  :commands agent-switch)
 
 (use-package gptel-agent
   :ensure t
