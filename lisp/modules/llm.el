@@ -122,17 +122,17 @@
   :ensure t
   :commands agent-switch)
 
-(use-package gptel-agent
-  :ensure t
-  :after gptel
-  :config
-  (require 'gptel-agent-tools)
-  (add-to-list 'gptel-agent-dirs (concat +emacs/repo-directory "/agents"))
-  (gptel-agent-update)
-  ;; this package automatically add presets to gptel
-  ;; @gptel-agent
-  ;; @gptel-plan
-  )
+;; (use-package gptel-agent
+;;   :ensure t
+;;   :after gptel
+;;   :config
+;;   (require 'gptel-agent-tools)
+;;   (add-to-list 'gptel-agent-dirs (concat +emacs/repo-directory "/agents"))
+;;   (gptel-agent-update)
+;;   ;; this package automatically add presets to gptel
+;;   ;; @gptel-agent
+;;   ;; @gptel-plan
+;;   )
 
 (use-package agent-shell
   :ensure t
