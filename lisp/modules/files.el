@@ -188,6 +188,7 @@ pre-date the external-operation helper API."
             (setq-local truncate-lines t)))
 
 (require 'init-config-tramp)
+(require 'consult-tramp)
 
 (setq +eshell/proxy +emacs/proxy)
 (require 'init-config-eshell)
