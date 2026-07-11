@@ -25,6 +25,25 @@
   :group 'consult
   :group 'tramp)
 
+(defcustom consult-tramp-methods
+  '(ssh sshx scp rsync
+    docker dockercp podman podmancp kubernetes
+    sudo su)
+  "TRAMP methods searched by `consult-tramp-source-methods'.
+The default is a fixed list of method symbols.  Only methods that are also
+currently registered in `tramp-methods' are searched.  An empty customized
+list disables dynamic endpoint discovery.
+Active connections and locations from file name history are not filtered."
+  :type '(repeat (symbol :tag "Method"))
+  :group 'consult-tramp)
+
+(defcustom consult-tramp-extra-privileged-users nil
+  "Additional local users offered for privileged TRAMP methods.
+These names are appended to the automatically discovered login-capable users
+for methods such as sudo, su, and doas."
+  :type '(repeat (string :tag "User"))
+  :group 'consult-tramp)
+
 (defcustom consult-tramp-sources
   '(consult-tramp-source-active
     consult-tramp-source-history
@@ -44,6 +63,10 @@ not prevent later sources from contributing candidates."
   "Diagnostics collected during the current candidate collection.")
 
 (defconst consult-tramp--cache-miss (make-symbol "consult-tramp-cache-miss"))
+
+(defconst consult-tramp--privileged-methods
+  '(sudo sudoedit su doas run0 ksu surs sudors)
+  "TRAMP methods whose passwd completion should contain login users only.")
 
 (defun consult-tramp--record-diagnostic (context problem)
   "Record a candidate collection PROBLEM associated with CONTEXT."
@@ -133,19 +156,165 @@ completion rows or the captured error."
                consult-tramp--completion-cache)
       cached)))
 
+(defun consult-tramp--process-output (program &rest arguments)
+  "Return PROGRAM output for ARGUMENTS, or nil when it cannot be run."
+  (let ((default-directory temporary-file-directory))
+    (when-let* ((executable (executable-find program)))
+      (with-temp-buffer
+        (let ((status (apply #'process-file executable nil t nil arguments)))
+          (when (and (integerp status) (zerop status))
+            (buffer-string)))))))
+
+(defun consult-tramp--local-file-contents (file)
+  "Return the literal contents of local FILE, or nil when unreadable."
+  (let ((default-directory temporary-file-directory))
+    (when (file-readable-p file)
+      (with-temp-buffer
+        (insert-file-contents-literally file)
+        (buffer-string)))))
+
+(defun consult-tramp--parse-passwd-users (output)
+  "Parse passwd-format OUTPUT into (NAME UID SHELL) records."
+  (delq
+   nil
+   (mapcar
+    (lambda (line)
+      (let ((fields (split-string line ":" nil)))
+        (when (>= (length fields) 7)
+          (list (nth 0 fields)
+                (string-to-number (nth 2 fields))
+                (nth 6 fields)))))
+    (split-string (or output "") "\n" t))))
+
+(defun consult-tramp--parse-dscache-users (output)
+  "Parse macOS dscacheutil user OUTPUT into (NAME UID SHELL) records."
+  (let (records)
+    (dolist (block (split-string (or output "") "\n[[:blank:]]*\n" t))
+      (let (name uid shell)
+        (dolist (line (split-string block "\n" t))
+          (cond
+           ((string-match (rx string-start "name:" (+ blank) (group (+ nonl)))
+                          line)
+            (setq name (match-string 1 line)))
+           ((string-match (rx string-start "uid:" (+ blank) (group (+ digit)))
+                          line)
+            (setq uid (string-to-number (match-string 1 line))))
+           ((string-match (rx string-start "shell:" (+ blank) (group (+ nonl)))
+                          line)
+            (setq shell (match-string 1 line)))))
+        (when (and name uid)
+          (push (list name uid shell) records))))
+    (nreverse records)))
+
+(defun consult-tramp--local-user-records ()
+  "Return local account records using the operating system directory service."
+  (pcase system-type
+    ('darwin
+     (consult-tramp--parse-dscache-users
+      (consult-tramp--process-output "dscacheutil" "-q" "user")))
+    ('gnu/linux
+     (consult-tramp--parse-passwd-users
+      (or (consult-tramp--process-output "getent" "passwd")
+          (consult-tramp--local-file-contents "/etc/passwd"))))
+    (_
+     (consult-tramp--parse-passwd-users
+      (consult-tramp--local-file-contents "/etc/passwd")))))
+
+(defun consult-tramp--login-shells ()
+  "Return the local shells considered valid for interactive login."
+  (let* ((contents (consult-tramp--local-file-contents "/etc/shells"))
+         (shells
+          (seq-filter
+           (lambda (line)
+             (and (string-prefix-p "/" line)
+                  (not (string-match-p (rx (or "false" "nologin")
+                                            string-end)
+                                       line))))
+           (split-string (or contents "") "\n" t "[[:blank:]]+"))))
+    (or shells
+        (delete-dups
+         (delq nil (list (getenv "SHELL") "/bin/sh" "/bin/bash"
+                         "/bin/zsh"))))))
+
+(defun consult-tramp--linux-uid-min ()
+  "Return Linux's configured minimum UID for regular users."
+  (let ((contents (consult-tramp--local-file-contents "/etc/login.defs")))
+    (if (and contents
+             (string-match
+              (rx line-start (* blank) "UID_MIN" (+ blank)
+                  (group (+ digit)))
+              contents))
+        (string-to-number (match-string 1 contents))
+      1000)))
+
+(defun consult-tramp--login-user-p (record shells minimum-uid)
+  "Return non-nil when RECORD represents an interactive login user.
+SHELLS is the allowlist of login shells and MINIMUM-UID is the platform's
+regular-user threshold."
+  (pcase-let ((`(,name ,uid ,shell) record))
+    (or (equal name "root")
+        (equal name (user-login-name))
+        (and (stringp name)
+             (integerp uid)
+             (>= uid minimum-uid)
+             (not (and (eq system-type 'darwin)
+                       (string-prefix-p "_" name)))
+             (member shell shells)))))
+
+(defun consult-tramp--local-login-users ()
+  "Return local human login users, with root and the current user first."
+  (let* ((shells (consult-tramp--login-shells))
+         (minimum-uid
+          (if (eq system-type 'gnu/linux)
+              (consult-tramp--linux-uid-min)
+            500))
+         (discovered
+          (sort
+           (delete-dups
+            (mapcar #'car
+                    (seq-filter
+                     (lambda (record)
+                       (consult-tramp--login-user-p
+                        record shells minimum-uid))
+                     (consult-tramp--local-user-records))))
+           #'string<))
+         (priority (delq nil (list "root" (user-login-name)))))
+    (delete-dups
+     (append priority consult-tramp-extra-privileged-users discovered))))
+
+(defun consult-tramp--local-login-user-completion ()
+  "Return local login users as TRAMP (USER HOST) completion rows."
+  (mapcar (lambda (user) (list user "localhost"))
+          (consult-tramp--local-login-users)))
+
+(defun consult-tramp--completion-specification (method specification)
+  "Return the effective completion SPECIFICATION for METHOD."
+  (if (and (memq (intern method) consult-tramp--privileged-methods)
+           (eq (car-safe specification) 'tramp-parse-passwd))
+      '(consult-tramp--local-login-user-completion)
+    specification))
+
 (defun consult-tramp--source-methods-1 ()
   "Collect concrete locations from registered TRAMP method completion hooks."
-  (let (locations)
-    (dolist (method (sort (delete-dups
-                           (delq nil
-                                 (mapcar (lambda (entry)
-                                           (and (stringp (car-safe entry))
-                                                (car entry)))
-                                         tramp-methods)))
-                          #'string<))
+  (let ((methods (sort (delete-dups
+                        (delq nil
+                              (mapcar (lambda (entry)
+                                        (and (stringp (car-safe entry))
+                                             (car entry)))
+                                      tramp-methods)))
+                       #'string<))
+        locations)
+    (setq methods
+          (seq-filter (lambda (method)
+                        (memq (intern method) consult-tramp-methods))
+                      methods))
+    (dolist (method methods)
       (unless (equal method tramp-default-method-marker)
         (condition-case error-data
             (dolist (specification (tramp-get-completion-function method))
+              (setq specification
+                    (consult-tramp--completion-specification
+                     method specification))
               (pcase (consult-tramp--completion-result specification)
                 (`(t . ,rows)
                  (dolist (row rows)

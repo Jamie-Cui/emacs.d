@@ -337,6 +337,7 @@
    "fF"     #'consult-locate ; find file (system wide)
    "fm"     #'consult-man
    "fM"     #'consult-woman
+   "ft"     #'consult-tramp
    "fh"     #'consult-history ; find history
    "fp"     #'+keys/find-private-config ; find private emacs config
    "fP"     #'+keys/find-user-emacs-config ; find private emacs config in .emacs.d

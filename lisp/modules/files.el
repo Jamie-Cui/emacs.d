@@ -190,6 +190,9 @@ pre-date the external-operation helper API."
 (require 'init-config-tramp)
 (require 'consult-tramp)
 
+;; consult-tramp only use thses methods
+(setopt consult-tramp-methods '(sshx docker sudo))
+
 (setq +eshell/proxy +emacs/proxy)
 (require 'init-config-eshell)
 

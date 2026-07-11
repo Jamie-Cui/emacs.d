@@ -47,6 +47,84 @@
               '("/docker:alpha:" "/ssh:alpha:")))
       (should (= calls 1)))))
 
+(ert-deftest consult-tramp-source-methods-honors-configured-methods ()
+  (let ((consult-tramp-methods '(ssh))
+        (consult-tramp-sources '(consult-tramp-source-methods))
+        (tramp-methods '(("docker") ("ssh")))
+        called)
+    (cl-letf (((symbol-function 'tramp-get-completion-function)
+               (lambda (method)
+                 (push method called)
+                 '((consult-tramp-test--configured-completion "config"))))
+              ((symbol-function 'consult-tramp-test--configured-completion)
+               (lambda (_argument) '((nil "alpha")))))
+      (should (equal (consult-tramp-locations) '("/ssh:alpha:")))
+      (should (equal called '("ssh"))))))
+
+(ert-deftest consult-tramp-source-methods-replaces-sudo-passwd-users ()
+  (let ((consult-tramp-methods '(sudo))
+        (consult-tramp-sources '(consult-tramp-source-methods))
+        (tramp-methods '(("sudo"))))
+    (cl-letf (((symbol-function 'tramp-get-completion-function)
+               (lambda (_method) '((tramp-parse-passwd "/etc/passwd"))))
+              ((symbol-function 'tramp-parse-passwd)
+               (lambda (_file)
+                 '(("daemon" "localhost") ("_www" "localhost"))))
+              ((symbol-function 'consult-tramp--local-login-users)
+               (lambda () '("root" "jamie"))))
+      (should
+       (equal (consult-tramp-locations)
+              '("/sudo:root@localhost:" "/sudo:jamie@localhost:"))))))
+
+(ert-deftest consult-tramp-local-login-users-filters-macos-accounts ()
+  (let ((system-type 'darwin)
+        (consult-tramp-extra-privileged-users nil))
+    (cl-letf (((symbol-function 'user-login-name) (lambda () "jamie"))
+              ((symbol-function 'consult-tramp--login-shells)
+               (lambda () '("/bin/sh" "/bin/zsh")))
+              ((symbol-function 'consult-tramp--local-user-records)
+               (lambda ()
+                 '(("root" 0 "/bin/sh")
+                   ("alice" 501 "/bin/zsh")
+                   ("_service" 502 "/bin/zsh")
+                   ("daemon" 1 "/usr/bin/false")))))
+      (should
+       (equal (consult-tramp--local-login-users)
+              '("root" "jamie" "alice"))))))
+
+(ert-deftest consult-tramp-local-login-users-filters-linux-accounts ()
+  (let ((system-type 'gnu/linux)
+        (consult-tramp-extra-privileged-users nil))
+    (cl-letf (((symbol-function 'user-login-name) (lambda () "admin"))
+              ((symbol-function 'consult-tramp--linux-uid-min)
+               (lambda () 1000))
+              ((symbol-function 'consult-tramp--login-shells)
+               (lambda () '("/bin/bash")))
+              ((symbol-function 'consult-tramp--local-user-records)
+               (lambda ()
+                 '(("root" 0 "/bin/bash")
+                   ("admin" 500 "/bin/bash")
+                   ("alice" 1000 "/bin/bash")
+                   ("postgres" 999 "/bin/bash")
+                   ("service" 1001 "/usr/sbin/nologin")))))
+      (should
+       (equal (consult-tramp--local-login-users)
+              '("root" "admin" "alice"))))))
+
+(ert-deftest consult-tramp-parses-native-user-databases ()
+  (should
+   (equal
+    (consult-tramp--parse-passwd-users
+     "alice:x:1000:1000:Alice:/home/alice:/bin/bash\n")
+    '(("alice" 1000 "/bin/bash"))))
+  (should
+   (equal
+    (consult-tramp--parse-dscache-users
+     (concat "name: alice\nuid: 501\ngid: 20\ndir: /Users/alice\n"
+             "shell: /bin/zsh\n\n"
+             "name: _service\nuid: 250\nshell: /usr/bin/false\n"))
+    '(("alice" 501 "/bin/zsh") ("_service" 250 "/usr/bin/false")))))
+
 (ert-deftest consult-tramp-sort-locations-prefers-default-method-and-source-order ()
   (let ((tramp-default-method "ssh"))
     (should
