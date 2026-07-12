@@ -179,7 +179,8 @@
    :states '(normal visual motion)
    :keymaps 'override ; prevent from being override
    ;; application keys
-   "A"      #'agent-shell ;; A -> Agent Shell
+   "A"      #'agent-shell ;; A -> Agent shell
+   "S"      #'agent-switch ;; S -> agent Switch
    "G"      #'gptel  ;; G -> Gptel
    "D"      #'docker
    ;; "T"      #'telega ;; T -> Telegram

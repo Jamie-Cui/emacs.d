@@ -120,7 +120,10 @@
 (use-package agent-switch
   :vc (:url "https://github.com/Jamie-Cui/agent-switch.el" :rev "main")
   :ensure t
-  :commands agent-switch)
+  :commands agent-switch
+  :custom
+  (agent-switch-authinfo-file (expand-file-name "~/.authinfo"))
+  )
 
 ;; (use-package gptel-agent
 ;;   :ensure t
