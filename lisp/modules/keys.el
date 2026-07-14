@@ -203,6 +203,10 @@
    "wj"     #'evil-window-down
    "wk"     #'evil-window-up
    "wl"     #'evil-window-right
+   "wH"     #'windmove-swap-states-left
+   "wJ"     #'windmove-swap-states-down
+   "wK"     #'windmove-swap-states-up
+   "wL"     #'windmove-swap-states-right
    "ww"     #'other-window
    "wx"     #'evil-window-exchange
    "wd"     #'delete-window

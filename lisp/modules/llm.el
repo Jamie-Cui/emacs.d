@@ -378,7 +378,7 @@ functionality, allowing you to diff/ediff/merge the changes."
   :demand t
   :custom
   (magent-skill-directories (list (expand-file-name "skills" +emacs/repo-directory)))
-  (magent-bypass-permission t)
+  ;; (magent-bypass-permission t)
   (magent-default-effort 'xhigh)
   ;; (magent-ui-wrap-reasoning-in-think-block nil)
   :init
