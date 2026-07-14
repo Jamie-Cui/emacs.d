@@ -207,8 +207,6 @@
    "wJ"     #'windmove-swap-states-down
    "wK"     #'windmove-swap-states-up
    "wL"     #'windmove-swap-states-right
-   "ww"     #'other-window
-   "wx"     #'evil-window-exchange
    "wd"     #'delete-window
    "wr"     #'balance-windows
    "ws"     #'+evil/window-split-and-follow
