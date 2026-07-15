@@ -140,11 +140,12 @@
 (use-package agent-shell
   :ensure t
   :custom
-  (agent-shell-display-action
-   '((display-buffer-reuse-window
-      display-buffer-use-some-window
-      display-buffer-pop-up-window)
-     (inhibit-same-window . t)))
+  (agent-shell-display-action 'display-buffer-other-window)
+  ;; (agent-shell-display-action
+  ;;  '((display-buffer-reuse-window
+  ;;     display-buffer-use-some-window
+  ;;     display-buffer-pop-up-window)
+  ;;    (inhibit-same-window . t)))
   (agent-shell-show-welcome-message nil)
   (agent-shell-header-style 'text)
   (agent-shell-show-config-icons nil)
