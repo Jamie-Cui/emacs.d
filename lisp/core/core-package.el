@@ -15,7 +15,11 @@
 ;; Trust the configured archives without signature checks.
 (setq package-check-signature nil)
 (setq package-native-compile t)
-(setq package-install-upgrade-built-in t)
+;; Installed ELPA overrides of built-in packages are upgraded normally.  Do not
+;; also add every active built-in to `package-upgrade-all': Emacs 31.0.60
+;; destructively joins its memoized built-in alist to `package-alist', which can
+;; produce duplicate upgrades and eventually make the package list circular.
+(setq package-install-upgrade-built-in nil)
 
 (unless package--initialized
   (package-initialize))
