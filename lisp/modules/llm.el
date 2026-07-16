@@ -276,8 +276,7 @@ functionality, allowing you to diff/ediff/merge the changes."
   (magent-default-effort 'xhigh)
   :config
   (add-to-list 'magent-skill-directories
-               (expand-file-name "skills" +emacs/repo-directory)
-               t)
+               (expand-file-name "skills" +emacs/repo-directory) t)
   (magent-agent-shell-ensure-config))
 
 
