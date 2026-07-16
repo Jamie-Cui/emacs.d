@@ -208,8 +208,10 @@
     :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
     :after (gptel magit)
     :demand t
+    :custom
+    (magit-gptel-model 'deepseek-v4-flash)
+    (magit-gptel-request-params '(:thinking (:type "disabled")))
     :config
-    (setopt magit-gptel-request-params '(:enable_thinking :json-false))
     (setopt magit-gptel-commit-prompt
             (concat
              magit-gptel-commit-prompt
@@ -273,13 +275,10 @@ functionality, allowing you to diff/ediff/merge the changes."
   ;; (magent-bypass-permission t)
   (magent-default-effort 'xhigh)
   :config
-  (require 'magent-evil)
   (add-to-list 'magent-skill-directories
                (expand-file-name "skills" +emacs/repo-directory)
                t)
-  (magent-agent-shell-ensure-config)
-  (global-magent-mode 1)
-  (magent-evil-mode 1))
+  (magent-agent-shell-ensure-config))
 
 
 (provide 'init-llm)

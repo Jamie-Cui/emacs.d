@@ -132,9 +132,8 @@ is never inserted into the commit buffer."
 (defcustom magit-gptel-request-params nil
   "Extra request parameters for Magit GPTel requests.
 
-These parameters are merged into a request-local copy of `magit-gptel-model',
-so they do not mutate global gptel model state.  Values here take precedence
-over model-specific `:request-params'."
+These parameters are installed as buffer-local `gptel--request-params' for
+the isolated request, so they do not mutate global gptel model state."
   :type 'plist
   :group 'magit-gptel)
 
@@ -229,27 +228,9 @@ over model-specific `:request-params'."
   (or magit-gptel-model
       (default-value 'gptel-model)))
 
-(defun magit-gptel--merge-plists (&rest plists)
-  "Merge PLISTS into a new plist, with later values taking precedence."
-  (let (result)
-    (dolist (plist plists)
-      (let ((tail plist))
-        (while tail
-          (setq result (plist-put result (pop tail) (pop tail))))))
-    result))
-
 (defun magit-gptel--model-for-request ()
-  "Return the model object to use for an isolated Magit GPTel request."
-  (let ((model (magit-gptel--default-model)))
-    (if (and magit-gptel-request-params (symbolp model))
-        (let ((copy (make-symbol (symbol-name model))))
-          (setplist copy (copy-sequence (symbol-plist model)))
-          (put copy :request-params
-               (magit-gptel--merge-plists
-                (copy-sequence (get model :request-params))
-                magit-gptel-request-params))
-          copy)
-      model)))
+  "Return the registered model to use for an isolated Magit GPTel request."
+  (magit-gptel--default-model))
 
 (defun magit-gptel--repo-root (&optional buffer)
   "Return repository root for BUFFER or the current buffer."
@@ -718,25 +699,29 @@ text, so `magit-gptel--finalize-request' owns the terminal decision."
     (magit-gptel--register-request request)
     (condition-case err
         (with-current-buffer request-buffer
-          (let ((gptel-backend (magit-gptel--default-backend))
-                (gptel-model model)
-                (gptel-use-context nil)
-                (gptel-context nil)
-                (gptel-use-tools nil)
-                (gptel-tools nil)
-                (gptel-track-response nil)
-                (gptel-prompt-transform-functions nil)
-                (gptel-include-reasoning nil))
-            (magit-gptel--install-finalizer
-             (gptel-request
-                 prompt
-               :buffer request-buffer
-               :system system-prompt
-               :stream nil
-               :callback (lambda (response info)
-                           (magit-gptel--handle-response
-                            request response info)))
-             request)))
+          ;; `gptel-request' copies buffer-local request settings into its
+          ;; asynchronous prompt buffer.  Dynamic bindings here are lost, so
+          ;; make every isolated setting local before dispatching the request.
+          (setq-local gptel-backend (magit-gptel--default-backend)
+                      gptel-model model
+                      gptel-use-context nil
+                      gptel-context nil
+                      gptel-use-tools nil
+                      gptel-tools nil
+                      gptel-track-response nil
+                      gptel-include-reasoning nil
+                      gptel--request-params
+                      (copy-sequence magit-gptel-request-params))
+          (magit-gptel--install-finalizer
+           (gptel-request
+               prompt
+             :buffer request-buffer
+             :system system-prompt
+             :stream nil
+             :callback (lambda (response info)
+                         (magit-gptel--handle-response
+                          request response info)))
+           request))
       (error
        (magit-gptel--cleanup-request request)
        (signal (car err) (cdr err))))
