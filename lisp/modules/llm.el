@@ -210,19 +210,13 @@
     :demand t
     :custom
     (magit-gptel-model 'deepseek-v4-flash)
-    (magit-gptel-request-params '(:thinking (:type "disabled")))
+    (magit-gptel-request-params '(:thinking (:type "disabled")
+                                  :temperature 0.1))
     :config
+    ;; Reset from the fixed package default so reloading this module never
+    ;; appends another copy of the commit-message requirements.
     (setopt magit-gptel-commit-prompt
-            (concat
-             magit-gptel-commit-prompt
-             "\n\nAdditional hard requirements for this setup:\n"
-             "- The first line MUST fit within 50 characters, counting all spaces and punctuation\n"
-             "- The first line MUST already be a single line before any editor wrapping or filling\n"
-             "- If needed, abbreviate aggressively and drop secondary details to satisfy the limit\n"
-             "- If your first attempt is longer than 50 characters, rewrite it until it is 50 characters or shorter\n"
-             "- The body MAY be longer, but only after one blank line following the first line\n"
-             "- Return plain text only\n"
-             "- Never use markdown, code fences, or labels such as ```commit\n")))
+            magit-gptel--default-commit-prompt))
 
   ;; -----------------------------------------------------------
   ;; PlantUML Beautification (using gptel-rewrite)

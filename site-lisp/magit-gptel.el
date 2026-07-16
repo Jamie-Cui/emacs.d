@@ -43,36 +43,44 @@
   :prefix "magit-gptel-")
 
 (defconst magit-gptel--default-commit-prompt
-  (concat
-   "You are an expert at writing Git commits. Your job is to write a short clear commit message that summarizes the changes.
-
-The commit message should be structured as follows:
-
-    <type>(<optional scope>): <description>
-
-    [optional body]
-
-- Commits MUST be prefixed with a type, which consists of one of the followings words: build, chore, ci, docs, feat, fix, perf, refactor, style, test
-- The type feat MUST be used when a commit adds a new feature
-- The type fix MUST be used when a commit represents a bug fix
-- An optional scope MAY be provided after a type. A scope is a phrase describing a section of the codebase enclosed in parenthesis, e.g., fix(parser):
-- A description MUST immediately follow the type/scope prefix. The description is a short description of the code changes, e.g., fix: array parsing issue when multiple spaces were contained in string.
-- Try to limit the whole subject line to 60 characters
-- Capitalize the subject line
-- Do not end the subject line with any punctuation
-- A longer commit body MAY be provided after the short description, providing additional contextual information about the code changes. The body MUST begin one blank line after the description.
-- Use the imperative mood in the subject line
-- Keep the body short and concise (omit it entirely if not useful)"
-   "A prompt adapted from Conventional Commits (https://www.conventionalcommits.org/en/v1.0.0/)."
-   ;; "You write Git commit messages from staged diffs.\n\n"
-   ;; "Return only the commit message.  Do not wrap it in code fences.  Do not "
-   ;; "add prefaces such as \"Here is the commit message\".\n\n"
-   ;; "Write a concise subject line.  Add a body only when it carries real "
-   ;; "review value.  Keep the body short and factual.\n\n"
-   ;; "Prefer Conventional Commit style when the change naturally fits it:\n"
-   ;; "<type>(<optional-scope>): <description>\n\n"
-   ;; "Use imperative mood.  Do not end the subject line with punctuation."
-   )
+  (string-join
+   '("You write Git commit messages from staged diffs."
+     ""
+     "Return only the commit message in this form:"
+     ""
+     "    <type>(<optional scope>): <description>"
+     ""
+     "    [optional body]"
+     ""
+     "Choose the type from evidence in the staged patch:"
+     ""
+     "- feat: Add new user-visible behavior"
+     "- fix: Correct demonstrably incorrect behavior"
+     "- refactor: Restructure or remove code without adding a feature or fixing a bug"
+     "- style: Make formatting-only changes with no behavior change"
+     "- docs: Change documentation only"
+     "- test: Change tests only"
+     "- build: Change the build system or dependencies"
+     "- ci: Change continuous-integration configuration"
+     "- perf: Improve performance"
+     "- chore: Perform repository maintenance not covered above"
+     ""
+     "Removing a command is not a feat. Use refactor unless the patch clearly demonstrates that the removal fixes a bug."
+     "A whitespace-only or line-wrapping change is style."
+     "Do not invent motivations such as unused, incomplete, or buggy unless the staged patch provides direct evidence."
+     ""
+     "Hard requirements:"
+     ""
+     "- Keep type and scope lowercase"
+     "- Capitalize the first word of the description"
+     "- Use imperative mood"
+     "- Keep the entire subject at 50 characters or fewer"
+     "- Do not end the subject with punctuation"
+     "- Add a short body only when it provides useful context"
+     "- Separate the body from the subject with exactly one blank line"
+     "- Return plain text only"
+     "- Never use Markdown, inline backticks, code fences, quotations, or explanatory labels")
+   "\n")
   "Default system prompt for commit message generation.")
 
 (defconst magit-gptel--default-diff-explain-prompt
@@ -453,6 +461,10 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
         (string-join (butlast (cdr lines)) "\n")
       trimmed)))
 
+(defun magit-gptel--strip-inline-markup (text)
+  "Remove inline Markdown code markers from TEXT."
+  (replace-regexp-in-string "`\\([^`\n]+\\)`" "\\1" text))
+
 (defconst magit-gptel--commit-subject-search-regexp
   (concat "\\(?:build\\|chore\\|ci\\|docs\\|feat\\|fix\\|perf\\|"
           "refactor\\|style\\|test\\)"
@@ -465,21 +477,23 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
 
 (defun magit-gptel--commit-subject-line-p (line)
   "Return non-nil when LINE is a Conventional Commit subject."
-  (string-match-p magit-gptel--commit-subject-line-regexp
-                  (string-trim line)))
+  (let ((case-fold-search nil))
+    (string-match-p magit-gptel--commit-subject-line-regexp
+                    (string-trim line))))
 
 (defun magit-gptel--extract-commit-subject (text)
-  "Extract the last Conventional Commit subject found in TEXT."
-  (let (subject)
+  "Extract the first complete Conventional Commit subject from TEXT."
+  (catch 'subject
     (dolist (line (split-string text "\n"))
-      (when (string-match magit-gptel--commit-subject-search-regexp line)
-        (setq subject (string-trim (match-string 0 line)))))
-    subject))
+      (when (magit-gptel--commit-subject-line-p line)
+        (throw 'subject (string-trim line))))
+    nil))
 
 (defun magit-gptel--normalize-commit-message (text)
   "Normalize model TEXT into a plain commit message string."
   (let* ((unfenced (magit-gptel--unwrap-code-fence text))
-         (trimmed (string-trim unfenced))
+         (plain (magit-gptel--strip-inline-markup unfenced))
+         (trimmed (string-trim plain))
          (lines (split-string trimmed "\n"))
          (lines (if (and lines
                          (string-match-p
@@ -494,6 +508,52 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
           message
         (or (magit-gptel--extract-commit-subject message)
             message)))))
+
+(defun magit-gptel--commit-message-error (message)
+  "Return an error describing why commit MESSAGE is invalid, or nil."
+  (let* ((case-fold-search nil)
+         (lines (split-string message "\n"))
+         (subject (or (car lines) ""))
+         (body-lines (cdr lines))
+         (body-present-p
+          (cl-some (lambda (line) (not (string-empty-p line)))
+                   body-lines))
+         (scope
+          (and (string-match "\\`[a-z]+(\\([^)]+\\)):" subject)
+               (match-string 1 subject)))
+         (type
+          (and (string-match "\\`\\([a-z]+\\)" subject)
+               (match-string 1 subject)))
+         (description
+          (and (string-match ": \\(.+\\)\\'" subject)
+               (match-string 1 subject))))
+    (cond
+     ((string-empty-p subject)
+      "Model returned an empty subject")
+     ((string-match-p "`" message)
+      "Commit message contains Markdown backticks")
+     ((not (magit-gptel--commit-subject-line-p subject))
+      "Subject is not a valid Conventional Commit")
+     ((> (length subject) 50)
+      (format "Subject is %d characters; maximum is 50"
+              (length subject)))
+     ((and scope (not (string= scope (downcase scope))))
+      "Scope must be lowercase")
+     ((or (null description)
+          (not (string-match-p "\\`[[:upper:]]" description)))
+      "Description must begin with an uppercase letter")
+     ((and (string= type "feat")
+           (string-match-p
+            "\\`\\(?:Remove\\|Delete\\|Drop\\|Deprecate\\|Disable\\)\\_>"
+            description))
+      "Removal descriptions cannot use the feat type")
+     ((string-match-p "[[:punct:]]\\'" subject)
+      "Subject ends with punctuation")
+     ((and body-present-p
+           (or (not (string-empty-p (car body-lines)))
+               (and (cdr body-lines)
+                    (string-empty-p (cadr body-lines)))))
+      "Commit body must begin after exactly one blank line"))))
 
 (defun magit-gptel--reasoning-response-p (response)
   "Return non-nil when RESPONSE is a gptel reasoning callback value."
@@ -519,7 +579,8 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
   (when (and magit-gptel-commit-reasoning-fallback
              (eq (magit-gptel-request-kind request) 'commit-message))
     (magit-gptel--extract-commit-subject
-     (magit-gptel--reasoning-text request))))
+     (magit-gptel--strip-inline-markup
+      (magit-gptel--reasoning-text request)))))
 
 (defun magit-gptel--commit-message-region ()
   "Return the region containing the editable commit message body."
@@ -539,11 +600,15 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
 
 (defun magit-gptel--apply-commit-response (request response _info)
   "Apply commit RESPONSE for REQUEST when the target buffer is still safe."
-  (let ((message (magit-gptel--normalize-commit-message response))
-        (buffer (magit-gptel-request-target-buffer request)))
+  (let* ((message (magit-gptel--normalize-commit-message response))
+         (validation-error
+          (magit-gptel--commit-message-error message))
+         (buffer (magit-gptel-request-target-buffer request)))
     (cond
      ((string-empty-p message)
       (magit-gptel--show-commit-preview request response "Model returned an empty message"))
+     (validation-error
+      (magit-gptel--show-commit-preview request message validation-error))
      ((not (buffer-live-p buffer))
       (magit-gptel--show-commit-preview request message "Target commit buffer was closed"))
      (t
