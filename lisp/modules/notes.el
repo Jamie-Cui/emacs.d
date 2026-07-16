@@ -96,7 +96,7 @@
   ;; a more informative completion interface
   (setq org-roam-node-display-template
         (format "${title:50}%s"
-                (propertize "${tags:10}" 'face 'org-tag)))
+                (propertize "${tags:25}" 'face 'org-tag)))
   (require 'org-roam-db)
   (org-roam-db-autosync-mode +1)
   ;; If using org-roam-protocol
