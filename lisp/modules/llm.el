@@ -4,110 +4,6 @@
 ;; magit-gptel.
 ;;; Code:
 
-(require 'map)
-(require 'package)
-(require 'seq)
-
-
-(defconst +llm/magent-agent-shell-identifier 'magent
-  "Agent Shell config identifier used by Magent.")
-
-(defvar agent-shell-agent-configs)
-(defvar gptel-model)
-(defvar magent-default-agent)
-
-(declare-function agent-shell-make-agent-config "agent-shell")
-(declare-function magent-acp-make-client "magent-acp")
-
-(defun +llm/package-desc (package)
-  "Return PACKAGE's active package descriptor, when available."
-  (when-let* ((entry (assq package package-alist))
-              (value (cdr entry)))
-    (cond
-     ((package-desc-p value) value)
-     ((and (consp value)
-           (package-desc-p (car value)))
-      (car value)))))
-
-(defun +llm/magent-package-lisp-directory ()
-  "Return Magent's package-vc lisp directory, when it exists."
-  (when-let* ((desc (+llm/package-desc 'magent))
-              (package-dir (package-desc-dir desc))
-              (lisp-dir (expand-file-name "lisp" package-dir))
-              ((file-directory-p lisp-dir)))
-    lisp-dir))
-
-(defun +llm/ensure-magent-load-path ()
-  "Ensure Magent's package-vc lisp directory is on `load-path'."
-  (when-let* ((lisp-dir (+llm/magent-package-lisp-directory)))
-    (add-to-list 'load-path lisp-dir)))
-
-(defun +llm/require-magent ()
-  "Require Magent while preserving Evil's runtime key helper."
-  (+llm/ensure-magent-load-path)
-  (let ((had-evil-define-key (fboundp 'evil-define-key))
-        (evil-define-key-function (and (fboundp 'evil-define-key)
-                                       (symbol-function 'evil-define-key))))
-    (unwind-protect
-        (progn
-          (when (and (macrop 'evil-define-key)
-                     (fboundp 'evil-define-key*))
-            (fset 'evil-define-key
-                  (lambda (state keymap key def &rest bindings)
-                    (apply #'evil-define-key*
-                           state keymap key def bindings))))
-          (require 'magent))
-      (if had-evil-define-key
-          (fset 'evil-define-key evil-define-key-function)
-        (fmakunbound 'evil-define-key)))))
-
-(defun +llm/magent-agent-shell-model-id ()
-  "Return the current gptel model id for Agent Shell display."
-  (format "%s" (or (and (boundp 'gptel-model) gptel-model) "gptel")))
-
-(defun +llm/magent-agent-shell-default-agent ()
-  "Return Magent's default agent for Agent Shell."
-  (if (boundp 'magent-default-agent)
-      magent-default-agent
-    "build"))
-
-(defun +llm/magent-agent-shell-welcome-message (_config)
-  "Return the welcome message for Magent Agent Shell buffers."
-  "\nMagent\n")
-
-(defun +llm/magent-agent-shell-client (buffer)
-  "Return Magent's in-process ACP client for BUFFER."
-  (+llm/require-magent)
-  (magent-acp-make-client buffer))
-
-(defun +llm/magent-agent-shell-config ()
-  "Return a lightweight Agent Shell config for Magent."
-  (agent-shell-make-agent-config
-   :identifier +llm/magent-agent-shell-identifier
-   :mode-line-name "Magent"
-   :buffer-name "Magent"
-   :shell-prompt "Magent> "
-   :shell-prompt-regexp "Magent> "
-   :welcome-function #'+llm/magent-agent-shell-welcome-message
-   :client-maker #'+llm/magent-agent-shell-client
-   :default-model-id #'+llm/magent-agent-shell-model-id
-   :default-session-mode-id #'+llm/magent-agent-shell-default-agent
-   :install-instructions "Magent uses an in-process ACP client; no external command is required."))
-
-(defun +llm/ensure-magent-agent-shell-config ()
-  "Ensure Magent is registered in `agent-shell-agent-configs'."
-  (+llm/ensure-magent-load-path)
-  (let ((config (+llm/magent-agent-shell-config)))
-    (setq agent-shell-agent-configs
-          (cons config
-                (seq-remove
-                 (lambda (entry)
-                   (eq (map-elt entry :identifier)
-                       +llm/magent-agent-shell-identifier))
-                 agent-shell-agent-configs)))
-    config))
-
-
 ;; -----------------------------------------------------------
 ;; DONE llm
 ;;
@@ -150,10 +46,6 @@
   (agent-shell-header-style 'text)
   (agent-shell-show-config-icons nil)
   :config
-
-  ;; Register Magent for direct `M-x agent-shell' before the full Magent
-  ;; package is configured.
-  (+llm/ensure-magent-agent-shell-config)
 
   (defun +agent-shell/bind-return-in-action-keymap-a (map)
     "Bind GUI <return> in agent-shell action keymaps."
@@ -378,25 +270,16 @@ functionality, allowing you to diff/ediff/merge the changes."
   :after (agent-shell gptel)
   :demand t
   :custom
-  (magent-skill-directories (list (expand-file-name "skills" +emacs/repo-directory)))
   ;; (magent-bypass-permission t)
   (magent-default-effort 'xhigh)
-  ;; (magent-ui-wrap-reasoning-in-think-block nil)
-  :init
-  (+llm/require-magent)
   :config
-  (require 'magent-config)
   (require 'magent-evil)
-  (+llm/ensure-magent-agent-shell-config)
+  (add-to-list 'magent-skill-directories
+               (expand-file-name "skills" +emacs/repo-directory)
+               t)
+  (magent-agent-shell-ensure-config)
   (global-magent-mode 1)
-  (magent-evil-mode 1)
-
-  ;; keybindings that should not be overriden
-  (general-define-key
-   :keymaps 'magent-output-mode-map
-   :states '(normal visual motion)
-   "?"   #'magent-transient-menu
-   ))
+  (magent-evil-mode 1))
 
 
 (provide 'init-llm)
