@@ -211,7 +211,7 @@
     :custom
     (magit-gptel-model 'deepseek-v4-flash)
     (magit-gptel-request-params '(:thinking (:type "disabled")
-                                  :temperature 0.1))
+                                            :temperature 0.1))
     :config
     ;; Reset from the fixed package default so reloading this module never
     ;; appends another copy of the commit-message requirements.
@@ -271,7 +271,20 @@ functionality, allowing you to diff/ediff/merge the changes."
   :config
   (add-to-list 'magent-skill-directories
                (expand-file-name "skills" +emacs/repo-directory) t)
-  (magent-agent-shell-ensure-config))
+  (magent-agent-shell-ensure-config)
+
+  ;; register a new command
+  (magent-command-register
+   "ask"
+   :description "Test"
+   :turn
+   (magent-command-turn-spec-create
+    :prompt "How many words"
+    :buffers '(("*Messages*")))
+   :owner 'magent-command-explain
+   :source-layer 'user
+   :required-tools '(read_file grep bash emacs_eval))
+  )
 
 
 (provide 'init-llm)
