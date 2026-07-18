@@ -281,7 +281,6 @@ functionality, allowing you to diff/ediff/merge the changes."
    (magent-command-turn-spec-create
     :prompt "How many words"
     :buffers '(("*Messages*")))
-   :owner 'magent-command-explain
    :source-layer 'user
    :required-tools '(read_file grep bash emacs_eval))
   )
