@@ -534,9 +534,6 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
       "Commit message contains Markdown backticks")
      ((not (magit-gptel--commit-subject-line-p subject))
       "Subject is not a valid Conventional Commit")
-     ((> (length subject) 50)
-      (format "Subject is %d characters; maximum is 50"
-              (length subject)))
      ((and scope (not (string= scope (downcase scope))))
       "Scope must be lowercase")
      ((or (null description)
@@ -601,6 +598,7 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
 (defun magit-gptel--apply-commit-response (request response _info)
   "Apply commit RESPONSE for REQUEST when the target buffer is still safe."
   (let* ((message (magit-gptel--normalize-commit-message response))
+         (subject-length (length (car (split-string message "\n"))))
          (validation-error
           (magit-gptel--commit-message-error message))
          (buffer (magit-gptel-request-target-buffer request)))
@@ -636,7 +634,11 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
                   (unless (looking-at "\n")
                     (insert "\n")))
                 (setq-local magit-gptel--generated-message message))
-              (message "magit-gptel: Commit message inserted"))))))))))
+              (if (> subject-length 50)
+                  (message
+                   "magit-gptel: Commit message inserted; subject is %d characters (maximum is 50)"
+                   subject-length)
+                (message "magit-gptel: Commit message inserted")))))))))))
 
 (defun magit-gptel--show-diff-explanation (request response _info)
   "Display diff explanation RESPONSE for REQUEST."

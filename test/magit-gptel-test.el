@@ -77,12 +77,12 @@
    (equal
     (magit-gptel--commit-message-error
      "refactor(memory): Remove status command.")
-    "Subject ends with punctuation"))
-  (should
-   (string-prefix-p
-    "Subject is "
-    (magit-gptel--commit-message-error
-     (concat "refactor(memory): Remove " (make-string 40 ?x))))))
+    "Subject ends with punctuation")))
+
+(ert-deftest magit-gptel-validator-allows-long-subjects ()
+  (should-not
+   (magit-gptel--commit-message-error
+    "feat(isync): Add mbsync configuration for Outlook mail mirroring")))
 
 (ert-deftest magit-gptel-validator-requires-one-body-separator ()
   (should
@@ -127,6 +127,32 @@
                     "Description must begin with an uppercase letter")))
           (with-current-buffer target
             (should (string-empty-p (buffer-string)))))
+      (when (buffer-live-p target)
+        (kill-buffer target)))))
+
+(ert-deftest magit-gptel-long-subject-is-applied-with-log-message ()
+  (let ((target (generate-new-buffer " *magit-gptel-test-target*"))
+        (commit-message
+         "feat(isync): Add mbsync configuration for Outlook mail mirroring")
+        log-message)
+    (unwind-protect
+        (let ((request
+               (magit-gptel-request-create
+                :id "test-request"
+                :kind 'commit-message
+                :repo-root default-directory
+                :target-buffer target)))
+          (cl-letf (((symbol-function 'message)
+                     (lambda (format-string &rest args)
+                       (setq log-message
+                             (apply #'format format-string args)))))
+            (magit-gptel--apply-commit-response request commit-message nil))
+          (with-current-buffer target
+            (should (equal (string-trim-right (buffer-string))
+                           commit-message)))
+          (should (string-match-p
+                   "subject is 64 characters (maximum is 50)"
+                   log-message)))
       (when (buffer-live-p target)
         (kill-buffer target)))))
 
