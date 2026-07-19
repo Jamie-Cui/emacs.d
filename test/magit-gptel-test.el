@@ -4,7 +4,7 @@
 
 ;;; Commentary:
 
-;; Focused tests for commit-message normalization and validation.
+;; Focused tests for commit-message normalization and insertion.
 
 ;;; Code:
 
@@ -46,56 +46,6 @@
      "Suggested commit:\nrefactor(memory): Remove status command")
     "refactor(memory): Remove status command")))
 
-(ert-deftest magit-gptel-validator-accepts-valid-message ()
-  (should-not
-   (magit-gptel--commit-message-error
-    (concat "refactor(memory): Remove status command\n\n"
-            "Drop the obsolete status display."))))
-
-(ert-deftest magit-gptel-validator-rejects-invalid-subjects ()
-  (should
-   (equal
-    (magit-gptel--commit-message-error
-     "feature(memory): Add status command")
-    "Subject is not a valid Conventional Commit"))
-  (should
-   (equal
-    (magit-gptel--commit-message-error
-     "refactor(memory): remove status command")
-    "Description must begin with an uppercase letter"))
-  (should
-   (equal
-    (magit-gptel--commit-message-error
-     "refactor(Memory): Remove status command")
-    "Scope must be lowercase"))
-  (should
-   (equal
-    (magit-gptel--commit-message-error
-     "feat: Remove magent-open-memory-status")
-    "Removal descriptions cannot use the feat type"))
-  (should
-   (equal
-    (magit-gptel--commit-message-error
-     "refactor(memory): Remove status command.")
-    "Subject ends with punctuation")))
-
-(ert-deftest magit-gptel-validator-allows-long-subjects ()
-  (should-not
-   (magit-gptel--commit-message-error
-    "feat(isync): Add mbsync configuration for Outlook mail mirroring")))
-
-(ert-deftest magit-gptel-validator-requires-one-body-separator ()
-  (should
-   (equal
-    (magit-gptel--commit-message-error
-     "refactor(memory): Remove status command\nBody text")
-    "Commit body must begin after exactly one blank line"))
-  (should
-   (equal
-    (magit-gptel--commit-message-error
-     "refactor(memory): Remove status command\n\n\nBody text")
-    "Commit body must begin after exactly one blank line")))
-
 (ert-deftest magit-gptel-reasoning-fallback-strips-inline-markup ()
   (let ((request
          (magit-gptel-request-create
@@ -106,9 +56,10 @@
      (equal (magit-gptel--reasoning-fallback-text request)
             "refactor(memory): Remove status command"))))
 
-(ert-deftest magit-gptel-invalid-response-is-not-applied ()
+(ert-deftest magit-gptel-format-errors-do-not-block-insertion ()
   (let ((target (generate-new-buffer " *magit-gptel-test-target*"))
-        preview)
+        (commit-message
+         "feat(llm): add finish-work command to create PRs from changes"))
     (unwind-protect
         (let ((request
                (magit-gptel-request-create
@@ -117,16 +68,30 @@
                 :repo-root default-directory
                 :target-buffer target)))
           (cl-letf (((symbol-function 'magit-gptel--show-commit-preview)
-                     (lambda (_request message reason)
-                       (setq preview (list message reason)))))
+                     (lambda (&rest _args)
+                       (ert-fail "Formatting opened a commit preview"))))
             (magit-gptel--apply-commit-response
-             request "feat: remove status command" nil))
-          (should
-           (equal preview
-                  '("feat: remove status command"
-                    "Description must begin with an uppercase letter")))
+             request commit-message nil))
           (with-current-buffer target
-            (should (string-empty-p (buffer-string)))))
+            (should (equal (string-trim-right (buffer-string))
+                           commit-message))))
+      (when (buffer-live-p target)
+        (kill-buffer target)))))
+
+(ert-deftest magit-gptel-non-conventional-response-is-applied ()
+  (let ((target (generate-new-buffer " *magit-gptel-test-target*"))
+        (commit-message "Update staged changes."))
+    (unwind-protect
+        (let ((request
+               (magit-gptel-request-create
+                :id "test-request"
+                :kind 'commit-message
+                :repo-root default-directory
+                :target-buffer target)))
+          (magit-gptel--apply-commit-response request commit-message nil)
+          (with-current-buffer target
+            (should (equal (string-trim-right (buffer-string))
+                           commit-message))))
       (when (buffer-live-p target)
         (kill-buffer target)))))
 
@@ -164,6 +129,10 @@
   (should
    (string-match-p
     (regexp-quote "A whitespace-only or line-wrapping change is style")
+    magit-gptel--default-commit-prompt))
+  (should-not
+   (string-match-p
+    (regexp-quote "Capitalize the first word of the description")
     magit-gptel--default-commit-prompt))
   (should-not
    (string-match-p "useful)A prompt adapted"

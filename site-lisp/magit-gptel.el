@@ -72,7 +72,6 @@
      "Hard requirements:"
      ""
      "- Keep type and scope lowercase"
-     "- Capitalize the first word of the description"
      "- Use imperative mood"
      "- Keep the entire subject at 50 characters or fewer"
      "- Do not end the subject with punctuation"
@@ -509,49 +508,6 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
         (or (magit-gptel--extract-commit-subject message)
             message)))))
 
-(defun magit-gptel--commit-message-error (message)
-  "Return an error describing why commit MESSAGE is invalid, or nil."
-  (let* ((case-fold-search nil)
-         (lines (split-string message "\n"))
-         (subject (or (car lines) ""))
-         (body-lines (cdr lines))
-         (body-present-p
-          (cl-some (lambda (line) (not (string-empty-p line)))
-                   body-lines))
-         (scope
-          (and (string-match "\\`[a-z]+(\\([^)]+\\)):" subject)
-               (match-string 1 subject)))
-         (type
-          (and (string-match "\\`\\([a-z]+\\)" subject)
-               (match-string 1 subject)))
-         (description
-          (and (string-match ": \\(.+\\)\\'" subject)
-               (match-string 1 subject))))
-    (cond
-     ((string-empty-p subject)
-      "Model returned an empty subject")
-     ((string-match-p "`" message)
-      "Commit message contains Markdown backticks")
-     ((not (magit-gptel--commit-subject-line-p subject))
-      "Subject is not a valid Conventional Commit")
-     ((and scope (not (string= scope (downcase scope))))
-      "Scope must be lowercase")
-     ((or (null description)
-          (not (string-match-p "\\`[[:upper:]]" description)))
-      "Description must begin with an uppercase letter")
-     ((and (string= type "feat")
-           (string-match-p
-            "\\`\\(?:Remove\\|Delete\\|Drop\\|Deprecate\\|Disable\\)\\_>"
-            description))
-      "Removal descriptions cannot use the feat type")
-     ((string-match-p "[[:punct:]]\\'" subject)
-      "Subject ends with punctuation")
-     ((and body-present-p
-           (or (not (string-empty-p (car body-lines)))
-               (and (cdr body-lines)
-                    (string-empty-p (cadr body-lines)))))
-      "Commit body must begin after exactly one blank line"))))
-
 (defun magit-gptel--reasoning-response-p (response)
   "Return non-nil when RESPONSE is a gptel reasoning callback value."
   (and (consp response)
@@ -596,17 +552,14 @@ When MARKDOWN is non-nil, prefer a markdown viewing mode when available."
       (cons (point-min) end))))
 
 (defun magit-gptel--apply-commit-response (request response _info)
-  "Apply commit RESPONSE for REQUEST when the target buffer is still safe."
+  "Apply non-empty commit RESPONSE when REQUEST still owns a safe target.
+Commit-message formatting is advisory and never blocks insertion."
   (let* ((message (magit-gptel--normalize-commit-message response))
          (subject-length (length (car (split-string message "\n"))))
-         (validation-error
-          (magit-gptel--commit-message-error message))
          (buffer (magit-gptel-request-target-buffer request)))
     (cond
      ((string-empty-p message)
       (magit-gptel--show-commit-preview request response "Model returned an empty message"))
-     (validation-error
-      (magit-gptel--show-commit-preview request message validation-error))
      ((not (buffer-live-p buffer))
       (magit-gptel--show-commit-preview request message "Target commit buffer was closed"))
      (t
