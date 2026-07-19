@@ -14,6 +14,8 @@
 ;;       +emacs/email-full-name "Your Name"
 ;;       +emacs/email-maildir (expand-file-name "~/.local/share/mail/outlook")
 ;;       +emacs/mu4e-load-path "/usr/share/emacs/site-lisp/mu4e")
+;; Apple Silicon macOS with Homebrew:
+;; (setq +emacs/mu4e-load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e")
 ;; (setq +emacs/disabled-modules '("llm" "lang/lean"))
 
 ;; If you use an Apple keyboard, map the Super key to Meta.
