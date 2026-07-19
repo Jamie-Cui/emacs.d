@@ -10,6 +10,10 @@
 ;; User-tunable defaults (uncomment and edit as needed).
 ;; (setq +emacs/org-root-dir (expand-file-name "~/opt/org-root"))
 ;; (setq +emacs/proxy "127.0.0.1:10808")
+;; (setq +emacs/email-address "you@outlook.com"
+;;       +emacs/email-full-name "Your Name"
+;;       +emacs/email-maildir (expand-file-name "~/.local/share/mail/outlook")
+;;       +emacs/mu4e-load-path "/usr/share/emacs/site-lisp/mu4e")
 ;; (setq +emacs/disabled-modules '("llm" "lang/lean"))
 
 ;; If you use an Apple keyboard, map the Super key to Meta.

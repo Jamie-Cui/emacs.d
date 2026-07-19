@@ -180,10 +180,13 @@
    :keymaps 'override ; prevent from being override
    ;; application keys
    "A"      #'agent-shell ;; A -> Agent shell
-   "S"      #'agent-switch ;; S -> agent Switch
-   "G"      #'gptel  ;; G -> Gptel
-   "D"      #'docker
-   ;; "T"      #'telega ;; T -> Telegram
+   ;; "S"      #'agent-switch ;; S -> agent Switch
+   ;; "G"      #'gptel  ;; G -> Gptel
+   "D"      #'docker ;; D -> Docker
+   "M"      #'+email/open ;; M -> Email
+   "E"      #'elfeed ;; E -> Elfeed
+   "B"      #'ebib ;; B -> eBib
+   "T"      #'telega ;; T -> Telegram
    ;; most-frequency keys
    "."      #'find-file
    "<"      #'consult-buffer
@@ -233,10 +236,8 @@
    ;; open-related key bindings
    "o" '(:ignore t :which-key "open")
    "oo"     #'crux-open-with
-   "oe"     #'elfeed
    "oE"     #'ielm ; elisp repl
    "ob"     #'citar-open
-   "oB"     #'ebib
    "og"     #'+keys/magit-status-quick
    "op"     #'proced
    "od"     #'dired-jump

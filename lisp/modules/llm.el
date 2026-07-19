@@ -105,6 +105,15 @@
   ;;           "-c" "preferred_auth_method=\"apikey\"")))
   )
 
+(use-package agent-shell-permission-transient
+  :load-path (lambda () (concat +emacs/repo-directory "/site-lisp/"))
+  :after agent-shell
+  :demand t
+  :bind (:map agent-shell-mode-map
+              ("C-c C-p" . agent-shell-permission-transient-menu))
+  :config
+  (agent-shell-permission-transient-mode +1))
+
 (use-package gptel
   :ensure t
   :custom

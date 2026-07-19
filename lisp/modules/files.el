@@ -141,6 +141,13 @@ pre-date the external-operation helper API."
   ;; For `eat-eshell-visual-command-mode'.
   (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
 
+  (defun +eat/evil-keep-terminal-cursor-h ()
+    "Keep Evil from moving EAT's terminal cursor."
+    (setq-local evil-move-cursor-back nil
+                evil-move-beyond-eol t))
+
+  (add-hook 'eat-mode-hook #'+eat/evil-keep-terminal-cursor-h)
+
   (defun +eat/new ()
     (interactive)
     (let ((current-prefix-arg ""))

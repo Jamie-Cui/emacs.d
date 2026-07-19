@@ -48,6 +48,7 @@
    "bibliography"
    "latex"
    "reading"
+   "email"
    "llm"
    "input"
    "keys"))

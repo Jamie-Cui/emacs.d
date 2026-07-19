@@ -28,6 +28,17 @@
   (let ((explicit-shell-file-name "/bin/sh") )
     (shell)))
 
+;; Treat these commands as visual (run in a term buffer, not plain Eshell).
+(with-eval-after-load 'em-term
+  ;; Full-command visual overrides.
+  (add-to-list 'eshell-visual-commands "dnf")
+  (add-to-list 'eshell-visual-commands "brew")
+  (add-to-list 'eshell-visual-commands "cmake")
+  (add-to-list 'eshell-visual-commands "ninja")
+  (add-to-list 'eshell-visual-commands "nmap")
+  ;; Subcommand-level override: "sudo dnf" should use a term buffer too.
+  (add-to-list 'eshell-visual-subcommands '("sudo" "dnf")))
+
 (setopt eshell-scroll-show-maximum-output nil
         eshell-highlight-prompt nil
         eshell-destroy-buffer-when-process-dies t)
