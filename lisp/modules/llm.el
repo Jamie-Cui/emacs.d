@@ -286,7 +286,7 @@ functionality, allowing you to diff/ediff/merge the changes."
   (magent-agent-shell-ensure-config)
 
   (magent-command-register
-   "finish-work"
+   "submit-pr"
    :description "Create a branch, commit and push all changes, then open a PR."
    :title "Finish work as a pull request"
    :session-policy 'isolated
@@ -308,18 +308,18 @@ functionality, allowing you to diff/ediff/merge the changes."
                (error nil)))
             (reuse-branch-p
              (and (stringp current-branch)
-                  (string-prefix-p "finish-work/" current-branch)))
+                  (string-prefix-p "submit-pr/" current-branch)))
             (branch
              (if reuse-branch-p
                  current-branch
-               (format "finish-work/%s"
+               (format "submit-pr/%s"
                        (format-time-string "%Y%m%d-%H%M%S"))))
             process
             process-buffer
             commit
             subject)
        (unless root
-         (user-error "/finish-work requires a filesystem-backed project"))
+         (user-error "/submit-pr requires a filesystem-backed project"))
        (cl-labels
            ((cleanup ()
               (let ((owned-process process)
@@ -342,7 +342,7 @@ functionality, allowing you to diff/ediff/merge the changes."
             (run (label command callback)
               (when (eq (magent-command-invocation-status invocation) 'active)
                 (magent-command-progress invocation (concat label "..."))
-                (let* ((buffer (generate-new-buffer " *magent-finish-work*"))
+                (let* ((buffer (generate-new-buffer " *magent-submit-pr*"))
                        (default-directory root)
                        (process-environment
                         (cons "GIT_TERMINAL_PROMPT=0" process-environment))
@@ -354,8 +354,8 @@ functionality, allowing you to diff/ediff/merge the changes."
                      (when (and
                             (memq (process-status finished) '(exit signal))
                             (eq finished process)
-                            (not (process-get finished 'finish-work-done)))
-                       (process-put finished 'finish-work-done t)
+                            (not (process-get finished 'submit-pr-done)))
+                       (process-put finished 'submit-pr-done t)
                        (let ((status (process-exit-status finished))
                              (output
                               (when (buffer-live-p buffer)
@@ -383,7 +383,7 @@ functionality, allowing you to diff/ediff/merge the changes."
                       (progn
                         (setq child
                               (make-process
-                               :name "magent-finish-work"
+                               :name "magent-submit-pr"
                                :buffer buffer
                                :command command
                                :connection-type 'pipe
