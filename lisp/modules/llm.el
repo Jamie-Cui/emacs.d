@@ -46,8 +46,12 @@
   ;;     display-buffer-pop-up-window)
   ;;    (inhibit-same-window . t)))
   (agent-shell-show-welcome-message nil)
-  (agent-shell-header-style 'text)
+  (agent-shell-header-style nil)
   (agent-shell-show-config-icons nil)
+  (agent-shell-thought-process-expand-by-default nil)
+  (agent-shell-tool-use-expand-by-default nil)
+  (agent-shell-tool-use-group-expand-by-default nil)
+  (agent-shell-user-message-expand-by-default nil)
   :config
 
   (defun +agent-shell/bind-return-in-action-keymap-a (map)
@@ -115,6 +119,53 @@
   :bind (:map agent-shell-mode-map
               ("C-c C-p" . agent-shell-permission-transient-menu))
   :config
+  (defun +agent-shell/permissions-pending-p ()
+    "Return non-nil when agent-shell has a pending permission request."
+    (> (agent-shell-permission-transient-pending-count) 0))
+
+  (defun +agent-shell/configure-help-menu ()
+    "Add common agent-shell actions to `agent-shell-help-menu'."
+    (dolist (command '(agent-shell-ui-toggle-fragment
+                       agent-shell-ui-toggle-all-fragments
+                       agent-shell-restart
+                       agent-shell-reload
+                       agent-shell-fork
+                       agent-shell-permission-transient-menu
+                       agent-shell-switch-buffer
+                       agent-shell-other-buffer))
+      (transient-remove-suffix 'agent-shell-help-menu command))
+    (transient-append-suffix
+      'agent-shell-help-menu 'agent-shell-previous-item
+      '("z" "Toggle item" agent-shell-ui-toggle-fragment :transient t))
+    (transient-append-suffix
+      'agent-shell-help-menu 'agent-shell-ui-toggle-fragment
+      '("Z" "Toggle all" agent-shell-ui-toggle-all-fragments :transient t))
+    (transient-append-suffix
+      'agent-shell-help-menu 'agent-shell-interrupt
+      '("r" "Restart" agent-shell-restart))
+    (transient-append-suffix
+      'agent-shell-help-menu 'agent-shell-restart
+      '("R" "Reload" agent-shell-reload))
+    (transient-append-suffix
+      'agent-shell-help-menu 'agent-shell-reload
+      '("f" "Fork" agent-shell-fork))
+    (transient-append-suffix
+      'agent-shell-help-menu 'agent-shell-fork
+      '("P" "Permissions" agent-shell-permission-transient-menu
+        :if +agent-shell/permissions-pending-p))
+    (transient-append-suffix
+      'agent-shell-help-menu 'agent-shell-new-shell
+      '("s" "Switch shell" agent-shell-switch-buffer))
+    (transient-append-suffix
+      'agent-shell-help-menu 'agent-shell-switch-buffer
+      '("O" "Shell/viewport" agent-shell-other-buffer)))
+
+  (+agent-shell/configure-help-menu)
+
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal agent-shell-mode-map (kbd "?")
+      #'agent-shell-help-menu))
+
   (agent-shell-permission-transient-mode +1))
 
 (use-package gptel
