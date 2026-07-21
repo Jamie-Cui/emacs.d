@@ -14,6 +14,11 @@
 (setopt org-archive-location "::* Archive")
 (define-key org-mode-map (kbd "C-c C-a") #'org-archive-subtree)
 
+(define-key org-mode-map (kbd "TAB") #'outline-toggle-children)
+(define-key org-mode-map (kbd "<tab>") #'outline-toggle-children)
+(evil-collection-bind 'org-mode-map
+                      'section-toggle #'outline-toggle-children)
+
 ;; Emacs 30.2 can native-compile this helper incorrectly and then call
 ;; `org-element-with-disabled-cache' like a function while dashboard renders
 ;; agenda items.
@@ -291,6 +296,7 @@
   :custom
   (plantuml-jar-path (+org/plantuml-jar-path))
   (org-plantuml-jar-path (+org/plantuml-jar-path))
+  (plantuml-svg-background "white")
   :config
   (setq plantuml-default-exec-mode 'jar)
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml)))
