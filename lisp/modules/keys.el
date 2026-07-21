@@ -221,6 +221,7 @@
    "yb"     #'+editor/copy-buffer-identifier ; copy buffer identifier
    "yf"     #'+editor/copy-buffer-file-name ; copy file name
    "ya"     #'+editor/copy-ref-dwim ; copy dwim
+   "yl"     #'+org/copy-link ; copy org link
    ;; buffer-related key bindings
    "b" '(:ignore t :which-key "buffer")
    "ba"     #'evil-buffer-new
@@ -270,8 +271,6 @@
    "nc"      #'+org-project-capture-select-project
    "nt"      #'org-project-todo-list
    "nj"      #'org-journal-new-entry
-   "nl"      #'org-insert-link
-   "ny"      #'org-store-link
    "np"      #'+org-project-consult-notes
    "nd"      #'org-deft-org
    "nD"      #'org-deft-tex

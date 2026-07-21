@@ -490,6 +490,15 @@ TITLE, ROOT and SLUG seed the initial metadata."
   (interactive)
   (find-file (+org-project-file-dwim)))
 
+(defun +org/copy-link ()
+  "Copy an Org link to the current location."
+  (interactive)
+  (let ((link (org-store-link nil nil)))
+    (unless link
+      (user-error "Cannot create an Org link here"))
+    (kill-new link)
+    (message "Copied: %s" link)))
+
 (defun +org-project-consult-notes ()
   "Open one of the known central project notes via Consult.
 Pin the current project's central file to the front when available."
@@ -1569,8 +1578,8 @@ completion, or nil."
     (concat (string-join lines "\n") "\n")))
 
 (defun +org-project--log-done-to-journal (source-id task-title project project-file
-                                                  final-state done-at
-                                                  previous-state time)
+                                                    final-state done-at
+                                                    previous-state time)
   "Write a journal entry for a project task completed in FINAL-STATE.
 SOURCE-ID links to the task.  TASK-TITLE, PROJECT and PROJECT-FILE describe the
 source task.  DONE-AT is the inactive timestamp string, PREVIOUS-STATE is the
