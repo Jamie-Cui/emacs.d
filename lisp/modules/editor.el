@@ -165,6 +165,16 @@ Otherwise, copy the current line."
     (kill-new name)
     (message "Copied: %s" name)))
 
+(defun +editor/copy-buffer-identifier ()
+  "Copy an evaluable identifier for the current buffer.
+
+The identifier is an Emacs Lisp `get-buffer' form, so an agent with
+`emacs_eval' access can resolve file-backed and non-file buffers alike."
+  (interactive)
+  (let ((identifier (format "(get-buffer %S)" (buffer-name))))
+    (kill-new identifier)
+    (message "Copied: %s" identifier)))
+
 (defun +editor/wc-non-ascii (&optional start end)
   "Count lines, non-ASCII characters, and characters in region or buffer."
   (interactive)

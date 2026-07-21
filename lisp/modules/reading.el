@@ -29,6 +29,12 @@
                   ("https://www.feistyduck.com/newsletter/feed")
                   ;; crypto stack exchange
                   ("https://crypto.meta.stackexchange.com/feeds")
+                  ;; Post-quantum cryptography
+                  ("https://blog.cloudflare.com/tag/post-quantum/rss/" pqc security)
+                  ("https://pqca.org/feed/" pqc security)
+                  ("https://aws.amazon.com/blogs/security/tag/post-quantum-cryptography/feed/" pqc security)
+                  ("https://www.nist.gov/news-events/cybersecurity/rss.xml" pqc security)
+                  ("https://blog.google/security/rss/" pqc security)
                   ;;
                   ;; ------ General ------
                   ;; null program

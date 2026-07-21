@@ -46,7 +46,7 @@
   ;;     display-buffer-pop-up-window)
   ;;    (inhibit-same-window . t)))
   (agent-shell-show-welcome-message nil)
-  (agent-shell-header-style nil)
+  (agent-shell-header-style 'text)
   (agent-shell-show-config-icons nil)
   (agent-shell-thought-process-expand-by-default nil)
   (agent-shell-tool-use-expand-by-default nil)

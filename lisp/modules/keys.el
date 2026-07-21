@@ -218,6 +218,7 @@
    "wR"     #'redraw-display
    ;; yank-related key bindings
    "y" '(:ignore t :which-key "yank")
+   "yb"     #'+editor/copy-buffer-identifier ; copy buffer identifier
    "yf"     #'+editor/copy-buffer-file-name ; copy file name
    "ya"     #'+editor/copy-ref-dwim ; copy dwim
    ;; buffer-related key bindings
