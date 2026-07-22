@@ -116,47 +116,57 @@
     (call-interactively 'save-some-buffers)))
 
 (defun +editor/copy-ref-dwim ()
-  "Copy the current file location and text at point to the kill ring.
+  "Copy the current location and text at point to the kill ring.
 
-When a region is active, copy the file with the selected line range.
-Otherwise, copy the current line."
+When a region is active, copy the ref with the selected line range.
+Otherwise, copy the current line.
+
+In a Dired buffer, copy the absolute path of the file at point."
   (interactive)
-  (let* ((file (or buffer-file-name
-                   (user-error "Buffer is not associated with a file")))
-         (has-region (use-region-p))
-         (beg (if has-region (region-beginning) (line-beginning-position)))
-         (raw-end (if has-region (region-end) (line-end-position)))
-         (end (if (> raw-end beg) (1- raw-end) raw-end))
-         (start-line (line-number-at-pos beg t))
-         (end-line (line-number-at-pos end t))
-         (line-range
-          (format "%s:%d-%d" file start-line end-line))
-         (content
-          (if (= start-line end-line)
-              (let ((content-end (if (and (> raw-end beg)
-                                          (eq (char-before raw-end) ?\n))
-                                     (1- raw-end)
-                                   raw-end)))
-                (buffer-substring-no-properties beg content-end))
-            (save-excursion
-              (goto-char (point-min))
-              (forward-line (1- start-line))
-              (let ((line start-line)
-                    lines)
-                (while (<= line end-line)
-                  (push (format "   %d: %s"
-                                line
-                                (buffer-substring-no-properties
-                                 (line-beginning-position)
-                                 (line-end-position)))
-                        lines)
-                  (forward-line 1)
-                  (setq line (1+ line)))
-                (mapconcat #'identity (nreverse lines) "\n")))))
-         (text (format "%s\n\n%s" line-range content)))
-    (kill-new text)
-    (setq deactivate-mark t)
-    (message "Yanked: %s" line-range)))
+  (if (derived-mode-p 'dired-mode)
+      (let ((file (or (dired-get-filename nil t)
+                      (user-error "No file at point in Dired"))))
+        (kill-new file)
+        (message "Copied: %s" file))
+    (let* ((ref (or (buffer-file-name) (buffer-name)))
+           (has-region (use-region-p))
+           (beg (if has-region (region-beginning) (line-beginning-position)))
+           (raw-end (if has-region (region-end) (line-end-position)))
+           (end (if (> raw-end beg) (1- raw-end) raw-end))
+           (start-line (line-number-at-pos beg t))
+           (end-line (line-number-at-pos end t))
+           (line-range
+            (format "%s:%d-%d" ref start-line end-line))
+           (content
+            (if (= start-line end-line)
+                (let ((content-end (if (and (> raw-end beg)
+                                            (eq (char-before raw-end) ?
+))
+                                       (1- raw-end)
+                                     raw-end)))
+                  (buffer-substring-no-properties beg content-end))
+              (save-excursion
+                (goto-char (point-min))
+                (forward-line (1- start-line))
+                (let ((line start-line)
+                      lines)
+                  (while (<= line end-line)
+                    (push (format "   %d: %s"
+                                  line
+                                  (buffer-substring-no-properties
+                                   (line-beginning-position)
+                                   (line-end-position)))
+                          lines)
+                    (forward-line 1)
+                    (setq line (1+ line)))
+                  (mapconcat #'identity (nreverse lines) "
+")))))
+           (text (format "%s
+
+%s" line-range content)))
+      (kill-new text)
+      (setq deactivate-mark t)
+      (message "Yanked: %s" line-range))))
 
 (defun +editor/copy-buffer-file-name ()
   "Copy the current buffer file name to clipboard."
