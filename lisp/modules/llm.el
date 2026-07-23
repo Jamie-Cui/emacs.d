@@ -36,6 +36,43 @@
 ;;   ;; @gptel-plan
 ;;   )
 
+(defun +agent-shell/focus-input (shell-buffer)
+  "Move point in visible SHELL-BUFFER to the current input's beginning."
+  (when-let* ((window (get-buffer-window shell-buffer t)))
+    (set-window-point
+     window
+     (with-current-buffer shell-buffer
+       (let ((prompt-end
+              (and (boundp 'comint-last-prompt)
+                   (cdr-safe (symbol-value 'comint-last-prompt)))))
+         (if (and (markerp prompt-end)
+                  (marker-position prompt-end))
+             (marker-position prompt-end)
+           (point-max)))))))
+
+(defun +agent-shell/focus-input-after-display-a (shell-buffer)
+  "Move point to the input after displaying SHELL-BUFFER."
+  (+agent-shell/focus-input shell-buffer))
+
+(defun +agent-shell/focus-input-after-insert-a (&rest args)
+  "Move point after a focused insertion described by ARGS."
+  (unless (plist-get args :no-focus)
+    (when (derived-mode-p 'agent-shell-mode)
+      (+agent-shell/focus-input (current-buffer)))))
+
+(defun +agent-shell/focus-input-when-initialized-h ()
+  "Move point after this agent shell finishes initializing."
+  (let ((shell-buffer (current-buffer))
+        subscription)
+    (setq subscription
+          (agent-shell-subscribe-to
+           :shell-buffer shell-buffer
+           :event 'init-finished
+           :on-event
+           (lambda (_event)
+             (+agent-shell/focus-input shell-buffer)
+             (agent-shell-unsubscribe :subscription subscription))))))
+
 (use-package agent-shell
   :ensure t
   :custom
@@ -67,6 +104,19 @@
       (display-buffer-in-direction
        buffer
        (append `((direction . below) (window . ,window)) alist))))
+
+  (advice-remove 'agent-shell--display-buffer
+                 #'+agent-shell/focus-input-after-display-a)
+  (advice-add 'agent-shell--display-buffer
+              :after #'+agent-shell/focus-input-after-display-a)
+  (advice-remove 'agent-shell--insert-to-shell-buffer
+                 #'+agent-shell/focus-input-after-insert-a)
+  (advice-add 'agent-shell--insert-to-shell-buffer
+              :after #'+agent-shell/focus-input-after-insert-a)
+  (remove-hook 'agent-shell-mode-hook
+               #'+agent-shell/focus-input-when-prompt-ready-h)
+  (add-hook 'agent-shell-mode-hook
+            #'+agent-shell/focus-input-when-initialized-h)
 
   (with-eval-after-load 'agent-shell-ui
     (advice-remove 'agent-shell-ui-make-action-keymap
