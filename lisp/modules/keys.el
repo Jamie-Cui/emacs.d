@@ -272,8 +272,7 @@
    "nt"      #'org-project-todo-list
    "nj"      #'org-journal-new-entry
    "np"      #'+org-project-consult-notes
-   "nd"      #'org-deft-org
-   "nD"      #'org-deft-tex
+   "nd"      #'list-denotes
    "nq"      #'org-set-tags-command
    "nT" '(:ignore t :which-key "timer")
    "nTa"     #'org-timer-set-timer ; add timer

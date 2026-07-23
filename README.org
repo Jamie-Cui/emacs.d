@@ -55,7 +55,7 @@ list of module names to skip, e.g. ~'("llm" "lang/lean")~.
 | ~prog~                   | eglot, flycheck, citre, compilation, treesit              |
 | ~lang/*~                 | per-language config (cmake, bazel, markdown, lean, ...)   |
 | ~org~                    | Org core, babel, export, plantuml                         |
-| ~notes~                  | org-project, journal, roam, deft, agenda hygiene          |
+| ~notes~                  | org-project, journal, roam, denote, agenda hygiene        |
 | ~bibliography~           | citar, ebib, bibtex                                       |
 | ~latex~                  | auctex, pdf-tools, xenops, git-overleaf (GUI)             |
 | ~reading~                | elfeed                                                    |
