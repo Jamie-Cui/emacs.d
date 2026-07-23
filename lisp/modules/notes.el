@@ -181,12 +181,28 @@
       (+notes/denote-menu-refresh)
       (message "Archived to %s" destination))))
 
+(defun +notes/denote-menu-delete ()
+  "Delete the Denote file represented by the menu row at point."
+  (interactive)
+  (let* ((file (+notes/denote-menu-file-at-point))
+         (note-buffer (find-buffer-visiting file)))
+    (when (and note-buffer (buffer-modified-p note-buffer))
+      (user-error "Save the note before deleting it"))
+    (when (yes-or-no-p
+           (format "Delete `%s'? " (file-name-nondirectory file)))
+      (when note-buffer
+        (kill-buffer note-buffer))
+      (delete-file file)
+      (denote-update-dired-buffers)
+      (+notes/denote-menu-refresh)
+      (message "Deleted %s" file))))
+
 (use-package denote
   :ensure t
   :demand t
   :custom
   (denote-directory
-   (list (+emacs/org-subdir "deft")
+   (list (+emacs/org-subdir "denote")
          (+emacs/org-subdir "projects")))
   (denote-file-type 'org)
   (denote-prompts '(title keywords))
@@ -197,7 +213,7 @@
   (denote-excluded-files-regexp
    "\\(?:\\.sync-conflict-[^/]*\\.org\\'\\|/[^/]+-beorg\\.org\\'\\)")
   (denote-dired-directories
-   (list (+emacs/org-subdir "deft")
+   (list (+emacs/org-subdir "denote")
          (+emacs/org-subdir "projects")))
   (denote-dired-directories-include-subdirectories t)
   :hook
@@ -208,17 +224,21 @@
 
 (use-package denote-menu
   :ensure t
+  :custom
+  (denote-menu-title-column-width 50)
   :commands (denote-menu-list-notes list-denotes)
   :bind
   (:map denote-menu-mode-map
         ("C-c C-r" . +notes/denote-menu-rename-title)
         ("C-c C-n" . +notes/denote-menu-new)
-        ("C-c C-a" . +notes/denote-menu-archive))
+        ("C-c C-a" . +notes/denote-menu-archive)
+        ("C-c C-d" . +notes/denote-menu-delete))
   :config
   (evil-define-key 'normal denote-menu-mode-map
     (kbd "R") #'+notes/denote-menu-rename-title
     (kbd "N") #'+notes/denote-menu-new
-    (kbd "A") #'+notes/denote-menu-archive))
+    (kbd "A") #'+notes/denote-menu-archive
+    (kbd "D") #'+notes/denote-menu-delete))
 
 (use-package consult-denote
   :ensure t

@@ -61,6 +61,13 @@
         (define-key map (kbd "<return>") action)))
     map)
 
+  (defun +agent-shell/display-transient-below-window (buffer alist)
+    "Display transient BUFFER below the selected window using ALIST."
+    (let ((window (selected-window)))
+      (display-buffer-in-direction
+       buffer
+       (append `((direction . below) (window . ,window)) alist))))
+
   (with-eval-after-load 'agent-shell-ui
     (advice-remove 'agent-shell-ui-make-action-keymap
                    #'+agent-shell/bind-return-in-action-keymap-a)
@@ -125,6 +132,11 @@
 
   (defun +agent-shell/configure-help-menu ()
     "Add common agent-shell actions to `agent-shell-help-menu'."
+    (when-let* ((prefix (get 'agent-shell-help-menu 'transient--prefix)))
+      (oset prefix display-action
+            '(+agent-shell/display-transient-below-window
+              (dedicated . t)
+              (inhibit-same-window . t))))
     (dolist (command '(agent-shell-ui-toggle-fragment
                        agent-shell-ui-toggle-all-fragments
                        agent-shell-restart
