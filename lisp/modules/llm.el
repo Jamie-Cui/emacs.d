@@ -75,6 +75,7 @@
 
 (use-package agent-shell
   :ensure t
+  :demand t
   :custom
   (agent-shell-display-action 'display-buffer-other-window)
   ;; (agent-shell-display-action
